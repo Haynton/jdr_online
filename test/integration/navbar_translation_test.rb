@@ -22,4 +22,15 @@ class NavbarTranslationTest < ActionDispatch::IntegrationTest
 
     assert_select "nav button", text: "Se déconnecter"
   end
+
+  test "a french visitor sees the theme choices in french, none pressed before the script runs" do
+    get root_path, headers: { "Accept-Language" => "fr" }
+
+    assert_select "nav [role=group][aria-label=?]", "Thème" do
+      assert_select "button[aria-pressed=false]", count: 3
+      assert_select "button[data-theme-choice-param=light]", text: "Clair"
+      assert_select "button[data-theme-choice-param=dark]", text: "Sombre"
+      assert_select "button[data-theme-choice-param=system]", text: "Système"
+    end
+  end
 end

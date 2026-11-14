@@ -51,3 +51,8 @@ en:
       log_in: "Log in"
       log_out: "Log out"
       sign_up: "Sign up"
+      theme_label: "Theme"
+    theme_choice:
+      dark: "Dark"
+      light: "Light"
+      system: "System"
