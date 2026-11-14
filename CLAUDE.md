@@ -31,11 +31,12 @@ Projet réalisé en deux semaines, en équipe de deux ou trois personnes. Les me
 - Images : Active Storage avec Cloudinary
 - Variables d'environnement : `dotenv-rails` en développement, variables Heroku en production
 - Hébergement : Heroku. Kamal et le Dockerfile générés par Rails ne sont pas utilisés
+- Langues : I18n de Rails, français et anglais. Langue choisie par le compte, sinon par le navigateur, sinon l'anglais. Gems `rails-i18n` et `devise-i18n` (à installer, voir Prochaines tâches)
+- Thème : clair, sombre ou système, avec la variante `dark` de Tailwind pilotée par une classe `.dark` sur `<html>` et des couleurs nommées (voir Couleurs et thème)
 
 ## Commandes
 
-- Lancer l'application : `bin/dev` (serveur et reconstruction du CSS Tailwind). Ne pas utiliser `rails s` seul une fois Tailwind installé
-- Seule exception : l'étape 9 de la tâche en cours se teste avec `rails s`, car Tailwind n'est pas encore installé (à ce stade, `bin/dev` ne fait que lancer `rails server` ; c'est `tailwindcss:install` qui ajoute `Procfile.dev` et le watcher CSS)
+- Lancer l'application : `bin/dev` (serveur et reconstruction du CSS Tailwind). Une fois Tailwind installé, ne pas utiliser `rails s` seul : les classes Tailwind ne seraient pas reconstruites
 - Base de données : `rails db:migrate`, `rails db:seed`
 - Style Ruby : `bin/rubocop`
 - Console : `rails c`
@@ -128,6 +129,23 @@ end
 - Quand un groupe de classes se répète, en faire un partiel ou un helper
 - Le conteneur Jitsi garde `data-turbo-permanent` et un `id` fixe : il ne doit jamais être retiré ni rechargé de la page
 
+### Textes et traductions
+
+- **Aucun texte affiché à l'utilisateur écrit en dur** dans une vue, un contrôleur, un modèle ou un e-mail. Toujours passer par `t(...)` et les fichiers `config/locales/fr.yml` et `config/locales/en.yml`
+- Dans les vues, utiliser les clés courtes (« lazy lookup ») : `t(".title")` dans `app/views/tables/show.html.erb` cherche `fr.tables.show.title`
+- Toute nouvelle clé est ajoutée **dans les deux langues** en même temps
+- Les messages de validation et les noms d'attributs passent par `activerecord.attributes` et `activerecord.errors` dans les fichiers de traduction
+- Dates et nombres affichés avec `l(...)` (ex. `l(session.started_at, format: :short)`), jamais avec `strftime` en dur
+- Le code, les clés de traduction, les noms de variables et les commits restent en anglais
+
+### Couleurs et thème
+
+- L'application propose trois thèmes : clair, sombre et système (suit le réglage de l'appareil)
+- Utiliser les **couleurs nommées** du projet (`bg-page`, `bg-surface`, `text-ink`, `border-line`...), définies dans `app/assets/tailwind/application.css`. Elles changent toutes seules en mode sombre : pas besoin d'écrire `dark:` à chaque élément
+- Pas de couleur brute (`bg-gray-800`, `#1f2937`) dans les vues, sauf cas isolé justifié. S'il manque une couleur, l'ajouter aux couleurs nommées
+- `dark:` reste possible pour un ajustement ponctuel (une ombre, une image)
+- Référence visuelle du mode sombre : les wireframes du projet (police Inter, vert principal `#2E7D6B`)
+
 ### Sécurité et permissions
 
 - Toute permission est vérifiée **côté serveur** (rôle MJ ou joueur, séance en cours, visibilité réservée au MJ), jamais seulement en masquant un bouton dans la vue
@@ -168,31 +186,82 @@ end
 - Toute commande Heroku (`heroku ...`, `git push heroku`)
 - Toute commande qui touche à la base autrement que `db:migrate`
 
-## Tâche en cours : retirer Bootstrap et installer Tailwind
+## État du projet
 
-L'application vient d'être générée avec le template Devise de Le Wagon (Rails 8, branche `master` du template). Le template a installé Bootstrap, Font Awesome et les feuilles de style Le Wagon. Ce nettoyage est le seul travail fait directement sur `main`, avant le premier envoi sur GitHub.
+Fait, sur `main`, avant le premier envoi sur GitHub :
 
-Étapes, dans l'ordre, avec une vérification après chacune :
+- Application générée avec le template Devise de Le Wagon (Rails 8.1)
+- Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` ont été supprimées : Devise utilise ses vues intégrées
+- Tailwind v4 installé (`tailwindcss-rails` 4.7, `tailwindcss-ruby` 4.3)
+- Barre de navigation et messages flash réécrits en Tailwind, textes encore en anglais et en dur (à traduire, voir plus bas)
 
-1. Gemfile : retirer `bootstrap`, `autoprefixer-rails`, `font-awesome-sass` et `sassc-rails`. Garder `sprockets-rails`, `devise`, `simple_form` (depuis GitHub) et `dotenv-rails`. Puis `bundle install`
-2. Remplacer le dossier `app/assets/stylesheets` (SCSS Le Wagon) par un seul `application.css` vide
-3. Retirer Bootstrap et Popper de `config/importmap.rb`, `app/javascript/application.js`, `config/initializers/assets.rb` et `app/assets/config/manifest.js`
-4. Supprimer `config/initializers/simple_form_bootstrap.rb` (garder `simple_form.rb`)
-5. Supprimer le dossier `app/views/devise` : Devise utilisera ses vues intégrées, sans Bootstrap
-6. Supprimer `lib/templates/erb/scaffold/_form.html.erb` (modèle de formulaire Bootstrap)
-7. Réécrire en Tailwind `app/views/shared/_navbar.html.erb` et `app/views/shared/_flashes.html.erb`, et retirer les classes Bootstrap du layout `app/views/layouts/application.html.erb`. Déconnexion avec `button_to ..., method: :delete`
-8. Vérifier qu'il ne reste rien : `grep -rniE "bootstrap|popper|font-awesome|fontawesome|data-bs-" Gemfile app config lib`
-9. Tester avec `rails s` (et non `bin/dev`, Tailwind n'étant pas encore installé) : connexion, inscription, déconnexion, aucune erreur dans le terminal ni dans la console du navigateur
-10. Commit : `chore(setup): remove bootstrap, font awesome and le wagon stylesheets`
-11. Installer Tailwind : `bundle add tailwindcss-rails`, puis `bin/rails tailwindcss:install`. Vérifier la version 4.x (`bundle list | grep tailwind`), la présence de `stylesheet_link_tag "tailwind"` dans le layout et de `//= link_tree ../builds` dans `manifest.js`
-12. Tester avec `bin/dev` et une classe de test sur la page d'accueil
-13. Commit : `chore(setup): install tailwindcss-rails v4`
+À savoir :
 
-À ne pas toucher pendant cette tâche :
+- Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
+- Lancé en tâche de fond par Claude Code, le processus `css` de `bin/dev` s'arrête faute de terminal. Contournement : `tail -f /dev/null | bin/dev`. Ne pas modifier `Procfile.dev` pour ça
+- `config.mailer_sender` dans `config/initializers/devise.rb` vaut encore l'adresse d'exemple : à changer avant de tester le mot de passe oublié en production
 
-- `config/cable.yml` : la production passera à Redis dans une branche dédiée (`chore/p1-heroku-setup`)
-- Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue
-- Les migrations et `db/schema.rb`
+## Prochaines tâches
+
+Dans cet ordre. Chaque tâche a sa branche et sa Pull Request, sauf la première.
+
+### Envoyer le dépôt sur GitHub et protéger `main`
+
+- Dernier travail fait directement sur `main`
+- Création du dépôt privé avec `gh repo create`, premier envoi, protection de `main` (Pull Request obligatoire, une approbation)
+
+### Langues : `chore/p1-i18n-setup`
+
+À faire tôt, avant d'écrire beaucoup de vues : chaque texte écrit en dur devra sinon être repris.
+
+- Installer `rails-i18n` (dates, nombres et messages de validation en français) et `devise-i18n` (textes de Devise)
+- `config.i18n.default_locale = :en` et `config.i18n.available_locales = [:fr, :en]` dans `config/application.rb`. L'anglais sert de langue de secours parce qu'il est le plus international
+- Un concern `app/controllers/concerns/locale.rb`, inclus dans `ApplicationController`, avec un `around_action` qui appelle `I18n.with_locale`
+- Choix de la langue (décidé), dans cet ordre de priorité :
+  - la colonne `locale` sur `users`, si l'utilisateur est connecté et a fait un choix (il le suit sur tous ses appareils)
+  - sinon, la langue du navigateur (en-tête `Accept-Language`), si c'est une langue disponible (`fr` ou `en`)
+  - sinon, l'anglais
+- À l'inscription, préremplir `users.locale` avec la langue détectée dans le navigateur
+- Toujours vérifier la langue lue contre `I18n.available_locales` avant de l'utiliser : un navigateur en allemand doit tomber sur l'anglais, pas provoquer une erreur
+- Pas de langue dans l'URL (`/fr/...`) : ça complique toutes les routes, Devise compris
+- Sélecteur de langue dans la page Mon compte
+- Traduire la barre de navigation et les messages flash existants
+
+### Thème clair, sombre ou système : `chore/p1-theme`
+
+- Dans `app/assets/tailwind/application.css`, après `@import "tailwindcss";` :
+  - `@custom-variant dark (&:where(.dark, .dark *));` pour que `dark:` dépende d'une classe `.dark` sur `<html>` et plus seulement du réglage de l'appareil
+  - les couleurs nommées dans un bloc `@theme`, avec leurs valeurs claires, puis leurs valeurs sombres redéfinies dans un bloc `.dark { ... }`
+- Couleurs du mode sombre, reprises des wireframes :
+
+| Couleur nommée | Rôle | Sombre (wireframes) | Clair (proposition à valider) |
+|---|---|---|---|
+| `page` | Fond de page | `#0f1520` | `#f9fafb` |
+| `surface` | Cartes, panneaux | `#1f2937` | `#ffffff` |
+| `field` | Fond des champs | `#111827` | `#ffffff` |
+| `line` | Bordures | `#374151` | `#e5e7eb` |
+| `ink` | Texte principal | `#f9fafb` | `#111827` |
+| `muted` | Texte secondaire | `#9ca3af` | `#6b7280` |
+| `primary` | Bouton principal | `#2E7D6B` | `#2E7D6B` |
+| `link` | Liens | `#7fd1bd` | `#2E7D6B` |
+| `danger` | Bouton de suppression | `#b91c1c` | `#b91c1c` |
+| `error-bg` / `error-line` / `error-ink` | Message d'erreur | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fef2f2` / `#fecaca` / `#b91c1c` |
+
+- Police Inter, comme dans les wireframes
+- Choix du thème (décidé) : enregistré dans `localStorage`, donc propre à chaque navigateur (méthode de la documentation Tailwind). Petit script dans le `<head>` du layout, avant l'affichage, pour poser la classe `.dark` sans flash blanc au chargement. Contrôleur Stimulus `theme_controller.js` pour le sélecteur clair, sombre, système
+- Remplacer les couleurs brutes de la navbar, des flashes et du layout par les couleurs nommées
+
+### Production Heroku : `chore/p1-heroku-setup`
+
+- Redis pour Action Cable en production (`config/cable.yml`), à la place de Solid Cable
+- `mailer_sender` réel et service d'envoi d'e-mails
+- Voir la checklist de déploiement du projet
+
+### Plus tard
+
+- Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+
+À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
 
 ## Documentation du projet
 
