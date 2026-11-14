@@ -28,5 +28,9 @@ module JdrOnline
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.i18n.available_locales = %i[fr en]
+    # English is the fallback because it is the most widely understood language
+    config.i18n.default_locale = :en
   end
 end

@@ -1,0 +1,11 @@
+fr:
+  app_name: "JDR Online"
+  pages:
+    home:
+      title: "Accueil"
+      description: "Retrouvez-moi dans app/views/pages/home.html.erb"
+  shared:
+    navbar:
+      log_in: "Se connecter"
+      log_out: "Se déconnecter"
+      sign_up: "S'inscrire"
