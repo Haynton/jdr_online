@@ -39,6 +39,7 @@ Projet réalisé en deux semaines, en équipe de deux ou trois personnes. Les me
 - Lancer l'application : `bin/dev` (serveur et reconstruction du CSS Tailwind). Une fois Tailwind installé, ne pas utiliser `rails s` seul : les classes Tailwind ne seraient pas reconstruites
 - Base de données : `rails db:migrate`, `rails db:seed`
 - Style Ruby : `bin/rubocop`
+- Tests : `bin/rails test` (sans les tests système), `bin/rails test:system` (navigateur Chrome invisible), `bin/rails test:all` (tout)
 - Console : `rails c`
 
 ## Règles de code
@@ -145,6 +146,28 @@ end
 - Pas de couleur brute (`bg-gray-800`, `#1f2937`) dans les vues, sauf cas isolé justifié. S'il manque une couleur, l'ajouter aux couleurs nommées
 - `dark:` reste possible pour un ajustement ponctuel (une ombre, une image)
 - Référence visuelle du mode sombre : les wireframes du projet (police Inter, vert principal `#2E7D6B`)
+- Couleurs nommées (valeurs dans `app/assets/tailwind/application.css`, bloc `@theme` pour le clair, bloc `.dark` pour le sombre) :
+
+| Couleur nommée | Rôle | Sombre (wireframes) | Clair, parchemin léger |
+|---|---|---|---|
+| `page` | Fond de page | `#0f1520` | `#faf6ee` |
+| `surface` | Cartes, panneaux, barre de navigation | `#1f2937` | `#fffdf9` |
+| `field` | Fond des champs | `#111827` | `#ffffff` |
+| `line` | Bordures | `#374151` | `#ebe3d3` |
+| `ink` | Texte principal | `#f9fafb` | `#27211a` |
+| `muted` | Texte secondaire | `#9ca3af` | `#796e60` |
+| `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
+| `primary-hover` | Bouton principal au survol (texte blanc) | `#276a5b` | `#276a5b` |
+| `link` | Liens | `#7fd1bd` | `#2E7D6B` |
+| `danger` | Bouton de suppression | `#b91c1c` | `#b91c1c` |
+| `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
+| `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
+
+- Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
+- Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
+- Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). Le texte blanc sur `primary` est à 4,93 : ne pas éclaircir ce vert. Au survol, on assombrit (`primary-hover`, 6,37), on n'éclaircit pas. `muted` clair a été assombri de `#7b7062` à `#796e60` pour passer de 4,49 à 4,62 sur `page`. Toute nouvelle couleur de texte est vérifiée contre les fonds où elle s'affiche
+- Les boutons principaux utilisent le helper `primary_button_classes` (`app/helpers/buttons_helper.rb`) plutôt que de répéter leurs classes
+- Police Inter, hébergée dans `public/fonts/` (aucune requête vers un service de polices)
 
 ### Sécurité et permissions
 
@@ -219,6 +242,14 @@ Fait dans `feature/p1-account-locale` :
 - Après un changement de langue, le message de confirmation est dans la nouvelle langue. Après la connexion, le message est dans la langue du compte. Après la déconnexion, il suit le navigateur, comme la page qui l'affiche
 - Concern `DeviseLocale` (`prepend_around_action :switch_locale`) inclus dans `Users::SessionsController` et `Users::RegistrationsController` : le choix de la langue passe avant les vérifications de Devise, et « Vous êtes déjà connecté(e). » est traduit
 
+Fait dans `chore/p1-theme` :
+
+- Couleurs nommées et variante `dark` pilotée par la classe `.dark` sur `<html>` (`@custom-variant dark`), dans `app/assets/tailwind/application.css`. Plus aucune couleur brute dans les vues
+- Police Inter 4.1 (`InterVariable-4.1.woff2` et sa licence OFL `Inter-LICENSE.txt`) dans `public/fonts/`, déclarée par un `@font-face`
+- `app/javascript/theme_preload.js`, chargé de façon bloquante dans le `<head>` avant les feuilles de style : pose la classe `.dark` avant l'affichage, sans flash clair
+- Sélecteur Clair / Sombre / Système dans la barre de navigation (partiel `shared/_theme_choice`, `aria-pressed` sur le choix actif), contrôleur Stimulus `theme_controller.js`. Le choix est enregistré dans `localStorage` (clé `theme`, « Système » = pas de valeur) ; en mode Système, la page suit en direct le réglage de l'appareil
+- Tests système mis en place (`test/application_system_test_case.rb`, Chrome invisible) : choix du thème sombre gardé après rechargement, nouveau visiteur en mode Système
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -227,38 +258,13 @@ Fait dans `feature/p1-account-locale` :
 - Les contrôleurs Devise déclarent leurs vérifications avec `prepend_before_action` : elles passent avant le concern `Locale`, donc dans la langue par défaut. Un message Devise resté en anglais vient en général de là. Correction : un sous-contrôleur dans `app/controllers/users/` qui inclut `DeviseLocale`, et sa ligne dans `devise_for` (`config/routes.rb`)
 - Pendant une mise à jour du compte, Devise recharge l'utilisateur dans `resource` : `current_user` garde les anciennes valeurs jusqu'à la requête suivante. D'où `chosen_locale(resource)` dans `Users::RegistrationsController`
 - Pas de langue dans l'URL (`/fr/...`), décision prise : ça compliquerait toutes les routes, Devise compris
+- `theme_preload.js` et `controllers/theme_controller.js` lisent le même choix : même clé `theme`, mêmes valeurs (`light`, `dark`, rien pour Système). Modifier l'un, c'est modifier l'autre
+- Les fichiers de `public/` sont gardés un an par les navigateurs (`cache-control` de `config/environments/production.rb`). Une police ou une image qui y est placée porte sa version dans son nom (`InterVariable-4.1.woff2`) : une nouvelle version change de nom, sinon les visiteurs gardent l'ancienne
+- Tests système : au premier lancement, `selenium-webdriver` télécharge `chromedriver` tout seul dans `~/.cache/selenium`. Entre deux tests, Capybara vide les cookies et `localStorage` : inutile de les nettoyer dans un `setup`
 
 ## Prochaines tâches
 
 Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
-
-### Thème clair, sombre ou système : `chore/p1-theme`
-
-- Dans `app/assets/tailwind/application.css`, après `@import "tailwindcss";` :
-  - `@custom-variant dark (&:where(.dark, .dark *));` pour que `dark:` dépende d'une classe `.dark` sur `<html>` et plus seulement du réglage de l'appareil
-  - les couleurs nommées dans un bloc `@theme`, avec leurs valeurs claires, puis leurs valeurs sombres redéfinies dans un bloc `.dark { ... }`
-- Couleurs du mode sombre, reprises des wireframes :
-
-| Couleur nommée | Rôle | Sombre (wireframes) | Clair, parchemin léger |
-|---|---|---|---|
-| `page` | Fond de page | `#0f1520` | `#faf6ee` |
-| `surface` | Cartes, panneaux, barre de navigation | `#1f2937` | `#fffdf9` |
-| `field` | Fond des champs | `#111827` | `#ffffff` |
-| `line` | Bordures | `#374151` | `#ebe3d3` |
-| `ink` | Texte principal | `#f9fafb` | `#27211a` |
-| `muted` | Texte secondaire | `#9ca3af` | `#7b7062` |
-| `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
-| `link` | Liens | `#7fd1bd` | `#2E7D6B` |
-| `danger` | Bouton de suppression | `#b91c1c` | `#b91c1c` |
-| `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
-| `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
-
-- Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
-- Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
-- Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). Le texte blanc sur `primary` est à environ 4,9 : ne pas éclaircir ce vert
-- Police Inter, comme dans les wireframes
-- Choix du thème (décidé) : enregistré dans `localStorage`, donc propre à chaque navigateur (méthode de la documentation Tailwind). Petit script dans le `<head>` du layout, avant l'affichage, pour poser la classe `.dark` sans flash blanc au chargement. Contrôleur Stimulus `theme_controller.js` pour le sélecteur clair, sombre, système
-- Remplacer les couleurs brutes de la navbar, des flashes et du layout par les couleurs nommées
 
 ### Production Heroku : `chore/p1-heroku-setup`
 
@@ -269,6 +275,7 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- Mise en forme des formulaires Devise (connexion, inscription, Mon compte, mot de passe oublié) avec les couleurs nommées (`bg-field`, `border-line`, `text-ink`...) : leurs champs n'ont encore aucun style. Simple Form utilise le wrapper `:default` de `config/initializers/simple_form.rb`, c'est là que les classes des champs peuvent être définies une seule fois
 - Page Préférences, séparée de Mon compte, pour changer la langue (et plus tard le thème) sans saisir son mot de passe
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
