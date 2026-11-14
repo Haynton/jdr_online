@@ -2,7 +2,7 @@
 <html>
   <head>
     <title><%= content_for(:title) || "Jdr Online" %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Jdr Online">
     <meta name="mobile-web-app-capable" content="yes">
@@ -23,9 +23,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body><%= render "shared/navbar" %>
-<%= render "shared/flashes" %>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <%= render "shared/navbar" %>
+    <%= render "shared/flashes" %>
 
-    <%= yield %>
+    <main class="mx-auto max-w-5xl px-4 py-6">
+      <%= yield %>
+    </main>
   </body>
 </html>
