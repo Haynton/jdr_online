@@ -12,10 +12,11 @@
 
     <% if user_signed_in? %>
       <span class="text-sm text-muted"><%= current_user.email %></span>
-      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: primary_button_classes %>
+      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete,
+            class: button_classes(:primary, size: :compact) %>
     <% else %>
       <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
-      <%= link_to t(".sign_up"), new_user_registration_path, class: primary_button_classes %>
+      <%= link_to t(".sign_up"), new_user_registration_path, class: button_classes(:primary, size: :compact) %>
     <% end %>
   </div>
 </nav>

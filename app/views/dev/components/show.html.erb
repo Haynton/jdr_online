@@ -10,6 +10,32 @@
   </div>
 </section>
 
+<section class="mt-8" aria-labelledby="buttons-title">
+  <h2 id="buttons-title" class="text-lg font-semibold text-ink">Buttons</h2>
+  <% @button_variants.each do |button_variant| %>
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <span class="w-20 text-sm text-muted"><%= button_variant %></span>
+      <button type="button" class="<%= button_classes(button_variant) %>">Normal</button>
+      <button type="button" class="<%= button_classes(button_variant, size: :compact) %>">Compact</button>
+      <button type="button" class="<%= button_classes(button_variant) %>">
+        <%= render "shared/icons/plus" %>
+        With icon
+      </button>
+      <button type="button" class="<%= button_classes(button_variant) %>" disabled>Disabled</button>
+    </div>
+  <% end %>
+</section>
+
+<section class="mt-8" aria-labelledby="badges-title">
+  <h2 id="badges-title" class="text-lg font-semibold text-ink">Badges</h2>
+  <div class="mt-4 flex items-center gap-3">
+    <span class="<%= badge_classes(:game_master) %>">GM</span>
+    <span class="<%= badge_classes(:player) %>">Player</span>
+    <%# Next to a real button, to check that a badge never reads as one %>
+    <button type="button" class="<%= button_classes(:secondary, size: :compact) %>">Open</button>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">

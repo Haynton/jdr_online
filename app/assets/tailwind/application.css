@@ -38,6 +38,8 @@
   /* A logo keeps its colors in both themes (value from the wireframes' d20) */
   --color-logo-bg: #1f1b18;
   --color-danger: #b91c1c;
+  /* Darker on hover, like primary-hover: white text goes from 6.47 to 8.15 */
+  --color-danger-hover: #9d1818;
   --color-success-bg: #e9f1e5;
   --color-success-line: #c3d8b8;
   --color-success-ink: #2f5d3a;
@@ -68,6 +70,7 @@
     --color-surface-raised: #374151;
     --color-logo-bg: #1f1b18;
     --color-danger: #b91c1c;
+    --color-danger-hover: #9d1818;
     --color-success-bg: #12302a;
     --color-success-line: #2e7d6b;
     --color-success-ink: #a7e3d4;

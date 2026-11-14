@@ -18,6 +18,7 @@ module Dev
     def show
       @color_swatches = COLOR_SWATCHES
       @icon_names = ICON_NAMES
+      @button_variants = ButtonsHelper::BUTTON_VARIANT_CLASSES.keys
     end
   end
 end
