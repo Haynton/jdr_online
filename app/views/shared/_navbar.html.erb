@@ -1,15 +1,15 @@
-<nav class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
-  <%= link_to t("app_name"), root_path, class: "text-lg font-semibold text-gray-900" %>
+<nav class="flex items-center justify-between border-b border-line bg-surface px-4 py-3">
+  <%= link_to t("app_name"), root_path, class: "text-lg font-semibold text-ink" %>
 
   <div class="flex items-center gap-4">
     <% if user_signed_in? %>
-      <span class="text-sm text-gray-600"><%= current_user.email %></span>
+      <span class="text-sm text-muted"><%= current_user.email %></span>
       <%= button_to t(".log_out"), destroy_user_session_path, method: :delete,
-            class: "rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700" %>
+            class: "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover" %>
     <% else %>
-      <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-gray-700 hover:text-gray-900" %>
+      <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
       <%= link_to t(".sign_up"), new_user_registration_path,
-            class: "rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700" %>
+            class: "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover" %>
     <% end %>
   </div>
 </nav>

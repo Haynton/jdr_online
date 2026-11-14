@@ -27,6 +27,8 @@
   --color-ink: #27211a;
   --color-muted: #796e60;
   --color-primary: #2e7d6b;
+  /* Darker, not lighter, on hover: white text stays above the 4.5 contrast ratio (6.37) */
+  --color-primary-hover: #276a5b;
   --color-link: #2e7d6b;
   --color-danger: #b91c1c;
   --color-success-bg: #e9f1e5;
@@ -52,6 +54,7 @@
     --color-ink: #f9fafb;
     --color-muted: #9ca3af;
     --color-primary: #2e7d6b;
+    --color-primary-hover: #276a5b;
     --color-link: #7fd1bd;
     --color-danger: #b91c1c;
     --color-success-bg: #12302a;
