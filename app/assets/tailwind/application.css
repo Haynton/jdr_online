@@ -95,3 +95,64 @@
   }
 }
 
+/* Open list of our selects (class added by app/inputs/collection_select_input.rb).
+   appearance: base-select keeps a real <select> (keyboard, screen readers) but lets us style the list.
+   Browsers without it keep the system list. Written outside any layer on purpose:
+   an unlayered rule wins over the appearance-none utility of the select. */
+@supports (appearance: base-select) {
+  select.select-picker,
+  select.select-picker::picker(select) {
+    appearance: base-select;
+  }
+
+  /* base-select lays the closed select out like a button: center the chosen text vertically.
+     display: flex is needed because the field classes make it a block, where align-items does nothing */
+  select.select-picker {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Our chevron icon is already there */
+  select.select-picker::picker-icon {
+    display: none;
+  }
+
+  select.select-picker::picker(select) {
+    margin-block: 4px;
+    padding: 4px;
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  }
+
+  select.select-picker option {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* A small gap so a hovered option never touches the chosen one next to it */
+  select.select-picker option + option {
+    margin-top: 2px;
+  }
+
+  select.select-picker option:hover,
+  select.select-picker option:focus-visible {
+    background-color: var(--color-surface-raised);
+    outline: none;
+  }
+
+  /* primary-soft-ink on primary-soft: 7.09 light, 6.95 dark */
+  select.select-picker option:checked {
+    background-color: var(--color-primary-soft);
+    color: var(--color-primary-soft-ink);
+    font-weight: 600;
+  }
+
+  select.select-picker option::checkmark {
+    color: var(--color-primary-soft-ink);
+  }
+}

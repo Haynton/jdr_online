@@ -44,6 +44,8 @@
       <%= form.input :email, hint: "Error state: the address is invalid" %>
       <%= form.input :password, placeholder: "Placeholder text", hint: "A hint under the field" %>
       <%= form.input :password_confirmation, disabled: true, hint: "Disabled field" %>
+      <%= form.input :locale, collection: locale_options, include_blank: "Browser language",
+                              hint: "Native select: keyboard and mobile keep working" %>
       <%= form.input :remember_me, as: :boolean %>
     <% end %>
   </div>
