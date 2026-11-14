@@ -3,6 +3,13 @@
 <h1 class="text-2xl font-bold text-ink">Component gallery</h1>
 <p class="mt-1 text-sm text-muted">Use the theme buttons in the navbar to review every component in both themes.</p>
 
+<section class="mt-8" aria-labelledby="logo-title">
+  <h2 id="logo-title" class="text-lg font-semibold text-ink">Logo</h2>
+  <div class="mt-4 inline-flex rounded-lg border border-line bg-surface p-4">
+    <%= render "shared/logo" %>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">

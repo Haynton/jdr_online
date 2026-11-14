@@ -35,8 +35,8 @@
   --color-primary-soft-ink: #1d574a;
   /* Same value as line, like in the dark theme of the mockups; only ink on it (muted is 3.91) */
   --color-surface-raised: #ebe3d3;
-  /* A logo keeps its colors in both themes */
-  --color-logo-bg: #1f1b19;
+  /* A logo keeps its colors in both themes (value from the wireframes' d20) */
+  --color-logo-bg: #1f1b18;
   --color-danger: #b91c1c;
   --color-success-bg: #e9f1e5;
   --color-success-line: #c3d8b8;
@@ -66,7 +66,7 @@
     --color-primary-soft: #183a33;
     --color-primary-soft-ink: #7fd1bd;
     --color-surface-raised: #374151;
-    --color-logo-bg: #1f1b19;
+    --color-logo-bg: #1f1b18;
     --color-danger: #b91c1c;
     --color-success-bg: #12302a;
     --color-success-line: #2e7d6b;
