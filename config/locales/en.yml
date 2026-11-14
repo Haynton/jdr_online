@@ -28,4 +28,13 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  app_name: "JDR Online"
+  pages:
+    home:
+      title: "Home"
+      description: "Find me in app/views/pages/home.html.erb"
+  shared:
+    navbar:
+      log_in: "Log in"
+      log_out: "Log out"
+      sign_up: "Sign up"
