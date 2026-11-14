@@ -1,11 +1,25 @@
 @import "tailwindcss";
 
+/* Self-hosted so that no visitor IP address is sent to a font service.
+   Served from public/fonts: Sprockets does not rewrite urls in the Tailwind build.
+   The version is in the file name because public/ files are cached for a year:
+   a new version gets a new name, so browsers download it at once */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/InterVariable-4.1.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Named colors: views use bg-page, text-ink, border-line... and never a raw color,
    so the dark theme only has to redefine these variables below */
 @theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --color-page: #faf6ee;
   --color-surface: #fffdf9;
   --color-field: #ffffff;
