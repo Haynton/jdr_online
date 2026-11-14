@@ -36,6 +36,19 @@
   </div>
 </section>
 
+<section class="mt-8" aria-labelledby="forms-title">
+  <h2 id="forms-title" class="text-lg font-semibold text-ink">Forms</h2>
+  <p class="mt-1 text-sm text-muted">Styled once in config/initializers/simple_form.rb. Hover a field, then use Tab to see the focus.</p>
+  <div class="mt-4 max-w-md rounded-xl border border-line bg-surface p-6">
+    <%= simple_form_for @demo_user, url: dev_components_path, method: :get do |form| %>
+      <%= form.input :email, hint: "Error state: the address is invalid" %>
+      <%= form.input :password, placeholder: "Placeholder text", hint: "A hint under the field" %>
+      <%= form.input :password_confirmation, disabled: true, hint: "Disabled field" %>
+      <%= form.input :remember_me, as: :boolean %>
+    <% end %>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">

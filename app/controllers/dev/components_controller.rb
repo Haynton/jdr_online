@@ -19,6 +19,14 @@ module Dev
       @color_swatches = COLOR_SWATCHES
       @icon_names = ICON_NAMES
       @button_variants = ButtonsHelper::BUTTON_VARIANT_CLASSES.keys
+      @demo_user = build_invalid_demo_user
+    end
+
+    private
+
+    # Never saved: only validated, so the gallery can show the error state of the fields
+    def build_invalid_demo_user
+      User.new(email: "not-an-email").tap(&:validate)
     end
   end
 end

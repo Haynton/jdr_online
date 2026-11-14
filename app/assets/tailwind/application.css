@@ -24,6 +24,8 @@
   --color-surface: #fffdf9;
   --color-field: #ffffff;
   --color-line: #ebe3d3;
+  /* Field borders: line is too pale to show where to type (1.18 to 1.28), field-line reaches 3.48 to 3.75 */
+  --color-field-line: #8f8270;
   --color-ink: #27211a;
   --color-muted: #796e60;
   --color-primary: #2e7d6b;
@@ -60,6 +62,7 @@
     --color-surface: #1f2937;
     --color-field: #111827;
     --color-line: #374151;
+    --color-field-line: #6b7280;
     --color-ink: #f9fafb;
     --color-muted: #9ca3af;
     --color-primary: #2e7d6b;

@@ -6,6 +6,29 @@
 # more about custom components.
 # Dir[Rails.root.join('lib/components/**/*.rb')].each { |f| require f }
 #
+# Field styles, written once for every form of the app. Classes are written in full for Tailwind.
+module SimpleFormFieldClasses
+  LABEL = "mb-1.5 block text-[13px] font-semibold text-ink"
+
+  # The error border follows aria-invalid, which Simple Form sets on invalid inputs:
+  # no second border class competing with border-field-line
+  INPUT = %w[
+    block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 text-sm text-ink
+    placeholder:text-muted hover:border-muted
+    focus:outline-2 focus:outline-offset-0 focus:outline-primary
+    aria-invalid:border-error-ink aria-invalid:hover:border-error-ink
+    disabled:cursor-not-allowed disabled:opacity-50
+  ].join(" ").freeze
+
+  HINT = "mt-1.5 text-xs text-muted"
+  ERROR = "mt-1.5 text-xs text-error-ink"
+
+  CHECKBOX = %w[
+    size-4 accent-primary
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+  ].join(" ").freeze
+end
+
 # Use this setup block to configure all options available in SimpleForm.
 SimpleForm.setup do |config|
   # Wrappers are used by the form builder to generate a
@@ -13,8 +36,7 @@ SimpleForm.setup do |config|
   # wrapper, change the order or even add your own to the
   # stack. The options given below are used to wrap the
   # whole input.
-  config.wrappers :default, class: :input,
-    hint_class: :field_with_hint, error_class: :field_with_errors, valid_class: :field_without_errors do |b|
+  config.wrappers :default, class: "mb-4" do |b|
     ## Extensions enabled by default
     # Any of these extensions can be disabled for a
     # given input by passing: `f.input EXTENSION_NAME => false`.
@@ -52,16 +74,19 @@ SimpleForm.setup do |config|
     b.optional :readonly
 
     ## Inputs
-    # b.use :input, class: 'input', error_class: 'is-invalid', valid_class: 'is-valid'
-    b.use :label_input
-    b.use :hint,  wrap_with: { tag: :span, class: :hint }
-    b.use :error, wrap_with: { tag: :span, class: :error }
+    b.use :label, class: SimpleFormFieldClasses::LABEL
+    b.use :input, class: SimpleFormFieldClasses::INPUT
+    b.use :hint, wrap_with: { tag: :p, class: SimpleFormFieldClasses::HINT }
+    b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
+  end
 
-    ## full_messages_for
-    # If you want to display the full error message for the attribute, you can
-    # use the component :full_error, like:
-    #
-    # b.use :full_error, wrap_with: { tag: :span, class: :error }
+  # Check boxes: with the nested style, Simple Form puts the box inside its label
+  config.wrappers :boolean, class: "mb-4" do |b|
+    b.use :html5
+    b.optional :readonly
+    b.use :input, class: SimpleFormFieldClasses::CHECKBOX
+    b.use :hint, wrap_with: { tag: :p, class: SimpleFormFieldClasses::HINT }
+    b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
   end
 
   # The default wrapper to be used by the FormBuilder.
@@ -136,7 +161,7 @@ SimpleForm.setup do |config|
 
   # Custom wrappers for input types. This should be a hash containing an input
   # type as key and the wrapper that will be used for all inputs with specified type.
-  # config.wrapper_mappings = { string: :prepend }
+  config.wrapper_mappings = { boolean: :boolean }
 
   # Namespaces where SimpleForm should look for custom input classes that
   # override default inputs.
@@ -161,7 +186,7 @@ SimpleForm.setup do |config|
   # config.input_class = nil
 
   # Define the default class of the input wrapper of the boolean input.
-  config.boolean_label_class = 'checkbox'
+  config.boolean_label_class = "inline-flex items-center gap-2 text-sm text-ink"
 
   # Defines if the default input wrapper class should be included in radio
   # collection wrappers.
