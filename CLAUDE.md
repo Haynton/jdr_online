@@ -266,6 +266,8 @@ Suite de `chore/p1-i18n-setup`, depuis `main` une fois cette PR fusionnée.
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
+- Créer `.github/pull_request_template.md` avec le modèle de PR du document Versionnage-git (Quoi, Pourquoi, Comment tester, Captures, Checklist), pour que GitHub le propose à chaque nouvelle PR
+- Ajouter une intégration continue GitHub Actions qui lance les tests et RuboCop sur chaque PR (`.github/workflows/` est vide : aucune vérification automatique pour l'instant)
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 - Dependabot (`.github/dependabot.yml`, créé par Rails) a ouvert une Pull Request pour passer `image_processing` en 2.x alors que le Gemfile demande `~> 1.2` : ne pas la fusionner sans tester les variantes d'images d'Active Storage. Décision à prendre sur le réglage de Dependabot (voir avec Haynton)
 
