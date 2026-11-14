@@ -12,12 +12,12 @@ module Locale
   end
 
   # The account choice wins so a user keeps their language on every device
-  def chosen_locale
-    locale_from_user || locale_from_browser || I18n.default_locale
+  def chosen_locale(user = current_user)
+    locale_from_user(user) || locale_from_browser || I18n.default_locale
   end
 
-  def locale_from_user
-    available_locale(current_user&.locale)
+  def locale_from_user(user)
+    available_locale(user&.locale)
   end
 
   def locale_from_browser
