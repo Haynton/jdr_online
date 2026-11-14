@@ -261,6 +261,7 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 - Dependabot (`.github/dependabot.yml`, créé par Rails) a ouvert une Pull Request pour passer `image_processing` en 2.x alors que le Gemfile demande `~> 1.2` : ne pas la fusionner sans tester les variantes d'images d'Active Storage. Décision à prendre sur le réglage de Dependabot (voir avec Haynton)
 
