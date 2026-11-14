@@ -194,6 +194,8 @@ Fait, sur `main`, avant le premier envoi sur GitHub :
 - Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` ont été supprimées : Devise utilise ses vues intégrées
 - Tailwind v4 installé (`tailwindcss-rails` 4.7, `tailwindcss-ruby` 4.3)
 - Barre de navigation et messages flash réécrits en Tailwind, textes encore en anglais et en dur (à traduire, voir plus bas)
+- Dépôt public `github.com/Haynton/jdr_online`. `main` protégée : Pull Request obligatoire, sans approbation requise pour l'instant, règles appliquées aussi à l'administrateur (`enforce_admins`), push forcé et suppression interdits, branches supprimées automatiquement après fusion. Testé : un push direct sur `main` est refusé
+- Plus aucun commit direct sur `main` : tout passe par une branche et une Pull Request
 
 À savoir :
 
@@ -203,15 +205,7 @@ Fait, sur `main`, avant le premier envoi sur GitHub :
 
 ## Prochaines tâches
 
-Dans cet ordre. Chaque tâche a sa branche et sa Pull Request, sauf la première.
-
-### Envoyer le dépôt sur GitHub et protéger `main`
-
-- Dernier travail fait directement sur `main`
-- Dépôt **public** sur le compte personnel `Haynton` (la protection de branche n'est pas disponible sur un dépôt privé avec un compte GitHub gratuit)
-- Avant de le rendre public : vérifier qu'aucun secret n'est dans l'historique (`config/master.key`, `.env`, contenu de `.kamal/secrets`)
-- Création avec `gh repo create`, premier envoi, puis protection de `main` : Pull Request obligatoire, **sans approbation requise pour l'instant** (Haynton avance seul et fusionne ses propres PR), push forcé et suppression de `main` interdits
-- Plus tard, quand Julien rejoint le dépôt : passer à une approbation obligatoire
+Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 ### Langues : `chore/p1-i18n-setup`
 
@@ -267,6 +261,8 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request, sauf la première
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
+- Dependabot (`.github/dependabot.yml`, créé par Rails) a ouvert une Pull Request pour passer `image_processing` en 2.x alors que le Gemfile demande `~> 1.2` : ne pas la fusionner sans tester les variantes d'images d'Active Storage. Décision à prendre sur le réglage de Dependabot (voir avec Haynton)
 
 À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
 
