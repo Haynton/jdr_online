@@ -1,1 +1,50 @@
 @import "tailwindcss";
+
+/* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Named colors: views use bg-page, text-ink, border-line... and never a raw color,
+   so the dark theme only has to redefine these variables below */
+@theme {
+  --color-page: #faf6ee;
+  --color-surface: #fffdf9;
+  --color-field: #ffffff;
+  --color-line: #ebe3d3;
+  --color-ink: #27211a;
+  --color-muted: #796e60;
+  --color-primary: #2e7d6b;
+  --color-link: #2e7d6b;
+  --color-danger: #b91c1c;
+  --color-success-bg: #e9f1e5;
+  --color-success-line: #c3d8b8;
+  --color-success-ink: #2f5d3a;
+  --color-error-bg: #fbe9e4;
+  --color-error-line: #eec3b8;
+  --color-error-ink: #9b2c1f;
+}
+
+@layer theme {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    /* Native controls (scrollbars, inputs, select menus) follow the theme too */
+    color-scheme: dark;
+    --color-page: #0f1520;
+    --color-surface: #1f2937;
+    --color-field: #111827;
+    --color-line: #374151;
+    --color-ink: #f9fafb;
+    --color-muted: #9ca3af;
+    --color-primary: #2e7d6b;
+    --color-link: #7fd1bd;
+    --color-danger: #b91c1c;
+    --color-success-bg: #12302a;
+    --color-success-line: #2e7d6b;
+    --color-success-ink: #a7e3d4;
+    --color-error-bg: #3b1d1d;
+    --color-error-line: #7f2d2d;
+    --color-error-ink: #f87171;
+  }
+}
