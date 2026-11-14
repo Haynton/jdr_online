@@ -285,6 +285,11 @@ Devise.setup do |config|
   #   warden_config.default_strategies(scope: :user).unshift :some_external_strategy
   # end
 
+  # The lambda defers loading Users::FailureApp: app/ classes cannot be loaded from an initializer
+  config.warden do |warden_config|
+    warden_config.failure_app = ->(env) { Users::FailureApp.call(env) }
+  end
+
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine
   # is mountable, there are some extra configurations to be taken into account.
