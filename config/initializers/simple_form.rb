@@ -98,8 +98,8 @@ SimpleForm.setup do |config|
   #   nested: label > input
   config.boolean_style = :nested
 
-  # Default class for buttons
-  config.button_class = 'btn'
+  # No default class for buttons: each button gets button_classes(...) in its view ("btn" came from Bootstrap)
+  config.button_class = nil
 
   # Method used to tidy up errors. Specify any Rails Array method.
   # :first lists the first message for each field.
