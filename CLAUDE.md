@@ -138,6 +138,7 @@ end
 - Les messages de validation et les noms d'attributs passent par `activerecord.attributes` et `activerecord.errors` dans les fichiers de traduction
 - Dates et nombres affichés avec `l(...)` (ex. `l(session.started_at, format: :short)`), jamais avec `strftime` en dur
 - Le code, les clés de traduction, les noms de variables et les commits restent en anglais
+- Seule exception : la galerie de composants `/dev/components` (développement et test seulement, jamais servie en production). Outil de l'équipe, jamais vu par les joueurs : ses textes restent en anglais, écrits en dur, avec un commentaire en tête de la vue
 
 ### Couleurs et thème
 
@@ -159,15 +160,32 @@ end
 | `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
 | `primary-hover` | Bouton principal au survol (texte blanc) | `#276a5b` | `#276a5b` |
 | `link` | Liens | `#7fd1bd` | `#2E7D6B` |
-| `danger` | Bouton de suppression | `#b91c1c` | `#b91c1c` |
+| `primary-soft` | Fond du lien de navigation actif, carte « brouillon », badge « MJ » | `#183a33` | `#e4efe9` |
+| `primary-soft-ink` | Texte posé sur `primary-soft` | `#7fd1bd` | `#1d574a` |
+| `surface-raised` | Élément actif d'un menu, survol des boutons secondaires et discrets | `#374151` | `#ebe3d3` |
+| `logo-bg` | Carré du logo d20 (texte blanc) | `#1f1b18` | `#1f1b18` |
+| `danger` | Bouton de suppression (texte blanc) | `#b91c1c` | `#b91c1c` |
+| `danger-hover` | Bouton de suppression au survol (texte blanc) | `#9d1818` | `#9d1818` |
 | `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
 | `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
 
 - Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
 - Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
 - Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). Le texte blanc sur `primary` est à 4,93 : ne pas éclaircir ce vert. Au survol, on assombrit (`primary-hover`, 6,37), on n'éclaircit pas. `muted` clair a été assombri de `#7b7062` à `#796e60` pour passer de 4,49 à 4,62 sur `page`. Toute nouvelle couleur de texte est vérifiée contre les fonds où elle s'affiche
-- Les boutons principaux utilisent le helper `primary_button_classes` (`app/helpers/buttons_helper.rb`) plutôt que de répéter leurs classes
+- Contraste de forme : la bordure ou le fond d'un composant (bouton, badge, champ) doit se distinguer de son support avec un contraste d'au moins 3 (critère WCAG 1.4.11). Vérifier les deux, le texte **et** la forme
+- Sur `primary-soft`, seulement `ink` ou `primary-soft-ink` : `muted` (4,23) et `link` (4,18) y passent sous 4,5 en clair
+- Sur `surface-raised`, seulement `ink` : `muted` y passe sous 4,5 (3,91 en clair, 4,06 en sombre)
+- Le vert plein (`primary`) et le rouge plein (`danger`) sont réservés aux boutons : un badge ou une étiquette n'utilise jamais un fond plein, pour ne pas ressembler à un bouton
 - Police Inter, hébergée dans `public/fonts/` (aucune requête vers un service de polices)
+
+### Composants
+
+Construits une fois, réutilisés partout. On les voit tous, dans les deux thèmes, sur la galerie `/dev/components` (développement et test seulement).
+
+- Boutons : `button_classes(variant, size: :normal)` (`app/helpers/buttons_helper.rb`), variantes `:primary`, `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue
+- Badges : `badge_classes(:game_master | :player)` (`app/helpers/badges_helper.rb`) : pilule, 11 px, majuscules, couleurs tonales et contour intérieur de la couleur du texte à 50 % (sans lui, le badge disparaît sur une carte en sombre)
+- Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
+- Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »)
 
 ### Sécurité et permissions
 
@@ -250,6 +268,13 @@ Fait dans `chore/p1-theme` :
 - Sélecteur Clair / Sombre / Système dans la barre de navigation (partiel `shared/_theme_choice`, `aria-pressed` sur le choix actif), contrôleur Stimulus `theme_controller.js`. Le choix est enregistré dans `localStorage` (clé `theme`, « Système » = pas de valeur) ; en mode Système, la page suit en direct le réglage de l'appareil
 - Tests système mis en place (`test/application_system_test_case.rb`, Chrome invisible) : choix du thème sombre gardé après rechargement, nouveau visiteur en mode Système
 
+Fait dans `style/p1-ui-components` (première moitié des composants de la fiche Maquettes) :
+
+- Couleurs `primary-soft`, `primary-soft-ink`, `surface-raised`, `logo-bg` et `danger-hover`
+- Icônes Lucide, logo d20 (dans la barre de navigation), helpers de boutons et de badges (voir Composants)
+- Galerie de composants `/dev/components`, routée seulement si `Rails.env.local?`, avec un test qui vérifie son absence en production
+- Écarts volontaires avec la fiche Maquettes : badge « MJ » en vert tonal et en pilule (et non vert plein), bouton danger rouge plein (et non fond `surface` avec bordure `error-line`, trop pâle en clair : 1,57)
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -261,10 +286,23 @@ Fait dans `chore/p1-theme` :
 - `theme_preload.js` et `controllers/theme_controller.js` lisent le même choix : même clé `theme`, mêmes valeurs (`light`, `dark`, rien pour Système). Modifier l'un, c'est modifier l'autre
 - Les fichiers de `public/` sont gardés un an par les navigateurs (`cache-control` de `config/environments/production.rb`). Une police ou une image qui y est placée porte sa version dans son nom (`InterVariable-4.1.woff2`) : une nouvelle version change de nom, sinon les visiteurs gardent l'ancienne
 - Tests système : au premier lancement, `selenium-webdriver` télécharge `chromedriver` tout seul dans `~/.cache/selenium`. Entre deux tests, Capybara vide les cookies et `localStorage` : inutile de les nettoyer dans un `setup`
+- Au-delà de 50 tests, Rails les lance en parallèle (un processus par cœur) et crée une base de test par processus (`jdr_online_test_0`, `_1`...). C'est normal, on les garde
+- Minitest 6 n'inclut plus `minitest/mock` (gem à part, non installée) : pas de `stub`. Pour simuler la production dans un test, `Rails.env = "production"`, puis remettre l'environnement d'origine dans un `ensure` (voir `test/integration/component_gallery_test.rb`)
+- Une classe Tailwind avec opacité sur une couleur nommée (`ring-primary-soft-ink/50`) suit bien le thème : Tailwind écrit une valeur claire figée pour les vieux navigateurs, puis la vraie règle avec `color-mix()` et la variable
 
 ## Prochaines tâches
 
 Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
+
+### Interface : suite de la fiche Maquettes
+
+Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
+
+- `style/p1-form-components` : champs (wrapper `:default` de Simple Form), liste déroulante (vrai `<select>` stylé), messages dans les cartes (`devise/shared/_error_messages` compris), interrupteur (`role="switch"`)
+- `style/p1-auth-pages` : layout `auth`, pages connexion, inscription, mot de passe oublié et nouveau mot de passe, bouton œil, mot de passe de 12 caractères minimum
+- `feature/p1-app-navbar` : barre de navigation connectée, lien actif sur `primary-soft`, interrupteur de thème
+- `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion
+- `feature/p1-account-settings` : page Paramètres en rubriques (Affichage, Compte, Sécurité), langue sans mot de passe, déconnexion, suppression du compte
 
 ### Production Heroku : `chore/p1-heroku-setup`
 
@@ -275,8 +313,6 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
-- Mise en forme des formulaires Devise (connexion, inscription, Mon compte, mot de passe oublié) avec les couleurs nommées (`bg-field`, `border-line`, `text-ink`...) : leurs champs n'ont encore aucun style. Simple Form utilise le wrapper `:default` de `config/initializers/simple_form.rb`, c'est là que les classes des champs peuvent être définies une seule fois
-- Page Préférences, séparée de Mon compte, pour changer la langue (et plus tard le thème) sans saisir son mot de passe
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles

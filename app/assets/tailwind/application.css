@@ -30,7 +30,16 @@
   /* Darker, not lighter, on hover: white text stays above the 4.5 contrast ratio (6.37) */
   --color-primary-hover: #276a5b;
   --color-link: #2e7d6b;
+  /* Only ink or primary-soft-ink on primary-soft: muted (4.23) and link (4.18) fall below 4.5 here */
+  --color-primary-soft: #e4efe9;
+  --color-primary-soft-ink: #1d574a;
+  /* Same value as line, like in the dark theme of the mockups; only ink on it (muted is 3.91) */
+  --color-surface-raised: #ebe3d3;
+  /* A logo keeps its colors in both themes (value from the wireframes' d20) */
+  --color-logo-bg: #1f1b18;
   --color-danger: #b91c1c;
+  /* Darker on hover, like primary-hover: white text goes from 6.47 to 8.15 */
+  --color-danger-hover: #9d1818;
   --color-success-bg: #e9f1e5;
   --color-success-line: #c3d8b8;
   --color-success-ink: #2f5d3a;
@@ -56,7 +65,12 @@
     --color-primary: #2e7d6b;
     --color-primary-hover: #276a5b;
     --color-link: #7fd1bd;
+    --color-primary-soft: #183a33;
+    --color-primary-soft-ink: #7fd1bd;
+    --color-surface-raised: #374151;
+    --color-logo-bg: #1f1b18;
     --color-danger: #b91c1c;
+    --color-danger-hover: #9d1818;
     --color-success-bg: #12302a;
     --color-success-line: #2e7d6b;
     --color-success-ink: #a7e3d4;

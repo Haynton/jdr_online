@@ -1,5 +1,7 @@
 <nav class="flex items-center justify-between border-b border-line bg-surface px-4 py-3">
-  <%= link_to t("app_name"), root_path, class: "text-lg font-semibold text-ink" %>
+  <%= link_to root_path, class: "rounded-md" do %>
+    <%= render "shared/logo" %>
+  <% end %>
 
   <div class="flex items-center gap-4">
     <div class="flex items-center gap-1" role="group" aria-label="<%= t(".theme_label") %>" data-controller="theme">
@@ -10,10 +12,11 @@
 
     <% if user_signed_in? %>
       <span class="text-sm text-muted"><%= current_user.email %></span>
-      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: primary_button_classes %>
+      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete,
+            class: button_classes(:primary, size: :compact) %>
     <% else %>
       <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
-      <%= link_to t(".sign_up"), new_user_registration_path, class: primary_button_classes %>
+      <%= link_to t(".sign_up"), new_user_registration_path, class: button_classes(:primary, size: :compact) %>
     <% end %>
   </div>
 </nav>

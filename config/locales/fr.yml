@@ -3,7 +3,7 @@ fr:
     attributes:
       user:
         locale: "Langue"
-  app_name: "JDR Online"
+  app_name: "JDR en ligne"
   devise:
     registrations:
       edit:
