@@ -193,36 +193,39 @@ Fait, sur `main`, avant le premier envoi sur GitHub :
 - Application générée avec le template Devise de Le Wagon (Rails 8.1)
 - Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` ont été supprimées : Devise utilise ses vues intégrées
 - Tailwind v4 installé (`tailwindcss-rails` 4.7, `tailwindcss-ruby` 4.3)
-- Barre de navigation et messages flash réécrits en Tailwind, textes encore en anglais et en dur (à traduire, voir plus bas)
+- Barre de navigation et messages flash réécrits en Tailwind
 - Dépôt public `github.com/Haynton/jdr_online`. `main` protégée : Pull Request obligatoire, sans approbation requise pour l'instant, règles appliquées aussi à l'administrateur (`enforce_admins`), push forcé et suppression interdits, branches supprimées automatiquement après fusion. Testé : un push direct sur `main` est refusé
 - Plus aucun commit direct sur `main` : tout passe par une branche et une Pull Request
+
+Fait dans `chore/p1-i18n-setup` :
+
+- `rails-i18n` et `devise-i18n` installés. `default_locale = :en`, `available_locales = [:fr, :en]`. Traduction manquante = erreur en développement et en test (`raise_on_missing_translations`)
+- Colonne `users.locale` (vide = pas de choix), validée contre `I18n.available_locales`
+- Choix de la langue de chaque requête par le concern `Locale` : compte, puis navigateur, puis anglais. Lecture de l'en-tête `Accept-Language` par les services `AcceptLanguageParser` (variantes régionales, ordre des `q`) et `BrowserLocaleDetector` (première langue disponible)
+- Langue du navigateur enregistrée à l'inscription (`Users::RegistrationsController`)
+- Message « Vous devez vous connecter » traduit par une failure app Devise (`Users::FailureApp`)
+- Barre de navigation, titre et page d'accueil traduits. Un test vérifie que `fr.yml` et `en.yml` ont les mêmes clés
 
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
 - Lancé en tâche de fond par Claude Code, le processus `css` de `bin/dev` s'arrête faute de terminal. Contournement : `tail -f /dev/null | bin/dev`. Ne pas modifier `Procfile.dev` pour ça
 - `config.mailer_sender` dans `config/initializers/devise.rb` vaut encore l'adresse d'exemple : à changer avant de tester le mot de passe oublié en production
+- Les contrôleurs Devise déclarent leurs vérifications avec `prepend_before_action` : elles passent avant le concern `Locale`, donc dans la langue par défaut. Un message Devise resté en anglais vient en général de là
 
 ## Prochaines tâches
 
 Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
-### Langues : `chore/p1-i18n-setup`
+### Langue dans Mon compte : `feature/p1-account-locale`
 
-À faire tôt, avant d'écrire beaucoup de vues : chaque texte écrit en dur devra sinon être repris.
+Suite de `chore/p1-i18n-setup`, depuis `main` une fois cette PR fusionnée.
 
-- Installer `rails-i18n` (dates, nombres et messages de validation en français) et `devise-i18n` (textes de Devise)
-- `config.i18n.default_locale = :en` et `config.i18n.available_locales = [:fr, :en]` dans `config/application.rb`. L'anglais sert de langue de secours parce qu'il est le plus international
-- Un concern `app/controllers/concerns/locale.rb`, inclus dans `ApplicationController`, avec un `around_action` qui appelle `I18n.with_locale`
-- Choix de la langue (décidé), dans cet ordre de priorité :
-  - la colonne `locale` sur `users`, si l'utilisateur est connecté et a fait un choix (il le suit sur tous ses appareils)
-  - sinon, la langue du navigateur (en-tête `Accept-Language`), si c'est une langue disponible (`fr` ou `en`)
-  - sinon, l'anglais
-- À l'inscription, préremplir `users.locale` avec la langue détectée dans le navigateur
-- Toujours vérifier la langue lue contre `I18n.available_locales` avant de l'utiliser : un navigateur en allemand doit tomber sur l'anglais, pas provoquer une erreur
+- Vues d'inscription et de modification du compte générées avec `rails g devise:i18n:views`, limité aux registrations. Vérifier qu'elles ne contiennent aucune classe Bootstrap
+- Sélecteur de langue (`fr`, `en`, ou « langue du navigateur » pour revenir à `nil`) dans la page Mon compte, avec `devise_parameter_sanitizer.permit(:account_update, keys: [:locale])`
+- Nom de l'attribut traduit : `activerecord.attributes.user.locale` dans `fr.yml` et `en.yml`
+- Message « You are already signed in. » encore en anglais : `require_no_authentication` de Devise passe avant le concern `Locale` et ne passe pas par la failure app (cas d'un utilisateur connecté qui ouvre `/users/sign_in`)
 - Pas de langue dans l'URL (`/fr/...`) : ça complique toutes les routes, Devise compris
-- Sélecteur de langue dans la page Mon compte
-- Traduire la barre de navigation et les messages flash existants
 
 ### Thème clair, sombre ou système : `chore/p1-theme`
 
@@ -262,6 +265,7 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
+- `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 - Dependabot (`.github/dependabot.yml`, créé par Rails) a ouvert une Pull Request pour passer `image_processing` en 2.x alors que le Gemfile demande `~> 1.2` : ne pas la fusionner sans tester les variantes d'images d'Active Storage. Décision à prendre sur le réglage de Dependabot (voir avec Haynton)
 
