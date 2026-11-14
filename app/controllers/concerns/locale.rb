@@ -21,8 +21,7 @@ module Locale
   end
 
   def locale_from_browser
-    browser_languages = AcceptLanguageParser.new(request.headers["Accept-Language"]).call
-    browser_languages.find { |language| available_locale(language) }
+    BrowserLocaleDetector.new(request.headers["Accept-Language"]).call
   end
 
   def available_locale(candidate_locale)
