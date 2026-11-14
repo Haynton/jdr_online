@@ -208,7 +208,10 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request, sauf la première
 ### Envoyer le dépôt sur GitHub et protéger `main`
 
 - Dernier travail fait directement sur `main`
-- Création du dépôt privé avec `gh repo create`, premier envoi, protection de `main` (Pull Request obligatoire, une approbation)
+- Dépôt **public** sur le compte personnel `Haynton` (la protection de branche n'est pas disponible sur un dépôt privé avec un compte GitHub gratuit)
+- Avant de le rendre public : vérifier qu'aucun secret n'est dans l'historique (`config/master.key`, `.env`, contenu de `.kamal/secrets`)
+- Création avec `gh repo create`, premier envoi, puis protection de `main` : Pull Request obligatoire, **sans approbation requise pour l'instant** (Haynton avance seul et fusionne ses propres PR), push forcé et suppression de `main` interdits
+- Plus tard, quand Julien rejoint le dépôt : passer à une approbation obligatoire
 
 ### Langues : `chore/p1-i18n-setup`
 
@@ -234,19 +237,23 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request, sauf la première
   - les couleurs nommées dans un bloc `@theme`, avec leurs valeurs claires, puis leurs valeurs sombres redéfinies dans un bloc `.dark { ... }`
 - Couleurs du mode sombre, reprises des wireframes :
 
-| Couleur nommée | Rôle | Sombre (wireframes) | Clair (proposition à valider) |
+| Couleur nommée | Rôle | Sombre (wireframes) | Clair, parchemin léger |
 |---|---|---|---|
-| `page` | Fond de page | `#0f1520` | `#f9fafb` |
-| `surface` | Cartes, panneaux | `#1f2937` | `#ffffff` |
+| `page` | Fond de page | `#0f1520` | `#faf6ee` |
+| `surface` | Cartes, panneaux, barre de navigation | `#1f2937` | `#fffdf9` |
 | `field` | Fond des champs | `#111827` | `#ffffff` |
-| `line` | Bordures | `#374151` | `#e5e7eb` |
-| `ink` | Texte principal | `#f9fafb` | `#111827` |
-| `muted` | Texte secondaire | `#9ca3af` | `#6b7280` |
-| `primary` | Bouton principal | `#2E7D6B` | `#2E7D6B` |
+| `line` | Bordures | `#374151` | `#ebe3d3` |
+| `ink` | Texte principal | `#f9fafb` | `#27211a` |
+| `muted` | Texte secondaire | `#9ca3af` | `#7b7062` |
+| `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
 | `link` | Liens | `#7fd1bd` | `#2E7D6B` |
 | `danger` | Bouton de suppression | `#b91c1c` | `#b91c1c` |
-| `error-bg` / `error-line` / `error-ink` | Message d'erreur | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fef2f2` / `#fecaca` / `#b91c1c` |
+| `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
+| `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
 
+- Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
+- Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
+- Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). Le texte blanc sur `primary` est à environ 4,9 : ne pas éclaircir ce vert
 - Police Inter, comme dans les wireframes
 - Choix du thème (décidé) : enregistré dans `localStorage`, donc propre à chaque navigateur (méthode de la documentation Tailwind). Petit script dans le `<head>` du layout, avant l'affichage, pour poser la classe `.dark` sans flash blanc au chargement. Contrôleur Stimulus `theme_controller.js` pour le sélecteur clair, sombre, système
 - Remplacer les couleurs brutes de la navbar, des flashes et du layout par les couleurs nommées
