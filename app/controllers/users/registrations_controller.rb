@@ -1,5 +1,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
+    include DeviseLocale
+
     before_action :permit_locale_on_account_update, only: :update
 
     protected
