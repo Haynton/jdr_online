@@ -10,13 +10,14 @@ class SimpleFormFieldsTest < ActionView::TestCase
 
     assert_select "div.mb-4 > label.text-ink[for=user_email]"
     assert_select "input#user_email.border-field-line.bg-field.text-ink"
-    assert_select "input#user_email.focus\\:outline-primary"
+    assert_select "input#user_email.focus\\:border-focus-ring.focus\\:ring-3.focus\\:outline-hidden"
   end
 
-  test "an invalid field is marked for screen readers and gets the error border and message" do
+  test "an invalid field is marked for screen readers, with a thicker red border, a pink background and a message" do
     render_form { |form| form.input(:email) }
 
-    assert_select "input#user_email[aria-invalid=true].aria-invalid\\:border-error-ink"
+    assert_select "input#user_email[aria-invalid=true].aria-invalid\\:border-error-ink.aria-invalid\\:ring-1"
+    assert_select "input#user_email.aria-invalid\\:bg-error-bg"
     assert_select "input#user_email + p.text-error-ink"
   end
 
@@ -26,10 +27,17 @@ class SimpleFormFieldsTest < ActionView::TestCase
     assert_select "p.text-muted", text: "At least 6 characters"
   end
 
-  test "a check box sits inside its label and uses the primary color" do
+  test "a check box is drawn square by us, green with a white check when checked" do
     render_form { |form| form.input(:remember_me, as: :boolean) }
 
-    assert_select "label.inline-flex.text-ink > input[type=checkbox].accent-primary"
+    assert_select "input[type=checkbox]#user_remember_me.appearance-none.rounded-\\[3px\\]"
+    assert_select "input[type=checkbox].checked\\:bg-primary.checked\\:bg-checkmark"
+  end
+
+  test "a check box has its label text next to it, linked to the box" do
+    I18n.with_locale(:en) { render_form { |form| form.input(:remember_me, as: :boolean) } }
+
+    assert_select "div.flex > input#user_remember_me + label.text-ink[for=user_remember_me]", text: "Remember me"
   end
 
   test "no class left over from Bootstrap" do

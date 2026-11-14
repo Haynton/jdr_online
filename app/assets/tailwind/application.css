@@ -15,6 +15,15 @@
 /* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* White check mark of our own check boxes (the native one cannot be reshaped).
+   Path of the Lucide "check" icon, see app/views/shared/icons/LUCIDE-LICENSE.txt */
+@utility bg-checkmark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 75%;
+}
+
 /* Named colors: views use bg-page, text-ink, border-line... and never a raw color,
    so the dark theme only has to redefine these variables below */
 @theme {
@@ -26,6 +35,8 @@
   --color-line: #ebe3d3;
   /* Field borders: line is too pale to show where to type (1.18 to 1.28), field-line reaches 3.48 to 3.75 */
   --color-field-line: #8f8270;
+  /* Keyboard focus of fields and buttons: primary was too weak in the dark theme (2.98 on surface) */
+  --color-focus-ring: #1d574a;
   --color-ink: #27211a;
   --color-muted: #796e60;
   --color-primary: #2e7d6b;
@@ -63,6 +74,7 @@
     --color-field: #111827;
     --color-line: #374151;
     --color-field-line: #6b7280;
+    --color-focus-ring: #7fd1bd;
     --color-ink: #f9fafb;
     --color-muted: #9ca3af;
     --color-primary: #2e7d6b;
@@ -82,3 +94,4 @@
     --color-error-ink: #f87171;
   }
 }
+

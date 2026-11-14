@@ -10,23 +10,30 @@
 module SimpleFormFieldClasses
   LABEL = "mb-1.5 block text-[13px] font-semibold text-ink"
 
-  # The error border follows aria-invalid, which Simple Form sets on invalid inputs:
-  # no second border class competing with border-field-line
+  # Focus: the border takes focus-ring, with a soft 3 px halo (outline-hidden keeps an outline
+  # in Windows high contrast mode). Errors follow aria-invalid, which Simple Form sets on invalid
+  # inputs: a 1 px border was too thin to notice, so a ring doubles it and the background turns pink.
+  # aria-invalid variants come after focus and hover in the CSS, so the red always wins.
   INPUT = %w[
     block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 text-sm text-ink
     placeholder:text-muted hover:border-muted
-    focus:outline-2 focus:outline-offset-0 focus:outline-primary
-    aria-invalid:border-error-ink aria-invalid:hover:border-error-ink
+    focus:border-focus-ring focus:ring-3 focus:ring-focus-ring/30 focus:outline-hidden
+    aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink
+    aria-invalid:hover:border-error-ink aria-invalid:focus:ring-3 aria-invalid:focus:ring-error-ink/30
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 
   HINT = "mt-1.5 text-xs text-muted"
   ERROR = "mt-1.5 text-xs text-error-ink"
 
+  # Drawn by us (appearance-none): the native check box cannot be reshaped, only recolored
   CHECKBOX = %w[
-    size-4 accent-primary
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+    size-4.5 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-field-line bg-field
+    checked:border-primary checked:bg-primary checked:bg-checkmark
+    focus-visible:border-focus-ring focus-visible:ring-3 focus-visible:ring-focus-ring/30 focus-visible:outline-hidden
   ].join(" ").freeze
+
+  CHECKBOX_LABEL = "cursor-pointer text-sm text-ink"
 end
 
 # Use this setup block to configure all options available in SimpleForm.
@@ -80,11 +87,14 @@ SimpleForm.setup do |config|
     b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
   end
 
-  # Check boxes: with the nested style, Simple Form puts the box inside its label
+  # Check boxes: the box and its label side by side (inline style), so each one gets its own classes
   config.wrappers :boolean, class: "mb-4" do |b|
     b.use :html5
     b.optional :readonly
-    b.use :input, class: SimpleFormFieldClasses::CHECKBOX
+    b.wrapper tag: :div, class: "flex items-center gap-2" do |box_and_label|
+      box_and_label.use :input, class: SimpleFormFieldClasses::CHECKBOX
+      box_and_label.use :label, class: SimpleFormFieldClasses::CHECKBOX_LABEL
+    end
     b.use :hint, wrap_with: { tag: :p, class: SimpleFormFieldClasses::HINT }
     b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
   end
@@ -93,10 +103,11 @@ SimpleForm.setup do |config|
   config.default_wrapper = :default
 
   # Define the way to render check boxes / radio buttons with labels.
-  # Defaults to :nested for bootstrap config.
   #   inline: input + label
   #   nested: label > input
-  config.boolean_style = :nested
+  # Inline: with nested, only the label_input component writes the label text, and the box
+  # and its text could not get separate classes
+  config.boolean_style = :inline
 
   # No default class for buttons: each button gets button_classes(...) in its view ("btn" came from Bootstrap)
   config.button_class = nil
@@ -186,7 +197,8 @@ SimpleForm.setup do |config|
   # config.input_class = nil
 
   # Define the default class of the input wrapper of the boolean input.
-  config.boolean_label_class = "inline-flex items-center gap-2 text-sm text-ink"
+  # Only used with boolean_style = :nested: our check boxes use the :boolean wrapper instead
+  # config.boolean_label_class = nil
 
   # Defines if the default input wrapper class should be included in radio
   # collection wrappers.
