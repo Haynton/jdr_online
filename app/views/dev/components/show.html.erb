@@ -1,0 +1,28 @@
+<%# Development and test only (see config/routes.rb). The texts stay in English and written here
+    on purpose: this page is a tool for the team, never shown to players nor served in production. %>
+<h1 class="text-2xl font-bold text-ink">Component gallery</h1>
+<p class="mt-1 text-sm text-muted">Use the theme buttons in the navbar to review every component in both themes.</p>
+
+<section class="mt-8" aria-labelledby="colors-title">
+  <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
+  <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <% @color_swatches.each do |color_swatch| %>
+      <div class="rounded-lg border border-line bg-surface p-3">
+        <div class="h-12 rounded-md border border-line <%= color_swatch[:css_class] %>"></div>
+        <p class="mt-2 text-sm text-ink"><%= color_swatch[:name] %></p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="mt-8" aria-labelledby="icons-title">
+  <h2 id="icons-title" class="text-lg font-semibold text-ink">Icons</h2>
+  <div class="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-5">
+    <% @icon_names.each do |icon_name| %>
+      <div class="flex flex-col items-center gap-2 rounded-lg border border-line bg-surface p-3 text-ink">
+        <%= render "shared/icons/#{icon_name}", css_class: "size-5" %>
+        <span class="text-xs text-muted"><%= icon_name %></span>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
   root to: "pages#home"
+
+  # Component gallery to review the design system in both themes. Never routed in production
+  get "dev/components", to: "dev/components#show", as: :dev_components if Rails.env.local?
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
