@@ -2,14 +2,18 @@
   <%= link_to t("app_name"), root_path, class: "text-lg font-semibold text-ink" %>
 
   <div class="flex items-center gap-4">
+    <div class="flex items-center gap-1" role="group" aria-label="<%= t(".theme_label") %>" data-controller="theme">
+      <%= render "shared/theme_choice", choice: "light" %>
+      <%= render "shared/theme_choice", choice: "dark" %>
+      <%= render "shared/theme_choice", choice: "system" %>
+    </div>
+
     <% if user_signed_in? %>
       <span class="text-sm text-muted"><%= current_user.email %></span>
-      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete,
-            class: "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover" %>
+      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: primary_button_classes %>
     <% else %>
       <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
-      <%= link_to t(".sign_up"), new_user_registration_path,
-            class: "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover" %>
+      <%= link_to t(".sign_up"), new_user_registration_path, class: primary_button_classes %>
     <% end %>
   </div>
 </nav>
