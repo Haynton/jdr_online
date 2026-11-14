@@ -40,6 +40,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 gem "sprockets-rails"
+gem "tailwindcss-rails", "~> 4.7"
 gem "devise"
 gem "simple_form", github: "heartcombo/simple_form"
 
