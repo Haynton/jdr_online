@@ -191,7 +191,7 @@ end
 Fait, sur `main`, avant le premier envoi sur GitHub :
 
 - Application générée avec le template Devise de Le Wagon (Rails 8.1)
-- Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` ont été supprimées : Devise utilise ses vues intégrées
+- Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` par le template ont été supprimées (voir plus bas les vues regénérées avec `devise-i18n`)
 - Tailwind v4 installé (`tailwindcss-rails` 4.7, `tailwindcss-ruby` 4.3)
 - Barre de navigation et messages flash réécrits en Tailwind
 - Dépôt public `github.com/Haynton/jdr_online`. `main` protégée : Pull Request obligatoire, sans approbation requise pour l'instant, règles appliquées aussi à l'administrateur (`enforce_admins`), push forcé et suppression interdits, branches supprimées automatiquement après fusion. Testé : un push direct sur `main` est refusé
@@ -211,26 +211,26 @@ Fait dans `chore/p1-dependabot-config` :
 - Dependabot (`.github/dependabot.yml`, créé par Rails) ne propose plus de version majeure pour les gems (`ignore` avec `dependency-name: "*"` et `version-update:semver-major`, section `bundler` seulement). Les mises à jour mineures et correctives continuent. Une version majeure se fait volontairement, dans une branche, après l'avoir testée
 - La PR Dependabot #1 (`image_processing` 2.2.0) a été fermée sans fusion : on reste en 1.x, la version 2 n'est pas testée avec Active Storage
 
+Fait dans `feature/p1-account-locale` :
+
+- Vues d'inscription et de modification du compte générées avec `rails g devise:i18n:views -v registrations`, dans `app/views/devise/` (sans `scoped_views`), sans classe Bootstrap. Les autres pages Devise (connexion, mot de passe oublié) utilisent encore les vues intégrées à `devise-i18n`
+- Sélecteur de langue dans Mon compte : « Langue du navigateur » (enregistre `nil`), « Français », « English ». Les langues sont nommées dans leur propre langue (`locale_names`), la liste vient du helper `locale_options`. Le mot de passe actuel reste obligatoire pour changer de langue, comme pour toute modification du compte
+- Titre « Mon compte » / « My account » (surcharge de `devise.registrations.edit.title`) et attribut `locale` traduit (`activerecord.attributes.user.locale`)
+- Après un changement de langue, le message de confirmation est dans la nouvelle langue. Après la connexion, le message est dans la langue du compte. Après la déconnexion, il suit le navigateur, comme la page qui l'affiche
+- Concern `DeviseLocale` (`prepend_around_action :switch_locale`) inclus dans `Users::SessionsController` et `Users::RegistrationsController` : le choix de la langue passe avant les vérifications de Devise, et « Vous êtes déjà connecté(e). » est traduit
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
 - Lancé en tâche de fond par Claude Code, le processus `css` de `bin/dev` s'arrête faute de terminal. Contournement : `tail -f /dev/null | bin/dev`. Ne pas modifier `Procfile.dev` pour ça
 - `config.mailer_sender` dans `config/initializers/devise.rb` vaut encore l'adresse d'exemple : à changer avant de tester le mot de passe oublié en production
-- Les contrôleurs Devise déclarent leurs vérifications avec `prepend_before_action` : elles passent avant le concern `Locale`, donc dans la langue par défaut. Un message Devise resté en anglais vient en général de là
+- Les contrôleurs Devise déclarent leurs vérifications avec `prepend_before_action` : elles passent avant le concern `Locale`, donc dans la langue par défaut. Un message Devise resté en anglais vient en général de là. Correction : un sous-contrôleur dans `app/controllers/users/` qui inclut `DeviseLocale`, et sa ligne dans `devise_for` (`config/routes.rb`)
+- Pendant une mise à jour du compte, Devise recharge l'utilisateur dans `resource` : `current_user` garde les anciennes valeurs jusqu'à la requête suivante. D'où `chosen_locale(resource)` dans `Users::RegistrationsController`
+- Pas de langue dans l'URL (`/fr/...`), décision prise : ça compliquerait toutes les routes, Devise compris
 
 ## Prochaines tâches
 
 Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
-
-### Langue dans Mon compte : `feature/p1-account-locale`
-
-Suite de `chore/p1-i18n-setup`, depuis `main` une fois cette PR fusionnée.
-
-- Vues d'inscription et de modification du compte générées avec `rails g devise:i18n:views`, limité aux registrations. Vérifier qu'elles ne contiennent aucune classe Bootstrap
-- Sélecteur de langue (`fr`, `en`, ou « langue du navigateur » pour revenir à `nil`) dans la page Mon compte, avec `devise_parameter_sanitizer.permit(:account_update, keys: [:locale])`
-- Nom de l'attribut traduit : `activerecord.attributes.user.locale` dans `fr.yml` et `en.yml`
-- Message « You are already signed in. » encore en anglais : `require_no_authentication` de Devise passe avant le concern `Locale` et ne passe pas par la failure app (cas d'un utilisateur connecté qui ouvre `/users/sign_in`)
-- Pas de langue dans l'URL (`/fr/...`) : ça complique toutes les routes, Devise compris
 
 ### Thème clair, sombre ou système : `chore/p1-theme`
 
@@ -269,6 +269,8 @@ Suite de `chore/p1-i18n-setup`, depuis `main` une fois cette PR fusionnée.
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- Page Préférences, séparée de Mon compte, pour changer la langue (et plus tard le thème) sans saisir son mot de passe
+- « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
 - Créer `.github/pull_request_template.md` avec le modèle de PR du document Versionnage-git (Quoi, Pourquoi, Comment tester, Captures, Checklist), pour que GitHub le propose à chaque nouvelle PR
