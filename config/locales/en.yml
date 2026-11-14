@@ -28,7 +28,20 @@
 #       enabled: "ON"
 
 en:
+  activerecord:
+    attributes:
+      user:
+        locale: "Language"
   app_name: "JDR Online"
+  devise:
+    registrations:
+      edit:
+        browser_language: "Browser language"
+        title: "My account"
+  # Each language is named in its own language, so that a user can always find theirs
+  locale_names:
+    en: "English"
+    fr: "Français"
   pages:
     home:
       title: "Home"
