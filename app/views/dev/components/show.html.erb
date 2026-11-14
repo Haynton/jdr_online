@@ -51,6 +51,23 @@
   </div>
 </section>
 
+<section class="mt-8" aria-labelledby="messages-title">
+  <h2 id="messages-title" class="text-lg font-semibold text-ink">Messages</h2>
+  <div class="mt-4 grid max-w-2xl gap-3">
+    <%= render layout: "shared/message", locals: { variant: :success } do %>Your account has been updated.<% end %>
+    <%= render layout: "shared/message", locals: { variant: :error } do %>Invalid email or password.<% end %>
+    <div class="rounded-xl border border-line bg-surface p-6">
+      <%= render layout: "shared/message", locals: { variant: :error } do %>
+        <p class="font-semibold">2 errors prohibited this account from being saved:</p>
+        <ul class="mt-1 list-disc pl-4">
+          <li>Email is invalid</li>
+          <li>Password can't be blank</li>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">

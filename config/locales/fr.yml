@@ -27,3 +27,6 @@ fr:
       dark: "Sombre"
       light: "Clair"
       system: "Système"
+  simple_form:
+    error_notification:
+      default_message: "Merci de corriger les erreurs ci-dessous."
