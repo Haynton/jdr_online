@@ -39,6 +39,7 @@ en:
           attributes:
             username:
               invalid: "can only contain letters, digits, dashes (-) and underscores (_)"
+              taken: "is already taken by another player"
   app_name: "JDR Online"
   devise:
     passwords:

@@ -23,6 +23,7 @@ class SignUpUsernameTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_content
     assert_select "input#user_username[aria-invalid=true]"
+    assert_select "#user_username ~ *", text: "est déjà pris par un autre joueur"
   end
 
   private

@@ -10,6 +10,7 @@ fr:
           attributes:
             username:
               invalid: "ne peut contenir que des lettres, des chiffres, des tirets (-) et des tirets bas (_)"
+              taken: "est déjà pris par un autre joueur"
   app_name: "JDR en ligne"
   devise:
     passwords:
