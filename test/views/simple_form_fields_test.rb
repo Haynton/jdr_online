@@ -13,6 +13,12 @@ class SimpleFormFieldsTest < ActionView::TestCase
     assert_select "input#user_email.focus\\:border-focus-ring.focus\\:ring-3.focus\\:outline-hidden"
   end
 
+  test "a field has a vertical padding, so that Safari does not stretch its caps lock indicator" do
+    render_form { |form| form.input(:email) }
+
+    assert_select "input#user_email.h-11.py-2\\.5"
+  end
+
   test "an invalid field is marked for screen readers, with a thicker red border, a pink background and a message" do
     render_form { |form| form.input(:email) }
 
