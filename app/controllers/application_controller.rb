@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   layout :layout_for_page
-  # The account menu marks "Settings" as the current page with it, error pages included (their URL is /users)
+  # The account menu marks "Settings" as the current page with it
   helper_method :settings_page?
 
   private
@@ -14,21 +14,13 @@ class ApplicationController < ActionController::Base
     tables_path
   end
 
-  # Visitor pages of Devise (sign in, sign up, passwords) get the auth layout,
-  # the account page keeps the application one with its navbar
+  # The pages of Devise (sign in, sign up, passwords) are visitor pages: they get the auth layout.
+  # The account itself is managed in the settings
   def layout_for_page
-    return "application" unless devise_controller?
-    return "application" if account_page?
-
-    "auth"
+    devise_controller? ? "auth" : "application"
   end
 
-  def account_page?
-    controller_name == "registrations" && action_name.in?(%w[edit update destroy cancel])
-  end
-
-  # The settings sections, and the old account page until the account section exists
   def settings_page?
-    controller_path.start_with?("settings/") || account_page?
+    controller_path.start_with?("settings/")
   end
 end

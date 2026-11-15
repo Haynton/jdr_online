@@ -18,9 +18,6 @@ fr:
         subtitle: "Saisissez l'e-mail de votre compte."
         title: "Recevoir un lien"
     registrations:
-      edit:
-        browser_language: "Langue du navigateur"
-        title: "Mon compte"
       new:
         already_registered: "Déjà inscrit ?"
         sign_in: "Se connecter"
@@ -52,6 +49,20 @@ fr:
       title: "Accueil"
       description: "Retrouvez-moi dans app/views/pages/home.html.erb"
   settings:
+    accounts:
+      show:
+        change_email: "Changer l'adresse e-mail"
+        current_password_hint: "Pour confirmer que c'est bien vous."
+        danger_zone: "Zone sensible"
+        delete_account: "Supprimer mon compte"
+        delete_account_button: "Supprimer"
+        delete_account_confirmation: "Supprimer définitivement votre compte ? Cette action ne peut pas être annulée."
+        delete_account_description: "Action définitive (droit à l'effacement)."
+        email_group: "Adresse e-mail"
+        log_out: "Se déconnecter"
+        log_out_description: "Sur cet appareil."
+        session_group: "Session"
+        title: "Compte"
     displays:
       show:
         browser_language: "Langue du navigateur"
@@ -62,14 +73,28 @@ fr:
         theme_description: "Clair, sombre, ou comme votre appareil."
         theme_group: "Thème"
         title: "Affichage"
+    emails:
+      update:
+        updated: "Adresse e-mail modifiée."
     locales:
       update:
         unavailable: "Cette langue n'est pas disponible."
         updated: "Langue enregistrée."
+    passwords:
+      update:
+        updated: "Mot de passe modifié."
     sections_menu:
       account: "Compte"
       display: "Affichage"
+      security: "Sécurité"
       title: "Paramètres"
+    securities:
+      show:
+        change_password: "Changer le mot de passe"
+        new_password: "Nouveau mot de passe"
+        password_confirmation: "Confirmation du nouveau mot de passe"
+        password_group: "Mot de passe"
+        title: "Sécurité"
   shared:
     navbar:
       label: "Navigation principale"

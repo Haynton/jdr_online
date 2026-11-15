@@ -43,14 +43,14 @@ class NavbarTest < ActionDispatch::IntegrationTest
     assert_select "#user-menu a[aria-current=page]", count: 1, text: "Mes tables"
   end
 
-  test "on the account page, settings is the current link of the menu" do
-    get edit_user_registration_path
+  test "on the account settings, settings is the current link of the menu" do
+    get settings_account_path
 
     assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
   test "settings stays the current link when the account form comes back with an error" do
-    patch user_registration_path, params: { user: { email: "player@example.com", current_password: "wrong" } }
+    patch settings_email_path, params: { user: { email: "player@example.com", current_password: "wrong" } }
 
     assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
   end

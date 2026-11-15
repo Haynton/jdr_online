@@ -23,7 +23,7 @@ class SettingsTest < ActionDispatch::IntegrationTest
     sign_in create_user(locale: "fr")
     get settings_path
 
-    assert_select "nav li a svg.md\\:hidden[aria-hidden=true]", count: 2
+    assert_select "nav li a svg.md\\:hidden[aria-hidden=true]", count: 3
   end
 
   test "each setting row has a line under it, the last one of a group included" do
@@ -41,7 +41,7 @@ class SettingsTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-labelledby=settings-title] h1", text: "Paramètres"
     assert_select "nav[aria-labelledby=settings-title] a[href=?][aria-current=page]", settings_display_path,
                   text: "Affichage"
-    assert_select "nav[aria-labelledby=settings-title] a[href=?]", edit_user_registration_path, text: "Compte"
+    assert_select "nav[aria-labelledby=settings-title] a[href=?]", settings_account_path, text: "Compte"
     assert_select "section[aria-labelledby=settings-section-title] h2", text: "Affichage"
   end
 

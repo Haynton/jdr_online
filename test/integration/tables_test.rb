@@ -91,10 +91,10 @@ class TablesTest < ActionDispatch::IntegrationTest
 
   test "a page asked for before signing in comes first" do
     user = create_user(locale: "fr")
-    get edit_user_registration_path
+    get settings_account_path
     post user_session_path, params: { user: { email: user.email, password: TEST_PASSWORD } }
 
-    assert_redirected_to edit_user_registration_path
+    assert_redirected_to settings_account_path
   end
 
   private

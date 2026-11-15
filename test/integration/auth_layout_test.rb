@@ -16,15 +16,16 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
     assert_auth_layout
   end
 
-  test "the account page keeps the application layout with its navbar, even after an error" do
-    sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD)
+  test "the old account page leads to the account settings, and its old form changes nothing" do
+    user = User.create!(email: "player@example.com", password: TEST_PASSWORD)
+    sign_in user
 
     get edit_user_registration_path
-    assert_select "nav", count: 1
+    assert_redirected_to settings_account_path
 
-    patch user_registration_path, params: { user: { email: "player@example.com", current_password: "wrong" } }
-    assert_response :unprocessable_content
-    assert_select "nav", count: 1
+    patch user_registration_path, params: { user: { email: "new.player@example.com", current_password: TEST_PASSWORD } }
+    assert_redirected_to settings_account_path
+    assert_equal "player@example.com", user.reload.email
   end
 
   private
