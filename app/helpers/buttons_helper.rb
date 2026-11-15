@@ -18,7 +18,9 @@ module ButtonsHelper
     compact: "h-9 px-3 text-sm"
   }.freeze
 
-  def button_classes(variant, size: :normal)
-    [BUTTON_BASE_CLASSES, BUTTON_VARIANT_CLASSES.fetch(variant), BUTTON_SIZE_CLASSES.fetch(size)].join(" ")
+  def button_classes(variant, size: :normal, full_width: false)
+    classes = [BUTTON_BASE_CLASSES, BUTTON_VARIANT_CLASSES.fetch(variant), BUTTON_SIZE_CLASSES.fetch(size)]
+    classes << "w-full" if full_width
+    classes.join(" ")
   end
 end

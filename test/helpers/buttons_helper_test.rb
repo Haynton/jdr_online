@@ -24,6 +24,11 @@ class ButtonsHelperTest < ActionView::TestCase
     assert_includes button_classes(:secondary, size: :compact), "h-9"
   end
 
+  test "a button can take the full width of its container" do
+    assert_includes button_classes(:primary, full_width: true).split, "w-full"
+    assert_not_includes button_classes(:primary).split, "w-full"
+  end
+
   test "an unknown variant or size fails loudly instead of rendering an unstyled button" do
     assert_raises(KeyError) { button_classes(:primay) }
     assert_raises(KeyError) { button_classes(:primary, size: :huge) }

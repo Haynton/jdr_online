@@ -5,10 +5,36 @@ fr:
         locale: "Langue"
   app_name: "JDR en ligne"
   devise:
+    passwords:
+      edit:
+        get_a_new_link: "Recevoir un nouveau lien"
+        submit: "Enregistrer et se connecter"
+        title: "Nouveau mot de passe"
+      new:
+        back_to_sign_in: "Retour à la connexion"
+        remember_it: "Vous vous en souvenez ?"
+        # Overrides devise-i18n: its sentence was far too long for a button
+        send_me_reset_password_instructions: "Envoyer le lien"
+        subtitle: "Saisissez l'e-mail de votre compte."
+        title: "Recevoir un lien"
     registrations:
       edit:
         browser_language: "Langue du navigateur"
         title: "Mon compte"
+      new:
+        already_registered: "Déjà inscrit ?"
+        sign_in: "Se connecter"
+        submit: "Créer mon compte"
+        subtitle: "Quelques secondes et vous êtes prêt à jouer."
+        title: "Créer un compte"
+    sessions:
+      new:
+        create_account: "Créer un compte"
+        forgot_password: "Mot de passe oublié ?"
+        new_here: "Nouveau ici ?"
+        submit: "Se connecter"
+        subtitle: "Retrouvez vos tables de jeu."
+        title: "Connexion"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -22,11 +48,15 @@ fr:
       log_in: "Se connecter"
       log_out: "Se déconnecter"
       sign_up: "S'inscrire"
-      theme_label: "Thème"
     theme_choice:
       dark: "Sombre"
       light: "Clair"
       system: "Système"
+    theme_selector:
+      label: "Thème"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."
+    required:
+      # Hidden from screen readers: the field itself carries the required attribute, which they announce
+      html: '<span class="text-muted" aria-hidden="true">*</span>'

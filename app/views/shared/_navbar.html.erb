@@ -4,11 +4,7 @@
   <% end %>
 
   <div class="flex items-center gap-4">
-    <div class="flex items-center gap-1" role="group" aria-label="<%= t(".theme_label") %>" data-controller="theme">
-      <%= render "shared/theme_choice", choice: "light" %>
-      <%= render "shared/theme_choice", choice: "dark" %>
-      <%= render "shared/theme_choice", choice: "system" %>
-    </div>
+    <%= render "shared/theme_selector" %>
 
     <% if user_signed_in? %>
       <span class="text-sm text-muted"><%= current_user.email %></span>
