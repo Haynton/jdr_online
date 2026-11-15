@@ -22,11 +22,12 @@ fr:
       log_in: "Se connecter"
       log_out: "Se déconnecter"
       sign_up: "S'inscrire"
-      theme_label: "Thème"
     theme_choice:
       dark: "Sombre"
       light: "Clair"
       system: "Système"
+    theme_selector:
+      label: "Thème"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."
