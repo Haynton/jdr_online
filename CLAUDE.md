@@ -170,6 +170,8 @@ end
 | `danger-hover` | Bouton de suppression au survol (texte blanc) | `#9d1818` | `#9d1818` |
 | `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
 | `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
+| `switch-track` / `switch-knob` | Piste et rond de l'interrupteur de thème | `#111827` / `#4b5563` | `#e4d9c6` / `#ffffff` |
+| `switch-icon` / `switch-icon-active` | Icône sur la piste / sous le rond | `#9ca3af` / `#f9fafb` | `#796e60` / `#27211a` |
 
 - Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
 - Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
@@ -187,7 +189,11 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Boutons : `button_classes(variant, size: :normal, full_width: false)` (`app/helpers/buttons_helper.rb`), variantes `:primary`, `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px), `full_width: true` pour toute la largeur (`w-full`). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue. La bordure `line` du bouton secondaire reste discrète (décision) : plus marquée, il ressemblerait à un champ
 - Badges : `badge_classes(:game_master | :player)` (`app/helpers/badges_helper.rb`) : pilule, 11 px, majuscules, couleurs tonales et contour intérieur de la couleur du texte à 50 % (sans lui, le badge disparaît sur une carte en sombre)
 - Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
-- Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »)
+- Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »). `compact_on_phone: true` : le d20 seul sur téléphone, le nom reste pour les lecteurs d'écran
+- Avatar : partiel `shared/_avatar` (cercle de 32 px, initiales `User#initials`, tirées de l'e-mail tant que le pseudo n'existe pas), caché aux lecteurs d'écran
+- Menu déroulant : contrôleur générique `dropdown_controller.js` (cibles `button` et `menu`), modèle « bouton qui montre une liste de liens » (`aria-expanded`, `aria-controls`, pas de `role="menu"`). Se ferme sur Échap (le focus revient au bouton), sur un clic ailleurs, quand le focus clavier part ailleurs, et avant la mise en cache de Turbo. Un focus « vers nulle part » est ignoré : Safari ne donne pas le focus à un lien cliqué
+- Lignes d'un menu : `nav_link_to(label, path, icon:, current:)` et `nav_item_classes` pour un bouton (`app/helpers/navigation_helper.rb`), icône de 20 px, texte 15 px `ink`, survol `surface-raised`. La page en cours n'a **pas** de couleur à elle (décision : le vert ressemblait à une option choisie), seulement `aria-current="page"`
+- Interrupteur de thème : partiel `shared/_theme_switch`, `role="switch"`, libellé « Thème sombre », 56 × 28 px, **sans bordure**, rond de 24 px avec ombre, soleil et lune. Son aspect suit la classe `.dark` (variantes `dark:`) et non `aria-checked` : il est juste dès le premier affichage, sans glisser. `theme_controller.js` tient `aria-checked` à jour (cible `switch`) et bascule par l'action `toggle`, qui quitte le mode Système
 - Focus clavier : `focus-ring` partout. Champs : bordure `focus-ring` et halo de 3 px à 30 % (`outline-hidden` garde un contour en mode contraste élevé de Windows). Boutons : contour `focus-visible:outline-focus-ring`
 - Champs : définis une seule fois dans `config/initializers/simple_form.rb` (module `SimpleFormFieldClasses`, wrappers `:default` et `:boolean`). Ne jamais styler un champ dans une vue. États : repos `field-line`, survol `muted`, focus `focus-ring`, erreur (bordure et `ring-1` `error-ink`, fond `error-bg`, message `error-ink` sous le champ), désactivé (opacité 50 %). L'erreur suit `aria-invalid`, que Simple Form pose sur les champs invalides : les variantes `aria-invalid:` passent après `focus:` et `hover:`, le rouge l'emporte toujours. Hauteur fixe de 44 px **avec** `py-2.5` : sans marge verticale, Safari étirait son indicateur de majuscules dans le champ mot de passe
 - Aide sous un champ (`hint`) : cachée dès que le champ est invalide, le message d'erreur la remplace (`group-has-aria-invalid:hidden`, chaque bloc de champ porte `group` via `FIELD_BLOCK`)
@@ -310,6 +316,13 @@ Fait dans `feature/p1-password-rules` :
 - Mot de passe de 12 caractères minimum (`config.password_length = 12..128` dans `config/initializers/devise.rb`). Aide « 12 caractères minimum » / « 12 characters minimum » (surcharge de `devise.shared.minimum_password_length`). Les comptes créés avant gardent leur mot de passe : Devise ne vérifie la longueur que quand on en choisit un
 - Bouton œil sur tous les champs mot de passe, aide cachée sur un champ en erreur, correctif de l'indicateur de majuscules de Safari (voir Composants)
 
+Fait dans `feature/p1-app-navbar` :
+
+- Barre connectée de 64 px : logo (mène à l'accueil, futur « Mes tables »), interrupteur de thème, avatar et e-mail (avatar seul sur téléphone) qui ouvrent le menu du compte : « Mes tables », « Paramètres » (page du compte en attendant la page Paramètres), « Se déconnecter ». Barre des visiteurs : sélecteur à trois choix, « Se connecter », « S'inscrire »
+- `account_page?` utilisable dans les vues (`helper_method`) : « Paramètres » reste la page en cours quand le formulaire du compte revient avec une erreur (adresse `/users`)
+- Le choix « Système » n'existe plus pour un utilisateur connecté jusqu'à la page Paramètres (rubrique Affichage) : toucher l'interrupteur quitte le mode Système
+- Écarts volontaires avec la fiche Maquettes : pas de liens « Mes tables » ni « Mon compte » dans la barre (dans le menu de l'avatar, demandé par l'équipe ; des liens reviendront dans la barre quand il y aura une deuxième destination, comme « Mes modèles de cartes »), déconnexion dans le menu (et aussi dans Paramètres, plus tard), interrupteur sans bordure avec une piste beige en clair. **Écart à la règle de contraste de forme** : piste sur la barre 1,37 (clair) et 1,21 (sombre), rond sur la piste 1,4 et 2,35. Un rond blanc ne peut pas atteindre 3 sur une piste claire, et les bordures ont été refusées. Les icônes identifient l'interrupteur et son état (toutes au-dessus de 3), ce qui reste conforme à WCAG 1.4.11
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -321,6 +334,9 @@ Fait dans `feature/p1-password-rules` :
 - `theme_preload.js` et `controllers/theme_controller.js` lisent le même choix : même clé `theme`, mêmes valeurs (`light`, `dark`, rien pour Système). Modifier l'un, c'est modifier l'autre
 - Les fichiers de `public/` sont gardés un an par les navigateurs (`cache-control` de `config/environments/production.rb`). Une police ou une image qui y est placée porte sa version dans son nom (`InterVariable-4.1.woff2`) : une nouvelle version change de nom, sinon les visiteurs gardent l'ancienne
 - Tests système : au premier lancement, `selenium-webdriver` télécharge `chromedriver` tout seul dans `~/.cache/selenium`. Entre deux tests, Capybara vide les cookies et `localStorage` : inutile de les nettoyer dans un `setup`. Le Chrome des tests n'envoie pas forcément l'anglais comme langue : viser un bouton par sélecteur (`find("input[type=submit]")`), pas par son texte
+- Capybara : `visible: false` veut dire « visible ou non », **pas** « caché ». Pour vérifier qu'un élément est caché : `assert_selector "#user-menu", visible: :hidden`. Un test avec `visible: false` passe toujours
+- Tests système, taille téléphone : Chrome refuse une fenêtre de moins de 500 px. Pour 390 px, passer par `execute_cdp("Emulation.setDeviceMetricsOverride", ...)`. Un réglage d'émulation (`Emulation.setEmulatedMedia` pour un appareil en sombre) reste actif pour le test suivant : Capybara garde le même Chrome. Le remettre à zéro dans un `teardown` (voir `test/system/theme_switch_test.rb`)
+- Test d'un helper qui rend un partiel (`ActionView::TestCase`) : l'appeler par `view.` (`view.nav_link_to(...)`). Appelé sur le test lui-même, le `render` écrit dans la sortie du test au lieu de renvoyer le HTML
 - Dans les tests, le mot de passe des comptes est la constante `TEST_PASSWORD` (`test/test_helper.rb`), assez longue pour la règle des 12 caractères. Ne pas réécrire un mot de passe en dur
 - Safari n'a pas pu être piloté par les tests (`safaridriver --enable` fait, « Autoriser l'automatisation à distance » coché, mais la session expire). Les vérifications propres à Safari se font à la main
 - Au-delà de 50 tests, Rails les lance en parallèle (un processus par cœur) et crée une base de test par processus (`jdr_online_test_0`, `_1`...). C'est normal, on les garde
@@ -340,9 +356,8 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `feature/p1-app-navbar` : barre de navigation connectée, lien actif sur `primary-soft`, interrupteur de thème
-- `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion
-- `feature/p1-account-settings` : page Paramètres en rubriques (Affichage, Compte, Sécurité), langue sans mot de passe, déconnexion, suppression du compte
+- `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion (le lien « Mes tables » du menu et le logo y mèneront)
+- `feature/p1-account-settings` : page Paramètres en rubriques (Affichage avec les trois choix de thème dont « Système », Compte, Sécurité), langue sans mot de passe, déconnexion (en plus de celle du menu de l'avatar), suppression du compte. Faire pointer « Paramètres » du menu vers cette page
 
 ### Production Heroku : `chore/p1-heroku-setup`
 
