@@ -1,5 +1,6 @@
-<%# Use the settings_group helper. Each row has its own line under it, the last one included %>
-<section class="mt-6 first:mt-0">
+<%# Use the settings_group helper. Each row has its own line under it, the last one of a group included,
+    except the very last element of the section: there, the edge of the card is enough %>
+<section class="mt-6 first:mt-0 [&:last-child>div>*:last-child]:border-b-0">
   <h3 class="text-xs font-bold tracking-wider text-muted uppercase"><%= title %></h3>
   <div class="mt-1">
     <%= rows %>
