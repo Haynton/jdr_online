@@ -15,6 +15,17 @@
 /* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Keyboard focus of every element, in the theme green instead of the browser blue: links, logo, buttons...
+   Same outline as our buttons and fields (2 px, 2 px away). focus-ring is darker in the light theme and
+   lighter in the dark one, so that it stays visible on each background (8.22 on the cards).
+   In the base layer: an element with its own focus classes keeps them */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
 /* White check mark of our own check boxes (the native one cannot be reshaped).
    Path of the Lucide "check" icon, see app/views/shared/icons/LUCIDE-LICENSE.txt */
 @utility bg-checkmark {
