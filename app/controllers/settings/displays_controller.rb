@@ -1,6 +1,6 @@
 module Settings
   # Display section of the settings: theme and language
-  class DisplaysController < ApplicationController
+  class DisplaysController < BaseController
     def show
     end
   end

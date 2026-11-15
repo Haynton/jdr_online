@@ -69,6 +69,9 @@ en:
       minimum_password_length:
         one: "%{count} character minimum"
         other: "%{count} characters minimum"
+  layouts:
+    settings:
+      back_to_settings: "Settings"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -92,7 +95,7 @@ en:
       update:
         unavailable: "This language is not available."
         updated: "Language saved."
-    panel:
+    sections_menu:
       account: "Account"
       display: "Display"
       title: "Settings"

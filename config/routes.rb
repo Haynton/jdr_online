@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   resources :tables, only: %i[index new]
 
   # Settings: one address per section, so the section menu is made of plain links
-  get "settings", to: redirect("/settings/display"), as: :settings
+  get "settings", to: "settings/sections#index", as: :settings
   namespace :settings do
     resource :display, only: :show
     resource :locale, only: :update

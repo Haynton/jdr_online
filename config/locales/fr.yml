@@ -40,6 +40,9 @@ fr:
       minimum_password_length:
         one: "%{count} caractère minimum"
         other: "%{count} caractères minimum"
+  layouts:
+    settings:
+      back_to_settings: "Paramètres"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -63,7 +66,7 @@ fr:
       update:
         unavailable: "Cette langue n'est pas disponible."
         updated: "Langue enregistrée."
-    panel:
+    sections_menu:
       account: "Compte"
       display: "Affichage"
       title: "Paramètres"
