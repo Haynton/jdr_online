@@ -33,6 +33,12 @@ class SimpleFormFieldsTest < ActionView::TestCase
     assert_select "p.text-muted", text: "At least 6 characters"
   end
 
+  test "a hint is hidden once its field is invalid, the error message takes its place" do
+    render_form { |form| form.input(:password, hint: "At least 12 characters") }
+
+    assert_select "div.group:has(input#user_password[aria-invalid=true]) p.group-has-aria-invalid\\:hidden"
+  end
+
   test "a check box is drawn square by us, green with a white check when checked" do
     render_form { |form| form.input(:remember_me, as: :boolean) }
 

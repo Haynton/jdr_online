@@ -25,7 +25,10 @@ module SimpleFormFieldClasses
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 
-  HINT = "mt-1.5 text-xs text-muted"
+  # Each field block is a group: once its field is invalid, the error message replaces the hint
+  # ("12 caractères minimum" above "Est trop court (au moins 12 caractères)" said the same thing twice)
+  FIELD_BLOCK = "group mb-4"
+  HINT = "mt-1.5 text-xs text-muted group-has-aria-invalid:hidden"
   # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
   ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"
 
@@ -46,7 +49,7 @@ SimpleForm.setup do |config|
   # wrapper, change the order or even add your own to the
   # stack. The options given below are used to wrap the
   # whole input.
-  config.wrappers :default, class: "mb-4" do |b|
+  config.wrappers :default, class: SimpleFormFieldClasses::FIELD_BLOCK do |b|
     ## Extensions enabled by default
     # Any of these extensions can be disabled for a
     # given input by passing: `f.input EXTENSION_NAME => false`.
@@ -91,7 +94,7 @@ SimpleForm.setup do |config|
   end
 
   # Check boxes: the box and its label side by side (inline style), so each one gets its own classes
-  config.wrappers :boolean, class: "mb-4" do |b|
+  config.wrappers :boolean, class: SimpleFormFieldClasses::FIELD_BLOCK do |b|
     b.use :html5
     b.optional :readonly
     b.wrapper tag: :div, class: "flex items-center gap-2" do |box_and_label|
