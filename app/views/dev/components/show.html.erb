@@ -68,6 +68,24 @@
   </div>
 </section>
 
+<section class="mt-8" aria-labelledby="switches-title">
+  <h2 id="switches-title" class="text-lg font-semibold text-ink">Switches</h2>
+  <div class="mt-4 grid max-w-md gap-4 rounded-xl border border-line bg-surface p-6">
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-noise-label" class="text-sm text-ink">Noise reduction (off)</span>
+      <%= render "shared/switch", id: "switch-noise", labelled_by: "switch-noise-label" %>
+    </div>
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-push-label" class="text-sm text-ink">Push to talk (on)</span>
+      <%= render "shared/switch", id: "switch-push", labelled_by: "switch-push-label", checked: true %>
+    </div>
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-disabled-label" class="text-sm text-muted">Disabled</span>
+      <%= render "shared/switch", id: "switch-disabled", labelled_by: "switch-disabled-label", disabled: true %>
+    </div>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
