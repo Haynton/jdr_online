@@ -47,9 +47,6 @@ en:
         subtitle: "Enter the email of your account."
         title: "Get a link"
     registrations:
-      edit:
-        browser_language: "Browser language"
-        title: "My account"
       new:
         already_registered: "Already registered?"
         sign_in: "Sign in"

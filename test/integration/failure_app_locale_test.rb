@@ -17,7 +17,7 @@ class FailureAppLocaleTest < ActionDispatch::IntegrationTest
 
   def visit_protected_page_with_browser_language(accept_language)
     headers = { "Accept-Language" => accept_language }
-    get edit_user_registration_path, headers: headers
+    get settings_account_path, headers: headers
     assert_redirected_to new_user_session_path
     follow_redirect!(headers: headers)
   end

@@ -18,9 +18,6 @@ fr:
         subtitle: "Saisissez l'e-mail de votre compte."
         title: "Recevoir un lien"
     registrations:
-      edit:
-        browser_language: "Langue du navigateur"
-        title: "Mon compte"
       new:
         already_registered: "Déjà inscrit ?"
         sign_in: "Se connecter"
