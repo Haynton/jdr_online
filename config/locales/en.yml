@@ -80,10 +80,18 @@ en:
   settings:
     displays:
       show:
+        browser_language: "Browser language"
+        language: "Interface language"
+        language_description: "Saved as soon as you change it."
+        language_group: "Language"
         theme: "Theme"
         theme_description: "Light, dark, or like your device."
         theme_group: "Theme"
         title: "Display"
+    locales:
+      update:
+        unavailable: "This language is not available."
+        updated: "Language saved."
     panel:
       account: "Account"
       display: "Display"

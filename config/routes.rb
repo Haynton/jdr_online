@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get "settings", to: redirect("/settings/display"), as: :settings
   namespace :settings do
     resource :display, only: :show
+    resource :locale, only: :update
   end
 
   # Component gallery to review the design system in both themes. Never routed in production

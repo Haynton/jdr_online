@@ -19,6 +19,13 @@ class SettingsThemeTest < ApplicationSystemTestCase
     assert page.evaluate_script("document.documentElement.classList.contains('dark')")
   end
 
+  test "changing the language list saves it at once" do
+    find("select#user_locale").select("Français")
+
+    assert_selector "[role=status]", text: "Langue enregistrée."
+    assert_selector "html[lang=fr]"
+  end
+
   test "the navbar switch updates the choices of the settings" do
     find("nav button[role=switch]").click
 

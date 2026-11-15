@@ -51,10 +51,18 @@ fr:
   settings:
     displays:
       show:
+        browser_language: "Langue du navigateur"
+        language: "Langue de l'interface"
+        language_description: "Enregistrée dès que vous la changez."
+        language_group: "Langue"
         theme: "Thème"
         theme_description: "Clair, sombre, ou comme votre appareil."
         theme_group: "Thème"
         title: "Affichage"
+    locales:
+      update:
+        unavailable: "Cette langue n'est pas disponible."
+        updated: "Langue enregistrée."
     panel:
       account: "Compte"
       display: "Affichage"

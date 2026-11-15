@@ -28,6 +28,8 @@ module SimpleFormFieldClasses
   # Each field block is a group: once its field is invalid, the error message replaces the hint
   # ("12 caractères minimum" above "Est trop court (au moins 12 caractères)" said the same thing twice)
   FIELD_BLOCK = "group mb-4"
+  # Full width on a phone, where the control goes under the label; 240 px from 640 px
+  SETTING_FIELD_BLOCK = "group w-full sm:w-60"
   HINT = "mt-1.5 text-xs text-muted group-has-aria-invalid:hidden"
   # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
   ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"
@@ -102,6 +104,14 @@ SimpleForm.setup do |config|
       box_and_label.use :label, class: SimpleFormFieldClasses::CHECKBOX_LABEL
     end
     b.use :hint, wrap_with: { tag: :p, class: SimpleFormFieldClasses::HINT }
+    b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
+  end
+
+  # A field inside a setting row (setting_row helper): the row already shows the label and the description,
+  # the field names itself with aria-labelledby. No bottom margin, to stay aligned with the label
+  config.wrappers :setting, class: SimpleFormFieldClasses::SETTING_FIELD_BLOCK do |b|
+    b.use :html5
+    b.use :input, class: SimpleFormFieldClasses::INPUT
     b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
   end
 
