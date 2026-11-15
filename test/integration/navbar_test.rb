@@ -5,55 +5,60 @@ class NavbarTest < ActionDispatch::IntegrationTest
     sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
   end
 
-  test "a signed in user sees the main links, the avatar and the email" do
+  test "a signed in user sees the logo, the theme switch and the account button, no other link" do
     get root_path
 
     assert_select "nav[aria-label=?]", "Navigation principale" do
-      assert_select "a[href=?]", root_path, text: "Mes tables"
-      assert_select "a[href=?]", edit_user_registration_path, text: "Mon compte"
+      assert_select "nav > a[href=?]", root_path
+      assert_select "button[role=switch]"
+      assert_select "button[aria-expanded=false][aria-controls=user-menu]"
+    end
+    assert_select "nav a", count: 3, message: "only the logo and the two links of the menu"
+    assert_select "#user-menu a", count: 2
+  end
+
+  test "the account button shows the avatar and the email, and is named for screen readers" do
+    get root_path
+
+    assert_select "button[aria-controls=user-menu]" do
       assert_select "span[aria-hidden=true]", text: "PL"
-      assert_select "span", text: "player@example.com"
+      assert_select "span.sr-only", text: "Menu du compte"
+      assert_select "span.sr-only.sm\\:not-sr-only", text: "player@example.com"
     end
   end
 
-  test "on the home page, my tables is the current link" do
+  test "the account menu is hidden until the button opens it, and holds the links and log out" do
     get root_path
 
-    assert_select "nav a[aria-current=page]", count: 1, text: "Mes tables"
+    assert_select "#user-menu[hidden]" do
+      assert_select "a[href=?]", root_path, text: "Mes tables"
+      assert_select "a[href=?]", edit_user_registration_path, text: "Paramètres"
+      assert_select "form[action=?] button", destroy_user_session_path, text: "Se déconnecter"
+    end
   end
 
-  test "on the account page, my account is the current link" do
+  test "on the home page, my tables is the current link of the menu" do
+    get root_path
+
+    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Mes tables"
+  end
+
+  test "on the account page, settings is the current link of the menu" do
     get edit_user_registration_path
 
-    assert_select "nav a[aria-current=page]", count: 1, text: "Mon compte"
+    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
-  test "my account stays the current link when the account form comes back with an error" do
+  test "settings stays the current link when the account form comes back with an error" do
     patch user_registration_path, params: { user: { email: "player@example.com", current_password: "wrong" } }
 
-    assert_select "nav a[aria-current=page]", count: 1, text: "Mon compte"
+    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
-  test "a signed in user can still log out from the navbar, until the settings page exists" do
-    get root_path
-
-    assert_select "nav form[action=?] button", destroy_user_session_path, text: "Se déconnecter"
-  end
-
-  test "on a phone, the avatar alone links to the account, named for screen readers" do
-    get edit_user_registration_path
-
-    assert_select "nav a.sm\\:hidden[href=?][aria-label=?][aria-current=page]",
-                  edit_user_registration_path, "Mon compte" do
-      assert_select "span[aria-hidden=true]", text: "PL"
-    end
-  end
-
-  test "on a phone, the logo and the log out button keep their names for screen readers" do
+  test "on a phone, the logo keeps its name for screen readers" do
     get root_path
 
     assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", root_path, text: "JDR en ligne"
-    assert_select "nav form button span.sr-only.sm\\:not-sr-only", text: "Se déconnecter"
   end
 
   test "a signed in user gets the light or dark switch, not the three theme choices" do
@@ -71,12 +76,11 @@ class NavbarTest < ActionDispatch::IntegrationTest
     assert_select "nav [role=switch]", count: 0
   end
 
-  test "a visitor sees neither the main links nor an avatar" do
+  test "a visitor gets neither the account menu nor an avatar" do
     sign_out :user
     get root_path, headers: { "Accept-Language" => "fr" }
 
-    assert_select "nav a", text: "Mes tables", count: 0
-    assert_select "nav a", text: "Mon compte", count: 0
+    assert_select "#user-menu", count: 0
     assert_select "nav a", text: "Se connecter"
   end
 end

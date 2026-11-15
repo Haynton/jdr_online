@@ -51,10 +51,6 @@ fr:
   shared:
     navbar:
       label: "Navigation principale"
-      my_tables: "Mes tables"
-    navbar_user_links:
-      log_out: "Se déconnecter"
-      my_account: "Mon compte"
     navbar_visitor_links:
       log_in: "Se connecter"
       sign_up: "S'inscrire"
@@ -68,6 +64,11 @@ fr:
       label: "Thème"
     theme_switch:
       dark_theme: "Thème sombre"
+    user_menu:
+      account_menu: "Menu du compte"
+      log_out: "Se déconnecter"
+      my_tables: "Mes tables"
+      settings: "Paramètres"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."

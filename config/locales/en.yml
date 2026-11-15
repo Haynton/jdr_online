@@ -80,10 +80,6 @@ en:
   shared:
     navbar:
       label: "Main navigation"
-      my_tables: "My tables"
-    navbar_user_links:
-      log_out: "Log out"
-      my_account: "My account"
     navbar_visitor_links:
       log_in: "Log in"
       sign_up: "Sign up"
@@ -97,6 +93,11 @@ en:
       label: "Theme"
     theme_switch:
       dark_theme: "Dark theme"
+    user_menu:
+      account_menu: "Account menu"
+      log_out: "Log out"
+      my_tables: "My tables"
+      settings: "Settings"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."

@@ -1,0 +1,33 @@
+<%# Account menu of the navbar, opened by the avatar (dropdown_controller.js).
+    The menu is rendered hidden: without JavaScript it stays closed. %>
+<div class="relative"
+     data-controller="dropdown"
+     data-action="keydown.esc->dropdown#closeAndFocusButton click@window->dropdown#closeOnOutsideClick focusout->dropdown#closeOnFocusLeave turbo:before-cache@document->dropdown#close">
+  <%# On a phone the email is not shown: the screen reader text names the button. The visible email stays in that name %>
+  <button type="button"
+          class="flex items-center gap-2 rounded-full p-0.5 text-muted transition-colors hover:text-ink sm:rounded-lg sm:px-2 sm:py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          aria-expanded="false"
+          aria-controls="user-menu"
+          data-dropdown-target="button"
+          data-action="dropdown#toggle">
+    <%= render "shared/avatar", user: current_user %>
+    <span class="sr-only"><%= t(".account_menu") %></span>
+    <span class="sr-only text-sm sm:not-sr-only"><%= current_user.email %></span>
+    <%= render "shared/icons/chevron_down", css_class: "size-4 shrink-0" %>
+  </button>
+
+  <div id="user-menu" hidden
+       class="absolute top-full right-0 z-10 mt-2 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-lg"
+       data-dropdown-target="menu">
+    <ul>
+      <li><%= nav_link_to t(".my_tables"), root_path, icon: "dices" %></li>
+      <%# Leads to the account page until the settings page exists (feature/p1-account-settings) %>
+      <li><%= nav_link_to t(".settings"), edit_user_registration_path, icon: "settings", current: account_page? %></li>
+    </ul>
+    <hr class="my-1.5 border-line">
+    <%= button_to destroy_user_session_path, method: :delete, class: nav_item_classes do %>
+      <%= nav_icon("log_out") %>
+      <%= t(".log_out") %>
+    <% end %>
+  </div>
+</div>

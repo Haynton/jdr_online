@@ -44,7 +44,7 @@ class ThemeSwitchTest < ApplicationSystemTestCase
     fill_in "user_email", with: "player@example.com"
     fill_in "user_password", with: TEST_PASSWORD
     find("input[type=submit]").click
-    assert_selector "nav a[aria-current=page]"
+    assert_selector "button[aria-controls=user-menu]"
   end
 
   def use_dark_device

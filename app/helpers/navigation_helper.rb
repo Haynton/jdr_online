@@ -1,22 +1,29 @@
 module NavigationHelper
-  NAV_LINK_BASE_CLASSES = %w[
-    rounded-lg px-3 py-2 text-[15px] whitespace-nowrap transition-colors
+  # On surface-raised, only ink stays readable (muted falls under 4.5)
+  NAV_ITEM_CLASSES = %w[
+    flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] text-ink whitespace-nowrap transition-colors
+    hover:bg-surface-raised
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
 
-  # On surface-raised, only ink stays readable (muted falls under 4.5): the hover turns the text to ink
-  NAV_LINK_STATE_CLASSES = {
-    current: "bg-primary-soft font-semibold text-primary-soft-ink",
-    other: "text-muted hover:bg-surface-raised hover:text-ink"
-  }.freeze
+  NAV_ICON_CLASSES = "size-5 shrink-0".freeze
 
-  # A link of the navbar. The page being shown is marked for everyone: green background on screen,
-  # aria-current for screen readers. current: replaces the URL check when one page has several URLs
-  def nav_link_to(label, path, current: current_page?(path))
-    state = current ? :current : :other
-    link_to label, path,
-            class: "#{NAV_LINK_BASE_CLASSES} #{NAV_LINK_STATE_CLASSES.fetch(state)}",
-            aria: current_page_aria(current)
+  # A link of a navigation menu, with its icon. The page being shown has no color of its own (decision:
+  # the green background looked like a selected option), screen readers still hear it through aria-current.
+  # current: replaces the URL check when one page has several URLs
+  def nav_link_to(label, path, icon:, current: current_page?(path))
+    link_to path, class: NAV_ITEM_CLASSES, aria: current_page_aria(current) do
+      nav_icon(icon) + label
+    end
+  end
+
+  # Also used by the log out button of the menu, so that it looks like the links around it
+  def nav_item_classes
+    NAV_ITEM_CLASSES
+  end
+
+  def nav_icon(icon)
+    render("shared/icons/#{icon}", css_class: NAV_ICON_CLASSES)
   end
 
   # Tells screen readers which link leads to the page being shown
