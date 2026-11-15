@@ -16,7 +16,7 @@ class NavbarTranslationTest < ActionDispatch::IntegrationTest
   end
 
   test "a french user sees the log out button in french" do
-    sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
+    sign_in User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
 
     get tables_path
 

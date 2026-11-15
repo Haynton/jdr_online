@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  USERNAME_LENGTH = 3..20
+  # Letters (accents included), digits, dash and underscore: no space, so it reads the same everywhere
+  USERNAME_FORMAT = /\A[[:alnum:]_-]*\z/
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -6,12 +10,17 @@ class User < ApplicationRecord
 
   # A blank locale means "no choice yet": store it as nil so there is only one way to say it
   normalizes :locale, with: lambda(&:presence)
+  normalizes :username, with: lambda(&:strip)
 
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }, allow_nil: true
+  # allow_blank on the length: an empty username only gets the "can't be blank" message
+  validates :username, presence: true,
+                       length: { in: USERNAME_LENGTH, allow_blank: true },
+                       format: { with: USERNAME_FORMAT },
+                       uniqueness: { case_sensitive: false }
 
-  # Shown in the avatar. Taken from the email until users have a username
+  # Shown in the avatar
   def initials
-    email_name = email.split("@").first.to_s
-    email_name.scan(/[[:alnum:]]/).first(2).join.upcase
+    username.to_s.scan(/[[:alnum:]]/).first(2).join.upcase
   end
 end

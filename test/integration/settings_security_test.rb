@@ -4,7 +4,7 @@ class SettingsSecurityTest < ActionDispatch::IntegrationTest
   NEW_PASSWORD = "another-long-password".freeze
 
   setup do
-    @user = User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
+    @user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
     sign_in @user
   end
 

@@ -17,7 +17,7 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
   end
 
   test "the old account page leads to the account settings, and its old form changes nothing" do
-    user = User.create!(email: "player@example.com", password: TEST_PASSWORD)
+    user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
     sign_in user
 
     get edit_user_registration_path
