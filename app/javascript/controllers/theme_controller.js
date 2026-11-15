@@ -3,33 +3,42 @@ import { Controller } from "@hotwired/stimulus"
 // Must stay in sync with theme_preload.js: same storage key, same values
 const themeStorageKey = "theme"
 const systemDarkQuery = "(prefers-color-scheme: dark)"
+// Several theme controls can share a page (navbar switch, display settings): each one tells the others
+const themeChangedEvent = "theme:changed"
 
 export default class extends Controller {
-  // choiceButton: the three choices (light, dark, system) of the visitor pages
+  // choiceButton: the three choices (light, dark, system) of the visitor pages and of the display settings
   // switch: the light or dark switch of the navbar
   static targets = ["choiceButton", "switch"]
 
   connect() {
     this.systemDarkMedia = window.matchMedia(systemDarkQuery)
-    this.followSystemChange = () => this.applyTheme()
-    this.systemDarkMedia.addEventListener("change", this.followSystemChange)
+    this.followThemeChange = () => this.applyTheme()
+    this.systemDarkMedia.addEventListener("change", this.followThemeChange)
+    window.addEventListener(themeChangedEvent, this.followThemeChange)
     this.applyTheme()
   }
 
   disconnect() {
-    this.systemDarkMedia.removeEventListener("change", this.followSystemChange)
+    this.systemDarkMedia.removeEventListener("change", this.followThemeChange)
+    window.removeEventListener(themeChangedEvent, this.followThemeChange)
   }
 
   choose({ params: { choice } }) {
     this.saveChoice(choice)
-    this.applyTheme()
+    this.announceThemeChange()
   }
 
   // The switch leaves the system mode: it saves the theme opposite to the one shown
   toggle() {
     const isDark = this.isDark(this.readSavedChoice())
     this.saveChoice(isDark ? "light" : "dark")
-    this.applyTheme()
+    this.announceThemeChange()
+  }
+
+  // Every theme control of the page, this one included, applies the new choice
+  announceThemeChange() {
+    window.dispatchEvent(new CustomEvent(themeChangedEvent))
   }
 
   applyTheme() {

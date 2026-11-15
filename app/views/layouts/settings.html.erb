@@ -1,0 +1,18 @@
+<%# Nested layout of the settings, centered in 1120 px like the other pages: the section menu on the page
+    background on the left (240 px, from 768 px), the section in a card on the right.
+    On a phone, /settings shows the list of sections, and a section page its section with a way back to the list.
+    It fills the application layout, which keeps the head and the navbar %>
+<% content_for :full_width_page do %>
+  <div class="mx-auto max-w-[1120px] px-4 py-8 sm:px-8 md:grid md:grid-cols-[240px_1fr] md:items-start md:gap-8 md:py-10">
+    <%= render "settings/sections_menu" %>
+    <main class="min-w-0 <%= settings_section_visibility_classes %>">
+      <%= link_to settings_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted hover:text-ink md:hidden" do %>
+        <%= render "shared/icons/chevron_down", css_class: "size-4 rotate-90" %>
+        <%= t(".back_to_settings") %>
+      <% end %>
+      <%= render "shared/flashes" %>
+      <%= yield %>
+    </main>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

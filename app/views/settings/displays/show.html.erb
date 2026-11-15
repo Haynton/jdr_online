@@ -1,0 +1,18 @@
+<%= settings_section(title: t(".title")) do %>
+  <%= settings_group(title: t(".theme_group")) do %>
+    <%= setting_row(label: t(".theme"), label_id: "theme-setting", description: t(".theme_description")) do %>
+      <%= render "settings/theme_choices", labelled_by: "theme-setting" %>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".language_group")) do %>
+    <%= setting_row(label: t(".language"), label_id: "language-setting", description: t(".language_description")) do %>
+      <%= simple_form_for current_user, url: settings_locale_path, method: :patch,
+                                        data: { controller: "auto-submit", action: "change->auto-submit#submit" } do |form| %>
+        <%= form.input :locale, wrapper: :setting, collection: locale_options,
+                                include_blank: t(".browser_language"),
+                                input_html: { aria: { labelledby: "language-setting" } } %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

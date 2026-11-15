@@ -32,7 +32,7 @@ class NavbarTest < ActionDispatch::IntegrationTest
 
     assert_select "#user-menu[hidden]" do
       assert_select "a[href=?]", tables_path, text: "Mes tables"
-      assert_select "a[href=?]", edit_user_registration_path, text: "Paramètres"
+      assert_select "a[href=?]", settings_display_path, text: "Paramètres"
       assert_select "form[action=?] button", destroy_user_session_path, text: "Se déconnecter"
     end
   end

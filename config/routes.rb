@@ -3,6 +3,13 @@ Rails.application.routes.draw do
   root to: "pages#home"
   resources :tables, only: %i[index new]
 
+  # Settings: one address per section, so the section menu is made of plain links
+  get "settings", to: "settings/sections#index", as: :settings
+  namespace :settings do
+    resource :display, only: :show
+    resource :locale, only: :update
+  end
+
   # Component gallery to review the design system in both themes. Never routed in production
   get "dev/components", to: "dev/components#show", as: :dev_components if Rails.env.local?
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

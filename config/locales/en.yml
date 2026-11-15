@@ -69,6 +69,9 @@ en:
       minimum_password_length:
         one: "%{count} character minimum"
         other: "%{count} characters minimum"
+  layouts:
+    settings:
+      back_to_settings: "Settings"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -77,6 +80,25 @@ en:
     home:
       title: "Home"
       description: "Find me in app/views/pages/home.html.erb"
+  settings:
+    displays:
+      show:
+        browser_language: "Browser language"
+        language: "Interface language"
+        language_description: "Saved as soon as you change it."
+        language_group: "Language"
+        theme: "Theme"
+        theme_description: "Light, dark, or like your device."
+        theme_group: "Theme"
+        title: "Display"
+    locales:
+      update:
+        unavailable: "This language is not available."
+        updated: "Language saved."
+    sections_menu:
+      account: "Account"
+      display: "Display"
+      title: "Settings"
   shared:
     navbar:
       label: "Main navigation"

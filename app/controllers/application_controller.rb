@@ -3,8 +3,8 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   layout :layout_for_page
-  # The navbar marks "My account" as the current page with it, error pages included (their URL is /users)
-  helper_method :account_page?
+  # The account menu marks "Settings" as the current page with it, error pages included (their URL is /users)
+  helper_method :settings_page?
 
   private
 
@@ -25,5 +25,10 @@ class ApplicationController < ActionController::Base
 
   def account_page?
     controller_name == "registrations" && action_name.in?(%w[edit update destroy cancel])
+  end
+
+  # The settings sections, and the old account page until the account section exists
+  def settings_page?
+    controller_path.start_with?("settings/") || account_page?
   end
 end

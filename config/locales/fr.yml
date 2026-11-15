@@ -40,6 +40,9 @@ fr:
       minimum_password_length:
         one: "%{count} caractère minimum"
         other: "%{count} caractères minimum"
+  layouts:
+    settings:
+      back_to_settings: "Paramètres"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -48,6 +51,25 @@ fr:
     home:
       title: "Accueil"
       description: "Retrouvez-moi dans app/views/pages/home.html.erb"
+  settings:
+    displays:
+      show:
+        browser_language: "Langue du navigateur"
+        language: "Langue de l'interface"
+        language_description: "Enregistrée dès que vous la changez."
+        language_group: "Langue"
+        theme: "Thème"
+        theme_description: "Clair, sombre, ou comme votre appareil."
+        theme_group: "Thème"
+        title: "Affichage"
+    locales:
+      update:
+        unavailable: "Cette langue n'est pas disponible."
+        updated: "Langue enregistrée."
+    sections_menu:
+      account: "Compte"
+      display: "Affichage"
+      title: "Paramètres"
   shared:
     navbar:
       label: "Navigation principale"

@@ -6,12 +6,17 @@
 
   <body class="min-h-screen bg-page text-ink">
     <%= render "shared/navbar" %>
-    <div class="mx-4">
-      <%= render "shared/flashes" %>
-    </div>
 
-    <main class="mx-auto max-w-[1120px] px-4 py-10 sm:px-8">
-      <%= yield %>
-    </main>
+    <%# A nested layout (layouts/settings) can take the whole width under the navbar %>
+    <% if content_for?(:full_width_page) %>
+      <%= yield :full_width_page %>
+    <% else %>
+      <div class="mx-4">
+        <%= render "shared/flashes" %>
+      </div>
+      <main class="mx-auto max-w-[1120px] px-4 py-10 sm:px-8">
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

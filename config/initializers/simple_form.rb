@@ -10,24 +10,27 @@
 module SimpleFormFieldClasses
   LABEL = "mb-1.5 block text-[13px] font-semibold text-ink"
 
-  # Focus: the border takes focus-ring, with a soft 3 px halo (outline-hidden keeps an outline
-  # in Windows high contrast mode). Errors follow aria-invalid, which Simple Form sets on invalid
-  # inputs: a 1 px border was too thin to notice, so a ring doubles it and the background turns pink.
+  # Focus: a 2 px focus-ring outline, 2 px away from the field, like the buttons; the border keeps its color
+  # (decision). The soft 30 % halo used before was too pale alone (1.66 in light, 2.0 in dark), the outline
+  # reaches 8.22. Errors follow aria-invalid, which Simple Form sets on invalid inputs: a 1 px border was
+  # too thin to notice, so a ring doubles it, the background turns pink and the focus outline turns red.
   # aria-invalid variants come after focus and hover in the CSS, so the red always wins.
   # The vertical padding keeps the height but shrinks the inner box:
   # Safari stretched its caps lock indicator to fill it.
   INPUT = %w[
     block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 py-2.5 text-sm text-ink
     placeholder:text-muted hover:border-muted
-    focus:border-focus-ring focus:ring-3 focus:ring-focus-ring/30 focus:outline-hidden
+    focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring
     aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink
-    aria-invalid:hover:border-error-ink aria-invalid:focus:ring-3 aria-invalid:focus:ring-error-ink/30
+    aria-invalid:hover:border-error-ink aria-invalid:focus:outline-error-ink
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 
   # Each field block is a group: once its field is invalid, the error message replaces the hint
   # ("12 caractères minimum" above "Est trop court (au moins 12 caractères)" said the same thing twice)
   FIELD_BLOCK = "group mb-4"
+  # Full width on a phone, where the control goes under the label; 240 px from 640 px
+  SETTING_FIELD_BLOCK = "group w-full sm:w-60"
   HINT = "mt-1.5 text-xs text-muted group-has-aria-invalid:hidden"
   # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
   ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"
@@ -102,6 +105,14 @@ SimpleForm.setup do |config|
       box_and_label.use :label, class: SimpleFormFieldClasses::CHECKBOX_LABEL
     end
     b.use :hint, wrap_with: { tag: :p, class: SimpleFormFieldClasses::HINT }
+    b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
+  end
+
+  # A field inside a setting row (setting_row helper): the row already shows the label and the description,
+  # the field names itself with aria-labelledby. No bottom margin, to stay aligned with the label
+  config.wrappers :setting, class: SimpleFormFieldClasses::SETTING_FIELD_BLOCK do |b|
+    b.use :html5
+    b.use :input, class: SimpleFormFieldClasses::INPUT
     b.use :error, wrap_with: { tag: :p, class: SimpleFormFieldClasses::ERROR }
   end
 
