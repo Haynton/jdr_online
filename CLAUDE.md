@@ -189,7 +189,9 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
 - Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »)
 - Focus clavier : `focus-ring` partout. Champs : bordure `focus-ring` et halo de 3 px à 30 % (`outline-hidden` garde un contour en mode contraste élevé de Windows). Boutons : contour `focus-visible:outline-focus-ring`
-- Champs : définis une seule fois dans `config/initializers/simple_form.rb` (module `SimpleFormFieldClasses`, wrappers `:default` et `:boolean`). Ne jamais styler un champ dans une vue. États : repos `field-line`, survol `muted`, focus `focus-ring`, erreur (bordure et `ring-1` `error-ink`, fond `error-bg`, message `error-ink` sous le champ), désactivé (opacité 50 %). L'erreur suit `aria-invalid`, que Simple Form pose sur les champs invalides : les variantes `aria-invalid:` passent après `focus:` et `hover:`, le rouge l'emporte toujours
+- Champs : définis une seule fois dans `config/initializers/simple_form.rb` (module `SimpleFormFieldClasses`, wrappers `:default` et `:boolean`). Ne jamais styler un champ dans une vue. États : repos `field-line`, survol `muted`, focus `focus-ring`, erreur (bordure et `ring-1` `error-ink`, fond `error-bg`, message `error-ink` sous le champ), désactivé (opacité 50 %). L'erreur suit `aria-invalid`, que Simple Form pose sur les champs invalides : les variantes `aria-invalid:` passent après `focus:` et `hover:`, le rouge l'emporte toujours. Hauteur fixe de 44 px **avec** `py-2.5` : sans marge verticale, Safari étirait son indicateur de majuscules dans le champ mot de passe
+- Aide sous un champ (`hint`) : cachée dès que le champ est invalide, le message d'erreur la remplace (`group-has-aria-invalid:hidden`, chaque bloc de champ porte `group` via `FIELD_BLOCK`)
+- Champ mot de passe : `app/inputs/password_input.rb` (Simple Form cherche ce nom exact) ajoute à **chaque** champ mot de passe un bouton œil (`shared/_password_visibility_button`, contrôleur `password_visibility_controller.js`) : 36 px dans le champ à droite, libellé fixe « Afficher le mot de passe » et `aria-pressed`, un bouton par champ. Rendu `hidden`, affiché par le contrôleur (sans JavaScript, pas de bouton inutile). Le mot de passe est remasqué à chaque envoi de formulaire, pour que le navigateur ne le range pas dans l'historique des champs texte
 - Message d'erreur sous un champ : première lettre en majuscule (`first-letter:uppercase`), car Simple Form l'écrit sans le nom du champ (« doit être rempli(e) »)
 - Champ obligatoire : astérisque discret (`text-muted`) **après** le libellé (`config.label_text`), caché aux lecteurs d'écran (`aria-hidden`), qui annoncent déjà l'attribut `required` du champ. Texte dans la clé `simple_form.required.html`
 - Case à cocher : dessinée par nous (`appearance-none`, 18 px, coins de 3 px, coche blanche `@utility bg-checkmark` sur `primary`), à côté de son libellé (`boolean_style = :inline`)
@@ -303,6 +305,11 @@ Fait dans `style/p1-auth-pages` :
 - `devise/shared/_links` n'est plus rendu par nos vues, et `devise/shared/_error_messages` non plus : gardés pour les pages Devise intégrées (confirmation par e-mail, déblocage) si ces modules sont activés un jour
 - Clé `devise-i18n` surchargée : `devise.passwords.new.send_me_reset_password_instructions` (« Envoyer le lien »), le texte d'origine était trop long pour un bouton
 
+Fait dans `feature/p1-password-rules` :
+
+- Mot de passe de 12 caractères minimum (`config.password_length = 12..128` dans `config/initializers/devise.rb`). Aide « 12 caractères minimum » / « 12 characters minimum » (surcharge de `devise.shared.minimum_password_length`). Les comptes créés avant gardent leur mot de passe : Devise ne vérifie la longueur que quand on en choisit un
+- Bouton œil sur tous les champs mot de passe, aide cachée sur un champ en erreur, correctif de l'indicateur de majuscules de Safari (voir Composants)
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -313,7 +320,9 @@ Fait dans `style/p1-auth-pages` :
 - Pas de langue dans l'URL (`/fr/...`), décision prise : ça compliquerait toutes les routes, Devise compris
 - `theme_preload.js` et `controllers/theme_controller.js` lisent le même choix : même clé `theme`, mêmes valeurs (`light`, `dark`, rien pour Système). Modifier l'un, c'est modifier l'autre
 - Les fichiers de `public/` sont gardés un an par les navigateurs (`cache-control` de `config/environments/production.rb`). Une police ou une image qui y est placée porte sa version dans son nom (`InterVariable-4.1.woff2`) : une nouvelle version change de nom, sinon les visiteurs gardent l'ancienne
-- Tests système : au premier lancement, `selenium-webdriver` télécharge `chromedriver` tout seul dans `~/.cache/selenium`. Entre deux tests, Capybara vide les cookies et `localStorage` : inutile de les nettoyer dans un `setup`
+- Tests système : au premier lancement, `selenium-webdriver` télécharge `chromedriver` tout seul dans `~/.cache/selenium`. Entre deux tests, Capybara vide les cookies et `localStorage` : inutile de les nettoyer dans un `setup`. Le Chrome des tests n'envoie pas forcément l'anglais comme langue : viser un bouton par sélecteur (`find("input[type=submit]")`), pas par son texte
+- Dans les tests, le mot de passe des comptes est la constante `TEST_PASSWORD` (`test/test_helper.rb`), assez longue pour la règle des 12 caractères. Ne pas réécrire un mot de passe en dur
+- Safari n'a pas pu être piloté par les tests (`safaridriver --enable` fait, « Autoriser l'automatisation à distance » coché, mais la session expire). Les vérifications propres à Safari se font à la main
 - Au-delà de 50 tests, Rails les lance en parallèle (un processus par cœur) et crée une base de test par processus (`jdr_online_test_0`, `_1`...). C'est normal, on les garde
 - Minitest 6 n'inclut plus `minitest/mock` (gem à part, non installée) : pas de `stub`. Pour simuler la production dans un test, `Rails.env = "production"`, puis remettre l'environnement d'origine dans un `ensure` (voir `test/integration/component_gallery_test.rb`)
 - Une classe Tailwind avec opacité sur une couleur nommée (`ring-primary-soft-ink/50`) suit bien le thème : Tailwind écrit une valeur claire figée pour les vieux navigateurs, puis la vraie règle avec `color-mix()` et la variable
@@ -331,7 +340,6 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `feature/p1-password-rules` : bouton œil pour afficher le mot de passe, mot de passe de 12 caractères minimum
 - `feature/p1-app-navbar` : barre de navigation connectée, lien actif sur `primary-soft`, interrupteur de thème
 - `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion
 - `feature/p1-account-settings` : page Paramètres en rubriques (Affichage, Compte, Sécurité), langue sans mot de passe, déconnexion, suppression du compte
@@ -345,7 +353,7 @@ Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
-- Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge
+- Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
