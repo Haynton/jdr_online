@@ -11,12 +11,15 @@ class SettingsThemeTest < ApplicationSystemTestCase
     visit settings_display_path
   end
 
-  test "choosing dark in the settings applies it and updates the navbar switch" do
+  test "choosing dark in the settings applies it and keeps it after a reload" do
     find("main [data-theme-choice-param=dark]").click
 
     assert_selector "main [data-theme-choice-param=dark][aria-pressed=true]"
-    assert_selector "nav button[role=switch][aria-checked=true]"
     assert page.evaluate_script("document.documentElement.classList.contains('dark')")
+
+    refresh
+
+    assert_selector "main [data-theme-choice-param=dark][aria-pressed=true]"
   end
 
   test "changing the language list saves it at once" do
@@ -24,12 +27,5 @@ class SettingsThemeTest < ApplicationSystemTestCase
 
     assert_selector "[role=status]", text: "Langue enregistrée."
     assert_selector "html[lang=fr]"
-  end
-
-  test "the navbar switch updates the choices of the settings" do
-    find("nav button[role=switch]").click
-
-    assert_selector "main [data-theme-choice-param=dark][aria-pressed=true]"
-    assert_selector "main [data-theme-choice-param=system][aria-pressed=false]"
   end
 end

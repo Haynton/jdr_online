@@ -10,7 +10,7 @@
         <%= render "shared/icons/chevron_down", css_class: "size-4 rotate-90" %>
         <%= t(".back_to_settings") %>
       <% end %>
-      <%= render "shared/flashes" %>
+      <%# The messages are shown inside the section card (settings/_section) %>
       <%= yield %>
     </main>
   </div>

@@ -1,9 +1,10 @@
-<%# One theme choice (light, dark or system). css_class: another look, as in the display settings %>
-<button type="button"
-        class="<%= local_assigns.fetch(:css_class, "rounded-md px-2 py-1 text-sm text-muted hover:text-ink aria-pressed:bg-page aria-pressed:font-medium aria-pressed:text-ink") %>"
-        aria-pressed="false"
-        data-theme-target="choiceButton"
-        data-theme-choice-param="<%= choice %>"
-        data-action="theme#choose">
-  <%= t(".#{choice}") %>
-</button>
+<%# One theme choice of shared/_theme_selector. On surface-raised, only ink stays readable.
+    Compact: the text is for screen readers, the title shows it on hover %>
+<%= tag.button type: "button",
+               class: "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-muted hover:text-ink aria-pressed:bg-surface-raised aria-pressed:font-semibold aria-pressed:text-ink",
+               title: (t(".#{choice}") if compact),
+               aria: { pressed: false },
+               data: { theme_target: "choiceButton", theme_choice_param: choice, action: "theme#choose" } do %>
+  <%= render "shared/icons/#{icon}" %>
+  <span class="<%= theme_choice_text_classes(compact) %>"><%= t(".#{choice}") %></span>
+<% end %>

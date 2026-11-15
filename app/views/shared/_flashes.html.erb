@@ -9,3 +9,9 @@
     <%= render layout: "shared/message", locals: { variant: :error } do %><%= alert %><% end %>
   </div>
 <% end %>
+<%# A message that only repeats what the page shows (see Users::SessionsController): for screen readers only %>
+<% if flash[:screen_reader_notice] %>
+  <div class="sr-only">
+    <%= render layout: "shared/message", locals: { variant: :success } do %><%= flash[:screen_reader_notice] %><% end %>
+  </div>
+<% end %>

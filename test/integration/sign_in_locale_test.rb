@@ -14,6 +14,23 @@ class SignInLocaleTest < ActionDispatch::IntegrationTest
     assert_select "[role=status]", text: I18n.t("devise.sessions.signed_in", locale: :fr)
   end
 
+  test "the sign in message is for screen readers only: the page already shows the user is signed in" do
+    post user_session_path, params: { user: { email: @user.email, password: TEST_PASSWORD } }
+    follow_redirect!
+
+    assert_select ".sr-only [role=status]", text: I18n.t("devise.sessions.signed_in", locale: :fr)
+    assert_select "[role=status]", count: 1
+  end
+
+  test "the sign out message stays visible" do
+    sign_in @user
+    delete destroy_user_session_path
+    follow_redirect!
+
+    assert_select ".sr-only [role=status]", count: 0
+    assert_select "[role=status]", count: 1
+  end
+
   test "the sign out message follows the browser, like the page that shows it" do
     sign_in @user
 

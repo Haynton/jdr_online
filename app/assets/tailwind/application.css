@@ -15,6 +15,17 @@
 /* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Keyboard focus of every element, in the theme green instead of the browser blue: links, logo, buttons...
+   Same outline as our buttons and fields (2 px, 2 px away). focus-ring is darker in the light theme and
+   lighter in the dark one, so that it stays visible on each background (8.22 on the cards).
+   In the base layer: an element with its own focus classes keeps them */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
 /* White check mark of our own check boxes (the native one cannot be reshaped).
    Path of the Lucide "check" icon, see app/views/shared/icons/LUCIDE-LICENSE.txt */
 @utility bg-checkmark {
@@ -53,14 +64,6 @@
   --color-danger: #b91c1c;
   /* Darker on hover, like primary-hover: white text goes from 6.47 to 8.15 */
   --color-danger-hover: #9d1818;
-  /* Theme switch of the navbar, without borders: light beige track, white knob with a shadow.
-     Deliberate exception to the shape contrast of 3 (track on the navbar 1.37, knob on the track 1.4):
-     a white knob cannot reach 3 on a light track (#9d8d73 was needed, judged too dark), and borders were refused.
-     The icons identify the switch and its state: sun on the knob 15.92, moon on the track 3.57 */
-  --color-switch-track: #e4d9c6;
-  --color-switch-knob: #ffffff;
-  --color-switch-icon: #796e60;
-  --color-switch-icon-active: #27211a;
   --color-success-bg: #e9f1e5;
   --color-success-line: #c3d8b8;
   --color-success-ink: #2f5d3a;
@@ -94,11 +97,6 @@
     --color-logo-bg: #1f1b18;
     --color-danger: #b91c1c;
     --color-danger-hover: #9d1818;
-    /* Same exception (track on the navbar 1.21, knob on the track 2.35): moon on the knob 7.23, sun on the track 6.99 */
-    --color-switch-track: #111827;
-    --color-switch-knob: #4b5563;
-    --color-switch-icon: #9ca3af;
-    --color-switch-icon-active: #f9fafb;
     --color-success-bg: #12302a;
     --color-success-line: #2e7d6b;
     --color-success-ink: #a7e3d4;
