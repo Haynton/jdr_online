@@ -206,7 +206,7 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Carte des pages visiteurs : helper `auth_card(title:, subtitle: nil) do … end` (`app/helpers/auth_cards_helper.rb`), qui rend `shared/_auth_card` (titre `h1`, sous-titre facultatif). Passer par le helper, pas par `render layout:` (voir À savoir, clés courtes)
 - En-tête de page : helper `page_header(title:, subtitle: nil) do … end` (`app/helpers/page_headers_helper.rb`), qui rend `shared/_page_header` : titre `h1` de 32 px (800), sous-titre `muted`, boutons du bloc à droite (dessous sur téléphone), 32 px avant le contenu. Même principe que `auth_card` pour les clés courtes
 - Paramètres : layout imbriqué `layouts/settings` (il remplit `layouts/application` par `content_for :full_width_page`) et contrôleur parent `Settings::BaseController`. Centré dans 1120 px : menu des rubriques à gauche sur le fond de la page (240 px, à partir de 768 px), rubrique dans une carte à droite (trait sous son titre, de bord à bord). Rubrique en cours surlignée sur grand écran seulement (`surface-raised`, `ink`, `aria-current`). **Sur téléphone, modèle « liste puis rubrique »** : `/settings` montre seulement la liste des rubriques (une ligne par rubrique, chevron `›`), une page de rubrique seulement sa carte, avec « ‹ Paramètres » pour revenir (`sections_list_page?`, helpers `settings_menu_visibility_classes` et `settings_section_visibility_classes`). Sur grand écran, `/settings` montre la rubrique Affichage
-- Rubrique : helpers `settings_section(title:)`, `settings_group(title:)` et `setting_row(label:, label_id:, description:)` (`app/helpers/settings_helper.rb`), tous avec un bloc lu avant le rendu du partiel (`settings/_section`, `_group`, `_row`). Chaque ligne de réglage a un trait `line` sous elle, la dernière d'un groupe comprise. Le contrôle d'une ligne se nomme par `aria-labelledby="<label_id>"`. Une nouvelle rubrique : un contrôleur qui hérite de `Settings::BaseController`, et sa ligne dans `settings/_sections_menu`
+- Rubrique : helpers `settings_section(title:)`, `settings_group(title:)` et `setting_row(label:, label_id:, description:)` (`app/helpers/settings_helper.rb`), tous avec un bloc lu avant le rendu du partiel (`settings/_section`, `_group`, `_row`). Chaque ligne de réglage a un trait `line` sous elle, la dernière d'un groupe comprise, sauf le tout dernier élément de la rubrique (le bord de la carte suffit). Un formulaire dans un groupe se place comme une ligne (`border-b border-line py-4`). Le contrôle d'une ligne se nomme par `aria-labelledby="<label_id>"`. Une nouvelle rubrique : un contrôleur qui hérite de `Settings::BaseController`, sa ligne dans `settings/_sections_menu` et ses contrôleurs dans `SETTINGS_SECTION_CONTROLLERS` (`current_settings_section?`, pour que la rubrique reste en cours quand son formulaire revient avec une erreur)
 - Envoi automatique d'un formulaire : contrôleur générique `auto_submit_controller.js` (`change->auto-submit#submit` sur le formulaire). Toujours prévenir dans la description de la ligne (« Enregistrée dès que vous la changez. », critère WCAG 3.2.2)
 - Séparateur : partiel `shared/_divider` (`text:`), un trait de chaque côté d'un texte court (« Nouveau ici ? »)
 - Liens dans un texte ou sous un formulaire : `font-medium text-link hover:underline`
@@ -343,13 +343,19 @@ Fait dans `feature/p1-account-settings` :
 - Plusieurs contrôles de thème sur une page (interrupteur de la barre, choix d'Affichage) : `theme_controller.js` prévient les autres par l'événement `theme:changed` sur `window`
 - Limite connue : sous Windows, dans Chrome, les flèches du clavier sur la liste fermée changent la valeur tout de suite, donc enregistrent la langue à chaque appui. La description de la ligne prévient l'utilisateur
 
+Fait dans `feature/p1-account-security` :
+
+- Rubrique Compte (`/settings/account`) : changement d'e-mail avec le mot de passe actuel (`Settings::EmailsController`), ligne « Se déconnecter », zone sensible « Supprimer mon compte » (bouton danger, `turbo_confirm`, action `destroy` de Devise)
+- Rubrique Sécurité (`/settings/security`) : changement de mot de passe (`Settings::PasswordsController`), aide « 12 caractères minimum », l'utilisateur reste connecté (`bypass_sign_in`)
+- Fin de l'ancienne page « Mon compte » : `/users/edit` et `PATCH /users` redirigent vers la rubrique Compte sans rien modifier (`Users::RegistrationsController`). Supprimés : la vue `devise/registrations/edit.html.erb`, `test/integration/account_locale_test.rb` (couvert par `settings_language_test.rb`), `account_page?`, la langue dans le formulaire Devise et ses traductions. Toutes les pages Devise prennent le layout `auth`
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
 - Lancé en tâche de fond par Claude Code, le processus `css` de `bin/dev` s'arrête faute de terminal. Contournement : `tail -f /dev/null | bin/dev`. Ne pas modifier `Procfile.dev` pour ça
 - `config.mailer_sender` dans `config/initializers/devise.rb` vaut encore l'adresse d'exemple : à changer avant de tester le mot de passe oublié en production
 - Les contrôleurs Devise déclarent leurs vérifications avec `prepend_before_action` : elles passent avant le concern `Locale`, donc dans la langue par défaut. Un message Devise resté en anglais vient en général de là. Correction : un sous-contrôleur dans `app/controllers/users/` qui inclut `DeviseLocale`, et sa ligne dans `devise_for` (`config/routes.rb`)
-- Pendant une mise à jour du compte, Devise recharge l'utilisateur dans `resource` : `current_user` garde les anciennes valeurs jusqu'à la requête suivante. D'où `chosen_locale(resource)` dans `Users::RegistrationsController`
+- `update_with_password` (Devise), deux pièges : avec un mauvais mot de passe, il met quand même les nouvelles valeurs sur l'objet sans les enregistrer (si c'est `current_user`, la barre affiche l'e-mail refusé : travailler sur `User.find(current_user.id)`) ; et un nouveau mot de passe **vide** veut dire « ne rien changer », compté comme un succès (le refuser avant, voir `Settings::PasswordsController`). Après un changement de mot de passe, Devise déconnecte : `bypass_sign_in`
 - Pas de langue dans l'URL (`/fr/...`), décision prise : ça compliquerait toutes les routes, Devise compris
 - `theme_preload.js` et `controllers/theme_controller.js` lisent le même choix : même clé `theme`, mêmes valeurs (`light`, `dark`, rien pour Système). Modifier l'un, c'est modifier l'autre
 - Les fichiers de `public/` sont gardés un an par les navigateurs (`cache-control` de `config/environments/production.rb`). Une police ou une image qui y est placée porte sa version dans son nom (`InterVariable-4.1.woff2`) : une nouvelle version change de nom, sinon les visiteurs gardent l'ancienne
@@ -376,7 +382,12 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `feature/p1-account-security` : rubriques Compte (e-mail avec le mot de passe actuel, déconnexion en plus de celle du menu de l'avatar, zone sensible avec la suppression du compte et `turbo_confirm`) et Sécurité (changement de mot de passe, `bypass_sign_in`), dans nos propres contrôleurs (`Settings::EmailsController`, `Settings::PasswordsController`, avec `update_with_password`) pour réafficher la rubrique en cas d'erreur. Puis fin de l'ancienne page : `/users/edit` redirige vers les Paramètres, le lien « Compte » du menu des rubriques pointe vers la nouvelle rubrique, et la question de supprimer `devise/registrations/edit.html.erb` est posée à l'équipe
+- `style/p1-ui-polish`, demandé par l'équipe :
+  - message « Connecté(e). » caché à l'écran, gardé pour les lecteurs d'écran (`sr-only`), rangé à part par `Users::SessionsController`
+  - focus clavier : règle de base dans `application.css` (contour 2 px `focus-ring`, décalé de 2 px) pour tout élément, à la place du contour bleu du navigateur sur le logo, les liens texte, « ‹ Paramètres »...
+  - icône parchemin (Lucide `scroll-text`) pour « Mes tables » dans le menu de l'avatar
+  - interrupteur de thème retiré de la barre des utilisateurs connectés (le thème se règle dans Paramètres)
+  - trois choix de thème avec icônes (soleil, lune, écran Lucide `monitor`) dans Paramètres, et ce même contrôle pour les visiteurs (accueil et pages de connexion) à la place du sélecteur en texte (décision : un seul composant, « Système » reste accessible)
 
 ### Production Heroku : `chore/p1-heroku-setup`
 
