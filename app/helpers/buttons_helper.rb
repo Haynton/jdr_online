@@ -1,7 +1,7 @@
 module ButtonsHelper
   BUTTON_BASE_CLASSES = %w[
     inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 

@@ -1,10 +1,10 @@
 <% if notice %>
-  <div class="mx-4 mt-4 rounded-md border border-success-line bg-success-bg px-4 py-3 text-sm text-success-ink" role="status">
-    <%= notice %>
+  <div class="mx-4 mt-4">
+    <%= render layout: "shared/message", locals: { variant: :success } do %><%= notice %><% end %>
   </div>
 <% end %>
 <% if alert %>
-  <div class="mx-4 mt-4 rounded-md border border-error-line bg-error-bg px-4 py-3 text-sm text-error-ink" role="alert">
-    <%= alert %>
+  <div class="mx-4 mt-4">
+    <%= render layout: "shared/message", locals: { variant: :error } do %><%= alert %><% end %>
   </div>
 <% end %>

@@ -11,7 +11,7 @@ class ButtonsHelperTest < ActionView::TestCase
   test "every button shares the same shape and a visible keyboard focus" do
     %i[primary secondary quiet danger].each do |variant|
       assert_includes button_classes(variant), "rounded-lg font-semibold"
-      assert_includes button_classes(variant), "focus-visible:outline-primary"
+      assert_includes button_classes(variant), "focus-visible:outline-focus-ring"
     end
   end
 

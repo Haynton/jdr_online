@@ -56,3 +56,6 @@ en:
       dark: "Dark"
       light: "Light"
       system: "System"
+  simple_form:
+    error_notification:
+      default_message: "Please review the problems below."

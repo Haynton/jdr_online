@@ -155,6 +155,8 @@ end
 | `surface` | Cartes, panneaux, barre de navigation | `#1f2937` | `#fffdf9` |
 | `field` | Fond des champs | `#111827` | `#ffffff` |
 | `line` | Bordures | `#374151` | `#ebe3d3` |
+| `field-line` | Bordure des champs, case à cocher, piste d'interrupteur éteint | `#6b7280` | `#8f8270` |
+| `focus-ring` | Focus clavier des champs et des boutons | `#7fd1bd` | `#1d574a` |
 | `ink` | Texte principal | `#f9fafb` | `#27211a` |
 | `muted` | Texte secondaire | `#9ca3af` | `#796e60` |
 | `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
@@ -186,6 +188,12 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Badges : `badge_classes(:game_master | :player)` (`app/helpers/badges_helper.rb`) : pilule, 11 px, majuscules, couleurs tonales et contour intérieur de la couleur du texte à 50 % (sans lui, le badge disparaît sur une carte en sombre)
 - Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
 - Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »)
+- Focus clavier : `focus-ring` partout. Champs : bordure `focus-ring` et halo de 3 px à 30 % (`outline-hidden` garde un contour en mode contraste élevé de Windows). Boutons : contour `focus-visible:outline-focus-ring`
+- Champs : définis une seule fois dans `config/initializers/simple_form.rb` (module `SimpleFormFieldClasses`, wrappers `:default` et `:boolean`). Ne jamais styler un champ dans une vue. États : repos `field-line`, survol `muted`, focus `focus-ring`, erreur (bordure et `ring-1` `error-ink`, fond `error-bg`, message `error-ink` sous le champ), désactivé (opacité 50 %). L'erreur suit `aria-invalid`, que Simple Form pose sur les champs invalides : les variantes `aria-invalid:` passent après `focus:` et `hover:`, le rouge l'emporte toujours
+- Case à cocher : dessinée par nous (`appearance-none`, 18 px, coins de 3 px, coche blanche `@utility bg-checkmark` sur `primary`), à côté de son libellé (`boolean_style = :inline`)
+- Liste déroulante : `app/inputs/collection_select_input.rb` (Simple Form cherche ce nom exact pour remplacer son champ `select`). Vrai `<select>` : champ fermé stylé et chevron, **liste ouverte du système** (décision, voir À savoir)
+- Messages : partiel `shared/_message`, rendu en gabarit (`render layout: "shared/message", locals: { variant: :error } do … end`), variantes `:error` (`role="alert"`, icône `x`) et `:success` (`role="status"`, icône `check`), bordure de 1 px dans la couleur du texte à 70 %. Utilisé par les messages flash, `devise/shared/_error_messages` et `form_error_notification(f)`, qui remplace `f.error_notification` dans les formulaires
+- Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
 
 ### Sécurité et permissions
 
@@ -275,6 +283,13 @@ Fait dans `style/p1-ui-components` (première moitié des composants de la fiche
 - Galerie de composants `/dev/components`, routée seulement si `Rails.env.local?`, avec un test qui vérifie son absence en production
 - Écarts volontaires avec la fiche Maquettes : badge « MJ » en vert tonal et en pilule (et non vert plein), bouton danger rouge plein (et non fond `surface` avec bordure `error-line`, trop pâle en clair : 1,57)
 
+Fait dans `style/p1-form-components` (seconde moitié des composants de la fiche Maquettes) :
+
+- Couleurs `field-line` et `focus-ring`
+- Champs, case à cocher, liste déroulante, messages et interrupteur (voir Composants). Les formulaires d'inscription et de Mon compte en profitent déjà, avec leurs boutons (`button_classes`) et le bouton danger « Supprimer mon compte »
+- En-tête d'erreur des formulaires traduit en français (la clé `simple_form.error_notification.default_message` manquait : il s'affichait en anglais)
+- Écarts volontaires avec la fiche Maquettes : bordure des champs et piste d'interrupteur éteint en `field-line` (et non `line` : 1,18 à 1,77), case à cocher dessinée (et non `accent-color`), messages avec une bordure fine dans la couleur du texte (et non `*-line`, trop pâle). Une barre épaisse à gauche des messages a été essayée et refusée
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -289,6 +304,10 @@ Fait dans `style/p1-ui-components` (première moitié des composants de la fiche
 - Au-delà de 50 tests, Rails les lance en parallèle (un processus par cœur) et crée une base de test par processus (`jdr_online_test_0`, `_1`...). C'est normal, on les garde
 - Minitest 6 n'inclut plus `minitest/mock` (gem à part, non installée) : pas de `stub`. Pour simuler la production dans un test, `Rails.env = "production"`, puis remettre l'environnement d'origine dans un `ensure` (voir `test/integration/component_gallery_test.rb`)
 - Une classe Tailwind avec opacité sur une couleur nommée (`ring-primary-soft-ink/50`) suit bien le thème : Tailwind écrit une valeur claire figée pour les vieux navigateurs, puis la vraie règle avec `color-mix()` et la variable
+- Un fichier de `config/initializers/` (Simple Form, Devise...) n'est lu qu'au démarrage : **relancer `bin/dev`** après l'avoir modifié, sinon le serveur garde l'ancienne configuration (par exemple les anciennes classes des champs). Même chose pour un nouveau dossier dans `app/`, comme `app/inputs/`
+- Simple Form, case à cocher : avec `boolean_style = :nested`, seul le composant `:label_input` écrit le texte du libellé. Un wrapper qui n'utilise que `:input` affiche une case sans libellé. D'où `:inline` et le wrapper `:boolean`
+- Liste ouverte des `<select>` : une version stylée (`appearance: base-select`) a été essayée puis retirée. Chrome ne déplace pas le focus quand la souris bouge : après les flèches, le survol ne suivait plus la souris sans JavaScript en plus. Il fallait aussi du CSS hors des couches Tailwind, et Firefox ne la gère pas. Ne pas la remettre sans revoir ces points
+- RuboCop signale `Metrics/BlockLength` (30/25) sur le bloc `SimpleForm.setup` : accepté, `config/**` étant exclu de l'analyse, à trancher dans `chore/p1-rubocop-config`
 
 ## Prochaines tâches
 
@@ -298,7 +317,6 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `style/p1-form-components` : champs (wrapper `:default` de Simple Form), liste déroulante (vrai `<select>` stylé), messages dans les cartes (`devise/shared/_error_messages` compris), interrupteur (`role="switch"`)
 - `style/p1-auth-pages` : layout `auth`, pages connexion, inscription, mot de passe oublié et nouveau mot de passe, bouton œil, mot de passe de 12 caractères minimum
 - `feature/p1-app-navbar` : barre de navigation connectée, lien actif sur `primary-soft`, interrupteur de thème
 - `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion

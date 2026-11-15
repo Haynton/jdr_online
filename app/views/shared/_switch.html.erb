@@ -1,0 +1,14 @@
+<%# On/off switch. labelled_by: id of the visible text that names it. checked and disabled are optional.
+    The track is field-line when off (line was too pale: 1.18 to 1.77), primary when on.
+    The styles follow aria-checked, which switch_controller.js toggles. %>
+<button type="button" role="switch"
+        id="<%= local_assigns[:id] %>"
+        aria-checked="<%= local_assigns.fetch(:checked, false) %>"
+        aria-labelledby="<%= labelled_by %>"
+        <%= "disabled" if local_assigns.fetch(:disabled, false) %>
+        class="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full bg-field-line transition-colors duration-150 aria-checked:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+        data-controller="switch"
+        data-action="switch#toggle">
+  <span aria-hidden="true"
+        class="pointer-events-none inline-block size-5 translate-x-0.5 rounded-full bg-white shadow-sm transition-transform duration-150 group-aria-checked:translate-x-[22px] motion-reduce:transition-none"></span>
+</button>

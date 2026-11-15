@@ -36,6 +36,56 @@
   </div>
 </section>
 
+<section class="mt-8" aria-labelledby="forms-title">
+  <h2 id="forms-title" class="text-lg font-semibold text-ink">Forms</h2>
+  <p class="mt-1 text-sm text-muted">Styled once in config/initializers/simple_form.rb. Hover a field, then use Tab to see the focus.</p>
+  <div class="mt-4 max-w-md rounded-xl border border-line bg-surface p-6">
+    <%= simple_form_for @demo_user, url: dev_components_path, method: :get do |form| %>
+      <%= form.input :email, hint: "Error state: the address is invalid" %>
+      <%= form.input :password, placeholder: "Placeholder text", hint: "A hint under the field" %>
+      <%= form.input :password_confirmation, disabled: true, hint: "Disabled field" %>
+      <%= form.input :locale, collection: locale_options, include_blank: "Browser language",
+                              hint: "Native select: keyboard and mobile keep working" %>
+      <%= form.input :remember_me, as: :boolean %>
+    <% end %>
+  </div>
+</section>
+
+<section class="mt-8" aria-labelledby="messages-title">
+  <h2 id="messages-title" class="text-lg font-semibold text-ink">Messages</h2>
+  <div class="mt-4 grid max-w-2xl gap-3">
+    <%= render layout: "shared/message", locals: { variant: :success } do %>Your account has been updated.<% end %>
+    <%= render layout: "shared/message", locals: { variant: :error } do %>Invalid email or password.<% end %>
+    <div class="rounded-xl border border-line bg-surface p-6">
+      <%= render layout: "shared/message", locals: { variant: :error } do %>
+        <p class="font-semibold">2 errors prohibited this account from being saved:</p>
+        <ul class="mt-1 list-disc pl-4">
+          <li>Email is invalid</li>
+          <li>Password can't be blank</li>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="mt-8" aria-labelledby="switches-title">
+  <h2 id="switches-title" class="text-lg font-semibold text-ink">Switches</h2>
+  <div class="mt-4 grid max-w-md gap-4 rounded-xl border border-line bg-surface p-6">
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-noise-label" class="text-sm text-ink">Noise reduction (off)</span>
+      <%= render "shared/switch", id: "switch-noise", labelled_by: "switch-noise-label" %>
+    </div>
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-push-label" class="text-sm text-ink">Push to talk (on)</span>
+      <%= render "shared/switch", id: "switch-push", labelled_by: "switch-push-label", checked: true %>
+    </div>
+    <div class="flex items-center justify-between gap-4">
+      <span id="switch-disabled-label" class="text-sm text-muted">Disabled</span>
+      <%= render "shared/switch", id: "switch-disabled", labelled_by: "switch-disabled-label", disabled: true %>
+    </div>
+  </div>
+</section>
+
 <section class="mt-8" aria-labelledby="colors-title">
   <h2 id="colors-title" class="text-lg font-semibold text-ink">Colors</h2>
   <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
