@@ -35,13 +35,35 @@ en:
   app_name: "JDR Online"
   devise:
     passwords:
+      edit:
+        get_a_new_link: "Get a new link"
+        submit: "Save and sign in"
+        title: "New password"
       new:
+        back_to_sign_in: "Back to sign in"
+        remember_it: "Remember it?"
         # Overrides devise-i18n: its sentence was far too long for a button
         send_me_reset_password_instructions: "Send the link"
+        subtitle: "Enter the email of your account."
+        title: "Get a link"
     registrations:
       edit:
         browser_language: "Browser language"
         title: "My account"
+      new:
+        already_registered: "Already registered?"
+        sign_in: "Sign in"
+        submit: "Create my account"
+        subtitle: "A few seconds and you are ready to play."
+        title: "Create an account"
+    sessions:
+      new:
+        create_account: "Create an account"
+        forgot_password: "Forgot your password?"
+        new_here: "New here?"
+        submit: "Sign in"
+        subtitle: "Find your game tables."
+        title: "Sign in"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"

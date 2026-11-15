@@ -1,27 +1,33 @@
-<h2><%= t(".change_your_password") %></h2>
+<%= auth_card(title: t(".title")) do %>
+  <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+    <%= form_error_notification(f) %>
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= form_error_notification(f) %>
+    <%# Devise only checks the link when the form is sent: an expired link is reported here, with a way out %>
+    <% if resource.errors.include?(:reset_password_token) %>
+      <div class="mb-4">
+        <%= render layout: "shared/message", locals: { variant: :error } do %>
+          <p><%= resource.errors.full_messages_for(:reset_password_token).to_sentence %></p>
+          <p class="mt-1">
+            <%# Full key: inside a render layout block, a short key would be looked up for shared/message %>
+            <%= link_to t("devise.passwords.edit.get_a_new_link"), new_password_path(resource_name), class: "font-semibold underline" %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
 
-  <%= f.input :reset_password_token, as: :hidden %>
-  <%= f.full_error :reset_password_token %>
+    <%= f.input :reset_password_token, as: :hidden %>
 
-  <div class="form-inputs">
     <%= f.input :password,
                 label: t(".new_password"),
                 required: true,
                 autofocus: true,
-                hint: (t('devise.shared.minimum_password_length', count: @minimum_password_length) if @minimum_password_length),
+                hint: (t("devise.shared.minimum_password_length", count: @minimum_password_length) if @minimum_password_length),
                 input_html: { autocomplete: "new-password" } %>
     <%= f.input :password_confirmation,
                 label: t(".confirm_new_password"),
                 required: true,
                 input_html: { autocomplete: "new-password" } %>
-  </div>
 
-  <div class="form-actions">
-    <%= f.button :submit, t(".change_my_password"), class: button_classes(:primary) %>
-  </div>
+    <%= f.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
+  <% end %>
 <% end %>
-
-<%= render "devise/shared/links" %>

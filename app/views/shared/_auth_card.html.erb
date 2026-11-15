@@ -1,0 +1,10 @@
+<%# Card of the visitor pages. Use the auth_card helper (app/helpers/auth_cards_helper.rb), not this partial directly %>
+<section class="rounded-xl border border-line bg-surface px-8 py-7" aria-labelledby="auth-card-title">
+  <h1 id="auth-card-title" class="text-[26px] leading-tight font-extrabold tracking-tight text-ink"><%= title %></h1>
+  <% if subtitle %>
+    <p class="mt-1 text-sm text-muted"><%= subtitle %></p>
+  <% end %>
+  <div class="mt-6">
+    <%= content %>
+  </div>
+</section>

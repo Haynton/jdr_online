@@ -33,11 +33,23 @@ class AuthFormsTest < ActionDispatch::IntegrationTest
     assert_select "form input[type=submit].bg-primary", count: 1
   end
 
-  test "the links under the forms use the link style" do
+  test "the sign in page links to the forgot password page and offers to create an account" do
     get new_user_session_path
 
-    assert_select "a.text-link[href=?]", new_user_registration_path
     assert_select "a.text-link[href=?]", new_user_password_path
+    assert_select "a.border-line.w-full[href=?]", new_user_registration_path
+  end
+
+  test "the sign up page links back to the sign in page" do
+    get new_user_registration_path
+
+    assert_select "a.text-link[href=?]", new_user_session_path
+  end
+
+  test "the forgot password page offers a way back to the sign in page" do
+    get new_user_password_path
+
+    assert_select "a.w-full[href=?]", new_user_session_path
   end
 
   test "a field error starts with a capital letter" do
