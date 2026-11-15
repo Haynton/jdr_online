@@ -10,18 +10,19 @@
 module SimpleFormFieldClasses
   LABEL = "mb-1.5 block text-[13px] font-semibold text-ink"
 
-  # Focus: the border takes focus-ring, with a soft 3 px halo (outline-hidden keeps an outline
-  # in Windows high contrast mode). Errors follow aria-invalid, which Simple Form sets on invalid
-  # inputs: a 1 px border was too thin to notice, so a ring doubles it and the background turns pink.
+  # Focus: a 2 px focus-ring outline, 2 px away from the field, like the buttons; the border keeps its color
+  # (decision). The soft 30 % halo used before was too pale alone (1.66 in light, 2.0 in dark), the outline
+  # reaches 8.22. Errors follow aria-invalid, which Simple Form sets on invalid inputs: a 1 px border was
+  # too thin to notice, so a ring doubles it, the background turns pink and the focus outline turns red.
   # aria-invalid variants come after focus and hover in the CSS, so the red always wins.
   # The vertical padding keeps the height but shrinks the inner box:
   # Safari stretched its caps lock indicator to fill it.
   INPUT = %w[
     block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 py-2.5 text-sm text-ink
     placeholder:text-muted hover:border-muted
-    focus:border-focus-ring focus:ring-3 focus:ring-focus-ring/30 focus:outline-hidden
+    focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring
     aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink
-    aria-invalid:hover:border-error-ink aria-invalid:focus:ring-3 aria-invalid:focus:ring-error-ink/30
+    aria-invalid:hover:border-error-ink aria-invalid:focus:outline-error-ink
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 

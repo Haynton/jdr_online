@@ -10,7 +10,15 @@ class SimpleFormFieldsTest < ActionView::TestCase
 
     assert_select "div.mb-4 > label.text-ink[for=user_email]"
     assert_select "input#user_email.border-field-line.bg-field.text-ink"
-    assert_select "input#user_email.focus\\:border-focus-ring.focus\\:ring-3.focus\\:outline-hidden"
+  end
+
+  test "a focused field gets an outline like the buttons, its border keeps its color" do
+    render_form { |form| form.input(:email) }
+
+    assert_select "input#user_email.focus\\:outline-2.focus\\:outline-offset-2.focus\\:outline-focus-ring"
+    assert_select "input#user_email.aria-invalid\\:focus\\:outline-error-ink"
+    assert_select "input#user_email[class*='focus:border']", count: 0
+    assert_select "input#user_email[class*='focus:ring']", count: 0
   end
 
   test "a field has a vertical padding, so that Safari does not stretch its caps lock indicator" do
