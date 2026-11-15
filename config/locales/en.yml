@@ -104,3 +104,16 @@ en:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
+  tables:
+    create_table_button:
+      create_table: "Create a table"
+    empty_state:
+      text: "The tables you create or join will show up here."
+      title: "No table yet"
+    index:
+      subtitle: "Your ongoing games, as GM or as a player."
+      title: "My tables"
+    new:
+      back_to_tables: "Back to my tables"
+      coming_soon: "Creating a table is coming soon. You will choose a name, a setting and invite your players."
+      title: "Create a table"

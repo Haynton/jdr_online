@@ -20,7 +20,7 @@
        class="absolute top-full right-0 z-10 mt-2 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-lg"
        data-dropdown-target="menu">
     <ul>
-      <li><%= nav_link_to t(".my_tables"), root_path, icon: "dices" %></li>
+      <li><%= nav_link_to t(".my_tables"), tables_path, icon: "dices" %></li>
       <%# Leads to the account page until the settings page exists (feature/p1-account-settings) %>
       <li><%= nav_link_to t(".settings"), edit_user_registration_path, icon: "settings", current: account_page? %></li>
     </ul>

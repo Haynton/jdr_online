@@ -26,6 +26,11 @@ module NavigationHelper
     render("shared/icons/#{icon}", css_class: NAV_ICON_CLASSES)
   end
 
+  # The logo leads a signed in user to their tables, a visitor to the home page
+  def logo_path
+    user_signed_in? ? tables_path : root_path
+  end
+
   # Tells screen readers which link leads to the page being shown
   def current_page_aria(current)
     current ? { current: "page" } : {}

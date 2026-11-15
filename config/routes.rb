@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
   root to: "pages#home"
+  resources :tables, only: %i[index new]
 
   # Component gallery to review the design system in both themes. Never routed in production
   get "dev/components", to: "dev/components#show", as: :dev_components if Rails.env.local?

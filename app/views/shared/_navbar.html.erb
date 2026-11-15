@@ -1,6 +1,5 @@
 <nav class="flex h-16 items-center justify-between gap-4 border-b border-line bg-surface px-4 sm:px-8" aria-label="<%= t(".label") %>">
-  <%# For a signed in user, the logo leads to their tables: the home page %>
-  <%= link_to root_path, class: "rounded-md" do %>
+  <%= link_to logo_path, class: "rounded-md" do %>
     <%= render "shared/logo", compact_on_phone: true %>
   <% end %>
 
