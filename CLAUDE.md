@@ -241,6 +241,7 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - **Ne jamais lire, afficher, modifier ni commiter** `config/master.key` et `.env`
 - Toute nouvelle variable d'environnement est ajoutée, sans valeur, dans `.env.example`
 - Ne jamais écrire de clé, de mot de passe ou de jeton dans le code
+- Un secret publié sur GitHub (dépôt public) est considéré comme brûlé : on ne réécrit pas l'historique pour l'effacer, on ne l'utilise plus. Il faut en générer un nouveau (`bin/rails secret`) et le ranger dans les credentials chiffrés (`bin/rails credentials:edit`) ou dans une variable d'environnement. Exemple : les valeurs `config.secret_key` et `config.pepper` retirées de `config/initializers/devise.rb` restent visibles dans l'historique, sans risque car elles n'ont jamais servi
 - Ne pas commiter `app/assets/builds/*` (CSS reconstruit automatiquement)
 
 ## Commandes à faire valider avant de les lancer
@@ -406,7 +407,6 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
-- `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 
 À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
