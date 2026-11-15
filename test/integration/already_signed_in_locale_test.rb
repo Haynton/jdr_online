@@ -17,6 +17,12 @@ class AlreadySignedInLocaleTest < ActionDispatch::IntegrationTest
     assert_already_signed_in_message_in :fr
   end
 
+  test "opening the forgotten password page while signed in explains it in the user's language" do
+    get new_user_password_path
+
+    assert_already_signed_in_message_in :fr
+  end
+
   private
 
   def assert_already_signed_in_message_in(locale)

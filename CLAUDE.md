@@ -282,7 +282,7 @@ Fait dans `feature/p1-account-locale` :
 - Sélecteur de langue dans Mon compte : « Langue du navigateur » (enregistre `nil`), « Français », « English ». Les langues sont nommées dans leur propre langue (`locale_names`), la liste vient du helper `locale_options`. Le mot de passe actuel reste obligatoire pour changer de langue, comme pour toute modification du compte
 - Titre « Mon compte » / « My account » (surcharge de `devise.registrations.edit.title`) et attribut `locale` traduit (`activerecord.attributes.user.locale`)
 - Après un changement de langue, le message de confirmation est dans la nouvelle langue. Après la connexion, le message est dans la langue du compte. Après la déconnexion, il suit le navigateur, comme la page qui l'affiche
-- Concern `DeviseLocale` (`prepend_around_action :switch_locale`) inclus dans `Users::SessionsController` et `Users::RegistrationsController` : le choix de la langue passe avant les vérifications de Devise, et « Vous êtes déjà connecté(e). » est traduit
+- Concern `DeviseLocale` (`prepend_around_action :switch_locale`) inclus dans `Users::SessionsController`, `Users::RegistrationsController` et `Users::PasswordsController` (ajouté dans `fix/p1-password-page-locale`) : le choix de la langue passe avant les vérifications de Devise, et « Vous êtes déjà connecté(e). » est traduit
 
 Fait dans `chore/p1-theme` :
 
@@ -405,7 +405,6 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
 - Branche du modèle `Table` : `@tables = current_user.tables` dans `TablesController#index` (avec `includes` pour éviter le N+1), cartes de table dans la grille, test « dès la première table, la carte vide disparaît », vrai formulaire à la place de la page provisoire `tables/new`
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
-- « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 
