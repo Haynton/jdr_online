@@ -1,12 +1,12 @@
 require "test_helper"
 
 class SettingsLanguageTest < ActionDispatch::IntegrationTest
-  test "the confirmation message shows in the section column" do
+  test "the confirmation message shows inside the section card, under its title" do
     sign_in create_user(locale: "fr")
     patch settings_locale_path, params: { user: { locale: "en" } }
     follow_redirect!
 
-    assert_select "main [role=status]", text: "Language saved."
+    assert_select "#{section_card_selector} > header + div [role=status]", text: "Language saved."
   end
 
   test "the language row offers the browser language and each language, named by the row label" do
@@ -60,6 +60,10 @@ class SettingsLanguageTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def section_card_selector
+    "section[aria-labelledby=settings-section-title]"
+  end
 
   def create_user(locale:)
     User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: locale)

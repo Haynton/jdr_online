@@ -1,10 +1,14 @@
 <%# Use the settings_section helper (app/helpers/settings_helper.rb), not this partial directly.
-    A card, like "My tables". The line under the title goes from one edge of the card to the other %>
+    A card, like "My tables". The line under the title goes from one edge of the card to the other.
+    The messages ("Language saved.") show at the top of the card, next to the settings they confirm %>
 <section class="rounded-xl border border-line bg-surface" aria-labelledby="settings-section-title">
   <header class="border-b border-line px-6 py-5 sm:px-8">
     <h2 id="settings-section-title" class="text-2xl font-bold text-ink"><%= title %></h2>
   </header>
-  <div class="px-6 py-6 sm:px-8">
-    <%= content %>
+  <div class="px-6 pb-6 sm:px-8">
+    <%= render "shared/flashes" %>
+    <div class="mt-6">
+      <%= content %>
+    </div>
   </div>
 </section>
