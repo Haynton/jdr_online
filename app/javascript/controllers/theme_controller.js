@@ -5,7 +5,9 @@ const themeStorageKey = "theme"
 const systemDarkQuery = "(prefers-color-scheme: dark)"
 
 export default class extends Controller {
-  static targets = ["choiceButton"]
+  // choiceButton: the three choices (light, dark, system) of the visitor pages
+  // switch: the light or dark switch of the navbar
+  static targets = ["choiceButton", "switch"]
 
   connect() {
     this.systemDarkMedia = window.matchMedia(systemDarkQuery)
@@ -23,13 +25,22 @@ export default class extends Controller {
     this.applyTheme()
   }
 
+  // The switch leaves the system mode: it saves the theme opposite to the one shown
+  toggle() {
+    const isDark = this.isDark(this.readSavedChoice())
+    this.saveChoice(isDark ? "light" : "dark")
+    this.applyTheme()
+  }
+
   applyTheme() {
     const savedChoice = this.readSavedChoice()
-    document.documentElement.classList.toggle("dark", this.isDark(savedChoice))
+    const isDark = this.isDark(savedChoice)
+    document.documentElement.classList.toggle("dark", isDark)
     this.choiceButtonTargets.forEach((choiceButton) => {
       const isSelected = choiceButton.dataset.themeChoiceParam === savedChoice
       choiceButton.setAttribute("aria-pressed", String(isSelected))
     })
+    this.switchTargets.forEach((themeSwitch) => themeSwitch.setAttribute("aria-checked", String(isDark)))
   }
 
   isDark(choice) {

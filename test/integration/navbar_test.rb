@@ -56,6 +56,21 @@ class NavbarTest < ActionDispatch::IntegrationTest
     assert_select "nav form button span.sr-only.sm\\:not-sr-only", text: "Se déconnecter"
   end
 
+  test "a signed in user gets the light or dark switch, not the three theme choices" do
+    get root_path
+
+    assert_select "nav button[role=switch][aria-label=?][data-action='theme#toggle']", "Thème sombre"
+    assert_select "nav [role=group]", count: 0
+  end
+
+  test "a visitor keeps the three theme choices, without the switch" do
+    sign_out :user
+    get root_path
+
+    assert_select "nav [role=group] button", count: 3
+    assert_select "nav [role=switch]", count: 0
+  end
+
   test "a visitor sees neither the main links nor an avatar" do
     sign_out :user
     get root_path, headers: { "Accept-Language" => "fr" }

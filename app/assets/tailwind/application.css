@@ -53,6 +53,16 @@
   --color-danger: #b91c1c;
   /* Darker on hover, like primary-hover: white text goes from 6.47 to 8.15 */
   --color-danger-hover: #9d1818;
+  /* Theme switch of the navbar: light beige track, white knob. A white knob cannot reach 3 on a light track
+     (#9d8d73 was needed, judged too dark). Deliberate exception: light borders, under 3 (track border on the
+     navbar 2.66, knob border on the track 1.93); the icons identify the switch and its state:
+     sun on the knob 15.92, moon on the track 3.57 */
+  --color-switch-track: #e4d9c6;
+  --color-switch-line: #a89c89;
+  --color-switch-knob: #ffffff;
+  --color-switch-knob-line: #a89c89;
+  --color-switch-icon: #796e60;
+  --color-switch-icon-active: #27211a;
   --color-success-bg: #e9f1e5;
   --color-success-line: #c3d8b8;
   --color-success-ink: #2f5d3a;
@@ -86,6 +96,13 @@
     --color-logo-bg: #1f1b18;
     --color-danger: #b91c1c;
     --color-danger-hover: #9d1818;
+    /* Knob on track 1.72: its border carries the shape, 3.8 on the track */
+    --color-switch-track: #111827;
+    --color-switch-line: #6b7280;
+    --color-switch-knob: #374151;
+    --color-switch-knob-line: #6b7280;
+    --color-switch-icon: #9ca3af;
+    --color-switch-icon-active: #f9fafb;
     --color-success-bg: #12302a;
     --color-success-line: #2e7d6b;
     --color-success-ink: #a7e3d4;

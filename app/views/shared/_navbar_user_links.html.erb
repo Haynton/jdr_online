@@ -1,3 +1,6 @@
+<%# Light or dark only: the system choice will come back in the settings page (feature/p1-account-settings) %>
+<%= render "shared/theme_switch" %>
+
 <%# On a wide screen: "My account", then the avatar next to the email %>
 <span class="hidden sm:block">
   <%= nav_link_to t(".my_account"), edit_user_registration_path, current: account_page? %>

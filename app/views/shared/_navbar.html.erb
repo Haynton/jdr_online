@@ -9,7 +9,6 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <%= render "shared/theme_selector" %>
     <%= render(user_signed_in? ? "shared/navbar_user_links" : "shared/navbar_visitor_links") %>
   </div>
 </nav>

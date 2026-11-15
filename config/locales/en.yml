@@ -95,6 +95,8 @@ en:
       system: "System"
     theme_selector:
       label: "Theme"
+    theme_switch:
+      dark_theme: "Dark theme"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."
