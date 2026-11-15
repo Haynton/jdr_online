@@ -1,9 +1,10 @@
 # Replaces Simple Form's select input (Simple Form looks for a class with this exact name).
 # Keeps the native <select>, usable with the keyboard and on mobile, hides the browser arrow
 # and shows the chevron icon in its place. The icon lets clicks through to the select.
-# select-picker styles the open list where the browser allows it (see app/assets/tailwind/application.css).
+# The open list stays the system one on purpose: same mouse and keyboard behavior everywhere,
+# where a styled list (appearance: base-select) lost the mouse hover after using the arrows.
 class CollectionSelectInput < SimpleForm::Inputs::CollectionSelectInput
-  SELECT_CLASSES = "select-picker cursor-pointer appearance-none pr-10".freeze
+  SELECT_CLASSES = "cursor-pointer appearance-none pr-10".freeze
   CHEVRON_CLASSES = "pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-muted".freeze
 
   def input(wrapper_options = nil)

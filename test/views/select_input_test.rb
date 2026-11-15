@@ -4,7 +4,8 @@ class SelectInputTest < ActionView::TestCase
   test "a select keeps the field style, hides the browser arrow and shows the chevron icon" do
     render_locale_select
 
-    assert_select "div.relative > select#user_locale.select-picker.appearance-none.border-field-line.bg-field"
+    assert_select "div.relative > select#user_locale.appearance-none.border-field-line.bg-field"
+    assert_select "select.select-picker", count: 0
     assert_select "div.relative > select#user_locale + svg[aria-hidden=true].pointer-events-none.text-muted"
   end
 
