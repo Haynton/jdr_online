@@ -204,6 +204,7 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Liste déroulante : `app/inputs/collection_select_input.rb` (Simple Form cherche ce nom exact pour remplacer son champ `select`). Vrai `<select>` : champ fermé stylé et chevron, **liste ouverte du système** (décision, voir À savoir)
 - Messages : partiel `shared/_message`, rendu en gabarit (`render layout: "shared/message", locals: { variant: :error } do … end`), variantes `:error` (`role="alert"`, icône `x`) et `:success` (`role="status"`, icône `check`), bordure de 1 px dans la couleur du texte à 70 %. Utilisé par les messages flash, `devise/shared/_error_messages` et `form_error_notification(f)`, qui remplace `f.error_notification` dans les formulaires. Décision : à l'écran, le champ rouge et son message suffisent, l'en-tête de `form_error_notification` est donc en `sr-only` (son `role="alert"` prévient les lecteurs d'écran)
 - Carte des pages visiteurs : helper `auth_card(title:, subtitle: nil) do … end` (`app/helpers/auth_cards_helper.rb`), qui rend `shared/_auth_card` (titre `h1`, sous-titre facultatif). Passer par le helper, pas par `render layout:` (voir À savoir, clés courtes)
+- En-tête de page : helper `page_header(title:, subtitle: nil) do … end` (`app/helpers/page_headers_helper.rb`), qui rend `shared/_page_header` : titre `h1` de 32 px (800), sous-titre `muted`, boutons du bloc à droite (dessous sur téléphone), 32 px avant le contenu. Même principe que `auth_card` pour les clés courtes
 - Séparateur : partiel `shared/_divider` (`text:`), un trait de chaque côté d'un texte court (« Nouveau ici ? »)
 - Liens dans un texte ou sous un formulaire : `font-medium text-link hover:underline`
 - Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
@@ -323,6 +324,15 @@ Fait dans `feature/p1-app-navbar` :
 - Le choix « Système » n'existe plus pour un utilisateur connecté jusqu'à la page Paramètres (rubrique Affichage) : toucher l'interrupteur quitte le mode Système
 - Écarts volontaires avec la fiche Maquettes : pas de liens « Mes tables » ni « Mon compte » dans la barre (dans le menu de l'avatar, demandé par l'équipe ; des liens reviendront dans la barre quand il y aura une deuxième destination, comme « Mes modèles de cartes »), déconnexion dans le menu (et aussi dans Paramètres, plus tard), interrupteur sans bordure avec une piste beige en clair. **Écart à la règle de contraste de forme** : piste sur la barre 1,37 (clair) et 1,21 (sombre), rond sur la piste 1,4 et 2,35. Un rond blanc ne peut pas atteindre 3 sur une piste claire, et les bordures ont été refusées. Les icônes identifient l'interrupteur et son état (toutes au-dessus de 3), ce qui reste conforme à WCAG 1.4.11
 
+Fait dans `feature/p1-dashboard` :
+
+- Page « Mes tables » (`TablesController#index`, `/tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`tables/_empty_state`), affichée seulement si `@tables` est vide. `@tables` vaut `[]` en attendant le modèle `Table`
+- « Créer une table » mène à une page provisoire (`TablesController#new`, `/tables/new`) qui annonce la création à venir
+- Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
+- Zone principale du layout `application` : 1120 px au maximum, marges de 32 px (16 px sur téléphone), 40 px en haut et en bas
+- Écarts volontaires avec la fiche Maquettes : bouton « Créer une table » visible dès maintenant (page provisoire) ; pointillés de la carte vide en `line` gardés, même s'ils se voient peu en clair (1,2)
+- **Question ouverte** : le mot « table » (jargon de rôliste) est-il assez clair ? Pistes : « Mes campagnes », « Mes parties ». À trancher avec Julien. Si le terme change, seul le texte affiché change a priori : `tables` reste dans le code et la base
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -356,7 +366,6 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion (le lien « Mes tables » du menu et le logo y mèneront)
 - `feature/p1-account-settings` : page Paramètres en rubriques (Affichage avec les trois choix de thème dont « Système », Compte, Sécurité), langue sans mot de passe, déconnexion (en plus de celle du menu de l'avatar), suppression du compte. Faire pointer « Paramètres » du menu vers cette page
 
 ### Production Heroku : `chore/p1-heroku-setup`
@@ -368,6 +377,7 @@ Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- Branche du modèle `Table` : `@tables = current_user.tables` dans `TablesController#index` (avec `includes` pour éviter le N+1), cartes de table dans la grille, test « dès la première table, la carte vide disparaît », vrai formulaire à la place de la page provisoire `tables/new`
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
