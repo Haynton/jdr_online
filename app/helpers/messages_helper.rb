@@ -29,12 +29,15 @@ module MessagesHelper
     MESSAGE_VARIANTS.fetch(variant)[:icon]
   end
 
-  # Replaces Simple Form's f.error_notification, which has no icon nor role
+  # Replaces Simple Form's f.error_notification. On screen, the red field and its message are enough;
+  # this summary stays for screen readers only (sr-only): its alert role tells them the form has errors
   def form_error_notification(form)
     return if form.object.errors.none?
 
-    render(layout: "shared/message", locals: { variant: :error }) do
-      t("simple_form.error_notification.default_message")
+    content_tag(:div, class: "sr-only") do
+      render(layout: "shared/message", locals: { variant: :error }) do
+        t("simple_form.error_notification.default_message")
+      end
     end
   end
 end

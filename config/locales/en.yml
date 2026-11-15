@@ -34,6 +34,10 @@ en:
         locale: "Language"
   app_name: "JDR Online"
   devise:
+    passwords:
+      new:
+        # Overrides devise-i18n: its sentence was far too long for a button
+        send_me_reset_password_instructions: "Send the link"
     registrations:
       edit:
         browser_language: "Browser language"
@@ -60,3 +64,6 @@ en:
   simple_form:
     error_notification:
       default_message: "Please review the problems below."
+    required:
+      # Hidden from screen readers: the field itself carries the required attribute, which they announce
+      html: '<span class="text-muted" aria-hidden="true">*</span>'

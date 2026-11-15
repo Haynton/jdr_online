@@ -5,6 +5,10 @@ fr:
         locale: "Langue"
   app_name: "JDR en ligne"
   devise:
+    passwords:
+      new:
+        # Overrides devise-i18n: its sentence was far too long for a button
+        send_me_reset_password_instructions: "Envoyer le lien"
     registrations:
       edit:
         browser_language: "Langue du navigateur"
@@ -31,3 +35,6 @@ fr:
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."
+    required:
+      # Hidden from screen readers: the field itself carries the required attribute, which they announce
+      html: '<span class="text-muted" aria-hidden="true">*</span>'

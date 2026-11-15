@@ -24,7 +24,8 @@ module SimpleFormFieldClasses
   ].join(" ").freeze
 
   HINT = "mt-1.5 text-xs text-muted"
-  ERROR = "mt-1.5 text-xs text-error-ink"
+  # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
+  ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"
 
   # Drawn by us (appearance-none): the native check box cannot be reshaped, only recolored
   CHECKBOX = %w[
@@ -143,7 +144,8 @@ SimpleForm.setup do |config|
   # config.item_wrapper_class = nil
 
   # How the label text should be generated altogether with the required text.
-  # config.label_text = lambda { |label, required, explicit_label| "#{required} #{label}" }
+  # The required mark goes after the label (simple_form.required.html in config/locales)
+  config.label_text = ->(label, required_mark, _explicit_label) { "#{label} #{required_mark}".strip }
 
   # You can define the class to use on all labels. Default is nil.
   # config.label_class = nil
