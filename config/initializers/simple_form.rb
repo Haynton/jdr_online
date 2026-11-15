@@ -14,8 +14,10 @@ module SimpleFormFieldClasses
   # in Windows high contrast mode). Errors follow aria-invalid, which Simple Form sets on invalid
   # inputs: a 1 px border was too thin to notice, so a ring doubles it and the background turns pink.
   # aria-invalid variants come after focus and hover in the CSS, so the red always wins.
+  # The vertical padding keeps the height but shrinks the inner box:
+  # Safari stretched its caps lock indicator to fill it.
   INPUT = %w[
-    block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 text-sm text-ink
+    block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 py-2.5 text-sm text-ink
     placeholder:text-muted hover:border-muted
     focus:border-focus-ring focus:ring-3 focus:ring-focus-ring/30 focus:outline-hidden
     aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink
@@ -23,7 +25,10 @@ module SimpleFormFieldClasses
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 
-  HINT = "mt-1.5 text-xs text-muted"
+  # Each field block is a group: once its field is invalid, the error message replaces the hint
+  # ("12 caractères minimum" above "Est trop court (au moins 12 caractères)" said the same thing twice)
+  FIELD_BLOCK = "group mb-4"
+  HINT = "mt-1.5 text-xs text-muted group-has-aria-invalid:hidden"
   # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
   ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"
 
@@ -44,7 +49,7 @@ SimpleForm.setup do |config|
   # wrapper, change the order or even add your own to the
   # stack. The options given below are used to wrap the
   # whole input.
-  config.wrappers :default, class: "mb-4" do |b|
+  config.wrappers :default, class: SimpleFormFieldClasses::FIELD_BLOCK do |b|
     ## Extensions enabled by default
     # Any of these extensions can be disabled for a
     # given input by passing: `f.input EXTENSION_NAME => false`.
@@ -89,7 +94,7 @@ SimpleForm.setup do |config|
   end
 
   # Check boxes: the box and its label side by side (inline style), so each one gets its own classes
-  config.wrappers :boolean, class: "mb-4" do |b|
+  config.wrappers :boolean, class: SimpleFormFieldClasses::FIELD_BLOCK do |b|
     b.use :html5
     b.optional :readonly
     b.wrapper tag: :div, class: "flex items-center gap-2" do |box_and_label|

@@ -2,12 +2,12 @@ require "test_helper"
 
 class SignInLocaleTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(email: "player@example.com", password: "password123", locale: "fr")
+    @user = User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
   end
 
   test "the sign in message uses the user's language, not the browser's" do
     post user_session_path,
-         params: { user: { email: @user.email, password: "password123" } },
+         params: { user: { email: @user.email, password: TEST_PASSWORD } },
          headers: english_browser
     follow_redirect!(headers: english_browser)
 

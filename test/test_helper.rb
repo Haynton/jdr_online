@@ -10,7 +10,8 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    # Long enough for the 12 characters rule (config.password_length in config/initializers/devise.rb)
+    TEST_PASSWORD = "correct-horse-battery".freeze
   end
 end
 

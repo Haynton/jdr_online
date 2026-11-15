@@ -64,6 +64,11 @@ en:
         submit: "Sign in"
         subtitle: "Find your game tables."
         title: "Sign in"
+    shared:
+      # Overrides devise-i18n: shorter, without brackets, as in the mockups
+      minimum_password_length:
+        one: "%{count} character minimum"
+        other: "%{count} characters minimum"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -77,6 +82,8 @@ en:
       log_in: "Log in"
       log_out: "Log out"
       sign_up: "Sign up"
+    password_visibility_button:
+      show_password: "Show password"
     theme_choice:
       dark: "Dark"
       light: "Light"

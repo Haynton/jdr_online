@@ -13,6 +13,12 @@ class SimpleFormFieldsTest < ActionView::TestCase
     assert_select "input#user_email.focus\\:border-focus-ring.focus\\:ring-3.focus\\:outline-hidden"
   end
 
+  test "a field has a vertical padding, so that Safari does not stretch its caps lock indicator" do
+    render_form { |form| form.input(:email) }
+
+    assert_select "input#user_email.h-11.py-2\\.5"
+  end
+
   test "an invalid field is marked for screen readers, with a thicker red border, a pink background and a message" do
     render_form { |form| form.input(:email) }
 
@@ -25,6 +31,12 @@ class SimpleFormFieldsTest < ActionView::TestCase
     render_form { |form| form.input(:password, hint: "At least 6 characters") }
 
     assert_select "p.text-muted", text: "At least 6 characters"
+  end
+
+  test "a hint is hidden once its field is invalid, the error message takes its place" do
+    render_form { |form| form.input(:password, hint: "At least 12 characters") }
+
+    assert_select "div.group:has(input#user_password[aria-invalid=true]) p.group-has-aria-invalid\\:hidden"
   end
 
   test "a check box is drawn square by us, green with a white check when checked" do

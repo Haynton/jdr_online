@@ -17,7 +17,7 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
   end
 
   test "the account page keeps the application layout with its navbar, even after an error" do
-    sign_in User.create!(email: "player@example.com", password: "password123")
+    sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD)
 
     get edit_user_registration_path
     assert_select "nav", count: 1
