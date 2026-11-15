@@ -184,15 +184,20 @@ end
 
 Construits une fois, réutilisés partout. On les voit tous, dans les deux thèmes, sur la galerie `/dev/components` (développement et test seulement).
 
-- Boutons : `button_classes(variant, size: :normal)` (`app/helpers/buttons_helper.rb`), variantes `:primary`, `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue
+- Boutons : `button_classes(variant, size: :normal, full_width: false)` (`app/helpers/buttons_helper.rb`), variantes `:primary`, `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px), `full_width: true` pour toute la largeur (`w-full`). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue. La bordure `line` du bouton secondaire reste discrète (décision) : plus marquée, il ressemblerait à un champ
 - Badges : `badge_classes(:game_master | :player)` (`app/helpers/badges_helper.rb`) : pilule, 11 px, majuscules, couleurs tonales et contour intérieur de la couleur du texte à 50 % (sans lui, le badge disparaît sur une carte en sombre)
 - Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
 - Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »)
 - Focus clavier : `focus-ring` partout. Champs : bordure `focus-ring` et halo de 3 px à 30 % (`outline-hidden` garde un contour en mode contraste élevé de Windows). Boutons : contour `focus-visible:outline-focus-ring`
 - Champs : définis une seule fois dans `config/initializers/simple_form.rb` (module `SimpleFormFieldClasses`, wrappers `:default` et `:boolean`). Ne jamais styler un champ dans une vue. États : repos `field-line`, survol `muted`, focus `focus-ring`, erreur (bordure et `ring-1` `error-ink`, fond `error-bg`, message `error-ink` sous le champ), désactivé (opacité 50 %). L'erreur suit `aria-invalid`, que Simple Form pose sur les champs invalides : les variantes `aria-invalid:` passent après `focus:` et `hover:`, le rouge l'emporte toujours
+- Message d'erreur sous un champ : première lettre en majuscule (`first-letter:uppercase`), car Simple Form l'écrit sans le nom du champ (« doit être rempli(e) »)
+- Champ obligatoire : astérisque discret (`text-muted`) **après** le libellé (`config.label_text`), caché aux lecteurs d'écran (`aria-hidden`), qui annoncent déjà l'attribut `required` du champ. Texte dans la clé `simple_form.required.html`
 - Case à cocher : dessinée par nous (`appearance-none`, 18 px, coins de 3 px, coche blanche `@utility bg-checkmark` sur `primary`), à côté de son libellé (`boolean_style = :inline`)
 - Liste déroulante : `app/inputs/collection_select_input.rb` (Simple Form cherche ce nom exact pour remplacer son champ `select`). Vrai `<select>` : champ fermé stylé et chevron, **liste ouverte du système** (décision, voir À savoir)
-- Messages : partiel `shared/_message`, rendu en gabarit (`render layout: "shared/message", locals: { variant: :error } do … end`), variantes `:error` (`role="alert"`, icône `x`) et `:success` (`role="status"`, icône `check`), bordure de 1 px dans la couleur du texte à 70 %. Utilisé par les messages flash, `devise/shared/_error_messages` et `form_error_notification(f)`, qui remplace `f.error_notification` dans les formulaires
+- Messages : partiel `shared/_message`, rendu en gabarit (`render layout: "shared/message", locals: { variant: :error } do … end`), variantes `:error` (`role="alert"`, icône `x`) et `:success` (`role="status"`, icône `check`), bordure de 1 px dans la couleur du texte à 70 %. Utilisé par les messages flash, `devise/shared/_error_messages` et `form_error_notification(f)`, qui remplace `f.error_notification` dans les formulaires. Décision : à l'écran, le champ rouge et son message suffisent, l'en-tête de `form_error_notification` est donc en `sr-only` (son `role="alert"` prévient les lecteurs d'écran)
+- Carte des pages visiteurs : helper `auth_card(title:, subtitle: nil) do … end` (`app/helpers/auth_cards_helper.rb`), qui rend `shared/_auth_card` (titre `h1`, sous-titre facultatif). Passer par le helper, pas par `render layout:` (voir À savoir, clés courtes)
+- Séparateur : partiel `shared/_divider` (`text:`), un trait de chaque côté d'un texte court (« Nouveau ici ? »)
+- Liens dans un texte ou sous un formulaire : `font-medium text-link hover:underline`
 - Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
 
 ### Sécurité et permissions
@@ -262,7 +267,7 @@ Fait dans `chore/p1-dependabot-config` :
 
 Fait dans `feature/p1-account-locale` :
 
-- Vues d'inscription et de modification du compte générées avec `rails g devise:i18n:views -v registrations`, dans `app/views/devise/` (sans `scoped_views`), sans classe Bootstrap. Les autres pages Devise (connexion, mot de passe oublié) utilisent encore les vues intégrées à `devise-i18n`
+- Vues d'inscription et de modification du compte générées avec `rails g devise:i18n:views -v registrations`, dans `app/views/devise/` (sans `scoped_views`), sans classe Bootstrap. Les pages de connexion et de mot de passe oublié ont été générées à leur tour dans `style/p1-auth-pages`
 - Sélecteur de langue dans Mon compte : « Langue du navigateur » (enregistre `nil`), « Français », « English ». Les langues sont nommées dans leur propre langue (`locale_names`), la liste vient du helper `locale_options`. Le mot de passe actuel reste obligatoire pour changer de langue, comme pour toute modification du compte
 - Titre « Mon compte » / « My account » (surcharge de `devise.registrations.edit.title`) et attribut `locale` traduit (`activerecord.attributes.user.locale`)
 - Après un changement de langue, le message de confirmation est dans la nouvelle langue. Après la connexion, le message est dans la langue du compte. Après la déconnexion, il suit le navigateur, comme la page qui l'affiche
@@ -273,7 +278,7 @@ Fait dans `chore/p1-theme` :
 - Couleurs nommées et variante `dark` pilotée par la classe `.dark` sur `<html>` (`@custom-variant dark`), dans `app/assets/tailwind/application.css`. Plus aucune couleur brute dans les vues
 - Police Inter 4.1 (`InterVariable-4.1.woff2` et sa licence OFL `Inter-LICENSE.txt`) dans `public/fonts/`, déclarée par un `@font-face`
 - `app/javascript/theme_preload.js`, chargé de façon bloquante dans le `<head>` avant les feuilles de style : pose la classe `.dark` avant l'affichage, sans flash clair
-- Sélecteur Clair / Sombre / Système dans la barre de navigation (partiel `shared/_theme_choice`, `aria-pressed` sur le choix actif), contrôleur Stimulus `theme_controller.js`. Le choix est enregistré dans `localStorage` (clé `theme`, « Système » = pas de valeur) ; en mode Système, la page suit en direct le réglage de l'appareil
+- Sélecteur Clair / Sombre / Système dans la barre de navigation (partiels `shared/_theme_selector` et `shared/_theme_choice`, `aria-pressed` sur le choix actif), contrôleur Stimulus `theme_controller.js`. Le choix est enregistré dans `localStorage` (clé `theme`, « Système » = pas de valeur) ; en mode Système, la page suit en direct le réglage de l'appareil
 - Tests système mis en place (`test/application_system_test_case.rb`, Chrome invisible) : choix du thème sombre gardé après rechargement, nouveau visiteur en mode Système
 
 Fait dans `style/p1-ui-components` (première moitié des composants de la fiche Maquettes) :
@@ -289,6 +294,14 @@ Fait dans `style/p1-form-components` (seconde moitié des composants de la fiche
 - Champs, case à cocher, liste déroulante, messages et interrupteur (voir Composants). Les formulaires d'inscription et de Mon compte en profitent déjà, avec leurs boutons (`button_classes`) et le bouton danger « Supprimer mon compte »
 - En-tête d'erreur des formulaires traduit en français (la clé `simple_form.error_notification.default_message` manquait : il s'affichait en anglais)
 - Écarts volontaires avec la fiche Maquettes : bordure des champs et piste d'interrupteur éteint en `field-line` (et non `line` : 1,18 à 1,77), case à cocher dessinée (et non `accent-color`), messages avec une bordure fine dans la couleur du texte (et non `*-line`, trop pâle). Une barre épaisse à gauche des messages a été essayée et refusée
+
+Fait dans `style/p1-auth-pages` :
+
+- Layout `auth` (`layouts/auth.html.erb`) : logo (lien vers l'accueil), sélecteur de thème, carte centrée de 420 px, sans barre de navigation. `<head>` partagé avec `application` dans `layouts/_head`. Choix par `ApplicationController#layout_for_page` : pages Devise des visiteurs en `auth`, Mon compte (`registrations` `edit`, `update`, `destroy`, `cancel`) en `application`
+- Sélecteur de thème sorti de la barre de navigation (`shared/_theme_selector`) pour servir aux deux layouts. Messages flash sans marge horizontale : chaque layout les place
+- Vues `sessions` et `passwords` générées par `devise-i18n` (avec `--skip`, pour garder nos vues `shared`), puis réécrites avec Simple Form, `auth_card`, `form_error_notification` et `button_classes`. Les quatre pages : Connexion, Créer un compte, Recevoir un lien, Nouveau mot de passe. Un lien de réinitialisation expiré est signalé en haut du formulaire, avec un lien « Recevoir un nouveau lien »
+- `devise/shared/_links` n'est plus rendu par nos vues, et `devise/shared/_error_messages` non plus : gardés pour les pages Devise intégrées (confirmation par e-mail, déblocage) si ces modules sont activés un jour
+- Clé `devise-i18n` surchargée : `devise.passwords.new.send_me_reset_password_instructions` (« Envoyer le lien »), le texte d'origine était trop long pour un bouton
 
 À savoir :
 
@@ -307,7 +320,8 @@ Fait dans `style/p1-form-components` (seconde moitié des composants de la fiche
 - Un fichier de `config/initializers/` (Simple Form, Devise...) n'est lu qu'au démarrage : **relancer `bin/dev`** après l'avoir modifié, sinon le serveur garde l'ancienne configuration (par exemple les anciennes classes des champs). Même chose pour un nouveau dossier dans `app/`, comme `app/inputs/`
 - Simple Form, case à cocher : avec `boolean_style = :nested`, seul le composant `:label_input` écrit le texte du libellé. Un wrapper qui n'utilise que `:input` affiche une case sans libellé. D'où `:inline` et le wrapper `:boolean`
 - Liste ouverte des `<select>` : une version stylée (`appearance: base-select`) a été essayée puis retirée. Chrome ne déplace pas le focus quand la souris bouge : après les flèches, le survol ne suivait plus la souris sans JavaScript en plus. Il fallait aussi du CSS hors des couches Tailwind, et Firefox ne la gère pas. Ne pas la remettre sans revoir ces points
-- RuboCop signale `Metrics/BlockLength` (30/25) sur le bloc `SimpleForm.setup` : accepté, `config/**` étant exclu de l'analyse, à trancher dans `chore/p1-rubocop-config`
+- RuboCop signale `Metrics/BlockLength` (31/25) sur le bloc `SimpleForm.setup`, et `Layout/EmptyLineAfterMagicComment` en tête du fichier (ligne générée par Simple Form) : accepté, `config/**` étant exclu de l'analyse, à trancher dans `chore/p1-rubocop-config`
+- Clés courtes et `render layout:` : dans un bloc `render layout: "shared/message" do … end`, `t(".submit")` est cherché sous le partiel (`shared.message.submit`), pas sous la page, et lève « Translation missing ». Pour la carte des pages visiteurs, le helper `auth_card` règle ça (il lit le bloc avec `capture` avant de rendre le partiel). Ailleurs, dans un cas isolé, écrire la clé complète avec un commentaire (voir `devise/passwords/edit`)
 
 ## Prochaines tâches
 
@@ -317,7 +331,7 @@ Dans cet ordre. Chaque tâche a sa branche et sa Pull Request.
 
 Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `Maquettes/Figma-Mes-tables.png` et `Maquettes/Figma-Reglages.png`). Les maquettes sont une inspiration, pas un plan au pixel près.
 
-- `style/p1-auth-pages` : layout `auth`, pages connexion, inscription, mot de passe oublié et nouveau mot de passe, bouton œil, mot de passe de 12 caractères minimum
+- `feature/p1-password-rules` : bouton œil pour afficher le mot de passe, mot de passe de 12 caractères minimum
 - `feature/p1-app-navbar` : barre de navigation connectée, lien actif sur `primary-soft`, interrupteur de thème
 - `feature/p1-dashboard` : page « Mes tables » en état vide, arrivée après connexion
 - `feature/p1-account-settings` : page Paramètres en rubriques (Affichage, Compte, Sécurité), langue sans mot de passe, déconnexion, suppression du compte
@@ -331,6 +345,7 @@ Détail dans la fiche `Maquettes-pages-compte.md` (Obsidian, avec les captures `
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
+- Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
