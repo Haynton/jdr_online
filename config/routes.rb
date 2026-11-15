@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: "users/registrations", sessions: "users/sessions" }
+  devise_for :users, controllers: {
+    passwords: "users/passwords",
+    registrations: "users/registrations",
+    sessions: "users/sessions"
+  }
   root to: "pages#home"
   resources :tables, only: %i[index new]
 
