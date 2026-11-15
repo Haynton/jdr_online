@@ -56,7 +56,9 @@ class TablesTest < ActionDispatch::IntegrationTest
 
   test "a visitor is sent to the sign in page" do
     get tables_path
+    assert_redirected_to new_user_session_path
 
+    get new_table_path
     assert_redirected_to new_user_session_path
   end
 
