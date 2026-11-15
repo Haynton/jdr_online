@@ -2,7 +2,7 @@ require "test_helper"
 
 class AccountLocaleTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(email: "player@example.com", password: "password123", locale: "fr")
+    @user = User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
     sign_in @user
   end
 
@@ -40,6 +40,6 @@ class AccountLocaleTest < ActionDispatch::IntegrationTest
   private
 
   def update_locale_to(locale)
-    patch user_registration_path, params: { user: { locale: locale, current_password: "password123" } }
+    patch user_registration_path, params: { user: { locale: locale, current_password: TEST_PASSWORD } }
   end
 end

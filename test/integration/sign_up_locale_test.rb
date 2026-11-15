@@ -30,8 +30,8 @@ class SignUpLocaleTest < ActionDispatch::IntegrationTest
 
   def sign_up_with_browser_language(accept_language)
     post user_registration_path,
-         params: { user: { email: "new.player@example.com", password: "password123",
-                           password_confirmation: "password123" } },
+         params: { user: { email: "new.player@example.com", password: TEST_PASSWORD,
+                           password_confirmation: TEST_PASSWORD } },
          headers: { "Accept-Language" => accept_language }
   end
 end

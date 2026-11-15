@@ -35,6 +35,11 @@ fr:
         submit: "Se connecter"
         subtitle: "Retrouvez vos tables de jeu."
         title: "Connexion"
+    shared:
+      # Overrides devise-i18n: shorter, without brackets, as in the mockups
+      minimum_password_length:
+        one: "%{count} caractère minimum"
+        other: "%{count} caractères minimum"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
