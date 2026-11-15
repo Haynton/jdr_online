@@ -1,0 +1,9 @@
+<%# Shown while the user has no table, gone from the first one. Dashed border: an empty place, not a card %>
+<section class="flex min-h-[200px] flex-col items-center justify-center rounded-xl border-[1.5px] border-dashed border-line px-6 py-10 text-center"
+         aria-labelledby="empty-tables-title">
+  <span class="flex size-12 items-center justify-center rounded-full bg-surface text-link" aria-hidden="true">
+    <%= render "shared/icons/plus", css_class: "size-6" %>
+  </span>
+  <h2 id="empty-tables-title" class="mt-4 text-lg font-bold text-ink"><%= t(".title") %></h2>
+  <p class="mt-1 max-w-md text-sm text-muted"><%= t(".text") %></p>
+</section>

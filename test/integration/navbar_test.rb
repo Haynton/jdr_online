@@ -6,10 +6,10 @@ class NavbarTest < ActionDispatch::IntegrationTest
   end
 
   test "a signed in user sees the logo, the theme switch and the account button, no other link" do
-    get root_path
+    get tables_path
 
     assert_select "nav[aria-label=?]", "Navigation principale" do
-      assert_select "nav > a[href=?]", root_path
+      assert_select "nav > a[href=?]", tables_path
       assert_select "button[role=switch]"
       assert_select "button[aria-expanded=false][aria-controls=user-menu]"
     end
@@ -18,7 +18,7 @@ class NavbarTest < ActionDispatch::IntegrationTest
   end
 
   test "the account button shows the avatar and the email, and is named for screen readers" do
-    get root_path
+    get tables_path
 
     assert_select "button[aria-controls=user-menu]" do
       assert_select "span[aria-hidden=true]", text: "PL"
@@ -28,17 +28,17 @@ class NavbarTest < ActionDispatch::IntegrationTest
   end
 
   test "the account menu is hidden until the button opens it, and holds the links and log out" do
-    get root_path
+    get tables_path
 
     assert_select "#user-menu[hidden]" do
-      assert_select "a[href=?]", root_path, text: "Mes tables"
+      assert_select "a[href=?]", tables_path, text: "Mes tables"
       assert_select "a[href=?]", edit_user_registration_path, text: "Paramètres"
       assert_select "form[action=?] button", destroy_user_session_path, text: "Se déconnecter"
     end
   end
 
-  test "on the home page, my tables is the current link of the menu" do
-    get root_path
+  test "on my tables page, my tables is the current link of the menu" do
+    get tables_path
 
     assert_select "#user-menu a[aria-current=page]", count: 1, text: "Mes tables"
   end
@@ -56,13 +56,13 @@ class NavbarTest < ActionDispatch::IntegrationTest
   end
 
   test "on a phone, the logo keeps its name for screen readers" do
-    get root_path
+    get tables_path
 
-    assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", root_path, text: "JDR en ligne"
+    assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", tables_path, text: "JDR en ligne"
   end
 
   test "a signed in user gets the light or dark switch, not the three theme choices" do
-    get root_path
+    get tables_path
 
     assert_select "nav button[role=switch][aria-label=?][data-action='theme#toggle']", "Thème sombre"
     assert_select "nav [role=group]", count: 0

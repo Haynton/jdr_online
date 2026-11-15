@@ -75,3 +75,16 @@ fr:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
+  tables:
+    create_table_button:
+      create_table: "Créer une table"
+    empty_state:
+      text: "Les tables que vous créez ou rejoignez apparaîtront ici."
+      title: "Aucune table pour l'instant"
+    index:
+      subtitle: "Vos parties en cours, comme MJ ou comme joueur."
+      title: "Mes tables"
+    new:
+      back_to_tables: "Retour à mes tables"
+      coming_soon: "La création d'une table arrive bientôt. Vous pourrez y choisir un nom, un univers et inviter vos joueurs."
+      title: "Créer une table"

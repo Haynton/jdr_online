@@ -1,0 +1,13 @@
+<%# Use the page_header helper (app/helpers/page_headers_helper.rb), not this partial directly.
+    The buttons go under the title on a phone, on its right from 640 px. 32 px under it, before the content %>
+<header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <h1 class="text-[32px] leading-tight font-extrabold tracking-tight text-ink"><%= title %></h1>
+    <% if subtitle %>
+      <p class="mt-1 text-base text-muted"><%= subtitle %></p>
+    <% end %>
+  </div>
+  <% if actions %>
+    <div class="flex flex-wrap gap-3"><%= actions %></div>
+  <% end %>
+</header>
