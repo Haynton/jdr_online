@@ -83,10 +83,21 @@ fr:
       update:
         unavailable: "Cette langue n'est pas disponible."
         updated: "Langue enregistrée."
+    passwords:
+      update:
+        updated: "Mot de passe modifié."
     sections_menu:
       account: "Compte"
       display: "Affichage"
+      security: "Sécurité"
       title: "Paramètres"
+    securities:
+      show:
+        change_password: "Changer le mot de passe"
+        new_password: "Nouveau mot de passe"
+        password_confirmation: "Confirmation du nouveau mot de passe"
+        password_group: "Mot de passe"
+        title: "Sécurité"
   shared:
     navbar:
       label: "Navigation principale"

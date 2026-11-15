@@ -23,7 +23,7 @@ class SettingsTest < ActionDispatch::IntegrationTest
     sign_in create_user(locale: "fr")
     get settings_path
 
-    assert_select "nav li a svg.md\\:hidden[aria-hidden=true]", count: 2
+    assert_select "nav li a svg.md\\:hidden[aria-hidden=true]", count: 3
   end
 
   test "each setting row has a line under it, the last one of a group included" do

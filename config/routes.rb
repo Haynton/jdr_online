@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     resource :locale, only: :update
     resource :account, only: :show
     resource :email, only: :update
+    resource :security, only: :show
+    resource :password, only: :update
   end
 
   # Component gallery to review the design system in both themes. Never routed in production

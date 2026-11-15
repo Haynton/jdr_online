@@ -112,10 +112,21 @@ en:
       update:
         unavailable: "This language is not available."
         updated: "Language saved."
+    passwords:
+      update:
+        updated: "Password changed."
     sections_menu:
       account: "Account"
       display: "Display"
+      security: "Security"
       title: "Settings"
+    securities:
+      show:
+        change_password: "Change the password"
+        new_password: "New password"
+        password_confirmation: "New password confirmation"
+        password_group: "Password"
+        title: "Security"
   shared:
     navbar:
       label: "Main navigation"
