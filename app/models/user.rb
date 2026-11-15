@@ -8,4 +8,10 @@ class User < ApplicationRecord
   normalizes :locale, with: lambda(&:presence)
 
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }, allow_nil: true
+
+  # Shown in the avatar. Taken from the email until users have a username
+  def initials
+    email_name = email.split("@").first.to_s
+    email_name.scan(/[[:alnum:]]/).first(2).join.upcase
+  end
 end

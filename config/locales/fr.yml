@@ -50,8 +50,9 @@ fr:
       description: "Retrouvez-moi dans app/views/pages/home.html.erb"
   shared:
     navbar:
+      label: "Navigation principale"
+    navbar_visitor_links:
       log_in: "Se connecter"
-      log_out: "Se déconnecter"
       sign_up: "S'inscrire"
     password_visibility_button:
       show_password: "Afficher le mot de passe"
@@ -61,6 +62,13 @@ fr:
       system: "Système"
     theme_selector:
       label: "Thème"
+    theme_switch:
+      dark_theme: "Thème sombre"
+    user_menu:
+      account_menu: "Menu du compte"
+      log_out: "Se déconnecter"
+      my_tables: "Mes tables"
+      settings: "Paramètres"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."

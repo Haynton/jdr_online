@@ -1,9 +1,10 @@
-<%# d20 from the project wireframes. The square keeps logo-bg and the strokes stay white in both themes: it is a logo %>
+<%# d20 from the project wireframes. The square keeps logo-bg and the strokes stay white in both themes: it is a logo.
+    compact_on_phone: true keeps only the d20 on a phone; the name stays for screen readers, so a logo link keeps its name %>
 <span class="flex items-center gap-3">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" aria-hidden="true" class="size-8 shrink-0 text-white">
     <rect width="34" height="34" rx="9" class="fill-logo-bg"></rect>
     <path d="M17 6l9 5.2v10.4L17 27l-9-5.4V11.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>
     <path d="M17 6v8l9-2.8M17 14l-9-2.8M17 14l5.6 9.6M17 14l-5.6 9.6M11.4 23.6h11.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.8"></path>
   </svg>
-  <span class="text-[17px] font-extrabold text-ink"><%= t("app_name") %></span>
+  <span class="<%= local_assigns[:compact_on_phone] ? "sr-only sm:not-sr-only" : "" %> text-[17px] font-extrabold text-ink"><%= t("app_name") %></span>
 </span>

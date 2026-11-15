@@ -79,8 +79,9 @@ en:
       description: "Find me in app/views/pages/home.html.erb"
   shared:
     navbar:
+      label: "Main navigation"
+    navbar_visitor_links:
       log_in: "Log in"
-      log_out: "Log out"
       sign_up: "Sign up"
     password_visibility_button:
       show_password: "Show password"
@@ -90,6 +91,13 @@ en:
       system: "System"
     theme_selector:
       label: "Theme"
+    theme_switch:
+      dark_theme: "Dark theme"
+    user_menu:
+      account_menu: "Account menu"
+      log_out: "Log out"
+      my_tables: "My tables"
+      settings: "Settings"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."

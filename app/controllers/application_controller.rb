@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   layout :layout_for_page
+  # The navbar marks "My account" as the current page with it, error pages included (their URL is /users)
+  helper_method :account_page?
 
   private
 

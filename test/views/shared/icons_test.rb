@@ -1,7 +1,7 @@
 require "test_helper"
 
 class IconsTest < ActionView::TestCase
-  ICON_NAMES = %w[sun moon plus link eye eye_off log_out check x chevron_down].freeze
+  ICON_NAMES = %w[sun moon plus link eye eye_off log_out check x chevron_down dices settings].freeze
 
   ICON_NAMES.each do |icon_name|
     test "the #{icon_name} icon is hidden from screen readers, 16 px and colored by its text" do

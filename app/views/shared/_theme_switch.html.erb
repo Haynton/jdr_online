@@ -1,0 +1,21 @@
+<%# Light or dark switch of the navbar, driven by theme_controller.js.
+    It shows the theme really applied, "system" included: its look follows the dark class that theme_preload.js
+    puts on <html> before the first paint (dark: variants), so the knob never slides when a page loads.
+    aria-checked, set by the controller, tells screen readers the same thing.
+    Its colors (switch-*) only change with the theme.
+    Sizes: 56 × 28 px, no border, 24 px knob with 2 px all around, so it moves by 28 px;
+    each 14 px icon is centered under one position of the knob (7 px from the edge). %>
+<button type="button" role="switch" aria-checked="false" aria-label="<%= t(".dark_theme") %>"
+        class="relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full bg-switch-track focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+        data-controller="theme"
+        data-theme-target="switch"
+        data-action="theme#toggle">
+  <span aria-hidden="true"
+        class="absolute top-0.5 left-0.5 size-6 rounded-full bg-switch-knob shadow-md transition-transform duration-150 dark:translate-x-7 motion-reduce:transition-none"></span>
+  <span aria-hidden="true" class="absolute top-1/2 left-[7px] -translate-y-1/2 text-switch-icon-active dark:text-switch-icon">
+    <%= render "shared/icons/sun", css_class: "size-3.5" %>
+  </span>
+  <span aria-hidden="true" class="absolute top-1/2 right-[7px] -translate-y-1/2 text-switch-icon dark:text-switch-icon-active">
+    <%= render "shared/icons/moon", css_class: "size-3.5" %>
+  </span>
+</button>
