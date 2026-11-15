@@ -41,7 +41,7 @@ class SettingsTest < ActionDispatch::IntegrationTest
     assert_select "nav[aria-labelledby=settings-title] h1", text: "Paramètres"
     assert_select "nav[aria-labelledby=settings-title] a[href=?][aria-current=page]", settings_display_path,
                   text: "Affichage"
-    assert_select "nav[aria-labelledby=settings-title] a[href=?]", edit_user_registration_path, text: "Compte"
+    assert_select "nav[aria-labelledby=settings-title] a[href=?]", settings_account_path, text: "Compte"
     assert_select "section[aria-labelledby=settings-section-title] h2", text: "Affichage"
   end
 

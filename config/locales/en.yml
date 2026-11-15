@@ -81,6 +81,20 @@ en:
       title: "Home"
       description: "Find me in app/views/pages/home.html.erb"
   settings:
+    accounts:
+      show:
+        change_email: "Change the email address"
+        current_password_hint: "To confirm it is really you."
+        danger_zone: "Danger zone"
+        delete_account: "Delete my account"
+        delete_account_button: "Delete"
+        delete_account_confirmation: "Delete your account for good? This cannot be undone."
+        delete_account_description: "Permanent action (right to erasure)."
+        email_group: "Email address"
+        log_out: "Log out"
+        log_out_description: "On this device."
+        session_group: "Session"
+        title: "Account"
     displays:
       show:
         browser_language: "Browser language"
@@ -91,6 +105,9 @@ en:
         theme_description: "Light, dark, or like your device."
         theme_group: "Theme"
         title: "Display"
+    emails:
+      update:
+        updated: "Email address changed."
     locales:
       update:
         unavailable: "This language is not available."

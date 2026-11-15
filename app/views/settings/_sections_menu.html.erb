@@ -3,9 +3,8 @@
 <nav class="<%= settings_menu_visibility_classes %>" aria-labelledby="settings-title">
   <h1 id="settings-title" class="text-2xl font-bold text-ink md:px-4 md:text-xl"><%= t(".title") %></h1>
   <ul class="mt-4 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface md:mt-3 md:space-y-1 md:divide-y-0 md:rounded-none md:border-0 md:bg-transparent">
-    <%# On /settings, the display section is the one shown on a wide screen %>
-    <li><%= settings_link_to t(".display"), settings_display_path, current: current_page?(settings_display_path) || sections_list_page? %></li>
-    <%# The old account page, until the account section exists (feature/p1-account-security) %>
-    <li><%= settings_link_to t(".account"), edit_user_registration_path %></li>
+    <%# On /settings (sections controller), the display section is the one shown on a wide screen %>
+    <li><%= settings_link_to t(".display"), settings_display_path, current: current_settings_section?(:display) %></li>
+    <li><%= settings_link_to t(".account"), settings_account_path, current: current_settings_section?(:account) %></li>
   </ul>
 </nav>

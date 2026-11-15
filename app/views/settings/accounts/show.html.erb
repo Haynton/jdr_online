@@ -1,0 +1,26 @@
+<%= settings_section(title: t(".title")) do %>
+  <%= settings_group(title: t(".email_group")) do %>
+    <%= simple_form_for @user, url: settings_email_path, method: :patch, html: { class: "border-b border-line py-4" } do |form| %>
+      <%= form_error_notification(form) %>
+      <%= form.input :email, required: true, input_html: { autocomplete: "email" } %>
+      <%= form.input :current_password, required: true, hint: t(".current_password_hint"),
+                                        input_html: { autocomplete: "current-password" } %>
+      <%= form.button :submit, t(".change_email"), class: button_classes(:primary) %>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".session_group")) do %>
+    <%= setting_row(label: t(".log_out"), label_id: "log-out-setting", description: t(".log_out_description")) do %>
+      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: button_classes(:secondary) %>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".danger_zone")) do %>
+    <%= setting_row(label: t(".delete_account"), label_id: "delete-account-setting",
+                    description: t(".delete_account_description")) do %>
+      <%# Devise's own action. The browser asks for a confirmation before sending it %>
+      <%= button_to t(".delete_account_button"), user_registration_path, method: :delete,
+                    class: button_classes(:danger), data: { turbo_confirm: t(".delete_account_confirmation") } %>
+    <% end %>
+  <% end %>
+<% end %>

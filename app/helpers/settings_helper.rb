@@ -13,6 +13,16 @@ module SettingsHelper
     other: "text-ink md:text-muted"
   }.freeze
 
+  # The controllers that show each section, its form included when it comes back with an error
+  SETTINGS_SECTION_CONTROLLERS = {
+    display: %w[displays sections],
+    account: %w[accounts emails]
+  }.freeze
+
+  def current_settings_section?(section)
+    controller_name.in?(SETTINGS_SECTION_CONTROLLERS.fetch(section))
+  end
+
   # A section of the settings (the menu around it comes from layouts/settings).
   # Like page_header, the block is captured here so that its short translation keys stay the page's ones
   def settings_section(title:, &)
