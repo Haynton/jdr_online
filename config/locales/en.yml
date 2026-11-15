@@ -77,6 +77,17 @@ en:
     home:
       title: "Home"
       description: "Find me in app/views/pages/home.html.erb"
+  settings:
+    displays:
+      show:
+        theme: "Theme"
+        theme_description: "Light, dark, or like your device."
+        theme_group: "Theme"
+        title: "Display"
+    panel:
+      account: "Account"
+      display: "Display"
+      title: "Settings"
   shared:
     navbar:
       label: "Main navigation"

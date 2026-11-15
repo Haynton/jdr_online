@@ -1,5 +1,6 @@
+<%# One theme choice (light, dark or system). css_class: another look, as in the display settings %>
 <button type="button"
-        class="rounded-md px-2 py-1 text-sm text-muted hover:text-ink aria-pressed:bg-page aria-pressed:font-medium aria-pressed:text-ink"
+        class="<%= local_assigns.fetch(:css_class, "rounded-md px-2 py-1 text-sm text-muted hover:text-ink aria-pressed:bg-page aria-pressed:font-medium aria-pressed:text-ink") %>"
         aria-pressed="false"
         data-theme-target="choiceButton"
         data-theme-choice-param="<%= choice %>"

@@ -1,0 +1,13 @@
+<%# Use the setting_row helper. The control goes under the label on a phone, on its right from 640 px.
+    The control names itself with aria-labelledby="<label_id>" %>
+<div class="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+  <div>
+    <p id="<%= label_id %>" class="text-base font-medium text-ink"><%= label %></p>
+    <% if description %>
+      <p class="mt-0.5 text-sm text-muted"><%= description %></p>
+    <% end %>
+  </div>
+  <div class="shrink-0">
+    <%= control %>
+  </div>
+</div>

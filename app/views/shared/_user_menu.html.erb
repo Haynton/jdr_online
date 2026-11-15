@@ -21,8 +21,7 @@
        data-dropdown-target="menu">
     <ul>
       <li><%= nav_link_to t(".my_tables"), tables_path, icon: "dices" %></li>
-      <%# Leads to the account page until the settings page exists (feature/p1-account-settings) %>
-      <li><%= nav_link_to t(".settings"), edit_user_registration_path, icon: "settings", current: account_page? %></li>
+            <li><%= nav_link_to t(".settings"), settings_display_path, icon: "settings", current: settings_page? %></li>
     </ul>
     <hr class="my-1.5 border-line">
     <%= button_to destroy_user_session_path, method: :delete, class: nav_item_classes do %>

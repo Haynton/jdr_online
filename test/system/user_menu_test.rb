@@ -38,10 +38,10 @@ class UserMenuTest < ApplicationSystemTestCase
     assert_selector "#user-menu", visible: :hidden
   end
 
-  test "the menu leads to the account page and logs out" do
+  test "the menu leads to the settings and logs out" do
     account_button.click
-    find("#user-menu a[href='#{edit_user_registration_path}']").click
-    assert_current_path edit_user_registration_path
+    find("#user-menu a[href='#{settings_display_path}']").click
+    assert_current_path settings_display_path
 
     account_button.click
     find("#user-menu form button").click

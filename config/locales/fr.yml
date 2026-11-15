@@ -48,6 +48,17 @@ fr:
     home:
       title: "Accueil"
       description: "Retrouvez-moi dans app/views/pages/home.html.erb"
+  settings:
+    displays:
+      show:
+        theme: "Thème"
+        theme_description: "Clair, sombre, ou comme votre appareil."
+        theme_group: "Thème"
+        title: "Affichage"
+    panel:
+      account: "Compte"
+      display: "Affichage"
+      title: "Paramètres"
   shared:
     navbar:
       label: "Navigation principale"

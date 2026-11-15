@@ -1,0 +1,7 @@
+<%= settings_panel(section_title: t(".title")) do %>
+  <%= settings_group(title: t(".theme_group")) do %>
+    <%= setting_row(label: t(".theme"), label_id: "theme-setting", description: t(".theme_description")) do %>
+      <%= render "settings/theme_choices", labelled_by: "theme-setting" %>
+    <% end %>
+  <% end %>
+<% end %>
