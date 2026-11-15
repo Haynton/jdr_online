@@ -352,6 +352,12 @@ Fait dans `style/p1-ui-polish` (demandes de l'équipe) :
 - Message « Connecté(e). » réservé aux lecteurs d'écran ; focus clavier aux couleurs du thème partout ; icône parchemin (Lucide `scroll-text`) pour « Mes tables » dans le menu de l'avatar ; messages des Paramètres dans la carte
 - Thème : l'interrupteur de la barre est retiré (fichiers, couleurs `switch-*`, action `toggle`), l'écart de contraste qui le concernait n'a plus d'objet. Un seul sélecteur à trois choix avec icônes, pour les visiteurs (accueil, pages de connexion) et dans Paramètres (décision : « Système » reste accessible ; l'interrupteur seul sur l'accueil a été écarté)
 
+Fait dans `chore/p1-github-ci` :
+
+- Modèle de PR `.github/pull_request_template.md` (Quoi, Pourquoi, Comment tester, Captures, Checklist), proposé par GitHub à chaque nouvelle PR
+- Intégration continue `.github/workflows/ci.yml`, sur chaque PR et chaque push sur `main` : job `lint` (`bin/rubocop -f github`) et job `test` (PostgreSQL 15, `bin/rails db:test:prepare test test:system`, captures des tests système en échec gardées comme artefact)
+- Corrections pour que le lint passe : espaces retirés dans les `%i[ ]` du `Gemfile`, `vendor/**/*` ajouté à `Exclude` dans `.rubocop.yml` (voir À savoir)
+
 À savoir :
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
@@ -376,6 +382,7 @@ Fait dans `style/p1-ui-polish` (demandes de l'équipe) :
 - Simple Form, case à cocher : avec `boolean_style = :nested`, seul le composant `:label_input` écrit le texte du libellé. Un wrapper qui n'utilise que `:input` affiche une case sans libellé. D'où `:inline` et le wrapper `:boolean`
 - Liste ouverte des `<select>` : une version stylée (`appearance: base-select`) a été essayée puis retirée. Chrome ne déplace pas le focus quand la souris bouge : après les flèches, le survol ne suivait plus la souris sans JavaScript en plus. Il fallait aussi du CSS hors des couches Tailwind, et Firefox ne la gère pas. Ne pas la remettre sans revoir ces points
 - RuboCop signale `Metrics/BlockLength` (36/25) sur le bloc `SimpleForm.setup`, et `Layout/EmptyLineAfterMagicComment` en tête du fichier (ligne générée par Simple Form) : accepté, `config/**` étant exclu de l'analyse, à trancher dans `chore/p1-rubocop-config`
+- La liste `Exclude` de `.rubocop.yml` **remplace** celle de RuboCop au lieu de la compléter : un dossier ignoré par défaut doit y être écrit. `vendor/**/*` doit y rester : sur GitHub Actions, `bundler-cache` installe les gems dans `vendor/bundle`, et sans cette ligne RuboCop analyse toutes les gems (plus d'un million d'erreurs, job de 6 minutes). En local, les gems sont ailleurs : l'erreur ne se voit qu'en CI
 - Clés courtes et `render layout:` : dans un bloc `render layout: "shared/message" do … end`, `t(".submit")` est cherché sous le partiel (`shared.message.submit`), pas sous la page, et lève « Translation missing ». Pour la carte des pages visiteurs, le helper `auth_card` règle ça (il lit le bloc avec `capture` avant de rendre le partiel). Ailleurs, dans un cas isolé, écrire la clé complète avec un commentaire (voir `devise/passwords/edit`)
 
 ## Prochaines tâches
@@ -400,8 +407,6 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 - « Mot de passe oublié » alors qu'on est connecté : « You are already signed in. » reste en anglais. Même correction que pour Sessions et Registrations : `Users::PasswordsController` avec `DeviseLocale`
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - `config/initializers/devise.rb` contient, en commentaire, deux valeurs aléatoires générées à l'installation (`config.secret_key` et `config.pepper`). Elles ne servent pas (Devise utilise `secret_key_base`), mais le dépôt est public : les supprimer, et ne jamais les décommenter telles quelles
-- Créer `.github/pull_request_template.md` avec le modèle de PR du document Versionnage-git (Quoi, Pourquoi, Comment tester, Captures, Checklist), pour que GitHub le propose à chaque nouvelle PR
-- Ajouter une intégration continue GitHub Actions qui lance les tests et RuboCop sur chaque PR (`.github/workflows/` est vide : aucune vérification automatique pour l'instant)
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
 
 À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
