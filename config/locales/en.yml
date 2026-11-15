@@ -79,8 +79,13 @@ en:
       description: "Find me in app/views/pages/home.html.erb"
   shared:
     navbar:
-      log_in: "Log in"
+      label: "Main navigation"
+      my_tables: "My tables"
+    navbar_user_links:
       log_out: "Log out"
+      my_account: "My account"
+    navbar_visitor_links:
+      log_in: "Log in"
       sign_up: "Sign up"
     password_visibility_button:
       show_password: "Show password"

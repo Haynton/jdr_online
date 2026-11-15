@@ -1,18 +1,15 @@
-<nav class="flex items-center justify-between border-b border-line bg-surface px-4 py-3">
-  <%= link_to root_path, class: "rounded-md" do %>
-    <%= render "shared/logo" %>
-  <% end %>
-
+<nav class="flex h-16 items-center justify-between gap-4 border-b border-line bg-surface px-4 sm:px-8" aria-label="<%= t(".label") %>">
   <div class="flex items-center gap-4">
-    <%= render "shared/theme_selector" %>
-
-    <% if user_signed_in? %>
-      <span class="text-sm text-muted"><%= current_user.email %></span>
-      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete,
-            class: button_classes(:primary, size: :compact) %>
-    <% else %>
-      <%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
-      <%= link_to t(".sign_up"), new_user_registration_path, class: button_classes(:primary, size: :compact) %>
+    <%= link_to root_path, class: "rounded-md" do %>
+      <%= render "shared/logo", compact_on_phone: true %>
     <% end %>
+    <% if user_signed_in? %>
+      <%= nav_link_to t(".my_tables"), root_path %>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= render "shared/theme_selector" %>
+    <%= render(user_signed_in? ? "shared/navbar_user_links" : "shared/navbar_visitor_links") %>
   </div>
 </nav>

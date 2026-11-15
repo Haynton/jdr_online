@@ -12,6 +12,14 @@ class UserTest < ActiveSupport::TestCase
     assert build_user(password: "a" * 12).valid?
   end
 
+  test "the initials are the first two letters of the email name, in capitals" do
+    assert_equal "PL", User.new(email: "player@example.com").initials
+  end
+
+  test "the initials skip the dots and dashes of the email name" do
+    assert_equal "JD", User.new(email: "j.doe@example.com").initials
+  end
+
   private
 
   def build_user(password:)

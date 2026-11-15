@@ -50,8 +50,13 @@ fr:
       description: "Retrouvez-moi dans app/views/pages/home.html.erb"
   shared:
     navbar:
-      log_in: "Se connecter"
+      label: "Navigation principale"
+      my_tables: "Mes tables"
+    navbar_user_links:
       log_out: "Se déconnecter"
+      my_account: "Mon compte"
+    navbar_visitor_links:
+      log_in: "Se connecter"
       sign_up: "S'inscrire"
     password_visibility_button:
       show_password: "Afficher le mot de passe"
