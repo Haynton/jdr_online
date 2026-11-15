@@ -38,7 +38,7 @@ class LocaleTest < ActionDispatch::IntegrationTest
   private
 
   def create_user(locale:)
-    User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: locale)
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: locale)
   end
 
   def assert_page_language(expected_locale)

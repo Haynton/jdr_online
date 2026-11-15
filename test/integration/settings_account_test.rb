@@ -2,15 +2,17 @@ require "test_helper"
 
 class SettingsAccountTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
+    @user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
     sign_in @user
   end
 
-  test "the account section shows the email form, log out and the danger zone" do
+  test "the account section shows the username and email forms, log out and the danger zone" do
     get settings_account_path
 
     assert_response :success
     assert_select "h2", text: "Compte"
+    assert_select "form[action=?] input#user_username[value=?]", settings_username_path, "player"
+    assert_select "form[action=?] input[type=password]", settings_username_path, count: 0
     assert_select "form[action=?] input#user_email[value=?]", settings_email_path, "player@example.com"
     assert_select "form[action=?] input#user_current_password[type=password]", settings_email_path
     assert_select "form[action=?] button.border-line", destroy_user_session_path, text: "Se déconnecter"
@@ -47,11 +49,51 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_select "nav a[href=?][aria-current=page]", settings_account_path
   end
 
-  test "the navbar keeps the saved email when the change is refused" do
+  test "a refused email does not show an error in the username form" do
     patch settings_email_path, params: { user: { email: "new.player@example.com", current_password: "wrong" } }
 
-    assert_select "button[aria-controls=user-menu]", text: /player@example\.com/
-    assert_select "button[aria-controls=user-menu]", text: /new\.player/, count: 0
+    assert_select "form[action=?] [role=alert]", settings_email_path
+    assert_select "form[action=?] [role=alert]", settings_username_path, count: 0
+  end
+
+  test "the two forms of the section have their own id" do
+    get settings_account_path
+
+    assert_select "form#username-form"
+    assert_select "form#email-form"
+  end
+
+  test "the username changes without the password" do
+    patch settings_username_path, params: { user: { username: "Barde" } }
+
+    assert_equal "Barde", @user.reload.username
+    assert_redirected_to settings_account_path
+    follow_redirect!
+    assert_select "[role=status]", text: "Pseudo modifié."
+    assert_select "button[aria-controls=user-menu]", text: /Barde/
+  end
+
+  test "a refused username shows the section again, with the error only in the username form" do
+    patch settings_username_path, params: { user: { username: "le barde" } }
+
+    assert_response :unprocessable_content
+    assert_equal "player", @user.reload.username
+    assert_select "input#user_username[aria-invalid=true]"
+    assert_select "form[action=?] [role=alert]", settings_email_path, count: 0
+    assert_select "nav a[href=?][aria-current=page]", settings_account_path
+  end
+
+  test "the navbar keeps the saved username when the change is refused" do
+    patch settings_username_path, params: { user: { username: "le barde" } }
+
+    assert_select "button[aria-controls=user-menu]", text: /player/
+    assert_select "button[aria-controls=user-menu]", text: /le barde/, count: 0
+  end
+
+  test "only the username can be changed this way" do
+    patch settings_username_path, params: { user: { username: "Barde", email: "new.player@example.com" } }
+
+    assert_equal "player@example.com", @user.reload.email
   end
 
   test "only the email can be changed this way" do

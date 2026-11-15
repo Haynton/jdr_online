@@ -32,6 +32,14 @@ en:
     attributes:
       user:
         locale: "Language"
+        username: "Username"
+    errors:
+      models:
+        user:
+          attributes:
+            username:
+              invalid: "can only contain letters, digits, dashes (-) and underscores (_)"
+              taken: "is already taken by another player"
   app_name: "JDR Online"
   devise:
     passwords:
@@ -81,6 +89,7 @@ en:
     accounts:
       show:
         change_email: "Change the email address"
+        change_username: "Change the username"
         current_password_hint: "To confirm it is really you."
         danger_zone: "Danger zone"
         delete_account: "Delete my account"
@@ -92,6 +101,7 @@ en:
         log_out_description: "On this device."
         session_group: "Session"
         title: "Account"
+        username_group: "Username"
     displays:
       show:
         browser_language: "Browser language"
@@ -124,6 +134,9 @@ en:
         password_confirmation: "New password confirmation"
         password_group: "Password"
         title: "Security"
+    usernames:
+      update:
+        updated: "Username changed."
   shared:
     navbar:
       label: "Main navigation"
@@ -148,6 +161,10 @@ en:
   simple_form:
     error_notification:
       default_message: "Please review the problems below."
+    # Read by Simple Form for every username field: sign up and settings
+    hints:
+      user:
+        username: "Seen by the other players. 3 to 20 characters: letters, digits, - and _."
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'

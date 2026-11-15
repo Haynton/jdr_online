@@ -90,6 +90,6 @@ class SettingsTest < ActionDispatch::IntegrationTest
   private
 
   def create_user(locale:)
-    User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: locale)
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: locale)
   end
 end

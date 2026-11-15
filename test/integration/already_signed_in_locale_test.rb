@@ -2,7 +2,7 @@ require "test_helper"
 
 class AlreadySignedInLocaleTest < ActionDispatch::IntegrationTest
   setup do
-    sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
+    sign_in User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
   end
 
   test "opening the sign in page while signed in explains it in the user's language" do

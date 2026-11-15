@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class SettingsThemeTest < ApplicationSystemTestCase
   setup do
-    User.create!(email: "player@example.com", password: TEST_PASSWORD)
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
     visit new_user_session_path
     fill_in "user_email", with: "player@example.com"
     fill_in "user_password", with: TEST_PASSWORD

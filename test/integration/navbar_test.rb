@@ -2,7 +2,7 @@ require "test_helper"
 
 class NavbarTest < ActionDispatch::IntegrationTest
   setup do
-    sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
+    sign_in User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
   end
 
   test "a signed in user sees the logo and the account button, no other link" do
@@ -16,13 +16,13 @@ class NavbarTest < ActionDispatch::IntegrationTest
     assert_select "#user-menu a", count: 2
   end
 
-  test "the account button shows the avatar and the email, and is named for screen readers" do
+  test "the account button shows the avatar and the username, and is named for screen readers" do
     get tables_path
 
     assert_select "button[aria-controls=user-menu]" do
       assert_select "span[aria-hidden=true]", text: "PL"
       assert_select "span.sr-only", text: "Menu du compte"
-      assert_select "span.sr-only.sm\\:not-sr-only", text: "player@example.com"
+      assert_select "span.sr-only.sm\\:not-sr-only", text: "player"
     end
   end
 

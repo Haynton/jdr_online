@@ -3,6 +3,14 @@ fr:
     attributes:
       user:
         locale: "Langue"
+        username: "Pseudo"
+    errors:
+      models:
+        user:
+          attributes:
+            username:
+              invalid: "ne peut contenir que des lettres, des chiffres, des tirets (-) et des tirets bas (_)"
+              taken: "est déjà pris par un autre joueur"
   app_name: "JDR en ligne"
   devise:
     passwords:
@@ -52,6 +60,7 @@ fr:
     accounts:
       show:
         change_email: "Changer l'adresse e-mail"
+        change_username: "Changer de pseudo"
         current_password_hint: "Pour confirmer que c'est bien vous."
         danger_zone: "Zone sensible"
         delete_account: "Supprimer mon compte"
@@ -63,6 +72,7 @@ fr:
         log_out_description: "Sur cet appareil."
         session_group: "Session"
         title: "Compte"
+        username_group: "Pseudo"
     displays:
       show:
         browser_language: "Langue du navigateur"
@@ -95,6 +105,9 @@ fr:
         password_confirmation: "Confirmation du nouveau mot de passe"
         password_group: "Mot de passe"
         title: "Sécurité"
+    usernames:
+      update:
+        updated: "Pseudo modifié."
   shared:
     navbar:
       label: "Navigation principale"
@@ -119,6 +132,10 @@ fr:
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."
+    # Read by Simple Form for every username field: sign up and settings
+    hints:
+      user:
+        username: "Visible des autres joueurs. De 3 à 20 caractères : lettres, chiffres, - et _."
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'

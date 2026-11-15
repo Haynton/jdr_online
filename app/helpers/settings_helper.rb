@@ -16,7 +16,7 @@ module SettingsHelper
   # The controllers that show each section, its form included when it comes back with an error
   SETTINGS_SECTION_CONTROLLERS = {
     display: %w[displays sections],
-    account: %w[accounts emails],
+    account: %w[accounts usernames emails],
     security: %w[securities passwords]
   }.freeze
 

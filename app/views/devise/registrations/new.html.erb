@@ -2,9 +2,12 @@
   <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
     <%= form_error_notification(f) %>
 
-    <%= f.input :email,
+    <%= f.input :username,
                 required: true,
                 autofocus: true,
+                input_html: { autocomplete: "nickname" } %>
+    <%= f.input :email,
+                required: true,
                 input_html: { autocomplete: "email" } %>
     <%= f.input :password,
                 required: true,

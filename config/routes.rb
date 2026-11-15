@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resource :display, only: :show
     resource :locale, only: :update
     resource :account, only: :show
+    resource :username, only: :update
     resource :email, only: :update
     resource :security, only: :show
     resource :password, only: :update

@@ -4,7 +4,7 @@ class MessagesTest < ActionDispatch::IntegrationTest
   FRENCH_BROWSER = { "Accept-Language" => "fr" }.freeze
 
   test "a flash notice uses the success message" do
-    user = User.create!(email: "player@example.com", password: TEST_PASSWORD)
+    user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
     sign_in user
     delete destroy_user_session_path
     follow_redirect!

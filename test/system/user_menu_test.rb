@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class UserMenuTest < ApplicationSystemTestCase
   setup do
-    User.create!(email: "player@example.com", password: TEST_PASSWORD)
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
     sign_in_with_form
   end
 

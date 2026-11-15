@@ -3,7 +3,7 @@
 <div class="relative"
      data-controller="dropdown"
      data-action="keydown.esc->dropdown#closeAndFocusButton click@window->dropdown#closeOnOutsideClick focusout->dropdown#closeOnFocusLeave turbo:before-cache@document->dropdown#close">
-  <%# On a phone the email is not shown: the screen reader text names the button. The visible email stays in that name %>
+  <%# On a phone the username is not shown: the screen reader text names the button. The visible username stays in that name %>
   <button type="button"
           class="flex items-center gap-2 rounded-full p-0.5 text-muted transition-colors hover:text-ink sm:rounded-lg sm:px-2 sm:py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           aria-expanded="false"
@@ -12,7 +12,7 @@
           data-action="dropdown#toggle">
     <%= render "shared/avatar", user: current_user %>
     <span class="sr-only"><%= t(".account_menu") %></span>
-    <span class="sr-only text-sm sm:not-sr-only"><%= current_user.email %></span>
+    <span class="sr-only text-sm sm:not-sr-only"><%= current_user.username %></span>
     <%= render "shared/icons/chevron_down", css_class: "size-4 shrink-0" %>
   </button>
 

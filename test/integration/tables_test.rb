@@ -83,8 +83,8 @@ class TablesTest < ActionDispatch::IntegrationTest
   end
 
   test "signing up leads to my tables" do
-    post user_registration_path, params: { user: { email: "new.player@example.com", password: TEST_PASSWORD,
-                                                   password_confirmation: TEST_PASSWORD } }
+    post user_registration_path, params: { user: { username: "new_player", email: "new.player@example.com",
+                                                   password: TEST_PASSWORD, password_confirmation: TEST_PASSWORD } }
 
     assert_redirected_to tables_path
   end
@@ -104,6 +104,6 @@ class TablesTest < ActionDispatch::IntegrationTest
   end
 
   def create_user(locale:)
-    User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: locale)
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: locale)
   end
 end
