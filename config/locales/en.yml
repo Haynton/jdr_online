@@ -82,6 +82,8 @@ en:
       log_in: "Log in"
       log_out: "Log out"
       sign_up: "Sign up"
+    password_visibility_button:
+      show_password: "Show password"
     theme_choice:
       dark: "Dark"
       light: "Light"
