@@ -1,8 +1,0 @@
-<%# The three theme choices of the display settings, as a segmented control. Same controller as the navbar ones %>
-<div class="inline-flex gap-1 rounded-lg border border-field-line bg-field p-1"
-     role="group" aria-labelledby="<%= labelled_by %>" data-controller="theme">
-  <% %w[light dark system].each do |choice| %>
-    <%= render "shared/theme_choice", choice: choice,
-               css_class: "rounded-md px-3 py-1.5 text-sm text-muted hover:text-ink aria-pressed:bg-surface-raised aria-pressed:font-semibold aria-pressed:text-ink" %>
-  <% end %>
-</div>

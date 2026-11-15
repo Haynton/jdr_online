@@ -62,6 +62,8 @@ class SettingsTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: "Thème"
     assert_select "p#theme-setting", text: "Thème"
     assert_select "[role=group][aria-labelledby=theme-setting][data-controller=theme] button", count: 3
+    assert_select "[role=group][aria-labelledby=theme-setting] button:not([title]) svg + span:not(.sr-only)",
+                  text: "Clair"
   end
 
   test "the settings are translated in english" do

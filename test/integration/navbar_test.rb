@@ -5,12 +5,11 @@ class NavbarTest < ActionDispatch::IntegrationTest
     sign_in User.create!(email: "player@example.com", password: TEST_PASSWORD, locale: "fr")
   end
 
-  test "a signed in user sees the logo, the theme switch and the account button, no other link" do
+  test "a signed in user sees the logo and the account button, no other link" do
     get tables_path
 
     assert_select "nav[aria-label=?]", "Navigation principale" do
       assert_select "nav > a[href=?]", tables_path
-      assert_select "button[role=switch]"
       assert_select "button[aria-expanded=false][aria-controls=user-menu]"
     end
     assert_select "nav a", count: 3, message: "only the logo and the two links of the menu"
@@ -61,19 +60,22 @@ class NavbarTest < ActionDispatch::IntegrationTest
     assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", tables_path, text: "JDR en ligne"
   end
 
-  test "a signed in user gets the light or dark switch, not the three theme choices" do
+  test "a signed in user has no theme control in the navbar: the theme is set in the settings" do
     get tables_path
 
-    assert_select "nav button[role=switch][aria-label=?][data-action='theme#toggle']", "Thème sombre"
-    assert_select "nav [role=group]", count: 0
+    assert_select "nav [data-controller=theme]", count: 0
+    assert_select "nav [role=switch]", count: 0
   end
 
-  test "a visitor keeps the three theme choices, without the switch" do
+  test "a visitor gets the three theme choices as icons, their text kept for screen readers" do
     sign_out :user
-    get root_path
+    get root_path, headers: { "Accept-Language" => "fr" }
 
-    assert_select "nav [role=group] button", count: 3
-    assert_select "nav [role=switch]", count: 0
+    assert_select "nav [role=group][aria-label=?][data-controller=theme]", "Thème" do
+      assert_select "button[aria-pressed=false][title=?] svg[aria-hidden=true] + span.sr-only", "Clair", text: "Clair"
+      assert_select "button[title=?]", "Sombre"
+      assert_select "button[title=?]", "Système"
+    end
   end
 
   test "a visitor gets neither the account menu nor an avatar" do

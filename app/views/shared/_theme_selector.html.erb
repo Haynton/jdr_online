@@ -1,5 +1,10 @@
-<div class="flex items-center gap-1" role="group" aria-label="<%= t(".label") %>" data-controller="theme">
-  <%= render "shared/theme_choice", choice: "light" %>
-  <%= render "shared/theme_choice", choice: "dark" %>
-  <%= render "shared/theme_choice", choice: "system" %>
-</div>
+<%# The three theme choices (light, dark, system), the same control everywhere: settings, navbar of the visitors,
+    sign in pages. compact: icons only (the navbar and the sign in pages); labelled_by: id of the visible label
+    that names it (a settings row). Driven by theme_controller.js %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<%= tag.div class: "inline-flex gap-1 rounded-lg border border-field-line bg-field p-1", role: "group",
+            aria: theme_selector_aria(local_assigns[:labelled_by]), data: { controller: "theme" } do %>
+  <% ThemesHelper::THEME_CHOICE_ICONS.each do |choice, icon| %>
+    <%= render "shared/theme_choice", choice: choice, icon: icon, compact: compact %>
+  <% end %>
+<% end %>
