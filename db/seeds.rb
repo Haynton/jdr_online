@@ -5,22 +5,23 @@
 
 
 # ==========================================
-# Database Seeds
+# Clean database before seeding
 # ==========================================
 
-# Clean database before seeding
+# Delete existing records in dependency order
+Participation.destroy_all
+GameTable.destroy_all
 User.destroy_all
+
 
 # ==========================================
 # Users
 # ==========================================
 
-# Create default users
-#
-User.create!([
+users = User.create!([
   {
-    email: "othna@example.com",
-    password: "password1234",
+    email: "test@test.com",
+    password: "azertyuiopqsdfghjklm",
     username: "othna",
     locale: "fr"
   },
@@ -34,14 +35,10 @@ User.create!([
 
 
 # ==========================================
-# Game Tables Seeds
+# Game Tables
 # ==========================================
 
-# Clean existing game tables
-GameTable.destroy_all
-
-# Create heroic fantasy game tables
-GameTable.create!([
+game_tables = GameTable.create!([
   {
     name: "Les Royaumes Oubliés",
     description: "Un monde ancien où les royaumes humains tentent de survivre face aux créatures des ténèbres. D'anciennes ruines renferment des secrets capables de bouleverser l'équilibre du monde.",
@@ -105,7 +102,34 @@ GameTable.create!([
 ])
 
 
+# ==========================================
+# Participations
+# ==========================================
+
+# Assign the first 5 game tables to Othna
+game_tables.first(5).each do |game_table|
+  Participation.create!(
+    user: users[0],
+    game_table: game_table,
+    role: "game_master"
+  )
+end
+
+# Assign the last 5 game tables to Luara
+game_tables.last(5).each do |game_table|
+  Participation.create!(
+    user: users[1],
+    game_table: game_table,
+    role: "game_master"
+  )
+end
+
 
 # ==========================================
 # Seeds completed
 # ==========================================
+
+puts "Seeds completed:"
+puts "- #{User.count} users created"
+puts "- #{GameTable.count} game tables created"
+puts "- #{Participation.count} participations created"
