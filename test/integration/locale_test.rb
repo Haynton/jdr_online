@@ -4,7 +4,7 @@ class LocaleTest < ActionDispatch::IntegrationTest
   test "a signed-in user sees the language of their account" do
     sign_in create_user(locale: "fr")
 
-    get tables_path
+    get game_tables_path
 
     assert_page_language "fr"
   end
@@ -30,7 +30,7 @@ class LocaleTest < ActionDispatch::IntegrationTest
   test "the account language wins over the browser language" do
     sign_in create_user(locale: "en")
 
-    get tables_path, headers: { "Accept-Language" => "fr" }
+    get game_tables_path, headers: { "Accept-Language" => "fr" }
 
     assert_page_language "en"
   end

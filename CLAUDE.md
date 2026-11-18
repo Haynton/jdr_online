@@ -330,7 +330,7 @@ Fait dans `feature/p1-dashboard` :
 
 - Page « Mes tables » (`TablesController#index`, `/tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`tables/_empty_state`), affichée seulement si `@tables` est vide. `@tables` vaut `[]` en attendant le modèle `Table`
 - « Créer une table » mène à une page provisoire (`TablesController#new`, `/tables/new`) qui annonce la création à venir
-- Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
+- Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `game_tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
 - Zone principale du layout `application` : 1120 px au maximum, marges de 32 px (16 px sur téléphone), 40 px en haut et en bas
 - Écarts volontaires avec la fiche Maquettes : bouton « Créer une table » visible dès maintenant (page provisoire) ; pointillés de la carte vide en `line` gardés, même s'ils se voient peu en clair (1,2)
 - **Question ouverte** : le mot « table » (jargon de rôliste) est-il assez clair ? Pistes : « Mes campagnes », « Mes parties ». À trancher avec Julien. Si le terme change, seul le texte affiché change a priori : `tables` reste dans le code et la base

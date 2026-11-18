@@ -139,7 +139,7 @@ fr:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
-  tables:
+  game_tables:
     create_table_button:
       create_table: "Créer une table"
     empty_state:

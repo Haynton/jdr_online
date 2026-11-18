@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
   root to: "pages#home"
-  resources :tables, only: %i[index new]
+  resources :game_tables, only: %i[index new]
 
   # Settings: one address per section, so the section menu is made of plain links
   get "settings", to: "settings/sections#index", as: :settings

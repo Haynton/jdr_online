@@ -3,6 +3,6 @@ class PagesController < ApplicationController
 
   # The home page is for visitors: a signed in user goes to their tables
   def home
-    redirect_to tables_path if user_signed_in?
+    redirect_to game_tables_path if user_signed_in?
   end
 end

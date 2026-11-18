@@ -26,7 +26,7 @@ class AlreadySignedInLocaleTest < ActionDispatch::IntegrationTest
   private
 
   def assert_already_signed_in_message_in(locale)
-    assert_redirected_to tables_path
+    assert_redirected_to game_tables_path
     follow_redirect!
     assert_select "[role=alert]", text: I18n.t("devise.failure.already_authenticated", locale: locale)
   end

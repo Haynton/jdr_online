@@ -1,8 +1,8 @@
 <%= page_header(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= render "tables/create_table_button" %>
+  <%= render "game_tables/create_table_button" %>
 <% end %>
 
 <%# One column on a phone, two on a tablet, three on a wide screen. The table cards will fill it %>
 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  <%= render "tables/empty_state" if @tables.none? %>
+  <%= render "game_tables/empty_state" if @tables.none? %>
 </div>
