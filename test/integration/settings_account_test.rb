@@ -70,7 +70,7 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_redirected_to settings_account_path
     follow_redirect!
     assert_select "[role=status]", text: "Pseudo modifié."
-    assert_select "button[aria-controls=user-menu]", text: /Barde/
+    assert_select "#side-nav div[title=?]", "Barde", text: /Barde/
   end
 
   test "a refused username shows the section again, with the error only in the username form" do
@@ -83,11 +83,11 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_select "nav a[href=?][aria-current=page]", settings_account_path
   end
 
-  test "the navbar keeps the saved username when the change is refused" do
+  test "the navigation keeps the saved username when the change is refused" do
     patch settings_username_path, params: { user: { username: "le barde" } }
 
-    assert_select "button[aria-controls=user-menu]", text: /player/
-    assert_select "button[aria-controls=user-menu]", text: /le barde/, count: 0
+    assert_select "#side-nav div[title=?]", "player", text: /player/
+    assert_select "#side-nav", text: /le barde/, count: 0
   end
 
   test "only the username can be changed this way" do

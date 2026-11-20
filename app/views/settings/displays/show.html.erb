@@ -7,6 +7,8 @@
 
   <%= settings_group(title: t(".language_group")) do %>
     <%= setting_row(label: t(".language"), label_id: "language-setting", description: t(".language_description")) do %>
+      <%# In the settings window, the window stays and shows itself in the new language; the page behind it
+          reloads when the window closes (settings_dialog_controller.js). On the page, the whole page reloads %>
       <%= simple_form_for current_user, url: settings_locale_path, method: :patch,
                                         data: { controller: "auto-submit", action: "change->auto-submit#submit" } do |form| %>
         <%= form.input :locale, wrapper: :setting, collection: locale_options,

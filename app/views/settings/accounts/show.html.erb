@@ -1,36 +1,43 @@
 <%= settings_section(title: t(".title")) do %>
   <%= settings_group(title: t(".username_group")) do %>
     <%= simple_form_for @user_for_username, url: settings_username_path, method: :patch,
-                                            html: { id: "username-form", class: "border-b border-line py-4" } do |form| %>
+                                            html: { id: "username-form", class: "border-b border-line py-4" },
+                                            defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
       <%= form_error_notification(form) %>
       <%= form.input :username, required: true, input_html: { autocomplete: "nickname" } %>
-      <%= form.button :submit, t(".change_username"), class: button_classes(:primary) %>
+      <%= form.button :submit, t(".change_username"), class: button_classes(:secondary) %>
     <% end %>
   <% end %>
 
   <%= settings_group(title: t(".email_group")) do %>
     <%= simple_form_for @user_for_email, url: settings_email_path, method: :patch,
-                                         html: { id: "email-form", class: "border-b border-line py-4" } do |form| %>
+                                         html: { id: "email-form", class: "border-b border-line py-4" },
+                                         defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
       <%= form_error_notification(form) %>
       <%= form.input :email, required: true, input_html: { autocomplete: "email" } %>
       <%= form.input :current_password, required: true, hint: t(".current_password_hint"),
                                         input_html: { autocomplete: "current-password" } %>
-      <%= form.button :submit, t(".change_email"), class: button_classes(:primary) %>
+      <%= form.button :submit, t(".change_email"), class: button_classes(:secondary) %>
     <% end %>
   <% end %>
 
   <%= settings_group(title: t(".session_group")) do %>
     <%= setting_row(label: t(".log_out"), label_id: "log-out-setting", description: t(".log_out_description")) do %>
-      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: button_classes(:secondary) %>
+      <%# _top: leaving the settings, the whole page changes, in the settings window too %>
+      <%= button_to t(".log_out"), destroy_user_session_path, method: :delete, class: button_classes(:secondary),
+                                                                form: { data: { turbo_frame: "_top" } } %>
     <% end %>
   <% end %>
 
   <%= settings_group(title: t(".danger_zone")) do %>
     <%= setting_row(label: t(".delete_account"), label_id: "delete-account-setting",
                     description: t(".delete_account_description")) do %>
-      <%# Devise's own action. The browser asks for a confirmation before sending it %>
+      <%# Devise's own action. Asked first (shared/_confirm_dialog), with a red confirm button. _top, like log out %>
       <%= button_to t(".delete_account_button"), user_registration_path, method: :delete,
-                    class: button_classes(:danger), data: { turbo_confirm: t(".delete_account_confirmation") } %>
+                    class: button_classes(:danger),
+                    data: { turbo_confirm: t(".delete_account_confirmation"),
+                            confirm_button: t(".delete_account_button"), confirm_variant: "danger" },
+                    form: { data: { turbo_frame: "_top" } } %>
     <% end %>
   <% end %>
 <% end %>
