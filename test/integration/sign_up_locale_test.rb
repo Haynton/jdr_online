@@ -26,6 +26,14 @@ class SignUpLocaleTest < ActionDispatch::IntegrationTest
     assert_select "[role=status]", text: I18n.t("devise.registrations.signed_up", locale: :fr)
   end
 
+  test "the welcome message is for screen readers only: the page already shows the new user's tables" do
+    sign_up_with_browser_language "fr"
+    follow_redirect!
+
+    assert_select ".sr-only [role=status]", count: 1
+    assert_select "[role=status]", count: 1
+  end
+
   private
 
   def sign_up_with_browser_language(accept_language)
