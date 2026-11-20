@@ -207,6 +207,8 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Rubrique : helpers `settings_section(title:)`, `settings_group(title:)` et `setting_row(label:, label_id:, description:)` (`app/helpers/settings_helper.rb`), tous avec un bloc lu avant le rendu du partiel (`settings/_section`, `_group`, `_row`). Chaque ligne de réglage a un trait `line` sous elle, la dernière d'un groupe comprise, sauf le tout dernier élément de la rubrique (le bord de la carte suffit). Un formulaire dans un groupe se place comme une ligne (`border-b border-line py-4`). Le contrôle d'une ligne se nomme par `aria-labelledby="<label_id>"`. Une nouvelle rubrique : un contrôleur qui hérite de `Settings::BaseController`, sa ligne dans `settings/_sections_menu` et ses contrôleurs dans `SETTINGS_SECTION_CONTROLLERS` (`current_settings_section?`, pour que la rubrique reste en cours quand son formulaire revient avec une erreur)
 - Envoi automatique d'un formulaire : contrôleur générique `auto_submit_controller.js` (`change->auto-submit#submit` sur le formulaire). Toujours prévenir dans la description de la ligne (« Enregistrée dès que vous la changez. », critère WCAG 3.2.2)
 - Séparateur : partiel `shared/_divider` (`text:`), un trait de chaque côté d'un texte court (« Nouveau ici ? »)
+- Carte en ogive : partiel `game_tables/_ogive_card`, rendu en gabarit (`render layout:` avec `path:`, `cover_image_path:`, `aria:`), arc brisé de 220 × 310 px découpé par l'utilitaire `ogive` (`application.css`), couverture fondue dans la page en bas, contour redessiné en SVG (`GameTablesHelper`, même tracé que `ogive` : modifier les deux ensemble). Contour `link` au survol et sur la carte choisie (`aria-current="true"`)
+- Image de couverture : partiel `game_tables/_cover` (gabarit), image pleine largeur fondue vers le bas par les classes de masque de Tailwind (`mask-b-from-50% mask-b-to-100%`), dégradé de la couleur `page` derrière le texte pour garder le contraste sur n'importe quelle image
 - Liens dans un texte ou sous un formulaire : `font-medium text-link hover:underline`
 - Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
 
@@ -328,7 +330,7 @@ Fait dans `feature/p1-app-navbar` :
 
 Fait dans `feature/p1-dashboard` :
 
-- Page « Mes tables » (`GameTablesController#index`, `/game_tables`, renommés dans `chores/db-game_tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`game_tables/_empty_state`), affichée seulement si `@game_tables` est vide
+- Page « Mes tables » (`GameTablesController#index`, `/game_tables`, renommés dans `chores/db-game_tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`game_tables/_empty_state`), affichée seulement si `@game_tables` est vide. Page refaite dans `feature/p1-table-cards` : couverture, cartes en ogive, carte « Créer une table » à la place du bouton (voir plus bas)
 - « Créer une table » mène à une page provisoire (`GameTablesController#new`, `/game_tables/new`) qui annonce la création à venir
 - Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `game_tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
 - Zone principale du layout `application` : 1120 px au maximum, marges de 32 px (16 px sur téléphone), 40 px en haut et en bas
@@ -376,6 +378,15 @@ Fait dans `chores/db-game_tables` :
 - Règle décidée : celui qui crée une table en devient le MJ, les participants suivants sont joueurs. Elle sera codée avec le formulaire de création (l'action `create`, sans route ni formulaire, a été retirée de cette branche)
 - `User has_many :game_tables, through: :participations`. « Mes tables » montre les tables de l'utilisateur (`current_user.game_tables`), comme MJ ou comme joueur
 - Seed (`db/seeds.rb`) : vide d'abord la base (`User.destroy_all` compris, voulu), puis crée deux comptes, dix tables, cinq tables par compte en MJ
+
+Fait dans `feature/p1-table-cards` (design repris de l'essai `style/testing-night-dawn`, seulement « Mes tables ») :
+
+- Images de couverture dans `app/assets/images/covers/` : `sentinelle` (par défaut), `citadelle`, `dragon`, `gobelins`, `village`, `wolf`. Converties en WebP de 1600 px de large (`cwebp -q 80`) : 650 Ko pour les six au lieu de 12,6 Mo en PNG. Une nouvelle image suit le même traitement
+- Colonne `game_tables.cover_image` (texte, `sentinelle` par défaut) validée contre `GameTable::COVER_IMAGES` : l'utilisateur choisira dans cette galerie fixe (décision ; l'envoi d'une image perso avec Cloudinary n'est pas prévu pour l'instant)
+- « Mes tables » : en haut, la table choisie en grand sur sa couverture (rôle, nombre de joueurs, nom, description) ; sans table, la couverture par défaut et « Aucune table pour l'instant ». En dessous, « Toutes mes tables » : rangée de cartes en ogive qui défile sur le côté, la carte « Créer une table » en premier (avec la couverture par défaut), puis une carte par table, la plus récente d'abord. Le bouton « Créer une table » de l'en-tête est retiré (pas assez visible)
+- Choix d'une table par `?table=<id>`, cherché **seulement** parmi les tables de l'utilisateur : l'id d'une autre table affiche la plus récente. Participations chargées avec `includes(game_table: :participations)`, nombre de joueurs compté en Ruby (`GameTable#players_count`, sans le MJ) : pas de requête par carte
+- Retirés de l'essai : `scene_painter.js` et `scene_controller.js` (paysages dessinés en SVG, remplacés par les images), le faux modèle `TablePreview` et `?preview=1`
+- Seed : une couverture par table, et chaque compte joue aussi à deux tables de l'autre (les deux rôles se voient sur les cartes)
 
 À savoir :
 
@@ -425,7 +436,8 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
-- Création d'une table : vrai formulaire à la place de la page provisoire `game_tables/new`, action `create` qui crée la table et la participation MJ de son créateur dans une même transaction, page `show`, cartes de table dans la grille (avec `includes` si la carte affiche le MJ ou les joueurs, pour éviter le N+1)
+- Création d'une table : vrai formulaire à la place de la page provisoire `game_tables/new`, avec le choix de la couverture dans `GameTable::COVER_IMAGES` (aperçu de l'image choisie, `sentinelle` par défaut), action `create` qui crée la table et la participation MJ de son créateur dans une même transaction, page `show`
+- Design « nuit et aube » du reste de l'application (barre latérale, Paramètres, boutons, couleur laiton) : essayé dans `style/testing-night-dawn`, pas encore repris
 - Tests système : sur `main` comme ailleurs, ils plantent tous avec `invalid argument: * is not a valid URL` (au nettoyage de Capybara, `reset!`). Probablement une version de Chrome trop récente pour Capybara ou `selenium-webdriver`. Branche dédiée
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
