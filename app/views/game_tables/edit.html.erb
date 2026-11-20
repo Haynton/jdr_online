@@ -1,0 +1,7 @@
+<%# Temporary settings page of a table, for its game master, until the settings form exists %>
+<%= page_header(title: t(".title"), subtitle: @game_table.name) %>
+
+<section class="max-w-xl rounded-xl border border-line bg-surface px-6 py-5">
+  <p class="text-ink"><%= t(".coming_soon") %></p>
+  <%= link_to t("game_tables.show.back_to_tables"), game_tables_path(table: @game_table.id), class: "mt-3 inline-block text-sm font-medium text-link hover:underline" %>
+</section>

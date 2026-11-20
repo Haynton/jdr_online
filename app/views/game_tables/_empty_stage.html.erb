@@ -1,6 +1,5 @@
 <%# Shown while the user has no table: the default cover, and what this page will hold %>
 <%= render layout: "game_tables/cover", locals: { cover_image_path: default_cover_image_path, title_id: "empty-tables-title" } do %>
-  <p class="text-xs font-semibold tracking-widest text-ink uppercase"><%= t("game_tables.index.title") %></p>
   <h1 id="empty-tables-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
     <%= t("game_tables.empty_stage.title") %>
   </h1>

@@ -197,10 +197,19 @@ en:
       game_master: "GM"
       player: "Player"
     shelf:
+      next_tables: "Next tables"
+      previous_tables: "Previous tables"
       title: "All my tables"
-    stage:
-      status: "%{role} · %{players}"
+    edit:
+      coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
+      title: "Game settings"
     new:
       back_to_tables: "Back to my tables"
       coming_soon: "Creating a table is coming soon. You will choose a name, a setting and invite your players."
       title: "Create a table"
+    show:
+      back_to_tables: "Back to my tables"
+      coming_soon: "The page of the table is coming soon: board, chat and dice rolls will be played here."
+    stage:
+      game_settings: "Game settings"
+      join_game: "Join the game"

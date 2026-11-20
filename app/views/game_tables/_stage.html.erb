@@ -1,12 +1,25 @@
-<%# The chosen table, large, over its cover %>
-<%= render layout: "game_tables/cover", locals: { cover_image_path: participation.game_table.cover_image_path, title_id: "chosen-table-title" } do %>
-  <p class="text-xs font-semibold tracking-widest text-ink uppercase">
-    <%= t("game_tables.stage.status", role: table_role_label(participation), players: table_players_label(participation.game_table)) %>
-  </p>
+<%# The chosen table, large, over its cover: what it is, the way in, and who plays there %>
+<% game_table = participation.game_table %>
+<%= render layout: "game_tables/cover", locals: { cover_image_path: game_table.cover_image_path, title_id: "chosen-table-title" } do %>
+  <p class="text-xs font-semibold tracking-widest text-brass uppercase"><%= table_role_label(participation) %></p>
   <h1 id="chosen-table-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
-    <%= participation.game_table.name %>
+    <%= game_table.name %>
   </h1>
-  <% if participation.game_table.description.present? %>
-    <p class="max-w-md text-[15px] text-ink"><%= participation.game_table.description %></p>
+  <% if game_table.description.present? %>
+    <%# Three lines at most: the page has to fit in the height of the screen %>
+    <p class="line-clamp-3 max-w-md text-[15px] text-ink"><%= game_table.description %></p>
   <% end %>
+  <div class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
+    <div class="flex flex-wrap gap-3">
+      <%= link_to t("game_tables.stage.join_game"), game_table_path(game_table), class: button_classes(:primary) %>
+      <%# Only the game master sets up the game: the server refuses everyone else as well (GameTablesController#edit) %>
+      <% if participation.game_master? %>
+        <%= link_to edit_game_table_path(game_table), class: button_classes(:secondary) do %>
+          <%= render "shared/icons/settings" %>
+          <%= t("game_tables.stage.game_settings") %>
+        <% end %>
+      <% end %>
+    </div>
+    <%= render "game_tables/players", game_table: game_table %>
+  </div>
 <% end %>

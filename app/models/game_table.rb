@@ -19,7 +19,11 @@ class GameTable < ApplicationRecord
     self.class.cover_image_path(cover_image)
   end
 
-  # Counted in Ruby: "My tables" loads the participations of every table at once, without a query per card
+  # Read in Ruby: "My tables" loads the participations of every table at once, without a query per card
+  def players
+    participations.select(&:player?).map(&:user)
+  end
+
   def players_count
     participations.count(&:player?)
   end

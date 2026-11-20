@@ -86,6 +86,84 @@ class TablesTest < ActionDispatch::IntegrationTest
     assert_select "main", text: /L'Ombre du Dragon/, count: 0
   end
 
+  test "the game master can join the game, set it up and create another one, and sees the avatars of the players" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    game_table.participations.create!(user: create_other_user, role: :player)
+    sign_in user
+    get game_tables_path
+
+    assert_select "section[aria-labelledby=chosen-table-title]" do
+      assert_select "a.bg-primary[href=?]", game_table_path(game_table), text: "Rejoindre la partie"
+      assert_select "a[href=?]", edit_game_table_path(game_table), text: "Paramètres de la partie"
+      assert_select "a[href=?]", new_game_table_path, text: "Créer une table"
+      assert_select "span[aria-hidden=true]", text: "OT"
+      assert_select "p", text: /1 joueur/
+    end
+  end
+
+  test "a player can join the game but has no settings button" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    game_table.participations.create!(user: user, role: :player)
+    sign_in user
+    get game_tables_path
+
+    assert_select "a[href=?]", game_table_path(game_table), text: "Rejoindre la partie"
+    assert_select "a[href=?]", edit_game_table_path(game_table), count: 0
+  end
+
+  test "the game master opens the temporary settings page of the game" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get edit_game_table_path(game_table)
+
+    assert_response :success
+    assert_select "main h1", text: "Paramètres de la partie"
+    assert_select "main p", text: "Les Marches du Nord"
+  end
+
+  test "a player cannot open the settings of the game, even by its address" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    game_table.participations.create!(user: user, role: :player)
+    sign_in user
+    get edit_game_table_path(game_table)
+
+    assert_response :not_found
+  end
+
+  test "the row of cards has arrows named for screen readers, hidden until the controller shows them" do
+    sign_in create_user(locale: "fr")
+    get game_tables_path
+
+    assert_select "section[data-controller=card-row]" do
+      assert_select "button[hidden][aria-label=?][data-action='card-row#scrollPrevious']", "Tables précédentes"
+      assert_select "button[hidden][aria-label=?][data-action='card-row#scrollNext']", "Tables suivantes"
+      assert_select "ul.no-scrollbar[data-card-row-target=row]"
+    end
+  end
+
+  test "a participant opens the temporary page of their table" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_table_path(game_table)
+
+    assert_response :success
+    assert_select "main h1", text: "Les Marches du Nord"
+    assert_select "main a[href=?]", game_tables_path(table: game_table.id), text: "Retour à mes tables"
+  end
+
+  test "someone who is not at a table cannot open it" do
+    other_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    sign_in create_user(locale: "fr")
+    get game_table_path(other_table)
+
+    assert_response :not_found
+  end
+
   test "the create a table page says it is coming soon and leads back to my tables" do
     sign_in create_user(locale: "fr")
     get new_game_table_path

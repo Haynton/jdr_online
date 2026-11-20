@@ -168,10 +168,19 @@ fr:
       game_master: "MJ"
       player: "Joueur"
     shelf:
+      next_tables: "Tables suivantes"
+      previous_tables: "Tables précédentes"
       title: "Toutes mes tables"
-    stage:
-      status: "%{role} · %{players}"
+    edit:
+      coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
+      title: "Paramètres de la partie"
     new:
       back_to_tables: "Retour à mes tables"
       coming_soon: "La création d'une table arrive bientôt. Vous pourrez y choisir un nom, un univers et inviter vos joueurs."
       title: "Créer une table"
+    show:
+      back_to_tables: "Retour à mes tables"
+      coming_soon: "La page de la table arrive bientôt : plateau, chat et lancers de dés se joueront ici."
+    stage:
+      game_settings: "Paramètres de la partie"
+      join_game: "Rejoindre la partie"
