@@ -41,60 +41,70 @@ users = User.create!([
 game_tables = GameTable.create!([
   {
     name: "Les Royaumes Oubliés",
+    cover_image: "citadelle",
     description: "Un monde ancien où les royaumes humains tentent de survivre face aux créatures des ténèbres. D'anciennes ruines renferment des secrets capables de bouleverser l'équilibre du monde.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "L'Ombre du Dragon",
+    cover_image: "dragon",
     description: "Depuis le réveil d'un dragon ancestral, les terres sont plongées dans le chaos. Les villages brûlent, les armées se préparent et une ancienne prophétie annonce le retour d'un héros oublié.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Les Terres de Valdoria",
+    cover_image: "village",
     description: "Un vaste continent composé de royaumes rivaux, de forêts enchantées et de montagnes mystérieuses. Les aventuriers devront naviguer entre intrigues politiques, magie ancienne et dangers oubliés.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Le Crépuscule des Elfes",
+    cover_image: "wolf",
     description: "Les derniers royaumes elfiques disparaissent peu à peu sous l'influence d'une magie corrompue. Au cœur des forêts millénaires, une force inconnue menace de dévorer toute forme de vie.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "La Couronne des Cendres",
+    cover_image: "sentinelle",
     description: "Après la chute d'un empire puissant, plusieurs seigneurs se disputent les vestiges du trône. Mercenaires, chevaliers et sorciers cherchent à imposer leur propre vision du futur.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Les Chroniques d'Aetheria",
+    cover_image: "citadelle",
     description: "Un monde où la magie imprègne chaque pierre et chaque être vivant. Des cités flottantes aux temples oubliés, les aventuriers découvriront les traces d'une civilisation disparue.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Le Royaume des Brumes",
+    cover_image: "gobelins",
     description: "Une région mystérieuse recouverte d'une brume éternelle. Les voyageurs racontent que des villages entiers disparaissent et que des créatures anciennes rôdent dans les marécages.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Les Légendes de Drakemoor",
+    cover_image: "dragon",
     description: "Dans les terres sauvages de Drakemoor, les dragons sont considérés comme des dieux vivants. Les clans humains, nains et orcs doivent s'unir face à une menace venue des profondeurs.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "L'Éveil du Néant",
+    cover_image: "gobelins",
     description: "Une mystérieuse énergie noire commence à corrompre les terres et à transformer les êtres vivants. Les anciens grimoires évoquent une entité bannie depuis des millénaires qui chercherait à revenir.",
     status: "draft",
     creation_step: 1
   },
   {
     name: "Les Marches du Nord",
+    cover_image: "wolf",
     description: "Aux frontières du monde connu, de petites forteresses protègent les dernières terres civilisées. Au-delà des montagnes glacées, des tribus barbares et des monstres légendaires se rassemblent.",
     status: "draft",
     creation_step: 1
@@ -122,6 +132,15 @@ game_tables.last(5).each do |game_table|
     game_table: game_table,
     role: "game_master"
   )
+end
+
+# Each one also plays at two tables of the other, so that "My tables" shows both roles
+game_tables.first(2).each do |game_table|
+  Participation.create!(user: users[1], game_table: game_table, role: "player")
+end
+
+game_tables.last(2).each do |game_table|
+  Participation.create!(user: users[0], game_table: game_table, role: "player")
 end
 
 
