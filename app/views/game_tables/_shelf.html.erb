@@ -2,13 +2,31 @@
     The arrows beside the title move it (card_row_controller.js), so do the wheel, the keyboard and a finger.
     The first card creates a new table: more visible than a button in a corner.
     The row runs from edge to edge of the content (negative margin, same padding inside): the cards slide up to
-    the navigation instead of being cut 32 px away from it, and the first one still lines up with the title %>
-<section class="shrink-0 px-4 pb-4 sm:px-8" aria-labelledby="all-tables-title" data-controller="card-row">
-  <%# The title is as tall as the arrows (36 px), so that both sit on one line. From 768 px they stand together
-      on the right; on a phone, the title on the left and the arrows on the right %>
-  <div class="flex items-center justify-between gap-4 md:justify-end">
-    <h2 id="all-tables-title" class="text-lg leading-9 font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
-    <div class="flex gap-2">
+    the navigation instead of being cut 32 px away from it, and the first one still lines up with the title.
+    The pills filter the cards by role and status (table_filter_controller.js) %>
+<section class="shrink-0 px-4 pb-2 sm:px-8 md:pb-4" aria-labelledby="all-tables-title"
+         data-controller="card-row table-filter" data-action="table-filter:changed->card-row#toggleButtons">
+  <%# The title is as tall as the arrows (36 px), so that all sit on one line. From 768 px the title, the pills and
+      the arrows stand together on the right. On a phone, the arrows are left out (a finger moves the row) and
+      the pills scroll sideways beside the title: one line, so that the page still fits the screen %>
+  <div class="flex items-center gap-4 md:justify-end">
+    <h2 id="all-tables-title" class="shrink-0 text-lg leading-9 font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
+    <%# Nothing to filter without a table: no pills, no "no match" message %>
+    <% if participations.any? %>
+      <div hidden role="group" aria-label="<%= t("game_tables.shelf.filter") %>"
+           class="no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto md:flex-none"
+           data-table-filter-target="pills">
+        <% table_filter_groups.each_with_index do |filters, group_position| %>
+          <% if group_position.positive? %><span class="h-5 w-px shrink-0 bg-line" aria-hidden="true"></span><% end %>
+          <% filters.each do |filter| %>
+            <button type="button" aria-pressed="false" class="<%= filter_pill_classes %>"
+                    data-table-filter-target="pill" data-group="<%= filter[:group] %>" data-value="<%= filter[:value] %>"
+                    data-action="table-filter#toggle"><%= t(filter[:label_key]) %></button>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="hidden gap-2 md:flex">
       <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %>"
               aria-label="<%= t("game_tables.shelf.previous_tables") %>"
               data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
@@ -22,13 +40,22 @@
     </div>
   </div>
   <%# The edges fade over the width of the padding (row-edge-fade): a card leaving the row melts away instead of
-      being cut, while the first one, at rest, stays whole. Room above for a card lifted on hover %>
-  <ul class="no-scrollbar row-edge-fade -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pt-4 pb-3 [--row-edge:1rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2rem]"
+      being cut, while the first one, at rest, stays whole. Room above for a card lifted on hover (less on a phone,
+      which has no hover). On a short phone screen the cards are drawn at 85 % (zoom), so that the page fits %>
+  <ul class="no-scrollbar row-edge-fade -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pt-2 pb-3 [--row-edge:1rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2rem] md:mt-6 md:pt-4 max-md:[@media(max-height:740px)]:[zoom:0.85]"
       data-card-row-target="row"
       data-action="scroll->card-row#toggleButtons resize@window->card-row#toggleButtons">
+    <%# The create card is always there, whatever the filter %>
     <li class="shrink-0"><%= render "game_tables/create_table_card" %></li>
     <% participations.each do |participation| %>
-      <li class="shrink-0"><%= render "game_tables/table_card", participation: participation, chosen_participation: chosen_participation %></li>
+      <%= tag.li class: "shrink-0", data: table_card_filter_data(participation) do %>
+        <%= render "game_tables/table_card", participation: participation, chosen_participation: chosen_participation %>
+      <% end %>
+    <% end %>
+    <% if participations.any? %>
+      <li hidden class="flex h-[310px] shrink-0 items-center px-4 text-sm text-muted" data-table-filter-target="noMatch">
+        <%= t("game_tables.shelf.no_match") %>
+      </li>
     <% end %>
   </ul>
 </section>

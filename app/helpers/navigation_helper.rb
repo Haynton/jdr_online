@@ -33,7 +33,7 @@ module NavigationHelper
   # Room left for the navigation of a signed in user: under the floating bar of a phone (56 px, 16 px above
   # the bottom, and some air), on the left from 768 px. It slides along with the width of the bar
   SIGNED_IN_SHELL_CLASSES = %w[
-    pb-24 md:pb-0 md:pl-16 md:nav-expanded:pl-60
+    pb-20 md:pb-0 md:pl-16 md:nav-expanded:pl-60
     motion-safe:md:transition-[padding] motion-safe:md:duration-200 motion-safe:md:ease-out
   ].join(" ").freeze
 

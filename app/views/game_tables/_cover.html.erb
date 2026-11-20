@@ -1,8 +1,9 @@
 <%# The large cover at the top of "My tables", across the whole width: it fades into the page at the bottom (mask),
     and a gradient of the page color sits behind the text so that it stays readable over any image.
     The image is decoration (empty alt): the title of the section names the table.
-    The image and the text of the table fade in when a card replaces them; the header above them stays still %>
-<section class="relative isolate flex min-h-72 flex-1 flex-col px-4 pt-5 pb-12 sm:px-8"
+    The image and the text of the table fade in when a card replaces them; the header above them stays still.
+    On a phone it shrinks to the room left (min-h-0) and its spacing is tighter, so that the page fits the screen %>
+<section class="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden px-4 pt-5 pb-6 sm:px-8 md:min-h-72 md:pb-12"
          aria-labelledby="<%= title_id %>">
   <%= image_tag cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover cover-fade motion-safe:animate-fade-in" %>
   <div class="absolute inset-0 -z-10 bg-linear-to-t from-page via-page/80 to-transparent md:bg-linear-to-r md:via-page/70"></div>
@@ -15,7 +16,7 @@
     <% end %>
   </div>
 
-  <div class="mt-auto flex max-w-xl flex-col gap-2 pt-6 motion-safe:animate-fade-in">
+  <div class="mt-auto flex max-w-xl flex-col gap-2 pt-3 motion-safe:animate-fade-in md:pt-6">
     <%= yield %>
   </div>
 </section>

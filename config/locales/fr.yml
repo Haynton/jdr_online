@@ -172,9 +172,14 @@ fr:
       game_master: "MJ"
       player: "Joueur"
     shelf:
+      filter: "Filtrer les tables"
       next_tables: "Tables suivantes"
+      no_match: "Aucune table ne correspond à ce filtre."
       previous_tables: "Tables précédentes"
       title: "Toutes mes tables"
+    statuses:
+      draft: "Brouillon"
+      in_progress: "En cours"
     edit:
       coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
       title: "Paramètres de la partie"

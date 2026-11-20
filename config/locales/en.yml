@@ -201,9 +201,14 @@ en:
       game_master: "GM"
       player: "Player"
     shelf:
+      filter: "Filter the tables"
       next_tables: "Next tables"
+      no_match: "No table matches this filter."
       previous_tables: "Previous tables"
       title: "All my tables"
+    statuses:
+      draft: "Draft"
+      in_progress: "In progress"
     edit:
       coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
       title: "Game settings"

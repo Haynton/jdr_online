@@ -16,7 +16,7 @@ class SideNavTest < ActionDispatch::IntegrationTest
   test "the page leaves room for the navigation: under the floating bar of a phone, on the left from 768 px" do
     get game_tables_path
 
-    assert_select "body > div.pb-24.md\\:pl-16.md\\:nav-expanded\\:pl-60"
+    assert_select "body > div.pb-20.md\\:pl-16.md\\:nav-expanded\\:pl-60"
   end
 
   test "the navigation holds the logo, my tables and the account button" do
