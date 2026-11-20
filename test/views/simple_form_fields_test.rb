@@ -5,26 +5,25 @@ class SimpleFormFieldsTest < ActionView::TestCase
     @invalid_user = User.new(email: "not-an-email").tap(&:validate)
   end
 
-  test "a field has its label above it and the named field colors" do
+  test "a field has its label above it and shows by its background, with no border at rest" do
     render_form { |form| form.input(:email) }
 
     assert_select "div.mb-4 > label.text-ink[for=user_email]"
-    assert_select "input#user_email.border-field-line.bg-field.text-ink"
+    assert_select "input#user_email.border-transparent.bg-field.text-ink.hover\\:border-field-line"
   end
 
-  test "a focused field gets an outline like the buttons, its border keeps its color" do
+  test "a focused field gets a fine border in the text color and a soft halo, not the gold outline" do
     render_form { |form| form.input(:email) }
 
-    assert_select "input#user_email.focus\\:outline-2.focus\\:outline-offset-2.focus\\:outline-focus-ring"
-    assert_select "input#user_email.aria-invalid\\:focus\\:outline-error-ink"
-    assert_select "input#user_email[class*='focus:border']", count: 0
-    assert_select "input#user_email[class*='focus:ring']", count: 0
+    assert_select "input#user_email.focus\\:border-ink.focus\\:ring-3.focus\\:ring-ink\\/10.focus\\:outline-none"
+    assert_select "input#user_email.aria-invalid\\:focus\\:ring-error-ink\\/30"
+    assert_select "input#user_email[class*='outline-focus-ring']", count: 0
   end
 
-  test "a field has a vertical padding, so that Safari does not stretch its caps lock indicator" do
+  test "a field is 36 px high with a vertical padding, so that Safari does not stretch its caps lock indicator" do
     render_form { |form| form.input(:email) }
 
-    assert_select "input#user_email.h-11.py-2\\.5"
+    assert_select "input#user_email.h-9.py-1\\.5"
   end
 
   test "an invalid field is marked for screen readers, with a thicker red border, a pink background and a message" do
