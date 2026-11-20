@@ -24,6 +24,13 @@ class ButtonsHelperTest < ActionView::TestCase
     assert_includes button_classes(:secondary, size: :compact), "h-9"
   end
 
+  test "the compact icon size is a 36 px square, with no side padding" do
+    classes = button_classes(:quiet, size: :compact_icon).split
+
+    assert_includes classes, "size-9"
+    assert_empty classes.grep(/\Apx-/)
+  end
+
   test "a button can take the full width of its container" do
     assert_includes button_classes(:primary, full_width: true).split, "w-full"
     assert_not_includes button_classes(:primary).split, "w-full"

@@ -166,15 +166,21 @@ en:
       label: "Theme"
     theme_switch:
       dark_theme: "Dark theme"
+    settings_dialog:
+      close: "Close the settings"
+      title: "Settings"
     side_nav:
       label: "Main navigation"
       my_tables: "My tables"
       collapse: "Collapse the menu"
       expand: "Expand the menu"
-    user_menu:
-      account_menu: "Account menu"
+    account_nav:
       log_out: "Log out"
+      log_out_confirmation: "Log out?"
       settings: "Settings"
+    confirm_dialog:
+      cancel: "Cancel"
+      confirm: "Confirm"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."

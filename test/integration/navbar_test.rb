@@ -12,11 +12,11 @@ class NavbarTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a visitor gets neither the account menu nor the side navigation" do
+  test "a visitor gets neither the side navigation nor its account entries" do
     get root_path, headers: { "Accept-Language" => "fr" }
 
-    assert_select "#user-menu", count: 0
     assert_select "#side-nav", count: 0
+    assert_select "form[action=?]", destroy_user_session_path, count: 0
     assert_select "nav a", text: "Se connecter"
   end
 

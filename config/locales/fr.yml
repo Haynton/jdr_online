@@ -137,15 +137,21 @@ fr:
       label: "Thème"
     theme_switch:
       dark_theme: "Thème sombre"
+    settings_dialog:
+      close: "Fermer les paramètres"
+      title: "Paramètres"
     side_nav:
       label: "Navigation principale"
       my_tables: "Mes tables"
       collapse: "Replier le menu"
       expand: "Déplier le menu"
-    user_menu:
-      account_menu: "Menu du compte"
+    account_nav:
       log_out: "Se déconnecter"
+      log_out_confirmation: "Se déconnecter ?"
       settings: "Paramètres"
+    confirm_dialog:
+      cancel: "Annuler"
+      confirm: "Confirmer"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."

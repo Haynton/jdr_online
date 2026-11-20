@@ -1,7 +1,8 @@
 <%# Navigation of a signed in user, like an app. One element for both shapes:
     on a phone, a floating bar of icons centered above the bottom of the screen (under the thumb, always in view);
     from 768 px, a bar on the left, folded to its icons by default (64 px) and unfolded with its labels (240 px)
-    by the button at its foot (side_nav_controller.js). The account menu sits at the end: settings and log out.
+    by the button under the logo (side_nav_controller.js). Only the logo and that button at the top; "My tables"
+    and the account entries (shared/_account_nav) sit together at the foot (decision).
     The labels stay for screen readers. The logo is left out on a phone: "My tables" already leads to the same page.
     The width slides open in 200 ms, the page beside it too (page_shell_classes); the texts stay on one line, cut by
     the edge of their link, and fade in once the bar is wide (side_nav_fading_text_classes) %>
@@ -15,12 +16,10 @@
     <%= render "shared/logo", with_side_nav: true %>
   <% end %>
 
-  <%= side_nav_link_to t(".my_tables"), game_tables_path, icon: "scroll_text" %>
-
-  <%# Its name says what a click does: "Expand the menu" while folded (read by screen readers, shown as a tooltip),
-      "Collapse the menu", written out, once unfolded. The controller keeps the tooltip in step.
+  <%# Right under the logo. Its name says what a click does: "Expand the menu" while folded (read by screen readers,
+      shown as a tooltip), "Collapse the menu", written out, once unfolded. The controller keeps the tooltip in step.
       "Collapse" is invisible, not only transparent, while folded: the button would otherwise be named by both %>
-  <div class="hidden md:mt-auto md:block md:px-3">
+  <div class="hidden md:mb-3 md:block md:px-3">
     <button type="button" hidden
             class="flex h-10 w-full items-center gap-3 overflow-hidden rounded-lg px-2.5 text-muted transition-colors hover:bg-surface-raised hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
             title="<%= t(".expand") %>"
@@ -33,5 +32,10 @@
     </button>
   </div>
 
-  <%= render "shared/user_menu" %>
+  <%# md:mt-auto: from here on, pushed to the foot of the bar %>
+  <div class="md:mt-auto md:flex md:flex-col">
+    <%= side_nav_link_to t(".my_tables"), game_tables_path, icon: "scroll_text" %>
+  </div>
+
+  <%= render "shared/account_nav" %>
 </nav>

@@ -13,9 +13,11 @@ module ButtonsHelper
     danger: "bg-danger text-white hover:bg-danger-hover"
   }.freeze
 
+  # compact_icon: a 36 px square for a button that only shows an icon (its name in aria-label)
   BUTTON_SIZE_CLASSES = {
     normal: "h-11 px-4 text-sm",
-    compact: "h-9 px-3 text-sm"
+    compact: "h-9 px-3 text-sm",
+    compact_icon: "size-9"
   }.freeze
 
   def button_classes(variant, size: :normal, full_width: false)
