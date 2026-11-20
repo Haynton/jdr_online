@@ -28,6 +28,15 @@
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+
+  /* The browser paints with the background of <html> whatever lies beyond <body>: the bounce of a scroll,
+     a pixel left by rounding, the toolbar tint of Safari. Without it, those stayed white, even in the dark theme.
+     overflow-x: clip: a one pixel overflow (rounding, negative margins of the card row) cannot add a sideways
+     scroll, nor a band on the right. The rows that scroll sideways have their own scrolling and are not affected */
+  html {
+    background-color: var(--color-page);
+    overflow-x: clip;
+  }
 }
 
 /* White check mark of our own check boxes (the native one cannot be reshaped).
