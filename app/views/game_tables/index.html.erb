@@ -1,12 +1,18 @@
-<%# A dashboard as tall as the screen (less the 64 px navbar), like an app: the cover takes the room
-    the row of cards leaves. The page only scrolls when the window is shorter than both together %>
+<%# A dashboard as tall as the screen, like an app (less the 96 px kept under the floating bar of a phone;
+    the side navigation leaves the whole height from 768 px): the cover takes the room the row of cards leaves.
+    The page only scrolls when the window is shorter than both together.
+    The chosen table sits in a Turbo Frame: choosing a card only replaces it (and the ?table= of the address).
+    Reloading the whole page made the row of cards jump back into place, gold outline included.
+    target="_top": the links inside (join, settings, create) still open a whole page %>
 <% content_for :full_width_page do %>
-  <main class="flex min-h-[calc(100dvh-4rem)] min-w-0 flex-col">
+  <main class="flex min-h-[calc(100dvh-6rem)] min-w-0 flex-col md:min-h-dvh">
     <div class="mx-4"><%= render "shared/flashes" %></div>
-    <% if @chosen_participation %>
-      <%= render "game_tables/stage", participation: @chosen_participation %>
-    <% else %>
-      <%= render "game_tables/empty_stage" %>
+    <%= turbo_frame_tag "chosen_table", target: "_top", class: "flex flex-1 flex-col" do %>
+      <% if @chosen_participation %>
+        <%= render "game_tables/stage", participation: @chosen_participation %>
+      <% else %>
+        <%= render "game_tables/empty_stage" %>
+      <% end %>
     <% end %>
     <%= render "game_tables/shelf", participations: @participations, chosen_participation: @chosen_participation %>
   </main>

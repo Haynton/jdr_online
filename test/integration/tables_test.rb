@@ -77,6 +77,26 @@ class TablesTest < ActionDispatch::IntegrationTest
     assert_select "#{cards_row_selector} a[aria-current=true]", count: 1, text: /Les Marches du Nord/
   end
 
+  test "the chosen table sits in a frame, whose links still open a whole page" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "turbo-frame#chosen_table[target=_top] section[aria-labelledby=chosen-table-title]"
+  end
+
+  test "a table card only replaces the chosen table and the address, and moves the gold outline itself" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} a[href=?][data-turbo-frame=chosen_table][data-turbo-action=advance]" \
+                  "[data-action='card-row#choose']", game_tables_path(table: game_table.id)
+    assert_select "#{cards_row_selector} a[href=?]:not([data-turbo-frame])", new_game_table_path
+  end
+
   test "the tables of other users are neither in the row nor shown when asked for" do
     other_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
     sign_in create_user(locale: "fr")

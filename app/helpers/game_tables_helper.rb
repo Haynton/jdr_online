@@ -29,4 +29,10 @@ module GameTablesHelper
   def table_card_aria(participation, chosen_participation)
     participation == chosen_participation ? { current: "true" } : {}
   end
+
+  # A table card only replaces the chosen table (Turbo Frame of game_tables/index) and the address.
+  # card_row_controller.js moves the gold outline (aria-current) to it at once: the row is not rendered again
+  def table_card_data
+    { turbo_frame: "chosen_table", turbo_action: "advance", action: "card-row#choose" }
+  end
 end
