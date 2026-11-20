@@ -358,6 +358,7 @@ Fait dans `chore/p1-github-ci` :
 - Modèle de PR `.github/pull_request_template.md` (Quoi, Pourquoi, Comment tester, Captures, Checklist), proposé par GitHub à chaque nouvelle PR
 - Intégration continue `.github/workflows/ci.yml`, sur chaque PR et chaque push sur `main` : job `lint` (`bin/rubocop -f github`) et job `test` (PostgreSQL 15, `bin/rails db:test:prepare test test:system`, captures des tests système en échec gardées comme artefact)
 - Corrections pour que le lint passe : espaces retirés dans les `%i[ ]` du `Gemfile`, `vendor/**/*` ajouté à `Exclude` dans `.rubocop.yml` (voir À savoir)
+- Machine de la CI fixée à `ubuntu-24.04` dans `chore/p1-ci-ubuntu-pin` (et non `ubuntu-latest`) : quand GitHub a fait passer `ubuntu-latest` à 26.04, `setup-ruby` n'avait pas de Ruby 3.3.5 pour elle et tous les jobs échouaient à l'installation. Passer à une nouvelle Ubuntu volontairement, en même temps qu'une mise à jour de Ruby
 
 Fait dans `feature/p1-username` :
 
