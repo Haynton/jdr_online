@@ -244,6 +244,8 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Types de commit : `feat`, `fix`, `refactor`, `chore`, `style`, `docs`, `test`
 - Petits commits cohérents. Pas de `wip`, `update` ou `fix bug`
 - `git add` fichier par fichier, jamais `git add .` sans avoir vérifié `git status`
+- Fusion d'une PR par un commit de fusion classique (« Create a merge commit »), **pas de « Squash and merge »** ni de « Rebase and merge » (décision validée par le référent) : l'historique garde les petits commits de la branche
+- Pas d'approbation obligatoire d'un autre membre pour fusionner une PR (décision de l'équipe)
 - **Interdits** : commit ou push direct sur `main`, `git push --force`, `git reset --hard`, réécriture d'un historique déjà poussé
 - Toujours demander avant de commiter ou de pousser
 
@@ -270,7 +272,7 @@ Fait, sur `main`, avant le premier envoi sur GitHub :
 - Bootstrap, Font Awesome et les feuilles de style Le Wagon retirés. Les vues Devise copiées dans `app/views/devise` par le template ont été supprimées (voir plus bas les vues regénérées avec `devise-i18n`)
 - Tailwind v4 installé (`tailwindcss-rails` 4.7, `tailwindcss-ruby` 4.3)
 - Barre de navigation et messages flash réécrits en Tailwind
-- Dépôt public `github.com/Haynton/jdr_online`. `main` protégée : Pull Request obligatoire, sans approbation requise pour l'instant, règles appliquées aussi à l'administrateur (`enforce_admins`), push forcé et suppression interdits, branches supprimées automatiquement après fusion. Testé : un push direct sur `main` est refusé
+- Dépôt public `github.com/Haynton/jdr_online`. `main` protégée par une règle classique (Settings › Branches › Branch protection rules, pas par un « ruleset ») : Pull Request obligatoire, sans approbation requise (décision), règles appliquées aussi à l'administrateur (`enforce_admins`), push forcé et suppression interdits, branches supprimées automatiquement après fusion. Testé : un push direct sur `main` est refusé. Julien (`JmainguyM`) est collaborateur du dépôt
 - Plus aucun commit direct sur `main` : tout passe par une branche et une Pull Request
 
 Fait dans `chore/p1-i18n-setup` :
@@ -453,6 +455,8 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 
 ### Production Heroku : `chore/p1-heroku-setup`
 
+Prévu la semaine du 23 novembre 2026.
+
 - Redis pour Action Cable en production (`config/cable.yml`), à la place de Solid Cable
 - `mailer_sender` réel et service d'envoi d'e-mails
 - Voir la checklist de déploiement du projet
@@ -464,8 +468,7 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 - Design « nuit et aube » du reste de l'application (barre latérale, Paramètres, boutons, couleur laiton) : essayé dans `style/testing-night-dawn`, pas encore repris
 - Tests système : sur `main` comme ailleurs, ils plantent tous avec `invalid argument: * is not a valid URL` (au nettoyage de Capybara, `reset!`). Probablement une version de Chrome trop récente pour Capybara ou `selenium-webdriver`. Branche dédiée
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
-- RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
-- Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire
+- RuboCop, branche `chore/p1-rubocop-config` : **décision (retour du référent) : on garde le `.rubocop.yml` de Le Wagon**, plutôt que `rubocop-rails-omakase` (installée par Rails, que ce fichier ignore). Reste à faire : retirer la gem `rubocop-rails-omakase` du `Gemfile` (à valider, retrait de gem) et décider si `config/**` et `test/**`, exclus par Le Wagon, sont analysés. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 
 À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
 
