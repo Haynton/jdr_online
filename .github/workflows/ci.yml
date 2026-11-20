@@ -8,9 +8,11 @@ on:
 permissions:
   contents: read
 
+# Ubuntu is pinned instead of ubuntu-latest: when GitHub moved ubuntu-latest to 26.04,
+# setup-ruby had no prebuilt Ruby 3.3.5 for it and every job failed. Upgrade on purpose, with Ruby
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -20,7 +22,7 @@ jobs:
         run: bin/rubocop -f github
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:15
