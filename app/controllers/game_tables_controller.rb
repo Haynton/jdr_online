@@ -1,25 +1,10 @@
 class GameTablesController < ApplicationController
+  # "My tables": the page a user lands on after signing in, with the tables they play at or run
   def index
-    @tables = GameTable.all
+    @game_tables = current_user.game_tables
   end
 
-  # Temporary page: says that creating a table is coming. The form arrives with the Table model
+  # Temporary page: says that creating a table is coming. The form arrives in its own branch
   def new
-  end
-
-  def create
-    @game_table = GameTable.new(game_table_params)
-
-    GameTable.transaction do
-      @game_table.save!
-
-      @game_table.participations.create!(
-        user: current_user
-      )
-    end
-
-    redirect_to @game_table
-  rescue ActiveRecord::RecordInvalid
-    render :new, status: :unprocessable_entity
   end
 end
