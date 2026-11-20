@@ -146,7 +146,7 @@ end
 - Utiliser les **couleurs nommées** du projet (`bg-page`, `bg-surface`, `text-ink`, `border-line`...), définies dans `app/assets/tailwind/application.css`. Elles changent toutes seules en mode sombre : pas besoin d'écrire `dark:` à chaque élément
 - Pas de couleur brute (`bg-gray-800`, `#1f2937`) dans les vues, sauf cas isolé justifié. S'il manque une couleur, l'ajouter aux couleurs nommées
 - `dark:` reste possible pour un ajustement ponctuel (une ombre, une image)
-- Référence visuelle du mode sombre : les wireframes du projet (police Inter, vert principal `#2E7D6B`)
+- Référence visuelle du mode sombre : les wireframes du projet (police Inter). Leur vert principal `#2E7D6B` a été abandonné dans `feature/p1-table-cards` (décision : plus de vert, voir plus bas)
 - Couleurs nommées (valeurs dans `app/assets/tailwind/application.css`, bloc `@theme` pour le clair, bloc `.dark` pour le sombre) :
 
 | Couleur nommée | Rôle | Sombre (wireframes) | Clair, parchemin léger |
@@ -156,35 +156,38 @@ end
 | `field` | Fond des champs | `#111827` | `#ffffff` |
 | `line` | Bordures | `#374151` | `#ebe3d3` |
 | `field-line` | Bordure des champs, case à cocher, piste d'interrupteur éteint | `#6b7280` | `#8f8270` |
-| `focus-ring` | Focus clavier des champs et des boutons | `#7fd1bd` | `#1d574a` |
+| `focus-ring` | Focus clavier des champs et des boutons (doré) | `#e2c07c` | `#6b4d10` |
 | `ink` | Texte principal | `#f9fafb` | `#27211a` |
 | `muted` | Texte secondaire | `#9ca3af` | `#796e60` |
-| `primary` | Bouton principal (texte blanc) | `#2E7D6B` | `#2E7D6B` |
-| `primary-hover` | Bouton principal au survol (texte blanc) | `#276a5b` | `#276a5b` |
-| `link` | Liens | `#7fd1bd` | `#2E7D6B` |
-| `primary-soft` | Fond du lien de navigation actif, carte « brouillon », badge « MJ » | `#183a33` | `#e4efe9` |
-| `primary-soft-ink` | Texte posé sur `primary-soft` | `#7fd1bd` | `#1d574a` |
+| `primary` | Bouton principal, plaque couleur encre (claire en sombre, foncée en clair) | `#ece7db` | `#1e231f` |
+| `primary-hover` | Bouton principal au survol | `#d6d0c2` | `#343b35` |
+| `primary-ink` | Texte et coche posés sur `primary` (remplace le blanc) | `#101513` | `#fbf5e8` |
+| `link` | Liens (doré) | `#e2c07c` | `#6b4d10` |
+| `primary-soft` | Fond du lien de navigation actif, carte « brouillon », badge « MJ » (doré tonal) | `#33290f` | `#efe2c0` |
+| `primary-soft-ink` | Texte posé sur `primary-soft` | `#e2c07c` | `#6b4d10` |
 | `surface-raised` | Élément actif d'un menu, survol des boutons secondaires et discrets | `#374151` | `#ebe3d3` |
 | `logo-bg` | Carré du logo d20 (texte blanc) | `#1f1b18` | `#1f1b18` |
+| `brass` | Accent doré de « Mes tables » : petits libellés (rôle, « Mes tables »), contour de la carte choisie, pastille « + » (texte `page`) | `#e2c07c` | `#6b4d10` |
 | `danger` | Bouton de suppression (texte blanc) | `#b91c1c` | `#b91c1c` |
 | `danger-hover` | Bouton de suppression au survol (texte blanc) | `#9d1818` | `#9d1818` |
 | `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
 | `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
 
-- Palette décidée : vert `#2E7D6B` comme couleur principale dans les deux thèmes, parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir)
-- Le vert des boutons et le vert des messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
-- Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). Le texte blanc sur `primary` est à 4,93 : ne pas éclaircir ce vert. Au survol, on assombrit (`primary-hover`, 6,37), on n'éclaircit pas. `muted` clair a été assombri de `#7b7062` à `#796e60` pour passer de 4,49 à 4,62 sur `page`. Toute nouvelle couleur de texte est vérifiée contre les fonds où elle s'affiche
+- Palette décidée (`feature/p1-table-cards`) : **plus de vert**. Bouton principal couleur encre (repris de l'essai `style/testing-night-dawn`), accent doré (`brass`) pour les liens, le focus, les badges et « Mes tables ». Parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir). Seuls les messages de succès gardent leur vert (décision : le vert y signale une réussite)
+- Le bouton principal et les messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès
+- Contraste minimum visé : 4,5 pour le texte (critère WCAG AA). `primary-ink` sur `primary` : 14,69 en clair et 14,95 en sombre (10,6 et 12,0 au survol). Plaque sur la page : 14,81 et 14,82. Le blanc ne se pose jamais sur `primary` : en sombre, `primary` est clair (d'où `primary-ink`, `bg-checkmark-dark` pour la coche, rond de l'interrupteur en `primary-ink`). `muted` clair a été assombri de `#7b7062` à `#796e60` pour passer de 4,49 à 4,62 sur `page`. Toute nouvelle couleur de texte est vérifiée contre les fonds où elle s'affiche
 - Contraste de forme : la bordure ou le fond d'un composant (bouton, badge, champ) doit se distinguer de son support avec un contraste d'au moins 3 (critère WCAG 1.4.11). Vérifier les deux, le texte **et** la forme
-- Sur `primary-soft`, seulement `ink` ou `primary-soft-ink` : `muted` (4,23) et `link` (4,18) y passent sous 4,5 en clair
+- Sur `primary-soft`, seulement `ink` (12,37 en clair, 13,72 en sombre) ou `primary-soft-ink` (6,05 et 8,24)
 - Sur `surface-raised`, seulement `ink` : `muted` y passe sous 4,5 (3,91 en clair, 4,06 en sombre)
-- Le vert plein (`primary`) et le rouge plein (`danger`) sont réservés aux boutons : un badge ou une étiquette n'utilise jamais un fond plein, pour ne pas ressembler à un bouton
+- `brass` (doré) est un accent, jamais un fond de bouton. Mêmes valeurs que `link` et `focus-ring`. Contrastes : 7,23 sur `page` et 7,67 sur `surface` en clair, 10,51 et 8,43 en sombre ; `page` sur `brass` (pastille « + ») 7,23 et 10,51
+- La plaque pleine (`primary`) et le rouge plein (`danger`) sont réservés aux boutons : un badge ou une étiquette n'utilise jamais un fond plein, pour ne pas ressembler à un bouton
 - Police Inter, hébergée dans `public/fonts/` (aucune requête vers un service de polices)
 
 ### Composants
 
 Construits une fois, réutilisés partout. On les voit tous, dans les deux thèmes, sur la galerie `/dev/components` (développement et test seulement).
 
-- Boutons : `button_classes(variant, size: :normal, full_width: false)` (`app/helpers/buttons_helper.rb`), variantes `:primary`, `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px), `full_width: true` pour toute la largeur (`w-full`). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue. La bordure `line` du bouton secondaire reste discrète (décision) : plus marquée, il ressemblerait à un champ
+- Boutons : `button_classes(variant, size: :normal, full_width: false)` (`app/helpers/buttons_helper.rb`), variantes `:primary` (plaque couleur encre, texte `primary-ink`), `:secondary`, `:quiet`, `:danger` (rouge plein, texte blanc), tailles `:normal` (44 px) et `:compact` (36 px), `full_width: true` pour toute la largeur (`w-full`). Une variante ou une taille inconnue lève une erreur. Ne jamais répéter les séries de classes d'un bouton dans une vue. La bordure `line` du bouton secondaire reste discrète (décision) : plus marquée, il ressemblerait à un champ
 - Badges : `badge_classes(:game_master | :player)` (`app/helpers/badges_helper.rb`) : pilule, 11 px, majuscules, couleurs tonales et contour intérieur de la couleur du texte à 50 % (sans lui, le badge disparaît sur une carte en sombre)
 - Icônes : partiels `app/views/shared/icons/_nom.html.erb` (tracés Lucide 1.69.0, licence ISC et MIT Feather dans `LUCIDE-LICENSE.txt`), `aria-hidden="true"`, `stroke="currentColor"`, taille par `css_class` (`size-4` par défaut). Pour une nouvelle icône : reprendre le SVG du dépôt `lucide-icons/lucide` à une version déjà publiée depuis quelques jours, et vérifier qu'il ne contient que des tracés
 - Logo : partiel `shared/_logo` (d20 des wireframes sur `logo-bg`, traits blancs en `currentColor`, nom traduit « JDR en ligne » / « JDR Online »). `compact_on_phone: true` : le d20 seul sur téléphone, le nom reste pour les lecteurs d'écran
@@ -198,7 +201,7 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Champ mot de passe : `app/inputs/password_input.rb` (Simple Form cherche ce nom exact) ajoute à **chaque** champ mot de passe un bouton œil (`shared/_password_visibility_button`, contrôleur `password_visibility_controller.js`) : 36 px dans le champ à droite, libellé fixe « Afficher le mot de passe » et `aria-pressed`, un bouton par champ. Rendu `hidden`, affiché par le contrôleur (sans JavaScript, pas de bouton inutile). Le mot de passe est remasqué à chaque envoi de formulaire, pour que le navigateur ne le range pas dans l'historique des champs texte
 - Message d'erreur sous un champ : première lettre en majuscule (`first-letter:uppercase`), car Simple Form l'écrit sans le nom du champ (« doit être rempli(e) »)
 - Champ obligatoire : astérisque discret (`text-muted`) **après** le libellé (`config.label_text`), caché aux lecteurs d'écran (`aria-hidden`), qui annoncent déjà l'attribut `required` du champ. Texte dans la clé `simple_form.required.html`
-- Case à cocher : dessinée par nous (`appearance-none`, 18 px, coins de 3 px, coche blanche `@utility bg-checkmark` sur `primary`), à côté de son libellé (`boolean_style = :inline`)
+- Case à cocher : dessinée par nous (`appearance-none`, 18 px, coins de 3 px, coche `@utility bg-checkmark` blanche sur `primary`, et `bg-checkmark-dark` foncée en sombre, où `primary` est clair), à côté de son libellé (`boolean_style = :inline`)
 - Liste déroulante : `app/inputs/collection_select_input.rb` (Simple Form cherche ce nom exact pour remplacer son champ `select`). Vrai `<select>` : champ fermé stylé et chevron, **liste ouverte du système** (décision, voir À savoir)
 - Messages : partiel `shared/_message`, rendu en gabarit (`render layout: "shared/message", locals: { variant: :error } do … end`), variantes `:error` (`role="alert"`, icône `x`) et `:success` (`role="status"`, icône `check`), bordure de 1 px dans la couleur du texte à 70 %. Utilisé par les messages flash, `devise/shared/_error_messages` et `form_error_notification(f)`, qui remplace `f.error_notification` dans les formulaires. Décision : à l'écran, le champ rouge et son message suffisent, l'en-tête de `form_error_notification` est donc en `sr-only` (son `role="alert"` prévient les lecteurs d'écran). Même principe pour « Connecté(e). », qui ne fait que répéter ce que la page montre : `Users::SessionsController` le range dans `flash[:screen_reader_notice]`, que `shared/_flashes` affiche en `sr-only`. Dans les Paramètres, les messages s'affichent dans la carte de la rubrique, sous son titre (`settings/_section`)
 - Carte des pages visiteurs : helper `auth_card(title:, subtitle: nil) do … end` (`app/helpers/auth_cards_helper.rb`), qui rend `shared/_auth_card` (titre `h1`, sous-titre facultatif). Passer par le helper, pas par `render layout:` (voir À savoir, clés courtes)
@@ -207,10 +210,10 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Rubrique : helpers `settings_section(title:)`, `settings_group(title:)` et `setting_row(label:, label_id:, description:)` (`app/helpers/settings_helper.rb`), tous avec un bloc lu avant le rendu du partiel (`settings/_section`, `_group`, `_row`). Chaque ligne de réglage a un trait `line` sous elle, la dernière d'un groupe comprise, sauf le tout dernier élément de la rubrique (le bord de la carte suffit). Un formulaire dans un groupe se place comme une ligne (`border-b border-line py-4`). Le contrôle d'une ligne se nomme par `aria-labelledby="<label_id>"`. Une nouvelle rubrique : un contrôleur qui hérite de `Settings::BaseController`, sa ligne dans `settings/_sections_menu` et ses contrôleurs dans `SETTINGS_SECTION_CONTROLLERS` (`current_settings_section?`, pour que la rubrique reste en cours quand son formulaire revient avec une erreur)
 - Envoi automatique d'un formulaire : contrôleur générique `auto_submit_controller.js` (`change->auto-submit#submit` sur le formulaire). Toujours prévenir dans la description de la ligne (« Enregistrée dès que vous la changez. », critère WCAG 3.2.2)
 - Séparateur : partiel `shared/_divider` (`text:`), un trait de chaque côté d'un texte court (« Nouveau ici ? »)
-- Carte en ogive : partiel `game_tables/_ogive_card`, rendu en gabarit (`render layout:` avec `path:`, `cover_image_path:`, `aria:`), arc brisé de 220 × 310 px découpé par l'utilitaire `ogive` (`application.css`), couverture fondue dans la page en bas, contour redessiné en SVG (`GameTablesHelper`, même tracé que `ogive` : modifier les deux ensemble). Contour `link` au survol et sur la carte choisie (`aria-current="true"`)
-- Image de couverture : partiel `game_tables/_cover` (gabarit), image pleine largeur fondue vers le bas par les classes de masque de Tailwind (`mask-b-from-50% mask-b-to-100%`), dégradé de la couleur `page` derrière le texte pour garder le contraste sur n'importe quelle image
+- Carte en ogive : partiel `game_tables/_ogive_card`, rendu en gabarit (`render layout:` avec `path:`, `cover_image_path:`, `aria:`), arc brisé de 220 × 310 px découpé par l'utilitaire `ogive` (`application.css`), couverture fondue dans la page en bas, contour redessiné en SVG (`GameTablesHelper`, même tracé que `ogive` : modifier les deux ensemble). Contour `brass` au survol et sur la carte choisie (`aria-current="true"`)
+- Image de couverture : partiel `game_tables/_cover` (gabarit), image pleine largeur fondue vers le bas par l'utilitaire `cover-fade` (`mask-image` adouci : un fondu linéaire, `mask-b-from-50% mask-b-to-100%`, laissait voir une ligne là où il s'arrêtait), dégradé de la couleur `page` derrière le texte pour garder le contraste sur n'importe quelle image
 - Liens dans un texte ou sous un formulaire : `font-medium text-link hover:underline`
-- Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
+- Interrupteur : partiel `shared/_switch` (`<button role="switch">`, `aria-checked`, `aria-labelledby` vers le texte visible, 44 × 24 px, rond blanc de 20 px qui passe en `primary-ink` quand il est allumé, transition coupée par `motion-reduce:`) et contrôleur générique `switch_controller.js`, qui bascule `aria-checked` et émet `switch:change`. Ce qui est commandé (thème, réglage) écoute cet événement
 
 ### Sécurité et permissions
 
@@ -383,8 +386,10 @@ Fait dans `feature/p1-table-cards` (design repris de l'essai `style/testing-nigh
 
 - Images de couverture dans `app/assets/images/covers/` : `sentinelle` (par défaut), `citadelle`, `dragon`, `gobelins`, `village`, `wolf`. Converties en WebP de 1600 px de large (`cwebp -q 80`) : 650 Ko pour les six au lieu de 12,6 Mo en PNG. Une nouvelle image suit le même traitement
 - Colonne `game_tables.cover_image` (texte, `sentinelle` par défaut) validée contre `GameTable::COVER_IMAGES` : l'utilisateur choisira dans cette galerie fixe (décision ; l'envoi d'une image perso avec Cloudinary n'est pas prévu pour l'instant)
-- « Mes tables » : en haut, la table choisie en grand sur sa couverture (rôle, nombre de joueurs, nom, description) ; sans table, la couverture par défaut et « Aucune table pour l'instant ». En dessous, « Toutes mes tables » : rangée de cartes en ogive qui défile sur le côté, la carte « Créer une table » en premier (avec la couverture par défaut), puis une carte par table, la plus récente d'abord. Le bouton « Créer une table » de l'en-tête est retiré (pas assez visible)
-- Choix d'une table par `?table=<id>`, cherché **seulement** parmi les tables de l'utilisateur : l'id d'une autre table affiche la plus récente. Participations chargées avec `includes(game_table: :participations)`, nombre de joueurs compté en Ruby (`GameTable#players_count`, sans le MJ) : pas de requête par carte
+- « Mes tables », tableau de bord sur toute la largeur et **à la hauteur de l'écran** (moins la barre de 64 px, `min-h-[calc(100dvh-4rem)]`) : la couverture prend la place que laisse la rangée de cartes, la page ne défile que si la fenêtre est plus basse que les deux réunis (description limitée à 3 lignes pour tenir dans 800 px). En haut, la table choisie en grand sur sa couverture, avec « Mes tables » (doré) et le bouton secondaire « Créer une table » en tête, puis le rôle (doré), le nom, la description, « Rejoindre la partie » (bouton principal), « Paramètres de la partie » (secondaire, **MJ seulement**) et les avatars des joueurs (`game_tables/_players`, avatars superposés, MJ non compté) ; sans table, la couverture par défaut et « Aucune table pour l'instant ». En dessous, « Toutes mes tables » : rangée de cartes en ogive sans barre de défilement (`no-scrollbar`), flèches à hauteur du titre, la carte « Créer une table » en premier (avec la couverture par défaut), puis une carte par table, la plus récente d'abord. L'ancien en-tête avec son bouton est retiré
+- Flèches de la rangée : contrôleur `card_row_controller.js` (cibles `row`, `previousButton`, `nextButton`). Défilement de 80 % de la largeur visible, sans animation si l'appareil demande moins de mouvement, flèche désactivée au bout de la rangée. Les flèches sont rendues `hidden` et affichées par le contrôleur (sans JavaScript, la rangée défile encore au doigt, à la molette, au clavier). Au chargement, la carte choisie est ramenée au centre de la rangée : choisir une carte recharge la page
+- Pages provisoires d'une table : `GameTablesController#show` (`/game_tables/:id`, « Rejoindre la partie »), cherchée par `current_user.game_tables.find`, 404 pour qui n'est pas à la table ; `GameTablesController#edit` (`/game_tables/:id/edit`, « Paramètres de la partie »), cherchée parmi les participations **MJ** de l'utilisateur, 404 pour un joueur. Le bouton caché aux joueurs ne suffit pas : le serveur refuse aussi
+- Choix d'une table par `?table=<id>`, cherché **seulement** parmi les tables de l'utilisateur : l'id d'une autre table affiche la plus récente. Participations chargées avec `includes(game_table: { participations: :user })`, joueurs lus en Ruby (`GameTable#players` et `#players_count`, sans le MJ) : pas de requête par carte ni par avatar
 - Retirés de l'essai : `scene_painter.js` et `scene_controller.js` (paysages dessinés en SVG, remplacés par les images), le faux modèle `TablePreview` et `?preview=1`
 - Seed : une couverture par table, et chaque compte joue aussi à deux tables de l'autre (les deux rôles se voient sur les cartes)
 
@@ -436,7 +441,7 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
-- Création d'une table : vrai formulaire à la place de la page provisoire `game_tables/new`, avec le choix de la couverture dans `GameTable::COVER_IMAGES` (aperçu de l'image choisie, `sentinelle` par défaut), action `create` qui crée la table et la participation MJ de son créateur dans une même transaction, page `show`
+- Création d'une table : vrai formulaire à la place de la page provisoire `game_tables/new`, avec le choix de la couverture dans `GameTable::COVER_IMAGES` (aperçu de l'image choisie, `sentinelle` par défaut), action `create` qui crée la table et la participation MJ de son créateur dans une même transaction, vraie page de la table à la place de la page provisoire `game_tables/show`
 - Design « nuit et aube » du reste de l'application (barre latérale, Paramètres, boutons, couleur laiton) : essayé dans `style/testing-night-dawn`, pas encore repris
 - Tests système : sur `main` comme ailleurs, ils plantent tous avec `invalid argument: * is not a valid URL` (au nettoyage de Capybara, `reset!`). Probablement une version de Chrome trop récente pour Capybara ou `selenium-webdriver`. Branche dédiée
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
