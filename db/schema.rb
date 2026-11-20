@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_18_081543) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_124411) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "game_tables", force: :cascade do |t|
     t.string "name", limit: 60, null: false
-    t.text "description", null: false
+    t.text "description"
     t.string "status", default: "draft", null: false
     t.integer "creation_step", default: 1
     t.string "invite_token"
@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_18_081543) do
   create_table "participations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "game_table_id", null: false
-    t.string "role", default: "game_master", null: false
+    t.string "role", default: "player", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["game_table_id"], name: "index_participations_on_game_table_id"
