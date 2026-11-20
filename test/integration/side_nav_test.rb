@@ -19,7 +19,7 @@ class SideNavTest < ActionDispatch::IntegrationTest
     assert_select "body > div.pb-20.md\\:pl-16.md\\:nav-expanded\\:pl-60"
   end
 
-  test "the navigation holds the logo, my tables and the account button" do
+  test "the navigation holds the logo, my tables, settings and log out" do
     get game_tables_path
 
     assert_select "#side-nav" do
@@ -27,14 +27,25 @@ class SideNavTest < ActionDispatch::IntegrationTest
       assert_select "a[href=?][title=?]", game_tables_path, "Mes tables" do
         assert_select "svg[aria-hidden=true] + span#{fading_text_selector}", text: "Mes tables"
       end
-      assert_select "button[aria-expanded=false][aria-controls=user-menu]"
+      assert_select "#{account_entries_selector} a[href=?][title=?]", settings_display_path, "Paramètres"
+      assert_select "#{account_entries_selector} form[action=?][data-turbo-confirm=?] button[title=?]",
+                    destroy_user_session_path, "Se déconnecter ?", "Se déconnecter"
     end
+  end
+
+  test "only the logo and the unfolding button at the top; my tables opens the group at the foot" do
+    get game_tables_path
+
+    assert_select "#side-nav > a[href=?] + div > button[data-action='side-nav#toggle']", game_tables_path
+    assert_select "#side-nav > div:has(> button[data-action='side-nav#toggle']) + div.md\\:mt-auto > a[href=?]",
+                  game_tables_path, text: "Mes tables"
+    assert_select "#side-nav > div.md\\:mt-auto + div.md\\:hidden + div.hidden.md\\:flex"
   end
 
   test "on my tables page, my tables is the current link of the navigation" do
     get game_tables_path
 
-    assert_select "#side-nav > a[aria-current=page]", count: 1, text: "Mes tables"
+    assert_select "#side-nav > div > a[aria-current=page][href=?]", game_tables_path, count: 1, text: "Mes tables"
   end
 
   test "the button that unfolds the navigation is hidden until its controller shows it, and says what it does" do
@@ -49,14 +60,14 @@ class SideNavTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the account button shows the avatar, and keeps the username for screen readers" do
+  test "from 768 px, the avatar and the username only show who is signed in" do
     get game_tables_path
 
-    assert_select "button[aria-controls=user-menu]" do
+    assert_select "#{account_entries_selector} > div[title=?]", "player" do
       assert_select "span[aria-hidden=true]", text: "PL"
-      assert_select "span.sr-only", text: "Menu du compte"
       assert_select "span#{fading_text_selector}", text: "player"
     end
+    assert_select "#{account_entries_selector} > div a, #{account_entries_selector} > div button", count: 0
   end
 
   test "the bar slides open, and the page beside it, unless the device asks for less motion" do
@@ -66,42 +77,32 @@ class SideNavTest < ActionDispatch::IntegrationTest
     assert_select "body > div.motion-safe\\:md\\:transition-\\[padding\\]"
   end
 
-  test "the account menu is hidden until the button opens it, and holds the settings and log out" do
+  test "on a phone, the gear leads to the settings page, without the avatar" do
     get game_tables_path
 
-    assert_select "#user-menu[hidden]" do
-      assert_select "a", count: 1
-      assert_select "a[href=?]", settings_display_path, text: "Paramètres"
-      assert_select "form[action=?] button", destroy_user_session_path, text: "Se déconnecter"
+    assert_select "#side-nav > div.md\\:hidden a[href=?][title=?]", settings_path, "Paramètres" do
+      assert_select "svg[aria-hidden=true] + span#{fading_text_selector}", text: "Paramètres"
     end
+    assert_select "#side-nav > div.md\\:hidden span[aria-hidden=true]", text: "PL", count: 0
+    assert_select account_entries_selector
   end
 
-  test "on a phone, the avatar leads straight to the settings; the menu is for wider screens" do
-    get game_tables_path
-
-    assert_select "#side-nav a.md\\:hidden[href=?][title=?]", settings_path, "Paramètres" do
-      assert_select "span[aria-hidden=true]", text: "PL"
-      assert_select "span.sr-only", text: "Paramètres"
-    end
-    assert_select "#side-nav div.hidden.md\\:block[data-controller=dropdown] button[aria-controls=user-menu]"
-  end
-
-  test "on a phone, the avatar link is the current one on the settings" do
+  test "on a phone, the gear is the current link on the settings" do
     get settings_account_path
 
-    assert_select "#side-nav a.md\\:hidden[aria-current=page][href=?]", settings_path
+    assert_select "#side-nav > div.md\\:hidden a[aria-current=page][href=?]", settings_path
   end
 
-  test "on the account settings, settings is the current link of the menu" do
+  test "on the account settings, settings is the current link of the navigation" do
     get settings_account_path
 
-    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
+    assert_select "#{account_entries_selector} a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
   test "settings stays the current link when the account form comes back with an error" do
     patch settings_email_path, params: { user: { email: "player@example.com", current_password: "wrong" } }
 
-    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
+    assert_select "#{account_entries_selector} a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
   test "a signed in user has no theme control in the navigation: the theme is set in the settings" do
@@ -121,5 +122,10 @@ class SideNavTest < ActionDispatch::IntegrationTest
   # A text of the navigation: for screen readers only on a phone, transparent until the bar is unfolded from 768 px
   def fading_text_selector
     ".max-md\\:sr-only.md\\:opacity-0.md\\:nav-expanded\\:opacity-100"
+  end
+
+  # Settings, log out and who is signed in, from 768 px (shared/_account_nav)
+  def account_entries_selector
+    "#side-nav div.hidden.md\\:flex"
   end
 end

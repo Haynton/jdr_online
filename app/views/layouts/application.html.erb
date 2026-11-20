@@ -21,5 +21,8 @@
         </main>
       <% end %>
     </div>
+
+    <%= render "shared/settings_dialog" if settings_dialog_available? %>
+    <%= render "shared/confirm_dialog" if user_signed_in? %>
   </body>
 </html>

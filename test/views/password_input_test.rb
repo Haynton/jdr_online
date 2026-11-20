@@ -5,7 +5,7 @@ class PasswordInputTest < ActionView::TestCase
     render_password_field
 
     assert_select "div.relative[data-controller=password-visibility] > input#user_password[type=password]"
-    assert_select "input#user_password.border-field-line.bg-field.pr-12[data-password-visibility-target=field]"
+    assert_select "input#user_password.border-transparent.bg-field.pr-12[data-password-visibility-target=field]"
   end
 
   test "the button is hidden until JavaScript runs, and does not send the form" do

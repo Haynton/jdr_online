@@ -4,8 +4,8 @@ class AuthFormsTest < ActionDispatch::IntegrationTest
   test "the sign in page uses the styled fields and a primary button" do
     get new_user_session_path
 
-    assert_select "input#user_email.border-field-line"
-    assert_select "input#user_password.border-field-line"
+    assert_select "input#user_email.bg-field"
+    assert_select "input#user_password.bg-field"
     assert_select "input[type=checkbox]#user_remember_me.appearance-none"
     assert_select "form input[type=submit].bg-primary", count: 1
   end
@@ -13,7 +13,7 @@ class AuthFormsTest < ActionDispatch::IntegrationTest
   test "the forgot password page uses the styled field and a primary button" do
     get new_user_password_path
 
-    assert_select "input#user_email.border-field-line"
+    assert_select "input#user_email.bg-field"
     assert_select "form input[type=submit].bg-primary", count: 1
   end
 
@@ -28,8 +28,8 @@ class AuthFormsTest < ActionDispatch::IntegrationTest
   test "the new password page uses the styled fields and a primary button" do
     get edit_user_password_path(reset_password_token: "any-token")
 
-    assert_select "input#user_password.border-field-line"
-    assert_select "input#user_password_confirmation.border-field-line"
+    assert_select "input#user_password.bg-field"
+    assert_select "input#user_password_confirmation.bg-field"
     assert_select "form input[type=submit].bg-primary", count: 1
   end
 

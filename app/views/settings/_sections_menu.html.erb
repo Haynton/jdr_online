@@ -1,8 +1,9 @@
 <%# Section menu of the settings (layouts/settings). On a phone, a list in a card, one row per section;
-    from 768 px, a side menu on the page background %>
-<nav class="<%= settings_menu_visibility_classes %>" aria-labelledby="settings-title">
-  <h1 id="settings-title" class="text-2xl font-bold text-ink md:px-4 md:text-xl"><%= t(".title") %></h1>
-  <ul class="mt-4 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface md:mt-3 md:space-y-1 md:divide-y-0 md:rounded-none md:border-0 md:bg-transparent">
+    from 768 px, a side menu on the page background. In the settings window, the side menu at any width %>
+<nav class="<%= settings_menu_visibility_classes %> <%= settings_layout_classes(:menu) %>" aria-labelledby="settings-title">
+  <%# In the settings window, the title bar of the window shows it (settings_layout_classes) %>
+  <h1 id="settings-title" class="<%= settings_layout_classes(:menu_title) %>"><%= t(".title") %></h1>
+  <ul class="<%= settings_layout_classes(:menu_list) %>">
     <%# On /settings (sections controller), the display section is the one shown on a wide screen %>
     <li><%= settings_link_to t(".display"), settings_display_path, current: current_settings_section?(:display) %></li>
     <li><%= settings_link_to t(".account"), settings_account_path, current: current_settings_section?(:account) %></li>

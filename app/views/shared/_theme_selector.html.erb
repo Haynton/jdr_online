@@ -1,8 +1,9 @@
 <%# The three theme choices (light, dark, system), the same control everywhere: settings, navbar of the visitors,
     sign in pages. compact: icons only (the navbar and the sign in pages); labelled_by: id of the visible label
-    that names it (a settings row). Driven by theme_controller.js %>
+    that names it (a settings row). Driven by theme_controller.js.
+    Styled like the fields: their background (field), no border; the chosen theme stands out as a pill (theme_choice) %>
 <% compact = local_assigns.fetch(:compact, false) %>
-<%= tag.div class: "inline-flex gap-1 rounded-lg border border-field-line bg-field p-1", role: "group",
+<%= tag.div class: "inline-flex gap-1 rounded-lg bg-field p-1", role: "group",
             aria: theme_selector_aria(local_assigns[:labelled_by]), data: { controller: "theme" } do %>
   <% ThemesHelper::THEME_CHOICE_ICONS.each do |choice, icon| %>
     <%= render "shared/theme_choice", choice: choice, icon: icon, compact: compact %>

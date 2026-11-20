@@ -1,6 +1,7 @@
 <%= settings_section(title: t(".title")) do %>
   <%= settings_group(title: t(".password_group")) do %>
-    <%= simple_form_for @user, url: settings_password_path, method: :patch, html: { class: "border-b border-line py-4" } do |form| %>
+    <%= simple_form_for @user, url: settings_password_path, method: :patch, html: { class: "border-b border-line py-4" },
+                                defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
       <%= form_error_notification(form) %>
       <%= form.input :current_password, required: true, input_html: { autocomplete: "current-password" } %>
       <%= form.input :password, label: t(".new_password"), required: true,
@@ -8,7 +9,7 @@
                                 input_html: { autocomplete: "new-password" } %>
       <%= form.input :password_confirmation, label: t(".password_confirmation"), required: true,
                                              input_html: { autocomplete: "new-password" } %>
-      <%= form.button :submit, t(".change_password"), class: button_classes(:primary) %>
+      <%= form.button :submit, t(".change_password"), class: button_classes(:secondary) %>
     <% end %>
   <% end %>
 <% end %>

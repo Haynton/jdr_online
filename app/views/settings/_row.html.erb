@@ -1,6 +1,8 @@
-<%# Use the setting_row helper. The control goes under the label on a phone, on its right from 640 px.
-    The control names itself with aria-labelledby="<label_id>" %>
-<div class="flex flex-col gap-3 border-b border-line py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+<%# Use the setting_row helper. The control goes under the label, and on its right once the section is at least
+    672 px wide: a container query (@2xl:, the @container of settings/_section), not the width of the screen.
+    In the settings window the section is much narrower than the screen: the label got squeezed to one word per line
+    and the theme choices overflowed. The control names itself with aria-labelledby="<label_id>" %>
+<div class="flex flex-col gap-3 border-b border-line py-4 @2xl:flex-row @2xl:items-center @2xl:justify-between @2xl:gap-6">
   <div>
     <p id="<%= label_id %>" class="text-base font-medium text-ink"><%= label %></p>
     <% if description %>

@@ -1,6 +1,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
     include DeviseLocale
+    include ScreenReaderNotice
 
     before_action :permit_username, only: :create
 
@@ -16,6 +17,13 @@ module Users
     end
 
     protected
+
+    # "Welcome! You have signed up successfully." only repeats what the page shows (the new user's tables):
+    # for screen readers only, like "Signed in."
+    def set_flash_message!(key, kind, options = {})
+      super
+      keep_for_screen_readers_only if kind == :signed_up
+    end
 
     # Devise only accepts the email and the password at sign up
     def permit_username

@@ -39,11 +39,23 @@ module NavigationHelper
 
   # A link of a navigation menu, with its icon. The page being shown has no color of its own (decision:
   # the green background looked like a selected option), screen readers still hear it through aria-current.
-  # current: replaces the URL check when one page has several URLs
-  def nav_link_to(label, path, icon:, current: current_page?(path))
-    link_to path, class: NAV_ITEM_CLASSES, aria: current_page_aria(current) do
+  # current: replaces the URL check when one page has several URLs. data: optional (settings_link_data)
+  def nav_link_to(label, path, icon:, current: current_page?(path), data: {})
+    link_to path, class: NAV_ITEM_CLASSES, aria: current_page_aria(current), data: data do
       nav_icon(icon) + label
     end
+  end
+
+  # The settings window (shared/_settings_dialog), for a signed in user. Not on the settings pages:
+  # they hold the frame of the same name themselves, and "Settings" there simply leads to the page
+  def settings_dialog_available?
+    user_signed_in? && !settings_page?
+  end
+
+  # "Settings" of the navigation loads the section into the settings window when there is one.
+  # No prefetch: its answer, laid out for the window, would be reused for the same address opened as a page
+  def settings_link_data
+    settings_dialog_available? ? { turbo_frame: "settings_dialog", turbo_prefetch: false } : {}
   end
 
   # Also used by the log out button of the menu, so that it looks like the links around it
@@ -55,11 +67,26 @@ module NavigationHelper
     render("shared/icons/#{icon}", css_class: NAV_ICON_CLASSES)
   end
 
-  # title: the label as a tooltip, for a mouse user while only the icon shows
-  def side_nav_link_to(label, path, icon:, current: current_page?(path))
-    link_to path, class: SIDE_NAV_LINK_CLASSES, title: label, aria: current_page_aria(current) do
-      nav_icon(icon) + tag.span(label, class: SIDE_NAV_LABEL_CLASSES)
+  # title: the label as a tooltip, for a mouse user while only the icon shows. data: optional (settings_link_data)
+  def side_nav_link_to(label, path, icon:, current: current_page?(path), data: {})
+    link_to path, class: SIDE_NAV_LINK_CLASSES, title: label, aria: current_page_aria(current), data: data do
+      side_nav_item_content(label, icon)
     end
+  end
+
+  # A form button of the side navigation (log out), shaped like its links. A <button> takes the width of its content,
+  # where a link stretches: it gets the width of the bar less its 12 px margins, so that its hover fills the row
+  # confirm: a question asked first (shared/_confirm_dialog), nothing is sent if the user cancels;
+  # its confirm button says the label of this button
+  def side_nav_button_to(label, path, icon:, method:, confirm: nil)
+    button_to path, method: method, class: "#{SIDE_NAV_LINK_CLASSES} md:w-[calc(100%-1.5rem)]", title: label,
+                    form: { data: confirm ? { turbo_confirm: confirm, confirm_button: label } : {} } do
+      side_nav_item_content(label, icon)
+    end
+  end
+
+  def side_nav_item_content(label, icon)
+    nav_icon(icon) + tag.span(label, class: SIDE_NAV_LABEL_CLASSES)
   end
 
   def side_nav_fading_text_classes

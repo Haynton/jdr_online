@@ -1,0 +1,25 @@
+<%# The account entries at the foot of the side navigation (decision: directly in the bar, no menu to open:
+    only two actions).
+    On a phone, the gear of the settings page, like the other icons of the floating bar (log out is there too,
+    in Account; decision: the gear rather than the avatar).
+    From 768 px: "Settings", which opens the settings window (settings_link_data), or the settings page when already
+    on it; "Log out"; then the avatar and the username, which only show who is signed in %>
+<div class="md:hidden">
+  <%= side_nav_link_to t(".settings"), settings_path, icon: "settings", current: settings_page? %>
+</div>
+
+<%# Under "My tables", at the foot of the bar (shared/_side_nav) %>
+<div class="hidden md:mt-1.5 md:flex md:flex-col md:gap-1.5">
+  <%= side_nav_link_to t(".settings"), settings_display_path, icon: "settings", current: settings_page?,
+                                                              data: settings_link_data %>
+  <%# Asked first (shared/_confirm_dialog): a stray click in the bar no longer signs out %>
+  <%= side_nav_button_to t(".log_out"), destroy_user_session_path, icon: "log_out", method: :delete,
+                                                                    confirm: t(".log_out_confirmation") %>
+
+  <%# The username fades in once the navigation is unfolded, like the labels. The avatar keeps its place:
+      4 px from the edge, the centre of the 40 px row while folded %>
+  <div class="mx-3 mt-1.5 flex h-10 items-center gap-3 overflow-hidden px-1" title="<%= current_user.username %>">
+    <%= render "shared/avatar", user: current_user %>
+    <span class="truncate text-[15px] text-ink <%= side_nav_fading_text_classes %>"><%= current_user.username %></span>
+  </div>
+</div>

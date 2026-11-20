@@ -1,13 +1,15 @@
 <%# Use the settings_section helper (app/helpers/settings_helper.rb), not this partial directly.
-    A card, like "My tables". The line under the title goes from one edge of the card to the other.
-    The messages ("Language saved.") show at the top of the card, next to the settings they confirm %>
-<section class="rounded-xl border border-line bg-surface" aria-labelledby="settings-section-title">
-  <header class="border-b border-line px-6 py-5 sm:px-8">
-    <h2 id="settings-section-title" class="text-2xl font-bold text-ink"><%= title %></h2>
+    On the page, a card, like "My tables": the line under the title goes from one edge of the card to the other.
+    In the settings window, no card: a header across the panel, then the rows, which scroll on their own
+    (settings_section_classes). The messages ("Language saved.") show at the top, next to the settings they confirm %>
+<section class="<%= settings_section_classes(:section) %>" aria-labelledby="settings-section-title">
+  <header class="<%= settings_section_classes(:header) %>">
+    <h2 id="settings-section-title" class="<%= settings_section_classes(:title) %>"><%= title %></h2>
   </header>
-  <div class="px-6 pb-6 sm:px-8">
+  <div class="<%= settings_section_classes(:body) %>">
     <%= render "shared/flashes" %>
-    <div class="mt-6">
+    <%# A container: the setting rows lay themselves out by its width (settings/_row) %>
+    <div class="mt-6 @container">
       <%= content %>
     </div>
   </div>

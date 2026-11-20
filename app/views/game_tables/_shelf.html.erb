@@ -39,10 +39,10 @@
       </button>
     </div>
   </div>
-  <%# The edges fade over the width of the padding (row-edge-fade): a card leaving the row melts away instead of
+  <%# The edges fade over 1.25 times the padding (row-edge-fade): a card leaving the row melts away instead of
       being cut, while the first one, at rest, stays whole. Room above for a card lifted on hover (less on a phone,
       which has no hover). On a short phone screen the cards are drawn at 85 % (zoom), so that the page fits %>
-  <ul class="no-scrollbar row-edge-fade -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pt-2 pb-3 [--row-edge:1rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2rem] md:mt-6 md:pt-4 max-md:[@media(max-height:740px)]:[zoom:0.85]"
+  <ul class="no-scrollbar row-edge-fade -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pt-2 pb-3 [--row-edge:1.25rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2.5rem] md:mt-6 md:pt-4 max-md:[@media(max-height:740px)]:[zoom:0.85]"
       data-card-row-target="row"
       data-action="scroll->card-row#toggleButtons resize@window->card-row#toggleButtons">
     <%# The create card is always there, whatever the filter %>

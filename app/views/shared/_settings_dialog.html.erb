@@ -1,0 +1,25 @@
+<%# The settings in a window over the current page, like Claude, ChatGPT or Notion (from 768 px: on a phone,
+    the avatar opens the settings page). "Settings" in the account menu loads a section into the frame below,
+    and settings_dialog_controller.js opens the window once it has arrived. The settings layout wraps its content
+    in the same frame: links and forms of the settings stay in the window, and /settings/... stays a whole page.
+    A native <dialog> opened with showModal: Escape closes it, the keyboard focus stays inside, the page behind
+    is inert. A title bar across the window holds its name and the close cross; below it, the menu and the section.
+    open:flex only: a display class on a closed <dialog> would show it.
+    tabindex="-1": the controller focuses the window itself when it opens, not its first button (the close cross
+    showed a focus ring at once; autofocus on the dialog was not applied by Chrome). Tab then reaches the cross.
+    No outline on the window: its content has its own.
+    data-turbo-prefetch="false": a link hovered in the window was prefetched with the header of the window, and Turbo
+    reused that answer, laid out for the window, when the same address was then opened as a whole page %>
+<dialog id="settings-dialog" aria-labelledby="settings-dialog-title" tabindex="-1" data-turbo-prefetch="false"
+        class="m-auto h-[min(720px,calc(100dvh-4rem))] w-[min(960px,calc(100vw-4rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-controller="settings-dialog"
+        data-action="turbo:frame-load->settings-dialog#open click->settings-dialog#closeOnBackdrop close->settings-dialog#closed turbo:before-cache@document->settings-dialog#close">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="settings-dialog-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="settings-dialog#close">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <%= turbo_frame_tag "settings_dialog", class: "block min-h-0 flex-1", data: { settings_dialog_target: "frame" } %>
+</dialog>

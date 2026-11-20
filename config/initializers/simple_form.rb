@@ -10,27 +10,29 @@
 module SimpleFormFieldClasses
   LABEL = "mb-1.5 block text-[13px] font-semibold text-ink"
 
-  # Focus: a 2 px focus-ring outline, 2 px away from the field, like the buttons; the border keeps its color
-  # (decision). The soft 30 % halo used before was too pale alone (1.66 in light, 2.0 in dark), the outline
-  # reaches 8.22. Errors follow aria-invalid, which Simple Form sets on invalid inputs: a 1 px border was
-  # too thin to notice, so a ring doubles it, the background turns pink and the focus outline turns red.
-  # aria-invalid variants come after focus and hover in the CSS, so the red always wins.
+  # Decision: a field shows by its background, darker than the page in light, lighter in dark (field), with
+  # no border at rest (transparent, of the field color); a fine border on hover (field-line), and on focus a fine
+  # border in the text color (ink, above 10 on the field) with a soft halo, instead of the gold outline of
+  # the other elements. Accepted gap: the field background stands out from the page by about 1.3 only (under
+  # the shape contrast of 3); its label above it and its focus border make up for it.
+  # Errors follow aria-invalid, which Simple Form sets on invalid inputs: red border doubled by a ring,
+  # pink background, red halo on focus. aria-invalid variants come after focus and hover in the CSS: red wins.
   # The vertical padding keeps the height but shrinks the inner box:
-  # Safari stretched its caps lock indicator to fill it.
+  # Safari stretched its caps lock indicator to fill it. 36 px high (44, then 40 before: decision)
   INPUT = %w[
-    block h-11 w-full rounded-lg border border-field-line bg-field px-3.5 py-2.5 text-sm text-ink
-    placeholder:text-muted hover:border-muted
-    focus:outline-2 focus:outline-offset-2 focus:outline-focus-ring
+    block h-9 w-full rounded-lg border border-transparent bg-field px-3 py-1.5 text-sm text-ink
+    placeholder:text-muted hover:border-field-line
+    focus:border-ink focus:ring-3 focus:ring-ink/10 focus:outline-none
     aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink
-    aria-invalid:hover:border-error-ink aria-invalid:focus:outline-error-ink
+    aria-invalid:hover:border-error-ink aria-invalid:focus:ring-3 aria-invalid:focus:ring-error-ink/30
     disabled:cursor-not-allowed disabled:opacity-50
   ].join(" ").freeze
 
   # Each field block is a group: once its field is invalid, the error message replaces the hint
   # ("12 caractères minimum" above "Est trop court (au moins 12 caractères)" said the same thing twice)
   FIELD_BLOCK = "group mb-4"
-  # Full width on a phone, where the control goes under the label; 240 px from 640 px
-  SETTING_FIELD_BLOCK = "group w-full sm:w-60"
+  # Full width under its label, 240 px on its right: the same container query as the row (settings/_row)
+  SETTING_FIELD_BLOCK = "group w-full @2xl:w-60"
   HINT = "mt-1.5 text-xs text-muted group-has-aria-invalid:hidden"
   # Simple Form shows the message without the field name ("n'a pas été trouvé(e)"): capitalize its first letter
   ERROR = "mt-1.5 text-xs text-error-ink first-letter:uppercase"

@@ -22,12 +22,12 @@ class SignInLocaleTest < ActionDispatch::IntegrationTest
     assert_select "[role=status]", count: 1
   end
 
-  test "the sign out message stays visible" do
+  test "the sign out message is for screen readers only too: the home page already shows the user is signed out" do
     sign_in @user
     delete destroy_user_session_path
     follow_redirect!
 
-    assert_select ".sr-only [role=status]", count: 0
+    assert_select ".sr-only [role=status]", count: 1
     assert_select "[role=status]", count: 1
   end
 

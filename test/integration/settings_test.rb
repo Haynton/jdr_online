@@ -78,7 +78,7 @@ class SettingsTest < ActionDispatch::IntegrationTest
     sign_in create_user(locale: "fr")
     get settings_display_path
 
-    assert_select "#user-menu a[aria-current=page]", count: 1, text: "Paramètres"
+    assert_select "#side-nav div.hidden.md\\:flex a[aria-current=page]", count: 1, text: "Paramètres"
   end
 
   test "a visitor is sent to the sign in page" do

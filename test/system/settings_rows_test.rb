@@ -7,7 +7,7 @@ class SettingsRowsTest < ApplicationSystemTestCase
     fill_in "user_email", with: "player@example.com"
     fill_in "user_password", with: TEST_PASSWORD
     find("input[type=submit]").click
-    assert_selector "button[aria-controls=user-menu]"
+    assert_selector "#side-nav"
   end
 
   test "every row has a line under it, except the last element of the section" do
