@@ -1,9 +1,11 @@
+<%# Top bar of the visitor pages (home page): the logo, the theme choices, log in and sign up.
+    A signed in user gets the side navigation instead (shared/_side_nav) %>
 <nav class="flex h-16 items-center justify-between gap-4 border-b border-line bg-surface px-4 sm:px-8" aria-label="<%= t(".label") %>">
   <%= link_to logo_path, class: "rounded-md" do %>
     <%= render "shared/logo", compact_on_phone: true %>
   <% end %>
 
   <div class="flex items-center gap-3">
-    <%= render(user_signed_in? ? "shared/navbar_user_links" : "shared/navbar_visitor_links") %>
+    <%= render "shared/navbar_visitor_links" %>
   </div>
 </nav>

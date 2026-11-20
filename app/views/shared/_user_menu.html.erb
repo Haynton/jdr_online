@@ -1,27 +1,37 @@
-<%# Account menu of the navbar, opened by the avatar (dropdown_controller.js).
-    The menu is rendered hidden: without JavaScript it stays closed. %>
-<div class="relative"
+<%# Account entry at the end of the side navigation, the avatar.
+    On a phone, it leads straight to the settings (log out is there too, in Account): a small menu over a floating bar
+    added a tap for nothing.
+    From 768 px, it opens a menu to the right of the bar, 12 px away from its border (dropdown_controller.js):
+    the settings and log out, like in the apps that inspired it. The menu is rendered hidden: without JavaScript
+    it stays closed. %>
+<%= link_to settings_path, title: t(".settings"), aria: current_page_aria(settings_page?),
+            class: "flex size-11 items-center justify-center rounded-full transition-colors hover:bg-surface-raised aria-[current=page]:bg-surface-raised md:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring" do %>
+  <%= render "shared/avatar", user: current_user %>
+  <span class="sr-only"><%= t(".settings") %></span>
+<% end %>
+
+<div class="relative mx-3 mt-1.5 hidden md:block"
      data-controller="dropdown"
      data-action="keydown.esc->dropdown#closeAndFocusButton click@window->dropdown#closeOnOutsideClick focusout->dropdown#closeOnFocusLeave turbo:before-cache@document->dropdown#close">
-  <%# On a phone the username is not shown: the screen reader text names the button. The visible username stays in that name %>
+  <%# The username fades in once the navigation is unfolded; transparent, it stays in the name of the button.
+      Folded, the button is a circle around the avatar (4 px all around): hovering draws an even ring.
+      Unfolded, a row like the links. The avatar is not centered by flex: the hidden username would push it out %>
   <button type="button"
-          class="flex items-center gap-2 rounded-full p-0.5 text-muted transition-colors hover:text-ink sm:rounded-lg sm:px-2 sm:py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          class="flex size-10 items-center gap-3 overflow-hidden rounded-full px-1 text-ink transition-colors hover:bg-surface-raised nav-expanded:w-full nav-expanded:rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           aria-expanded="false"
           aria-controls="user-menu"
           data-dropdown-target="button"
           data-action="dropdown#toggle">
     <%= render "shared/avatar", user: current_user %>
     <span class="sr-only"><%= t(".account_menu") %></span>
-    <span class="sr-only text-sm sm:not-sr-only"><%= current_user.username %></span>
-    <%= render "shared/icons/chevron_down", css_class: "size-4 shrink-0" %>
+    <span class="truncate text-[15px] <%= side_nav_fading_text_classes %>"><%= current_user.username %></span>
   </button>
 
   <div id="user-menu" hidden
-       class="absolute top-full right-0 z-10 mt-2 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-lg"
+       class="absolute bottom-0 left-full z-30 ml-6 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-lg"
        data-dropdown-target="menu">
     <ul>
-      <li><%= nav_link_to t(".my_tables"), game_tables_path, icon: "scroll_text" %></li>
-            <li><%= nav_link_to t(".settings"), settings_display_path, icon: "settings", current: settings_page? %></li>
+      <li><%= nav_link_to t(".settings"), settings_display_path, icon: "settings", current: settings_page? %></li>
     </ul>
     <hr class="my-1.5 border-line">
     <%= button_to destroy_user_session_path, method: :delete, class: nav_item_classes do %>

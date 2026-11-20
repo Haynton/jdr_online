@@ -166,10 +166,14 @@ en:
       label: "Theme"
     theme_switch:
       dark_theme: "Dark theme"
+    side_nav:
+      label: "Main navigation"
+      my_tables: "My tables"
+      collapse: "Collapse the menu"
+      expand: "Expand the menu"
     user_menu:
       account_menu: "Account menu"
       log_out: "Log out"
-      my_tables: "My tables"
       settings: "Settings"
   simple_form:
     error_notification:

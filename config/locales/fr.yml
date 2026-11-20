@@ -137,10 +137,14 @@ fr:
       label: "Thème"
     theme_switch:
       dark_theme: "Thème sombre"
+    side_nav:
+      label: "Navigation principale"
+      my_tables: "Mes tables"
+      collapse: "Replier le menu"
+      expand: "Déplier le menu"
     user_menu:
       account_menu: "Menu du compte"
       log_out: "Se déconnecter"
-      my_tables: "Mes tables"
       settings: "Paramètres"
   simple_form:
     error_notification:
