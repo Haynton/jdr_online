@@ -38,7 +38,7 @@ module SimpleFormFieldClasses
   # Drawn by us (appearance-none): the native check box cannot be reshaped, only recolored
   CHECKBOX = %w[
     size-4.5 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-field-line bg-field
-    checked:border-primary checked:bg-primary checked:bg-checkmark
+    checked:border-primary checked:bg-primary checked:bg-checkmark dark:checked:bg-checkmark-dark
     focus-visible:border-focus-ring focus-visible:ring-3 focus-visible:ring-focus-ring/30 focus-visible:outline-hidden
   ].join(" ").freeze
 

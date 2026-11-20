@@ -47,7 +47,7 @@ class SimpleFormFieldsTest < ActionView::TestCase
     assert_select "div.group:has(input#user_password[aria-invalid=true]) p.group-has-aria-invalid\\:hidden"
   end
 
-  test "a check box is drawn square by us, green with a white check when checked" do
+  test "a check box is drawn square by us, filled with the main button color and a check when checked" do
     render_form { |form| form.input(:remember_me, as: :boolean) }
 
     assert_select "input[type=checkbox]#user_remember_me.appearance-none.rounded-\\[3px\\]"

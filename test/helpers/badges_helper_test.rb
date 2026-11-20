@@ -1,7 +1,7 @@
 require "test_helper"
 
 class BadgesHelperTest < ActionView::TestCase
-  test "the game master badge uses the tonal green, never the solid button green" do
+  test "the game master badge uses the tonal gold, never the solid button color" do
     assert_includes badge_classes(:game_master), "bg-primary-soft text-primary-soft-ink"
     assert_not_includes badge_classes(:game_master).split, "bg-primary"
   end
