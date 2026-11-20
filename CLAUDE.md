@@ -328,12 +328,12 @@ Fait dans `feature/p1-app-navbar` :
 
 Fait dans `feature/p1-dashboard` :
 
-- Page « Mes tables » (`TablesController#index`, `/tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`tables/_empty_state`), affichée seulement si `@tables` est vide. `@tables` vaut `[]` en attendant le modèle `Table`
-- « Créer une table » mène à une page provisoire (`TablesController#new`, `/tables/new`) qui annonce la création à venir
-- Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
+- Page « Mes tables » (`GameTablesController#index`, `/game_tables`, renommés dans `chores/db-game_tables`) : en-tête avec le bouton « Créer une table », grille de cartes (1 colonne sur téléphone, 2 à partir de 768 px, 3 à partir de 1024 px, 24 px d'écart) et carte vide en pointillés (`game_tables/_empty_state`), affichée seulement si `@game_tables` est vide
+- « Créer une table » mène à une page provisoire (`GameTablesController#new`, `/game_tables/new`) qui annonce la création à venir
+- Arrivée sur « Mes tables » après la connexion, l'inscription et la modification du compte : `signed_in_root_path` renvoie `game_tables_path` (`ApplicationController`). Une page demandée avant la connexion passe en premier. Un utilisateur connecté qui ouvre l'accueil y est redirigé ; le logo et le lien du menu y mènent (`logo_path`)
 - Zone principale du layout `application` : 1120 px au maximum, marges de 32 px (16 px sur téléphone), 40 px en haut et en bas
 - Écarts volontaires avec la fiche Maquettes : bouton « Créer une table » visible dès maintenant (page provisoire) ; pointillés de la carte vide en `line` gardés, même s'ils se voient peu en clair (1,2)
-- **Question ouverte** : le mot « table » (jargon de rôliste) est-il assez clair ? Pistes : « Mes campagnes », « Mes parties ». À trancher avec Julien. Si le terme change, seul le texte affiché change a priori : `tables` reste dans le code et la base
+- **Question ouverte** : le mot « table » (jargon de rôliste) est-il assez clair ? Pistes : « Mes campagnes », « Mes parties ». À trancher avec Julien. Si le terme change, seul le texte affiché change a priori : `game_tables` reste dans le code et la base
 
 Fait dans `feature/p1-account-settings` :
 
@@ -368,7 +368,18 @@ Fait dans `feature/p1-username` :
 - Modifiable dans Paramètres › Compte, **sans mot de passe** (`Settings::UsernamesController`). Chaque formulaire de la rubrique a son propre objet (`@user_for_username`, `@user_for_email`) et son `id` : une erreur dans l'un ne s'affiche pas dans l'autre
 - Le menu du compte affiche le pseudo à la place de l'e-mail
 
+Fait dans `chores/db-game_tables` :
+
+- Tout ce qui s'appelait `tables` s'appelle `game_tables` : contrôleur `GameTablesController`, routes `game_tables_path` et `new_game_table_path`, vues `app/views/game_tables/`, clés de traduction `game_tables.*`. Le mot « table » reste dans les textes affichés
+- Table `game_tables` (modèle `GameTable`) : `name` obligatoire, 60 caractères au plus (`GameTable::NAME_MAX_LENGTH`, même limite qu'en base), `description` facultative (décision), `status` (`draft` par défaut), `creation_step`, `invite_token`, `mode`, `template_snapshot` et `ai_settings` (JSON), `track_started_at`
+- Table `participations` (modèle `Participation`) : relie un utilisateur à une table, avec son rôle (`game_master` ou `player`, `player` par défaut). Le rôle est rangé ici, pas sur la table, pour pouvoir changer de MJ plus tard (décision). Gardé en base **et** dans le modèle : un seul MJ par table (index unique partiel), un utilisateur une seule fois par table (index unique), rôle limité aux deux valeurs (contrainte `CHECK`). Messages d'erreur traduits dans `activerecord.errors.models.participation`
+- Règle décidée : celui qui crée une table en devient le MJ, les participants suivants sont joueurs. Elle sera codée avec le formulaire de création (l'action `create`, sans route ni formulaire, a été retirée de cette branche)
+- `User has_many :game_tables, through: :participations`. « Mes tables » montre les tables de l'utilisateur (`current_user.game_tables`), comme MJ ou comme joueur
+- Seed (`db/seeds.rb`) : vide d'abord la base (`User.destroy_all` compris, voulu), puis crée deux comptes, dix tables, cinq tables par compte en MJ
+
 À savoir :
+
+- Changer le MJ d'une table : passer l'ancien MJ en `player` **avant** de passer le nouveau en `game_master`, dans une même transaction. Dans l'autre ordre, l'index unique partiel (un seul MJ par table) refuse l'enregistrement
 
 - Si `bin/dev` répond `foreman: not found` : lancer `rbenv rehash`
 - Lancé en tâche de fond par Claude Code, le processus `css` de `bin/dev` s'arrête faute de terminal. Contournement : `tail -f /dev/null | bin/dev`. Ne pas modifier `Procfile.dev` pour ça
@@ -414,7 +425,8 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 ### Plus tard
 
 - Fermeture des messages flash : contrôleur Stimulus, branche dédiée
-- Branche du modèle `Table` : `@tables = current_user.tables` dans `TablesController#index` (avec `includes` pour éviter le N+1), cartes de table dans la grille, test « dès la première table, la carte vide disparaît », vrai formulaire à la place de la page provisoire `tables/new`
+- Création d'une table : vrai formulaire à la place de la page provisoire `game_tables/new`, action `create` qui crée la table et la participation MJ de son créateur dans une même transaction, page `show`, cartes de table dans la grille (avec `includes` si la carte affiche le MJ ou les joueurs, pour éviter le N+1)
+- Tests système : sur `main` comme ailleurs, ils plantent tous avec `invalid argument: * is not a valid URL` (au nettoyage de Capybara, `reset!`). Probablement une version de Chrome trop récente pour Capybara ou `selenium-webdriver`. Branche dédiée
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - RuboCop, branche `chore/p1-rubocop-config` : le `.rubocop.yml` de Le Wagon ignore la gem `rubocop-rails-omakase` (installée par Rails) et exclut `config/**` et `test/**` de l'analyse. Choisir un seul style et décider quels dossiers analyser. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 - Quand Julien rejoint le dépôt : l'ajouter comme collaborateur et passer la protection de `main` à une approbation obligatoire

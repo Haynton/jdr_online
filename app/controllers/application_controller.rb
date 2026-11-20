@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   # Where Devise sends a signed in user: after signing in or up (unless a page asked for before comes first)
   # and after updating the account. "My tables" instead of the home page, which only redirects there
   def signed_in_root_path(_resource_or_scope)
-    tables_path
+    game_tables_path
   end
 
   # The pages of Devise (sign in, sign up, passwords) are visitor pages: they get the auth layout.

@@ -3,7 +3,7 @@ require "test_helper"
 class TablesTest < ActionDispatch::IntegrationTest
   test "my tables shows its title and the empty state, in french" do
     sign_in create_user(locale: "fr")
-    get tables_path
+    get game_tables_path
 
     assert_response :success
     assert_select "main header h1", text: "Mes tables"
@@ -16,14 +16,32 @@ class TablesTest < ActionDispatch::IntegrationTest
 
   test "the cards sit in a grid: one column on a phone, two on a tablet, three on a wide screen" do
     sign_in create_user(locale: "fr")
-    get tables_path
+    get game_tables_path
 
     assert_select "#{cards_grid_selector} > section[aria-labelledby=empty-tables-title]"
   end
 
+  test "from the first table, the empty state disappears" do
+    user = create_user(locale: "fr")
+    GameTable.create!(name: "Les Marches du Nord").participations.create!(user: user, role: :game_master)
+    sign_in user
+    get game_tables_path
+
+    assert_select "section[aria-labelledby=empty-tables-title]", count: 0
+  end
+
+  test "the tables of other users do not count as mine" do
+    other_user = User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
+    GameTable.create!(name: "L'Ombre du Dragon").participations.create!(user: other_user, role: :game_master)
+    sign_in create_user(locale: "fr")
+    get game_tables_path
+
+    assert_select "section[aria-labelledby=empty-tables-title]"
+  end
+
   test "my tables is translated in english" do
     sign_in create_user(locale: "en")
-    get tables_path
+    get game_tables_path
 
     assert_select "main h1", text: "My tables"
     assert_select "main h2", text: "No table yet"
@@ -31,34 +49,34 @@ class TablesTest < ActionDispatch::IntegrationTest
 
   test "the create a table button is in the header only, the join button waits for its page" do
     sign_in create_user(locale: "fr")
-    get tables_path
+    get game_tables_path
 
-    assert_select "main header a.bg-primary[href=?]", new_table_path, text: "Créer une table"
+    assert_select "main header a.bg-primary[href=?]", new_game_table_path, text: "Créer une table"
     assert_select "main section a", count: 0
     assert_select "main a", count: 1
   end
 
   test "the create a table page says it is coming soon and leads back to my tables" do
     sign_in create_user(locale: "fr")
-    get new_table_path
+    get new_game_table_path
 
     assert_response :success
     assert_select "main h1", text: "Créer une table"
-    assert_select "main a[href=?]", tables_path, text: "Retour à mes tables"
+    assert_select "main a[href=?]", game_tables_path, text: "Retour à mes tables"
   end
 
   test "the create a table page is translated in english" do
     sign_in create_user(locale: "en")
-    get new_table_path
+    get new_game_table_path
 
     assert_select "main h1", text: "Create a table"
   end
 
   test "a visitor is sent to the sign in page" do
-    get tables_path
+    get game_tables_path
     assert_redirected_to new_user_session_path
 
-    get new_table_path
+    get new_game_table_path
     assert_redirected_to new_user_session_path
   end
 
@@ -66,7 +84,7 @@ class TablesTest < ActionDispatch::IntegrationTest
     sign_in create_user(locale: "fr")
     get root_path
 
-    assert_redirected_to tables_path
+    assert_redirected_to game_tables_path
   end
 
   test "a visitor keeps the home page" do
@@ -79,14 +97,14 @@ class TablesTest < ActionDispatch::IntegrationTest
     user = create_user(locale: "fr")
     post user_session_path, params: { user: { email: user.email, password: TEST_PASSWORD } }
 
-    assert_redirected_to tables_path
+    assert_redirected_to game_tables_path
   end
 
   test "signing up leads to my tables" do
     post user_registration_path, params: { user: { username: "new_player", email: "new.player@example.com",
                                                    password: TEST_PASSWORD, password_confirmation: TEST_PASSWORD } }
 
-    assert_redirected_to tables_path
+    assert_redirected_to game_tables_path
   end
 
   test "a page asked for before signing in comes first" do

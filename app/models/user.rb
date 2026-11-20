@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  has_many :participations, dependent: :destroy
+  has_many :game_tables, through: :participations
+
   USERNAME_LENGTH = 3..20
   # Letters (accents included), digits, dash and underscore: no space, so it reads the same everywhere
   USERNAME_FORMAT = /\A[[:alnum:]_-]*\z/
