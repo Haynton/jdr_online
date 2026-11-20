@@ -1,0 +1,12 @@
+<%# The players of a table: their avatars, overlapping, then how many they are.
+    The avatars are hidden from screen readers (shared/_avatar): the count names them %>
+<p class="flex items-center gap-2.5 text-[13px] text-ink">
+  <% if game_table.players.any? %>
+    <span class="flex">
+      <% game_table.players.each do |player| %>
+        <span class="-ml-2 rounded-full ring-2 ring-page first:ml-0"><%= render "shared/avatar", user: player %></span>
+      <% end %>
+    </span>
+  <% end %>
+  <%= table_players_label(game_table) %>
+</p>

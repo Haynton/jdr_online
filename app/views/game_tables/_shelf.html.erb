@@ -1,0 +1,27 @@
+<%# Every table of the user as a row of arched cards, which scrolls sideways without a scroll bar.
+    The arrows beside the title move it (card_row_controller.js), so do the wheel, the keyboard and a finger.
+    The first card creates a new table: more visible than a button in a corner %>
+<section class="shrink-0 px-4 pb-4 sm:px-8" aria-labelledby="all-tables-title" data-controller="card-row">
+  <div class="flex items-center justify-between gap-4">
+    <h2 id="all-tables-title" class="text-lg font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
+    <div class="flex gap-2">
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %>"
+              aria-label="<%= t("game_tables.shelf.previous_tables") %>"
+              data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
+        <%= render "shared/icons/chevron_left" %>
+      </button>
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %>"
+              aria-label="<%= t("game_tables.shelf.next_tables") %>"
+              data-card-row-target="nextButton" data-action="card-row#scrollNext">
+        <%= render "shared/icons/chevron_right" %>
+      </button>
+    </div>
+  </div>
+  <ul class="no-scrollbar mt-3 flex gap-4 overflow-x-auto px-1 pt-2 pb-2"
+      data-card-row-target="row" data-action="scroll->card-row#toggleButtons resize@window->card-row#toggleButtons">
+    <li class="shrink-0"><%= render "game_tables/create_table_card" %></li>
+    <% participations.each do |participation| %>
+      <li class="shrink-0"><%= render "game_tables/table_card", participation: participation, chosen_participation: chosen_participation %></li>
+    <% end %>
+  </ul>
+</section>

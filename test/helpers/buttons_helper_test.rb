@@ -2,7 +2,7 @@ require "test_helper"
 
 class ButtonsHelperTest < ActionView::TestCase
   test "each variant brings its own colors" do
-    assert_includes button_classes(:primary), "bg-primary text-white hover:bg-primary-hover"
+    assert_includes button_classes(:primary), "bg-primary text-primary-ink hover:bg-primary-hover"
     assert_includes button_classes(:secondary), "border border-line bg-surface text-ink"
     assert_includes button_classes(:quiet), "bg-transparent text-ink"
     assert_includes button_classes(:danger), "bg-danger text-white hover:bg-danger-hover"

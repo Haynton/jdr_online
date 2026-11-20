@@ -1,0 +1,16 @@
+<%# The shape shared by every card of "My tables": a pointed arch of 220 x 310 px (ogive, application.css),
+    its cover fading into the page at the bottom, and its outline drawn over it.
+    The outline turns gold (brass) on the chosen card (aria-current) and on hover %>
+<%= link_to path, class: "group relative block h-[310px] w-[220px] text-ink transition-transform hover:-translate-y-1 motion-reduce:transition-none", aria: aria do %>
+  <span class="ogive absolute inset-0 isolate block bg-surface">
+    <%= image_tag cover_image_path, alt: "", loading: "lazy", class: "absolute inset-0 -z-20 size-full object-cover" %>
+    <span class="absolute inset-0 -z-10 block bg-linear-to-t from-page from-25% via-page/85 via-45% to-transparent to-70%"></span>
+  </span>
+  <svg class="pointer-events-none absolute inset-0 size-full overflow-visible fill-none" viewBox="0 0 220 310" aria-hidden="true">
+    <path class="stroke-line" d="<%= ogive_inner_path %>"></path>
+    <path class="stroke-transparent group-hover:stroke-brass group-aria-[current=true]:stroke-brass" stroke-width="2" d="<%= ogive_outline_path %>"></path>
+  </svg>
+  <span class="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-5 pt-4 pb-6 text-center">
+    <%= yield %>
+  </span>
+<% end %>

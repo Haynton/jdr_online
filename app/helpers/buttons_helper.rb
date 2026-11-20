@@ -6,7 +6,7 @@ module ButtonsHelper
   ].join(" ").freeze
 
   BUTTON_VARIANT_CLASSES = {
-    primary: "bg-primary text-white hover:bg-primary-hover",
+    primary: "bg-primary text-primary-ink hover:bg-primary-hover",
     secondary: "border border-line bg-surface text-ink hover:bg-surface-raised",
     quiet: "bg-transparent text-ink hover:bg-surface-raised",
     # Filled, like primary: an outlined red button did not stand out enough in the light theme

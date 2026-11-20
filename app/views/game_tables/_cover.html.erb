@@ -1,0 +1,20 @@
+<%# The large cover at the top of "My tables", across the whole width: it fades into the page at the bottom (mask),
+    and a gradient of the page color sits behind the text so that it stays readable over any image.
+    The image is decoration (empty alt): the title of the section names the table %>
+<section class="relative isolate flex min-h-72 flex-1 flex-col px-4 pt-5 pb-12 sm:px-8"
+         aria-labelledby="<%= title_id %>">
+  <%= image_tag cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover cover-fade" %>
+  <div class="absolute inset-0 -z-10 bg-linear-to-t from-page via-page/80 to-transparent md:bg-linear-to-r md:via-page/70"></div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t("game_tables.index.title") %></p>
+    <%= link_to new_game_table_path, class: button_classes(:secondary, size: :compact) do %>
+      <%= render "shared/icons/plus" %>
+      <%= t("game_tables.create_table_card.title") %>
+    <% end %>
+  </div>
+
+  <div class="mt-auto flex max-w-xl flex-col gap-2 pt-6">
+    <%= yield %>
+  </div>
+</section>

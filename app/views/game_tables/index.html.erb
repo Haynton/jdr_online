@@ -1,8 +1,13 @@
-<%= page_header(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= render "game_tables/create_table_button" %>
+<%# A dashboard as tall as the screen (less the 64 px navbar), like an app: the cover takes the room
+    the row of cards leaves. The page only scrolls when the window is shorter than both together %>
+<% content_for :full_width_page do %>
+  <main class="flex min-h-[calc(100dvh-4rem)] min-w-0 flex-col">
+    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <% if @chosen_participation %>
+      <%= render "game_tables/stage", participation: @chosen_participation %>
+    <% else %>
+      <%= render "game_tables/empty_stage" %>
+    <% end %>
+    <%= render "game_tables/shelf", participations: @participations, chosen_participation: @chosen_participation %>
+  </main>
 <% end %>
-
-<%# One column on a phone, two on a tablet, three on a wide screen. The table cards will fill it %>
-<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  <%= render "game_tables/empty_state" if @game_tables.none? %>
-</div>

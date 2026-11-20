@@ -1,0 +1,9 @@
+<%# One table of the user. Choosing it shows it large at the top of the page %>
+<% game_table = participation.game_table %>
+<%= render layout: "game_tables/ogive_card",
+           locals: { path: game_tables_path(table: game_table.id), cover_image_path: game_table.cover_image_path,
+                     aria: table_card_aria(participation, chosen_participation) } do %>
+  <span class="text-[11px] font-semibold tracking-widest text-brass uppercase"><%= table_role_label(participation) %></span>
+  <span class="text-lg leading-tight font-semibold text-balance"><%= game_table.name %></span>
+  <span class="text-[13px] text-muted"><%= table_players_label(game_table) %></span>
+<% end %>
