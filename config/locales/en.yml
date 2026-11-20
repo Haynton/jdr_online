@@ -166,10 +166,14 @@ en:
       label: "Theme"
     theme_switch:
       dark_theme: "Dark theme"
+    side_nav:
+      label: "Main navigation"
+      my_tables: "My tables"
+      collapse: "Collapse the menu"
+      expand: "Expand the menu"
     user_menu:
       account_menu: "Account menu"
       log_out: "Log out"
-      my_tables: "My tables"
       settings: "Settings"
   simple_form:
     error_notification:
@@ -197,9 +201,14 @@ en:
       game_master: "GM"
       player: "Player"
     shelf:
+      filter: "Filter the tables"
       next_tables: "Next tables"
+      no_match: "No table matches this filter."
       previous_tables: "Previous tables"
       title: "All my tables"
+    statuses:
+      draft: "Draft"
+      in_progress: "In progress"
     edit:
       coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
       title: "Game settings"

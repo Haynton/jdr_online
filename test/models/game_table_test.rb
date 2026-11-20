@@ -21,6 +21,14 @@ class GameTableTest < ActiveSupport::TestCase
     assert_equal GameTable::DEFAULT_COVER_IMAGE, GameTable.new.cover_image
   end
 
+  test "a new table is a draft until it gets another status" do
+    game_table = GameTable.new
+
+    assert game_table.draft?
+    game_table.status = "active"
+    assert_not game_table.draft?
+  end
+
   test "a cover outside the images of the app is refused" do
     game_table = GameTable.new(name: "Les Marches du Nord", cover_image: "../../secret")
 

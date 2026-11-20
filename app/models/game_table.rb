@@ -4,6 +4,9 @@ class GameTable < ApplicationRecord
   # The images of app/assets/images/covers. The default one is also the default of the column
   COVER_IMAGES = %w[sentinelle citadelle dragon gobelins village wolf].freeze
   DEFAULT_COVER_IMAGE = "sentinelle".freeze
+  # Default of the status column: the table is not fully set up yet. Any other status counts as in progress
+  # (decision: the exact list of statuses comes with the creation form)
+  DRAFT_STATUS = "draft".freeze
 
   has_many :participations, dependent: :destroy
   has_many :users, through: :participations
@@ -17,6 +20,10 @@ class GameTable < ApplicationRecord
 
   def cover_image_path
     self.class.cover_image_path(cover_image)
+  end
+
+  def draft?
+    status == DRAFT_STATUS
   end
 
   # Read in Ruby: "My tables" loads the participations of every table at once, without a query per card

@@ -15,7 +15,11 @@
 /* dark: follows a .dark class on <html> (set from the saved choice), not only the device setting */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Keyboard focus of every element, in the theme green instead of the browser blue: links, logo, buttons...
+/* nav-expanded: the side navigation shows its labels. Follows a .nav-expanded class on <html>,
+   set before the page is painted (side_nav_preload.js) and toggled by side_nav_controller.js */
+@custom-variant nav-expanded (&:where(.nav-expanded, .nav-expanded *));
+
+/* Keyboard focus of every element, in the theme gold instead of the browser blue: links, logo, buttons...
    Same outline as our buttons and fields (2 px, 2 px away). focus-ring is darker in the light theme and
    lighter in the dark one, so that it stays visible on each background (8.22 on the cards).
    In the base layer: an element with its own focus classes keeps them */
@@ -51,6 +55,29 @@
     rgb(0 0 0 / 0.2) 84%,
     rgb(0 0 0 / 0.06) 93%,
     transparent 100%
+  );
+}
+
+/* animate-fade-in: the chosen table of "My tables" fades in when a card replaces it (Turbo Frame).
+   Used with motion-safe:, so nothing moves for those who ask their device for less motion */
+@theme {
+  --animate-fade-in: fade-in 400ms ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Both edges of a row that scrolls sideways fade out over --row-edge (set to the padding of the row) */
+@utility row-edge-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--row-edge, 2rem),
+    #000 calc(100% - var(--row-edge, 2rem)),
+    transparent
   );
 }
 
@@ -119,14 +146,17 @@
   .dark {
     /* Native controls (scrollbars, inputs, select menus) follow the theme too */
     color-scheme: dark;
-    --color-page: #0f1520;
-    --color-surface: #1f2937;
-    --color-field: #111827;
-    --color-line: #374151;
-    --color-field-line: #6b7280;
+    /* Green-black night of the style/testing-night-dawn trial. ink: 16.49 on page, 14.57 on surface, 11.89 on
+       surface-raised; muted: 11.84, 10.46 and 8.53 */
+    --color-page: #030605;
+    --color-surface: #121816;
+    --color-field: #232826;
+    --color-line: #1f2523;
+    /* The trial gave field-line the color of field: no border showed where to type. 3.45 on field */
+    --color-field-line: #747b76;
     --color-focus-ring: #e2c07c;
-    --color-ink: #f9fafb;
-    --color-muted: #9ca3af;
+    --color-ink: #ece7db;
+    --color-muted: #c2c7bf;
     /* A light plaque on the dark page: dark text on it (14.95, 12.0 on hover) */
     --color-primary: #ece7db;
     --color-primary-hover: #d6d0c2;
@@ -135,9 +165,9 @@
     /* primary-soft-ink on it: 8.24 */
     --color-primary-soft: #33290f;
     --color-primary-soft-ink: #e2c07c;
-    --color-surface-raised: #374151;
+    --color-surface-raised: #232a27;
     --color-logo-bg: #1f1b18;
-    /* 10.51 on page, 8.43 on surface */
+    /* 11.69 on page, 10.33 on surface */
     --color-brass: #e2c07c;
     --color-danger: #b91c1c;
     --color-danger-hover: #9d1818;

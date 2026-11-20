@@ -45,8 +45,58 @@ class TablesTest < ActionDispatch::IntegrationTest
     assert_select "#{cards_row_selector} a[href=?]", game_tables_path(table: game_table.id) do
       assert_select "img[src*='covers/wolf']"
       assert_select "span", text: "MJ"
+      assert_select "span", text: "· Brouillon"
       assert_select "span", text: "Les Marches du Nord"
       assert_select "span", text: "1 joueur"
+    end
+  end
+
+  test "a table no longer in draft is shown in progress, on its card and at the top" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    game_table.update!(status: "active")
+    sign_in user
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} span", text: "· En cours"
+    assert_select "section[aria-labelledby=chosen-table-title] span", text: "· En cours"
+  end
+
+  test "each table card carries its role and status for the filter, the create card none" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} > li[data-table-filter-target=card][data-role=game_master][data-status=draft]",
+                  count: 1 do
+      assert_select "a[href=?]", game_tables_path(table: game_table.id)
+    end
+    assert_select "#{cards_row_selector} > li:first-child:not([data-table-filter-target])"
+    assert_select "#{cards_row_selector} > li[hidden][data-table-filter-target=noMatch]",
+                  text: "Aucune table ne correspond à ce filtre."
+  end
+
+  test "without a table, there is nothing to filter: no pills, no message" do
+    sign_in create_user(locale: "fr")
+    get game_tables_path
+
+    assert_select "[data-table-filter-target=pills]", count: 0
+    assert_select "[data-table-filter-target=noMatch]", count: 0
+  end
+
+  test "the filter pills are named, hidden until their controller shows them, and split role from status" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "div[hidden][role=group][aria-label=?][data-table-filter-target=pills]", "Filtrer les tables" do
+      assert_select "button[aria-pressed=false][data-group=role][data-value=game_master]", text: "MJ"
+      assert_select "button[aria-pressed=false][data-group=role][data-value=player]", text: "Joueur"
+      assert_select "button[aria-pressed=false][data-group=status][data-value=draft]", text: "Brouillon"
+      assert_select "button[aria-pressed=false][data-group=status][data-value=in_progress]", text: "En cours"
+      assert_select "span[aria-hidden=true].bg-line", count: 1
     end
   end
 
@@ -75,6 +125,26 @@ class TablesTest < ActionDispatch::IntegrationTest
 
     assert_select "h1#chosen-table-title", text: "Les Marches du Nord"
     assert_select "#{cards_row_selector} a[aria-current=true]", count: 1, text: /Les Marches du Nord/
+  end
+
+  test "the chosen table sits in a frame, whose links still open a whole page" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "turbo-frame#chosen_table[target=_top] section[aria-labelledby=chosen-table-title]"
+  end
+
+  test "a table card only replaces the chosen table and the address, and moves the gold outline itself" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} a[href=?][data-turbo-frame=chosen_table][data-turbo-action=advance]" \
+                  "[data-action='card-row#choose']", game_tables_path(table: game_table.id)
+    assert_select "#{cards_row_selector} a[href=?]:not([data-turbo-frame])", new_game_table_path
   end
 
   test "the tables of other users are neither in the row nor shown when asked for" do
@@ -138,7 +208,7 @@ class TablesTest < ActionDispatch::IntegrationTest
     sign_in create_user(locale: "fr")
     get game_tables_path
 
-    assert_select "section[data-controller=card-row]" do
+    assert_select "section[data-controller~=card-row]" do
       assert_select "button[hidden][aria-label=?][data-action='card-row#scrollPrevious']", "Tables précédentes"
       assert_select "button[hidden][aria-label=?][data-action='card-row#scrollNext']", "Tables suivantes"
       assert_select "ul.no-scrollbar[data-card-row-target=row]"
