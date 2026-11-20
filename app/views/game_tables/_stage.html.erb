@@ -1,0 +1,12 @@
+<%# The chosen table, large, over its cover %>
+<%= render layout: "game_tables/cover", locals: { cover_image_path: participation.game_table.cover_image_path, title_id: "chosen-table-title" } do %>
+  <p class="text-xs font-semibold tracking-widest text-ink uppercase">
+    <%= t("game_tables.stage.status", role: table_role_label(participation), players: table_players_label(participation.game_table)) %>
+  </p>
+  <h1 id="chosen-table-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
+    <%= participation.game_table.name %>
+  </h1>
+  <% if participation.game_table.description.present? %>
+    <p class="max-w-md text-[15px] text-ink"><%= participation.game_table.description %></p>
+  <% end %>
+<% end %>

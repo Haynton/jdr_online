@@ -1,0 +1,7 @@
+<%# Always the first card of the row, with the default cover: the way to create a table %>
+<%= render layout: "game_tables/ogive_card", locals: { path: new_game_table_path, cover_image_path: default_cover_image_path, aria: {} } do %>
+  <span class="flex size-11 items-center justify-center rounded-full bg-primary text-white" aria-hidden="true">
+    <%= render "shared/icons/plus", css_class: "size-5" %>
+  </span>
+  <span class="mt-2 text-lg leading-tight font-semibold"><%= t("game_tables.create_table_card.title") %></span>
+<% end %>

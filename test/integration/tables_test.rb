@@ -1,59 +1,89 @@
 require "test_helper"
 
 class TablesTest < ActionDispatch::IntegrationTest
-  test "my tables shows its title and the empty state, in french" do
+  test "without a table, my tables shows the default cover, the empty state and the create card, in french" do
     sign_in create_user(locale: "fr")
     get game_tables_path
 
     assert_response :success
-    assert_select "main header h1", text: "Mes tables"
-    assert_select "main header p.text-muted", text: "Vos parties en cours, comme MJ ou comme joueur."
-    assert_select "main section[aria-labelledby=empty-tables-title].border-dashed" do
-      assert_select "h2#empty-tables-title", text: "Aucune table pour l'instant"
-      assert_select "span[aria-hidden=true] svg"
+    assert_select "main section[aria-labelledby=empty-tables-title]" do
+      assert_select "img[alt=''][src*='covers/sentinelle']"
+      assert_select "h1#empty-tables-title", text: "Aucune table pour l'instant"
     end
-  end
-
-  test "the cards sit in a grid: one column on a phone, two on a tablet, three on a wide screen" do
-    sign_in create_user(locale: "fr")
-    get game_tables_path
-
-    assert_select "#{cards_grid_selector} > section[aria-labelledby=empty-tables-title]"
-  end
-
-  test "from the first table, the empty state disappears" do
-    user = create_user(locale: "fr")
-    GameTable.create!(name: "Les Marches du Nord").participations.create!(user: user, role: :game_master)
-    sign_in user
-    get game_tables_path
-
-    assert_select "section[aria-labelledby=empty-tables-title]", count: 0
-  end
-
-  test "the tables of other users do not count as mine" do
-    other_user = User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
-    GameTable.create!(name: "L'Ombre du Dragon").participations.create!(user: other_user, role: :game_master)
-    sign_in create_user(locale: "fr")
-    get game_tables_path
-
-    assert_select "section[aria-labelledby=empty-tables-title]"
+    assert_select "main h2#all-tables-title", text: "Toutes mes tables"
+    assert_select "#{cards_row_selector} > li", count: 1
   end
 
   test "my tables is translated in english" do
     sign_in create_user(locale: "en")
     get game_tables_path
 
-    assert_select "main h1", text: "My tables"
-    assert_select "main h2", text: "No table yet"
+    assert_select "main h1", text: "No table yet"
+    assert_select "main h2", text: "All my tables"
+    assert_select "#{cards_row_selector} a", text: "Create a table"
   end
 
-  test "the create a table button is in the header only, the join button waits for its page" do
-    sign_in create_user(locale: "fr")
+  test "the create card comes first in the row, with the default cover" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
     get game_tables_path
 
-    assert_select "main header a.bg-primary[href=?]", new_game_table_path, text: "Créer une table"
-    assert_select "main section a", count: 0
-    assert_select "main a", count: 1
+    assert_select "#{cards_row_selector} > li:first-child a[href=?]", new_game_table_path do
+      assert_select "img[src*='covers/sentinelle']"
+      assert_select "span", text: "Créer une table"
+    end
+  end
+
+  test "a table card shows the role of the user, the name, the players and the cover of the table" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    game_table.participations.create!(user: create_other_user, role: :player)
+    sign_in user
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} a[href=?]", game_tables_path(table: game_table.id) do
+      assert_select "img[src*='covers/wolf']"
+      assert_select "span", text: "MJ"
+      assert_select "span", text: "Les Marches du Nord"
+      assert_select "span", text: "1 joueur"
+    end
+  end
+
+  test "from the first table, the empty state gives way to the newest table" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    create_table_for(user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    sign_in user
+    get game_tables_path
+
+    assert_select "section[aria-labelledby=empty-tables-title]", count: 0
+    assert_select "section[aria-labelledby=chosen-table-title]" do
+      assert_select "img[src*='covers/dragon']"
+      assert_select "h1#chosen-table-title", text: "L'Ombre du Dragon"
+      assert_select "p", text: "Une description"
+    end
+    assert_select "#{cards_row_selector} a[aria-current=true]", count: 1, text: /L'Ombre du Dragon/
+  end
+
+  test "choosing a card shows that table at the top" do
+    user = create_user(locale: "fr")
+    older_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    create_table_for(user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    sign_in user
+    get game_tables_path(table: older_table.id)
+
+    assert_select "h1#chosen-table-title", text: "Les Marches du Nord"
+    assert_select "#{cards_row_selector} a[aria-current=true]", count: 1, text: /Les Marches du Nord/
+  end
+
+  test "the tables of other users are neither in the row nor shown when asked for" do
+    other_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    sign_in create_user(locale: "fr")
+    get game_tables_path(table: other_table.id)
+
+    assert_select "section[aria-labelledby=empty-tables-title]"
+    assert_select "main", text: /L'Ombre du Dragon/, count: 0
   end
 
   test "the create a table page says it is coming soon and leads back to my tables" do
@@ -117,11 +147,21 @@ class TablesTest < ActionDispatch::IntegrationTest
 
   private
 
-  def cards_grid_selector
-    "main div.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3"
+  def cards_row_selector
+    "main section[aria-labelledby=all-tables-title] ul"
   end
 
   def create_user(locale:)
     User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: locale)
+  end
+
+  def create_other_user
+    User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
+  end
+
+  def create_table_for(user, name:, cover_image:)
+    game_table = GameTable.create!(name: name, description: "Une description", cover_image: cover_image)
+    game_table.participations.create!(user: user, role: :game_master)
+    game_table
   end
 end

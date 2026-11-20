@@ -182,14 +182,24 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
-    create_table_button:
-      create_table: "Create a table"
-    empty_state:
-      text: "The tables you create or join will show up here."
+    create_table_card:
+      title: "Create a table"
+    empty_stage:
+      text: "The tables you create or join will show up here. Start with the first card below."
       title: "No table yet"
     index:
-      subtitle: "Your ongoing games, as GM or as a player."
       title: "My tables"
+    players:
+      one: "1 player"
+      other: "%{count} players"
+      zero: "No player yet"
+    roles:
+      game_master: "GM"
+      player: "Player"
+    shelf:
+      title: "All my tables"
+    stage:
+      status: "%{role} · %{players}"
     new:
       back_to_tables: "Back to my tables"
       coming_soon: "Creating a table is coming soon. You will choose a name, a setting and invite your players."

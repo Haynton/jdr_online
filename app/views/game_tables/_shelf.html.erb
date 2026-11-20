@@ -1,0 +1,11 @@
+<%# Every table of the user as a row of arched cards, which scrolls sideways.
+    The first card creates a new table: more visible than a button in a corner %>
+<section class="mx-auto max-w-[1120px] px-4 pb-10 sm:px-8" aria-labelledby="all-tables-title">
+  <h2 id="all-tables-title" class="text-lg font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
+  <ul class="mt-4 flex gap-4 overflow-x-auto px-1 pt-2 pb-4">
+    <li class="shrink-0"><%= render "game_tables/create_table_card" %></li>
+    <% participations.each do |participation| %>
+      <li class="shrink-0"><%= render "game_tables/table_card", participation: participation, chosen_participation: chosen_participation %></li>
+    <% end %>
+  </ul>
+</section>

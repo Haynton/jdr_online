@@ -1,8 +1,12 @@
-<%= page_header(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= render "game_tables/create_table_button" %>
+<%# The cover of the chosen table takes the whole width, so this page fills the layout itself %>
+<% content_for :full_width_page do %>
+  <main class="min-w-0">
+    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <% if @chosen_participation %>
+      <%= render "game_tables/stage", participation: @chosen_participation %>
+    <% else %>
+      <%= render "game_tables/empty_stage" %>
+    <% end %>
+    <%= render "game_tables/shelf", participations: @participations, chosen_participation: @chosen_participation %>
+  </main>
 <% end %>
-
-<%# One column on a phone, two on a tablet, three on a wide screen. The table cards will fill it %>
-<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  <%= render "game_tables/empty_state" if @game_tables.none? %>
-</div>

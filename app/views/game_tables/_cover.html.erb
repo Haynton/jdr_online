@@ -1,0 +1,13 @@
+<%# The large cover at the top of "My tables": it fades into the page at the bottom (mask),
+    and a gradient of the page color sits behind the text so that it stays readable over any image.
+    The image is decoration (empty alt): the title of the section names the table %>
+<section class="relative isolate flex min-h-80 flex-col justify-end px-4 pt-24 pb-8 sm:px-8 md:min-h-[28rem]"
+         aria-labelledby="<%= title_id %>">
+  <%= image_tag cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover mask-b-from-50% mask-b-to-100%" %>
+  <div class="absolute inset-0 -z-10 bg-linear-to-t from-page via-page/80 to-transparent md:bg-linear-to-r md:via-page/70"></div>
+  <div class="mx-auto w-full max-w-[1120px]">
+    <div class="flex max-w-xl flex-col gap-2.5">
+      <%= yield %>
+    </div>
+  </div>
+</section>

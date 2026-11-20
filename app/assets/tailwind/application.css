@@ -35,6 +35,12 @@
   background-size: 75%;
 }
 
+/* Table cards of "My tables": a pointed arch of exactly 220 x 310 px.
+   The same path outlines the card in GameTablesHelper::OGIVE_OUTLINE_PATH: change both together */
+@utility ogive {
+  clip-path: path("M0 310V148A154.6 154.6 0 0 1 110 0A154.6 154.6 0 0 1 220 148V310Z");
+}
+
 /* Named colors: views use bg-page, text-ink, border-line... and never a raw color,
    so the dark theme only has to redefine these variables below */
 @theme {
