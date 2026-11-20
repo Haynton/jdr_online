@@ -1,11 +1,24 @@
 fr:
   activerecord:
     attributes:
+      game_table:
+        description: "Description"
+        name: "Nom"
+      participation:
+        game_table_id: "Table"
+        role: "Rôle"
+        user_id: "Joueur"
       user:
         locale: "Langue"
         username: "Pseudo"
     errors:
       models:
+        participation:
+          attributes:
+            game_table_id:
+              game_master_taken: "a déjà un MJ"
+            user_id:
+              already_at_table: "participe déjà à cette table"
         user:
           attributes:
             username:

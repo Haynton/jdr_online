@@ -1,21 +1,17 @@
+# Links a user to a game table, with their role there. The role lives here, not on the table,
+# so that the game master of a table can change hands later
 class Participation < ApplicationRecord
   belongs_to :user
   belongs_to :game_table
 
-  # Available roles
   enum :role, {
     game_master: "game_master",
     player: "player"
   }
 
-  # Validations
   validates :role, presence: true
-
-  # Only one game master per game table
+  validates :user_id, uniqueness: { scope: :game_table_id, message: :already_at_table }
   validates :game_table_id,
-            uniqueness: {
-              conditions: -> { where(role: "game_master") },
-              message: "already has a game master"
-            },
+            uniqueness: { conditions: -> { game_master }, message: :game_master_taken },
             if: :game_master?
 end

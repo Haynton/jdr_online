@@ -30,11 +30,24 @@
 en:
   activerecord:
     attributes:
+      game_table:
+        description: "Description"
+        name: "Name"
+      participation:
+        game_table_id: "Table"
+        role: "Role"
+        user_id: "Player"
       user:
         locale: "Language"
         username: "Username"
     errors:
       models:
+        participation:
+          attributes:
+            game_table_id:
+              game_master_taken: "already has a game master"
+            user_id:
+              already_at_table: "is already at this table"
         user:
           attributes:
             username:
