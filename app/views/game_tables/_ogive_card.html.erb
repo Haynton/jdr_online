@@ -9,7 +9,8 @@
             aria: aria, data: local_assigns.fetch(:data, {}) do %>
   <span class="ogive absolute inset-0 isolate block bg-surface">
     <%= image_tag cover_image_path, alt: "", loading: "lazy", class: "absolute inset-0 -z-20 size-full object-cover" %>
-    <span class="absolute inset-0 -z-10 block bg-linear-to-t from-page from-25% via-page/85 via-45% to-transparent to-70%"></span>
+    <%# Over a shorter height than before (60 % of the card, 70 % before), in card-veil: less white in the light theme %>
+    <span class="absolute inset-0 -z-10 block bg-linear-to-t from-card-veil from-20% via-card-veil/80 via-38% to-transparent to-60%"></span>
   </span>
   <svg class="pointer-events-none absolute inset-0 size-full overflow-visible fill-none" viewBox="0 0 220 310" aria-hidden="true">
     <path class="stroke-line" d="<%= ogive_inner_path %>"></path>
