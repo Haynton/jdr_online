@@ -42,6 +42,8 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      character:
+        name: "Character name"
       game_table:
         cover_image: "Cover"
         description: "Description"
@@ -60,6 +62,10 @@ en:
         username: "Username"
     errors:
       models:
+        character:
+          attributes:
+            participation_id:
+              already_has_character: "already has a character at this table"
         game_table:
           attributes:
             sheet_template:
@@ -110,10 +116,16 @@ en:
         one: "%{count} character minimum"
         other: "%{count} characters minimum"
   invitations:
+    invalid:
+      back: "Back to the home page"
+      text: "The game master may have created a new link, or the table is not ready yet. Ask them for a new link."
+      title: "This invitation link no longer works"
+    join:
+      joined: "You joined “%{name}”. Now create your character."
     show:
-      back_to_tables: "Back to my tables"
-      coming_soon: "Joining a table is coming soon: you will create your character, then enter the game."
-      title: "Invitation to “%{name}”"
+      create_account: "Create an account"
+      join: "Join the table"
+      sign_in: "Sign in"
   layouts:
     settings:
       back_to_settings: "Settings"
@@ -230,6 +242,21 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    characters:
+      create:
+        created: "%{name} is ready. Welcome to the table!"
+      new:
+        decrease: "Decrease %{ability}"
+        increase: "Increase %{ability}"
+        later: "Later"
+        level: "Level"
+        modifier: "Modifier"
+        note_html: "%{labels}: %{text}"
+        proficient: "(proficient)"
+        resource_hint: "Maximum value: your character starts full."
+        submit: "Create my character"
+        subtitle: "For the table “%{name}”."
+        title: "Your character"
     choice_row:
       filter: "Filter by theme"
       next: "Next choices"
@@ -369,5 +396,6 @@ en:
       coming_soon: "The page of the table is coming soon: board, chat and dice rolls will be played here."
     stage:
       game_settings: "Game settings"
+      create_character: "Create my character"
       join_game: "Join the game"
       resume_creation: "Resume the creation"

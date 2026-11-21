@@ -3,6 +3,8 @@
 class Participation < ApplicationRecord
   belongs_to :user
   belongs_to :game_table
+  # The character a player plays at this table (none for the game master)
+  has_one :character, -> { pc }, dependent: :destroy, inverse_of: :participation
 
   enum :role, {
     game_master: "game_master",
@@ -29,4 +31,9 @@ class Participation < ApplicationRecord
   validates :game_table_id,
             uniqueness: { conditions: -> { game_master }, message: :game_master_taken },
             if: :game_master?
+
+  # A player makes their character before joining the game (decision); the game master has none to make
+  def needs_character?
+    player? && character.nil?
+  end
 end

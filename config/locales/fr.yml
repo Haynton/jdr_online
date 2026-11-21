@@ -13,6 +13,8 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      character:
+        name: "Nom du personnage"
       game_table:
         cover_image: "Couverture"
         description: "Description"
@@ -31,6 +33,10 @@ fr:
         username: "Pseudo"
     errors:
       models:
+        character:
+          attributes:
+            participation_id:
+              already_has_character: "a déjà un personnage à cette table"
         game_table:
           attributes:
             sheet_template:
@@ -81,10 +87,16 @@ fr:
         one: "%{count} caractère minimum"
         other: "%{count} caractères minimum"
   invitations:
+    invalid:
+      back: "Retour à l'accueil"
+      text: "Le MJ a peut-être créé un nouveau lien, ou la table n'est pas encore prête. Demandez-lui un nouveau lien."
+      title: "Ce lien d'invitation ne fonctionne plus"
+    join:
+      joined: "Vous avez rejoint « %{name} ». Créez maintenant votre personnage."
     show:
-      back_to_tables: "Retour à mes tables"
-      coming_soon: "Rejoindre une table arrive bientôt : vous créerez votre personnage, puis vous entrerez dans la partie."
-      title: "Invitation à « %{name} »"
+      create_account: "Créer un compte"
+      join: "Rejoindre la table"
+      sign_in: "Se connecter"
   layouts:
     settings:
       back_to_settings: "Paramètres"
@@ -201,6 +213,21 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    characters:
+      create:
+        created: "%{name} est prêt(e). Bienvenue à la table !"
+      new:
+        decrease: "Diminuer %{ability}"
+        increase: "Augmenter %{ability}"
+        later: "Plus tard"
+        level: "Niveau"
+        modifier: "Modificateur"
+        note_html: "%{labels} : %{text}"
+        proficient: "(maîtrise)"
+        resource_hint: "Valeur maximale : votre personnage commence au maximum."
+        submit: "Créer mon personnage"
+        subtitle: "Pour la table « %{name} »."
+        title: "Votre personnage"
     choice_row:
       filter: "Filtrer par thème"
       next: "Choix suivants"
@@ -340,5 +367,6 @@ fr:
       coming_soon: "La page de la table arrive bientôt : plateau, chat et lancers de dés se joueront ici."
     stage:
       game_settings: "Paramètres de la partie"
+      create_character: "Créer mon personnage"
       join_game: "Rejoindre la partie"
       resume_creation: "Reprendre la création"
