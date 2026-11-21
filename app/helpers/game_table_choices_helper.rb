@@ -69,7 +69,9 @@ module GameTableChoicesHelper
   # The hint leaves room on its right for what sits at the top right of the row: the arrows alone (from 768 px),
   # or the pills and the arrows (from 1024 px)
   def choice_row_hint_classes(filterable:)
-    filterable ? "max-w-xl text-xs text-muted lg:max-w-[calc(100%-26rem)]" : "max-w-xl text-xs text-muted md:pr-24"
+    room_on_the_right = filterable ? "lg:max-w-[calc(100%-26rem)]" : "md:pr-24"
+    # clear-left: below the legend, which floats (see game_tables/_choice_row)
+    "clear-left max-w-xl text-xs text-muted #{room_on_the_right}"
   end
 
   def choice_row_controls_classes(filterable:)
