@@ -27,14 +27,17 @@ module GameTableCreationHelper
     flush_top ? "px-4 pb-12 sm:px-8" : "px-4 pt-8 pb-12 sm:px-8"
   end
 
-  # A message pulled up by its own top margin (mt-4) under the usual space, kept apart from what follows
+  # A message shown on screen, pulled up by its own top margin (mt-4) under the usual space, kept apart from what
+  # follows. No space at all without one: the screen reader message takes no room
   def creation_messages_classes(flush_top)
+    return "" unless visible_messages?
+
     flush_top ? "mb-4" : "-mt-4 mb-6"
   end
 
-  # The messages shared/_flashes shows, the one for screen readers included
-  def page_messages?
-    flash[:notice].present? || flash[:alert].present? || flash[:screen_reader_notice].present?
+  # The messages of shared/_flashes that show on screen (flash[:screen_reader_notice] does not)
+  def visible_messages?
+    flash[:notice].present? || flash[:alert].present?
   end
 
   def creation_form_id

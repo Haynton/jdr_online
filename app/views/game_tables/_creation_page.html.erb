@@ -5,10 +5,8 @@
   <%= render "game_tables/creation_steps", current_step: current_step %>
 </header>
 <main class="<%= creation_main_classes(flush_top) %>">
-  <%# Rendered only when there is a message: an empty block would push the content (and a cover) down.
-      Each message brings its own top margin (mt-4) %>
-  <% if page_messages? %>
-    <div class="<%= creation_messages_classes(flush_top) %>"><%= render "shared/flashes" %></div>
-  <% end %>
+  <%# Spaced out only around a message shown on screen: one for screen readers only ("Table created as a draft"),
+      or none, would otherwise leave an empty band above the content (a cover moved down after a redirect) %>
+  <div class="<%= creation_messages_classes(flush_top) %>"><%= render "shared/flashes" %></div>
   <%= content %>
 </main>
