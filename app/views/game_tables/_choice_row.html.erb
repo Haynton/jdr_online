@@ -1,0 +1,30 @@
+<%# A group of choices of the creation (covers, sheet templates) as a row of cards that scrolls sideways, like the
+    row of "My tables": from edge to edge of the content (negative margin, same padding inside), edges that fade
+    (row-edge-fade), arrows from 768 px (card_row_controller.js; a finger moves the row on a phone).
+    Render it as a layout: the block holds the <li> of the cards. legend: the name of the group; hint: optional.
+    The hint sits right under the legend; the arrows stand apart, at the top right (on the same line, the hint
+    lined up with the bottom of the 40 px arrows and left a gap under the legend).
+    min-w-0: a fieldset is as wide as its content by default (min-inline-size: min-content), so the row widened
+    the whole page instead of scrolling %>
+<fieldset class="relative mb-8 min-w-0" data-controller="card-row">
+  <legend class="<%= choice_legend_classes %>"><%= legend %></legend>
+  <% if local_assigns[:hint] %>
+    <p class="max-w-xl text-xs text-muted md:pr-24"><%= hint %></p>
+  <% end %>
+  <div class="absolute top-0 right-0 hidden gap-2 md:flex">
+    <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+            aria-label="<%= t(".previous") %>" data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
+      <%= render "shared/icons/chevron_left" %>
+    </button>
+    <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+            aria-label="<%= t(".next") %>" data-card-row-target="nextButton" data-action="card-row#scrollNext">
+      <%= render "shared/icons/chevron_right" %>
+    </button>
+  </div>
+  <ul class="no-scrollbar row-edge-fade -mx-4 mt-3 flex gap-3 overflow-x-auto px-4 py-1.5 [--row-edge:1.25rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2.5rem] md:mt-5"
+      data-card-row-target="row"
+      data-action="scroll->card-row#toggleButtons resize@window->card-row#toggleButtons">
+    <%= yield %>
+  </ul>
+  <%= local_assigns[:error] %>
+</fieldset>

@@ -159,6 +159,7 @@ class TablesTest < ActionDispatch::IntegrationTest
   test "the game master can join the game, set it up and create another one, and sees the avatars of the players" do
     user = create_user(locale: "fr")
     game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    game_table.update!(status: "ready")
     game_table.participations.create!(user: create_other_user, role: :player)
     sign_in user
     get game_tables_path
@@ -170,6 +171,16 @@ class TablesTest < ActionDispatch::IntegrationTest
       assert_select "span[aria-hidden=true]", text: "OT"
       assert_select "p", text: /1 joueur/
     end
+  end
+
+  test "the game master of a draft resumes its creation instead of joining the game" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "a.bg-primary[href=?]", edit_game_table_details_path(game_table), text: "Reprendre la création"
+    assert_select "a[href=?]", game_table_path(game_table), count: 0
   end
 
   test "a player can join the game but has no settings button" do
@@ -232,15 +243,6 @@ class TablesTest < ActionDispatch::IntegrationTest
     get game_table_path(other_table)
 
     assert_response :not_found
-  end
-
-  test "the create a table page says it is coming soon and leads back to my tables" do
-    sign_in create_user(locale: "fr")
-    get new_game_table_path
-
-    assert_response :success
-    assert_select "main h1", text: "Créer une table"
-    assert_select "main a[href=?]", game_tables_path, text: "Retour à mes tables"
   end
 
   test "the create a table page is translated in english" do

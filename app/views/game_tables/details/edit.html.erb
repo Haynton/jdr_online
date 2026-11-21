@@ -1,0 +1,6 @@
+<%# The first step of a draft table, taken up again from "My tables" (Resume the creation) %>
+<%= creation_page(current_step: "details") do %>
+  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= render "game_tables/details_form", game_table: @game_table, url: game_table_details_path(@game_table),
+                                         method: :patch, cancel_path: game_tables_path(table: @game_table.id) %>
+<% end %>

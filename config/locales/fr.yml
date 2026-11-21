@@ -2,8 +2,10 @@ fr:
   activerecord:
     attributes:
       game_table:
+        cover_image: "Couverture"
         description: "Description"
         name: "Nom"
+        sheet_template: "Modèle de fiche"
       participation:
         game_table_id: "Table"
         role: "Rôle"
@@ -17,6 +19,10 @@ fr:
         username: "Pseudo"
     errors:
       models:
+        game_table:
+          attributes:
+            sheet_template:
+              blank: "choisissez un modèle de fiche pour continuer"
         participation:
           attributes:
             game_table_id:
@@ -159,6 +165,11 @@ fr:
     confirm_dialog:
       cancel: "Annuler"
       confirm: "Confirmer"
+  sheet_templates:
+    new:
+      back: "Retour"
+      coming_soon: "L'éditeur de modèles arrive bientôt : vous pourrez y créer vos fiches de personnage, de PNJ et d'objets, avec leur image."
+      title: "Créer un modèle"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."
@@ -170,8 +181,46 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    covers:
+      citadelle: "La citadelle"
+      dragon: "Le dragon"
+      gobelins: "Les gobelins"
+      sentinelle: "La sentinelle"
+      village: "Le village"
+      wolf: "Le loup"
+    choice_row:
+      next: "Choix suivants"
+      previous: "Choix précédents"
+    create:
+      created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
       title: "Créer une table"
+    creation_actions:
+      cancel: "Annuler"
+      continue: "Continuer"
+    creation_steps:
+      coming_soon: "Bientôt"
+      label: "Étapes de la création"
+      step_number: "Étape %{number} :"
+      steps:
+        details: "Informations"
+        invitations: "Invitations"
+        maps: "Cartes"
+        npcs: "PNJ et ennemis"
+        summary: "Récapitulatif"
+    details:
+      edit:
+        subtitle: "Votre table est en brouillon : modifiez ses informations quand vous voulez."
+        title: "Créer une table"
+      update:
+        saved: "Informations enregistrées."
+    details_form:
+      cover: "Couverture"
+      cover_hint: "L'image de votre table : elle l'illustre dans « Mes tables » et en haut de sa page."
+      create_template: "Créer un modèle"
+      description_hint: "Facultative. Quelques lignes pour présenter l'univers à vos joueurs."
+      sheet_template: "Modèle de fiche"
+      sheet_template_hint: "Les champs des fiches de personnage, des PNJ et des objets. Vous pourrez en changer tant que la table est en brouillon."
     empty_stage:
       text: "Les tables que vous créez ou rejoignez apparaîtront ici. Commencez par la première carte ci-dessous."
       title: "Aucune table pour l'instant"
@@ -197,8 +246,7 @@ fr:
       coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
       title: "Paramètres de la partie"
     new:
-      back_to_tables: "Retour à mes tables"
-      coming_soon: "La création d'une table arrive bientôt. Vous pourrez y choisir un nom, un univers et inviter vos joueurs."
+      subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"
     show:
       back_to_tables: "Retour à mes tables"
@@ -206,3 +254,4 @@ fr:
     stage:
       game_settings: "Paramètres de la partie"
       join_game: "Rejoindre la partie"
+      resume_creation: "Reprendre la création"
