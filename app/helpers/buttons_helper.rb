@@ -13,11 +13,13 @@ module ButtonsHelper
     danger: "bg-danger text-white hover:bg-danger-hover"
   }.freeze
 
-  # compact_icon: a 36 px square for a button that only shows an icon (its name in aria-label)
+  # Every button is 40 px high, whatever its size (decision: two heights side by side looked unfinished).
+  # compact: narrower sides only.
+  # compact_icon: a 40 px square for a button that only shows an icon (its name in aria-label)
   BUTTON_SIZE_CLASSES = {
-    normal: "h-11 px-4 text-sm",
-    compact: "h-9 px-3 text-sm",
-    compact_icon: "size-9"
+    normal: "h-10 px-4 text-sm",
+    compact: "h-10 px-3 text-sm",
+    compact_icon: "size-10"
   }.freeze
 
   def button_classes(variant, size: :normal, full_width: false)

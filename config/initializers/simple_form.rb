@@ -18,9 +18,9 @@ module SimpleFormFieldClasses
   # Errors follow aria-invalid, which Simple Form sets on invalid inputs: red border doubled by a ring,
   # pink background, red halo on focus. aria-invalid variants come after focus and hover in the CSS: red wins.
   # The vertical padding keeps the height but shrinks the inner box:
-  # Safari stretched its caps lock indicator to fill it. 36 px high (44, then 40 before: decision)
+  # Safari stretched its caps lock indicator to fill it. 40 px high, as the buttons (44, 40, then 36 before: decision)
   INPUT = %w[
-    block h-9 w-full rounded-lg border border-transparent bg-field px-3 py-1.5 text-sm text-ink
+    block h-10 w-full rounded-lg border border-transparent bg-field px-3 py-1.5 text-sm text-ink
     placeholder:text-muted hover:border-field-line
     focus:border-ink focus:ring-3 focus:ring-ink/10 focus:outline-none
     aria-invalid:border-error-ink aria-invalid:bg-error-bg aria-invalid:ring-1 aria-invalid:ring-error-ink

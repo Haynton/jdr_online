@@ -6,11 +6,11 @@
     The pills filter the cards by role and status (table_filter_controller.js) %>
 <section class="shrink-0 px-4 pb-2 sm:px-8 md:pb-4" aria-labelledby="all-tables-title"
          data-controller="card-row table-filter" data-action="table-filter:changed->card-row#toggleButtons">
-  <%# The title is as tall as the arrows (36 px), so that all sit on one line. From 768 px the title, the pills and
+  <%# The title is as tall as the arrows (40 px), so that all sit on one line. From 768 px the title, the pills and
       the arrows stand together on the right. On a phone, the arrows are left out (a finger moves the row) and
       the pills scroll sideways beside the title: one line, so that the page still fits the screen %>
   <div class="flex items-center gap-4 md:justify-end">
-    <h2 id="all-tables-title" class="shrink-0 text-lg leading-9 font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
+    <h2 id="all-tables-title" class="shrink-0 text-lg leading-10 font-semibold tracking-tight text-ink"><%= t("game_tables.shelf.title") %></h2>
     <%# Nothing to filter without a table: no pills, no "no match" message %>
     <% if participations.any? %>
       <div hidden role="group" aria-label="<%= t("game_tables.shelf.filter") %>"

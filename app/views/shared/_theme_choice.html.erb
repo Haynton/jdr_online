@@ -1,8 +1,9 @@
 <%# One theme choice of shared/_theme_selector, on the field background: ink text (muted falls to 3.88 there).
     The chosen one: a surface pill with a light shadow, in bold, marked by aria-pressed.
-    Compact: the text is for screen readers, the title shows it on hover %>
+    Compact: the text is for screen readers, the title shows it on hover.
+    32 px high: with the padding of the selector, as high as the buttons (40 px) %>
 <%= tag.button type: "button",
-               class: "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm text-ink transition-colors hover:bg-surface/60 aria-pressed:bg-surface aria-pressed:font-semibold aria-pressed:shadow-sm",
+               class: "inline-flex items-center gap-1.5 h-8 rounded-md px-2.5 text-sm text-ink transition-colors hover:bg-surface/60 aria-pressed:bg-surface aria-pressed:font-semibold aria-pressed:shadow-sm",
                title: (t(".#{choice}") if compact),
                aria: { pressed: false },
                data: { theme_target: "choiceButton", theme_choice_param: choice, action: "theme#choose" } do %>
