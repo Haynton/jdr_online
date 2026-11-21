@@ -19,10 +19,7 @@
       <span class="max-sm:sr-only"><%= t(".copy") %></span>
     </button>
   </div>
-  <%# Plain text color: the message also says when copying failed (the browser may refuse the clipboard) %>
-  <p class="mt-2 min-h-5 text-sm font-medium text-ink" role="status" data-clipboard-target="status"></p>
-
-  <div class="mt-2 flex flex-wrap gap-2">
+  <div class="mt-3 flex flex-wrap items-center gap-2">
     <%= mail_to "", t(".send_by_email"), class: button_classes(:secondary, size: :compact),
                 subject: t(".email_subject", name: game_table.name),
                 body: t(".email_body", name: game_table.name, link: invitation_url(game_table.invite_token)) %>
@@ -30,18 +27,24 @@
                   class: button_classes(:secondary, size: :compact),
                   form: { data: { turbo_confirm: t(".regenerate_confirmation"),
                                   confirm_button: t(".regenerate_confirm_button") } } %>
+    <%# Beside the buttons, rather than on a line of its own kept empty under the field until a copy.
+        Plain text color: the message also says when copying failed (the browser may refuse the clipboard) %>
+    <p class="text-sm font-medium text-ink" role="status" data-clipboard-target="status"></p>
   </div>
 
   <%# Or straight to a player of the app, by their username: they accept or refuse the invitation (pending until then).
       The label sits above the field and the button, so that the button lines up with the field, error or not %>
-  <%= simple_form_for player_invitation, url: game_table_player_invitations_path(game_table), html: { class: "mt-6" } do |form| %>
+  <%# Usernames suggested from the database while typing (username_suggestions_controller.js, in a <datalist>) %>
+  <%= simple_form_for player_invitation, url: game_table_player_invitations_path(game_table),
+                                         html: { class: "mt-6", data: username_suggestions_data(game_table) } do |form| %>
     <%# No required mark: a form of a single field %>
     <%= form.label :username, required: false, class: field_label_classes %>
     <div class="flex items-start gap-2">
       <%= form.input :username, label: false, required: false, wrapper_html: { class: "mb-0 min-w-0 flex-1" },
-                                input_html: { autocomplete: "off" } %>
+                                input_html: username_suggestions_input_options %>
       <%= form.button :submit, t(".invite"), class: "#{button_classes(:secondary)} shrink-0" %>
     </div>
+    <datalist id="player-suggestions" data-username-suggestions-target="list"></datalist>
   <% end %>
 
   <% if game_table.player_participations.any? %>

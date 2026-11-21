@@ -48,6 +48,54 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "ul[aria-label=?] li", "Joueurs invités", text: /Luara\s*En attente/
   end
 
+  test "usernames are suggested while typing: those beginning with the text, never someone already at the table" do
+    User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
+    User.create!(email: "lumen@example.com", username: "Lumen", password: TEST_PASSWORD)
+    User.create!(email: "aluna@example.com", username: "Aluna", password: TEST_PASSWORD)
+    invited_player = User.create!(email: "lucie@example.com", username: "Lucie", password: TEST_PASSWORD)
+    @game_table.participations.create!(user: invited_player, role: :player, status: :pending)
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "LU" }
+
+    assert_equal %w[Luara Lumen], response.parsed_body
+  end
+
+  test "below two letters, no username is suggested" do
+    User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "l" }
+
+    assert_equal [], response.parsed_body
+  end
+
+  test "a % typed is a plain character, not a wildcard that would list every player" do
+    User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "%%" }
+
+    assert_equal [], response.parsed_body
+  end
+
+  test "the username field is tied to the list of suggestions" do
+    get game_table_summary_path(@game_table)
+
+    assert_select "form[data-controller=username-suggestions][data-username-suggestions-url-value=?]",
+                  game_table_player_suggestions_path(@game_table) do
+      assert_select "input#player_invitation_username[list=player-suggestions][autocomplete=off]"
+      assert_select "datalist#player-suggestions[data-username-suggestions-target=list]"
+    end
+  end
+
+  test "a player of the table cannot read the suggestions" do
+    player = User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
+    @game_table.participations.create!(user: player, role: :player)
+    sign_in player
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "pl" }
+
+    assert_response :not_found
+  end
+
   test "an unknown username is refused under the field, on the summary" do
     assert_no_difference("Participation.count") do
       post game_table_player_invitations_path(@game_table), params: { player_invitation: { username: "personne" } }

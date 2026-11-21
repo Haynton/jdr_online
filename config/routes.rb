@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       resource :invite_token, only: :update
       # Invited by their username, from the summary (the id of destroy is the one of the participation)
       resources :player_invitations, only: %i[create destroy]
+      # Usernames suggested while typing the one to invite (JSON)
+      resources :player_suggestions, only: :index
     end
   end
   # The invitation link given to the players. Temporary page until joining a table exists

@@ -24,6 +24,12 @@ class User < ApplicationRecord
                        format: { with: USERNAME_FORMAT },
                        uniqueness: { case_sensitive: false }
 
+  # The usernames that begin with what was typed, whatever the case (suggestions when inviting a player).
+  # sanitize_sql_like: a % or _ typed stays a plain character, not a wildcard
+  scope :username_starting_with, lambda { |typed_text|
+    where("lower(username) LIKE ?", "#{sanitize_sql_like(typed_text.downcase)}%")
+  }
+
   # Shown in the avatar
   def initials
     username.to_s.scan(/[[:alnum:]]/).first(2).join.upcase
