@@ -4,7 +4,7 @@
   <% if game_table.players.any? %>
     <span class="flex">
       <% game_table.players.each do |player| %>
-        <span class="-ml-2 rounded-full ring-2 ring-page first:ml-0"><%= render "shared/avatar", user: player %></span>
+        <span class="-ml-2 rounded-full ring-2 ring-page-deep first:ml-0"><%= render "shared/avatar", user: player %></span>
       <% end %>
     </span>
   <% end %>

@@ -4,7 +4,7 @@
     <%= render "layouts/head" %>
   </head>
 
-  <body class="min-h-screen bg-page text-ink">
+  <body class="min-h-screen <%= page_background_class %> text-ink">
     <%# A signed in user gets the side navigation, like an app; a visitor keeps the top bar %>
     <%= render(user_signed_in? ? "shared/side_nav" : "shared/navbar") %>
 

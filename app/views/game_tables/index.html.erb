@@ -4,6 +4,7 @@
     The chosen table sits in a Turbo Frame: choosing a card only replaces it (and the ?table= of the address).
     Reloading the whole page made the row of cards jump back into place, gold outline included.
     target="_top": the links inside (join, settings, create) still open a whole page %>
+<% use_deep_page_background %>
 <% content_for :full_width_page do %>
   <main class="flex h-[calc(100dvh-5rem)] min-h-[34rem] min-w-0 flex-col md:h-auto md:min-h-dvh">
     <div class="mx-4"><%= render "shared/flashes" %></div>

@@ -38,6 +38,11 @@
     overflow-x: clip;
   }
 
+  /* The home page and "My tables" sit on the deeper night (page_background_class): beyond the body as well */
+  html:has(body.bg-page-deep) {
+    background-color: var(--color-page-deep);
+  }
+
   /* While a window is open (the settings), the page behind it does not scroll */
   html:has(dialog[open]) {
     overflow: hidden;
@@ -125,6 +130,8 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-page: #faf6ee;
+  /* Background of the pages under a cover (home, "My tables"). The same as page in light, deeper in dark */
+  --color-page-deep: #faf6ee;
   --color-surface: #fffdf9;
   /* Fields show by their background, darker than the page in light (decision): ink 12.38 on it.
      muted falls to 3.88 here: no muted text inside a field (the theme selector sits on page) */
@@ -173,16 +180,19 @@
   .dark {
     /* Native controls (scrollbars, inputs, select menus) follow the theme too */
     color-scheme: dark;
-    /* Green-black night of the style/testing-night-dawn trial. ink: 16.49 on page, 14.57 on surface, 11.89 on
-       surface-raised; muted: 11.84, 10.46 and 8.53 */
-    --color-page: #030605;
-    --color-surface: #121816;
-    /* Lighter than the page and the panels in dark: ink 10.46, muted 7.5 on it */
-    --color-field: #2d3330;
-    --color-line: #1f2523;
-    /* Check box border (4.14 on surface), off switch track, field border on hover (2.97 on field).
+    /* Neutral dark gray for the plain backgrounds (decision: the green-black night of the style/testing-night-dawn
+       trial was too deep for a form or the settings). ink: 14.25 on page, 12.89 on surface, 11.01 on
+       surface-raised; muted: 10.23, 9.25 and 7.9 */
+    --color-page: #191919;
+    /* The green-black night stays under the covers (home, "My tables"): ink 16.49, muted 11.84 on it */
+    --color-page-deep: #030605;
+    --color-surface: #222222;
+    /* Lighter than the page and the panels in dark: ink 10.24, muted 7.35 on it */
+    --color-field: #333333;
+    --color-line: #363636;
+    /* Check box border (4.31 on surface), off switch track, field border on hover (3.42 on field).
        The trial gave it the color of field: nothing showed where to type */
-    --color-field-line: #747b76;
+    --color-field-line: #858585;
     --color-focus-ring: #e2c07c;
     --color-ink: #ece7db;
     --color-muted: #c2c7bf;
@@ -194,11 +204,11 @@
     /* primary-soft-ink on it: 8.24 */
     --color-primary-soft: #33290f;
     --color-primary-soft-ink: #e2c07c;
-    --color-surface-raised: #232a27;
+    --color-surface-raised: #2e2e2e;
     --color-logo-bg: #1f1b18;
-    /* 11.69 on page, 10.33 on surface */
+    /* 10.1 on page, 9.14 on surface, 11.69 on page-deep */
     --color-brass: #e2c07c;
-    /* The page itself in the dark theme: ink at 75 % 9.28 on it */
+    /* page-deep, the background of "My tables" in the dark theme: ink at 75 % 9.28 on it */
     --color-card-veil: #030605;
     --color-danger: #b91c1c;
     --color-danger-hover: #9d1818;
