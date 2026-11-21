@@ -1,8 +1,18 @@
 class GameTable < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
-  # The images of app/assets/images/covers. The default one is also the default of the column
-  COVER_IMAGES = %w[sentinelle citadelle dragon gobelins village wolf].freeze
+  # The images of app/assets/images/covers (WebP, 1600 px wide), each with its theme, which filters them when a game
+  # master picks one. The order is the one of the row. The default one is also the default of the column.
+  # A new cover: its file, its line here, its label in game_tables.covers (fr.yml and en.yml)
+  COVER_THEMES = {
+    "sentinelle" => "fantasy", "citadelle" => "fantasy", "dragon" => "fantasy", "gobelins" => "fantasy",
+    "village" => "fantasy", "hobbit" => "fantasy", "wolf" => "fantasy",
+    "lovecraft" => "horror",
+    "cyberpunk" => "science_fiction", "metropole" => "science_fiction"
+  }.freeze
+  COVER_IMAGES = COVER_THEMES.keys.freeze
+  # In the order of their pills
+  COVER_THEME_NAMES = COVER_THEMES.values.uniq.freeze
   DEFAULT_COVER_IMAGE = "sentinelle".freeze
   # Default of the status column: the table is not fully set up yet. Any other status counts as in progress
   # (decision: the exact list of statuses comes with the creation form)

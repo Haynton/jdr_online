@@ -2,14 +2,28 @@
     row of "My tables": from edge to edge of the content (negative margin, same padding inside), edges that fade
     (row-edge-fade), arrows from 768 px (card_row_controller.js; a finger moves the row on a phone).
     Render it as a layout: the block holds the <li> of the cards. legend: the name of the group; hint: optional.
+    filters (optional): pills that filter the cards, like those of "My tables" (table_filter_controller.js, same
+    rules); each card then carries its value (cover_card_filter_data), and no_match says when none is left.
     The hint sits right under the legend; the arrows stand apart, at the top right (on the same line, the hint
     lined up with the bottom of the 40 px arrows and left a gap under the legend).
     min-w-0: a fieldset is as wide as its content by default (min-inline-size: min-content), so the row widened
     the whole page instead of scrolling %>
-<fieldset class="relative mb-8 min-w-0" data-controller="card-row">
+<% filters = local_assigns[:filters] %>
+<%= tag.fieldset class: "relative mb-8 min-w-0", data: choice_row_data(filterable: filters.present?) do %>
   <legend class="<%= choice_legend_classes %>"><%= legend %></legend>
   <% if local_assigns[:hint] %>
     <p class="max-w-xl text-xs text-muted md:pr-24"><%= hint %></p>
+  <% end %>
+  <%# Rendered hidden: shown by the controller, without which they would do nothing %>
+  <% if filters.present? %>
+    <div hidden role="group" aria-label="<%= t(".filter") %>"
+         class="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto" data-table-filter-target="pills">
+      <% filters.each do |filter| %>
+        <button type="button" aria-pressed="false" class="<%= filter_pill_classes %>"
+                data-table-filter-target="pill" data-group="<%= filter[:group] %>" data-value="<%= filter[:value] %>"
+                data-action="table-filter#toggle"><%= filter[:label] %></button>
+      <% end %>
+    </div>
   <% end %>
   <div class="absolute top-0 right-0 hidden gap-2 md:flex">
     <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
@@ -25,6 +39,11 @@
       data-card-row-target="row"
       data-action="scroll->card-row#toggleButtons resize@window->card-row#toggleButtons">
     <%= yield %>
+    <% if filters.present? %>
+      <li hidden class="flex shrink-0 items-center px-1 text-sm text-muted" data-table-filter-target="noMatch">
+        <%= local_assigns[:no_match] %>
+      </li>
+    <% end %>
   </ul>
   <%= local_assigns[:error] %>
-</fieldset>
+<% end %>

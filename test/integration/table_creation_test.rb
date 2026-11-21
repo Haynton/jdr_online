@@ -44,6 +44,18 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     assert_select "main h1", text: "Créer un modèle"
   end
 
+  test "the covers can be filtered by theme with pills, hidden until the filter controller shows them" do
+    get new_game_table_path
+
+    assert_select "fieldset[data-controller='card-row table-filter']" do
+      assert_select "div[hidden][role=group][aria-label=?] button[aria-pressed=false][data-group=theme]",
+                    "Filtrer par thème", count: GameTable::COVER_THEME_NAMES.size
+      assert_select "button[data-value=horror]", text: "Horreur"
+      assert_select "li[data-table-filter-target=card][data-theme=fantasy] input[value=dragon]"
+      assert_select "li[hidden][data-table-filter-target=noMatch]", text: /Aucune couverture pour ce thème/
+    end
+  end
+
   test "the description is a text area that is not held to the height of the other fields" do
     get new_game_table_path
 

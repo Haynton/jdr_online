@@ -43,6 +43,13 @@ class GameTableTest < ActiveSupport::TestCase
     end
   end
 
+  test "every image of the covers folder is in the list, with a theme" do
+    image_names = Rails.root.glob("app/assets/images/covers/*.webp").map { |image_file| image_file.basename(".webp").to_s }
+
+    assert_equal image_names.sort, GameTable::COVER_IMAGES.sort
+    assert_equal %w[fantasy horror science_fiction], GameTable::COVER_THEME_NAMES
+  end
+
   test "the players count leaves out the game master" do
     game_table = GameTable.create!(name: "Les Marches du Nord")
     game_table.participations.create!(user: create_user, role: :game_master)

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Filters the table cards of "My tables" with pills (role: GM or player, status: draft or in progress),
-// in the browser: every card is already on the page. Within a group, the pressed values add up;
+// Filters cards with pills, in the browser: every card is already on the page. The table cards of "My tables"
+// (role: GM or player, status: draft or in progress) and the covers of a new table (theme). Within a group, the pressed values add up;
 // between the groups, they combine. A group with no pressed pill lets every card through.
 // The pills are rendered hidden: without JavaScript they would do nothing, and every table stays in view.
 // A user with no table gets no pills at all (nothing to filter)

@@ -198,16 +198,25 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    choice_row:
+      filter: "Filtrer par thème"
+      next: "Choix suivants"
+      previous: "Choix précédents"
+    cover_themes:
+      fantasy: "Fantasy"
+      horror: "Horreur"
+      science_fiction: "Science-fiction"
     covers:
       citadelle: "La citadelle"
+      cyberpunk: "La cité néon"
       dragon: "Le dragon"
       gobelins: "Les gobelins"
+      hobbit: "Les collines"
+      lovecraft: "Le phare des abysses"
+      metropole: "La métropole"
       sentinelle: "La sentinelle"
       village: "Le village"
       wolf: "Le loup"
-    choice_row:
-      next: "Choix suivants"
-      previous: "Choix précédents"
     create:
       created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
@@ -235,6 +244,7 @@ fr:
       cover_hint: "L'image de votre table : elle l'illustre dans « Mes tables » et en haut de sa page."
       create_template: "Créer un modèle"
       description_hint: "Facultative. Quelques lignes pour présenter l'univers à vos joueurs."
+      no_matching_cover: "Aucune couverture pour ce thème."
       sheet_template: "Modèle de fiche"
       sheet_template_hint: "Les champs des fiches de personnage, des PNJ et des objets. Vous pourrez en changer tant que la table est en brouillon."
     empty_stage:

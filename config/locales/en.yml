@@ -227,16 +227,25 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    choice_row:
+      filter: "Filter by theme"
+      next: "Next choices"
+      previous: "Previous choices"
+    cover_themes:
+      fantasy: "Fantasy"
+      horror: "Horror"
+      science_fiction: "Science fiction"
     covers:
       citadelle: "The citadel"
+      cyberpunk: "The neon city"
       dragon: "The dragon"
       gobelins: "The goblins"
+      hobbit: "The hills"
+      lovecraft: "The lighthouse of the depths"
+      metropole: "The metropolis"
       sentinelle: "The sentinel"
       village: "The village"
       wolf: "The wolf"
-    choice_row:
-      next: "Next choices"
-      previous: "Previous choices"
     create:
       created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
@@ -264,6 +273,7 @@ en:
       cover_hint: "The picture of your table: it shows it in “My tables” and at the top of its page."
       create_template: "Create a template"
       description_hint: "Optional. A few lines to introduce the setting to your players."
+      no_matching_cover: "No cover for this theme."
       sheet_template: "Sheet template"
       sheet_template_hint: "The fields of the character, NPC and item sheets. You can change it while the table is a draft."
     empty_stage:
