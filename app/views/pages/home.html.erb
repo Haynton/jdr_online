@@ -6,10 +6,8 @@
     <div class="mx-4"><%= render "shared/flashes" %></div>
     <section class="relative isolate overflow-hidden" aria-labelledby="home-title">
       <%= render "shared/theme_cover", css_class: "absolute inset-0 -z-20 size-full object-cover object-[70%_50%] md:object-center" %>
-      <%# No fade at the bottom (cover-fade): nothing follows the section, and in the light theme it washed the dawn out.
-          The veil stays behind the text only (bottom on a phone, left from 768 px), strong enough for its contrast %>
+      <%# A veil behind the text only, for its contrast %>
       <div class="absolute inset-0 -z-10 bg-linear-to-t from-page-deep from-40% via-page-deep/60 via-65% to-transparent md:bg-linear-to-r md:from-page-deep/95 md:from-0% md:via-page-deep/80 md:via-40% md:to-transparent md:to-75%"></div>
-
       <div class="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-[1120px] flex-col justify-end px-4 pt-40 pb-12 sm:px-8 md:justify-center md:py-16">
         <div class="flex max-w-xl flex-col gap-4">
           <p class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".eyebrow") %></p>
