@@ -29,6 +29,12 @@ module MessagesHelper
     MESSAGE_VARIANTS.fetch(variant)[:icon]
   end
 
+  # The messages of shared/_flashes that show on screen (flash[:screen_reader_notice] does not): a layout keeps
+  # space under them only when there is one
+  def visible_messages?
+    flash[:notice].present? || flash[:alert].present?
+  end
+
   # Replaces Simple Form's f.error_notification. On screen, the red field and its message are enough;
   # this summary stays for screen readers only (sr-only): its alert role tells them the form has errors
   def form_error_notification(form)

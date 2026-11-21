@@ -16,7 +16,10 @@
     </header>
 
     <main class="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center px-4 pt-6 pb-12 md:pb-[calc(3rem+4.5rem)]">
-      <%= render "shared/flashes" %>
+      <%# Space between a message and the title, none without a message (the form stays in the middle) %>
+      <div class="<%= auth_messages_classes %>">
+        <%= render "shared/flashes" %>
+      </div>
       <%= yield %>
     </main>
   </body>
