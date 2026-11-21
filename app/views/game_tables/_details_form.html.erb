@@ -12,16 +12,18 @@
   <%= form.input :name, required: true, autofocus: true, input_html: { maxlength: GameTable::NAME_MAX_LENGTH } %>
   <%= form.input :description, as: :text, required: false, hint: t(".description_hint") %>
 
-  <%= render layout: "game_tables/choice_row", locals: { legend: t(".cover"), hint: t(".cover_hint") } do %>
+  <%# The covers filtered by theme (fantasy, horror, science fiction), with the pills of "My tables" %>
+  <%= render layout: "game_tables/choice_row", locals: { legend: t(".cover"), hint: t(".cover_hint"),
+                                                         filters: cover_filters, no_match: t(".no_matching_cover") } do %>
     <% GameTable::COVER_IMAGES.each do |cover_image| %>
-      <li class="relative w-[62%] shrink-0 sm:w-44">
+      <%= tag.li class: "relative w-[62%] shrink-0 sm:w-44", data: cover_card_filter_data(cover_image) do %>
         <%= form.radio_button :cover_image, cover_image, class: "peer sr-only" %>
         <%= form.label :cover_image, value: cover_image, class: choice_tile_classes do %>
           <%= image_tag GameTable.cover_image_path(cover_image), alt: "", loading: "lazy", class: "aspect-video w-full object-cover" %>
           <span class="block px-3 py-2 text-sm text-ink"><%= cover_choice_label(cover_image) %></span>
         <% end %>
         <span class="<%= choice_check_classes %>" aria-hidden="true"><%= render "shared/icons/check", css_class: "size-4" %></span>
-      </li>
+      <% end %>
     <% end %>
   <% end %>
 

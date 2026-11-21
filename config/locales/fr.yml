@@ -1,4 +1,16 @@
 fr:
+  # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
+  activemodel:
+    attributes:
+      player_invitation:
+        username: "Inviter un joueur par son pseudo"
+    errors:
+      models:
+        player_invitation:
+          attributes:
+            username:
+              already_at_table: "ce joueur est déjà à la table, ou déjà invité"
+              not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
       game_table:
@@ -68,6 +80,11 @@ fr:
       minimum_password_length:
         one: "%{count} caractère minimum"
         other: "%{count} caractères minimum"
+  invitations:
+    show:
+      back_to_tables: "Retour à mes tables"
+      coming_soon: "Rejoindre une table arrive bientôt : vous créerez votre personnage, puis vous entrerez dans la partie."
+      title: "Invitation à « %{name} »"
   layouts:
     settings:
       back_to_settings: "Paramètres"
@@ -181,16 +198,25 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    choice_row:
+      filter: "Filtrer par thème"
+      next: "Choix suivants"
+      previous: "Choix précédents"
+    cover_themes:
+      fantasy: "Fantasy"
+      horror: "Horreur"
+      science_fiction: "Science-fiction"
     covers:
       citadelle: "La citadelle"
+      cyberpunk: "La cité néon"
       dragon: "Le dragon"
       gobelins: "Les gobelins"
+      hobbit: "Les collines"
+      lovecraft: "Le phare des abysses"
+      metropole: "La métropole"
       sentinelle: "La sentinelle"
       village: "Le village"
       wolf: "Le loup"
-    choice_row:
-      next: "Choix suivants"
-      previous: "Choix précédents"
     create:
       created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
@@ -199,15 +225,16 @@ fr:
       cancel: "Annuler"
       continue: "Continuer"
     creation_steps:
+      change: "Modifier"
       coming_soon: "Bientôt"
       label: "Étapes de la création"
+      open: "Ouvrir"
       step_number: "Étape %{number} :"
       steps:
         details: "Informations"
-        invitations: "Invitations"
         maps: "Cartes"
         npcs: "PNJ et ennemis"
-        summary: "Récapitulatif"
+        summary: "Invitation"
     details:
       edit:
         subtitle: "Votre table est en brouillon : modifiez ses informations quand vous voulez."
@@ -219,6 +246,7 @@ fr:
       cover_hint: "L'image de votre table : elle l'illustre dans « Mes tables » et en haut de sa page."
       create_template: "Créer un modèle"
       description_hint: "Facultative. Quelques lignes pour présenter l'univers à vos joueurs."
+      no_matching_cover: "Aucune couverture pour ce thème."
       sheet_template: "Modèle de fiche"
       sheet_template_hint: "Les champs des fiches de personnage, des PNJ et des objets. Vous pourrez en changer tant que la table est en brouillon."
     empty_stage:
@@ -226,6 +254,14 @@ fr:
       title: "Aucune table pour l'instant"
     index:
       title: "Mes tables"
+    invite_tokens:
+      update:
+        regenerated: "Nouveau lien généré : l'ancien ne fonctionne plus."
+    player_invitations:
+      create:
+        invited: "Invitation envoyée à %{username}, en attente de sa réponse."
+      destroy:
+        removed: "Invitation de %{username} retirée."
     players:
       one: "1 joueur"
       other: "%{count} joueurs"
@@ -242,6 +278,43 @@ fr:
     statuses:
       draft: "Brouillon"
       in_progress: "En cours"
+    summaries:
+      invitation:
+        copied: "Lien copié."
+        copy: "Copier le lien"
+        copy_failed: "Copie impossible : le lien est sélectionné, copiez-le avec Ctrl+C (⌘+C sur Mac)."
+        email_body: "Bonjour,\n\nRejoins ma table « %{name} » sur JDR en ligne : %{link}\n\nÀ bientôt !"
+        email_subject: "Invitation à ma table « %{name} »"
+        hint: "Envoyez ce lien à vos joueurs : ils pourront le suivre dès que la création de la table sera terminée."
+        invite: "Inviter"
+        link: "Lien d'invitation"
+        regenerate: "Générer un lien"
+        regenerate_confirm_button: "Remplacer le lien"
+        regenerate_confirmation: "Générer un nouveau lien ? L'ancien ne fonctionnera plus."
+        send_by_email: "Envoyer par e-mail"
+        title: "Inviter vos joueurs"
+      participants:
+        badges:
+          game_master: "MJ"
+          pending: "En attente"
+          player: "Joueur"
+        no_players: "Aucun joueur invité pour l'instant."
+        remove: "Retirer"
+        remove_player: "Retirer %{username}"
+        title: "Participants"
+      show:
+        back: "Retour"
+        change: "Modifier"
+        finish: "Terminer la création"
+        finish_and_join: "Terminer et rejoindre la partie"
+        no_description: "Aucune description"
+        ready: "Invitez vos joueurs, ou revenez sur une étape pour la modifier. « Terminer la création » l'ouvre à vos joueurs."
+        ready_title: "Votre table est prête"
+        see_less: "Voir moins"
+        see_more: "Voir plus"
+        sheet_template: "Modèle de fiche :"
+      update:
+        finished: "Table prête : vos joueurs peuvent la rejoindre."
     edit:
       coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
       title: "Paramètres de la partie"

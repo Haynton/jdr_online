@@ -28,6 +28,18 @@
 #       enabled: "ON"
 
 en:
+  # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
+  activemodel:
+    attributes:
+      player_invitation:
+        username: "Invite a player by their username"
+    errors:
+      models:
+        player_invitation:
+          attributes:
+            username:
+              already_at_table: "this player is already at the table, or already invited"
+              not_found: "no player has this username"
   activerecord:
     attributes:
       game_table:
@@ -97,6 +109,11 @@ en:
       minimum_password_length:
         one: "%{count} character minimum"
         other: "%{count} characters minimum"
+  invitations:
+    show:
+      back_to_tables: "Back to my tables"
+      coming_soon: "Joining a table is coming soon: you will create your character, then enter the game."
+      title: "Invitation to “%{name}”"
   layouts:
     settings:
       back_to_settings: "Settings"
@@ -210,16 +227,25 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    choice_row:
+      filter: "Filter by theme"
+      next: "Next choices"
+      previous: "Previous choices"
+    cover_themes:
+      fantasy: "Fantasy"
+      horror: "Horror"
+      science_fiction: "Science fiction"
     covers:
       citadelle: "The citadel"
+      cyberpunk: "The neon city"
       dragon: "The dragon"
       gobelins: "The goblins"
+      hobbit: "The hills"
+      lovecraft: "The lighthouse of the depths"
+      metropole: "The metropolis"
       sentinelle: "The sentinel"
       village: "The village"
       wolf: "The wolf"
-    choice_row:
-      next: "Next choices"
-      previous: "Previous choices"
     create:
       created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
@@ -228,15 +254,16 @@ en:
       cancel: "Cancel"
       continue: "Continue"
     creation_steps:
+      change: "Change"
       coming_soon: "Coming soon"
       label: "Steps of the creation"
+      open: "Open"
       step_number: "Step %{number}:"
       steps:
         details: "Details"
-        invitations: "Invitations"
         maps: "Maps"
         npcs: "NPCs and enemies"
-        summary: "Summary"
+        summary: "Invitation"
     details:
       edit:
         subtitle: "Your table is a draft: change its details whenever you like."
@@ -248,6 +275,7 @@ en:
       cover_hint: "The picture of your table: it shows it in “My tables” and at the top of its page."
       create_template: "Create a template"
       description_hint: "Optional. A few lines to introduce the setting to your players."
+      no_matching_cover: "No cover for this theme."
       sheet_template: "Sheet template"
       sheet_template_hint: "The fields of the character, NPC and item sheets. You can change it while the table is a draft."
     empty_stage:
@@ -255,6 +283,14 @@ en:
       title: "No table yet"
     index:
       title: "My tables"
+    invite_tokens:
+      update:
+        regenerated: "New link generated: the old one no longer works."
+    player_invitations:
+      create:
+        invited: "Invitation sent to %{username}, waiting for their answer."
+      destroy:
+        removed: "Invitation of %{username} taken back."
     players:
       one: "1 player"
       other: "%{count} players"
@@ -271,6 +307,43 @@ en:
     statuses:
       draft: "Draft"
       in_progress: "In progress"
+    summaries:
+      invitation:
+        copied: "Link copied."
+        copy: "Copy the link"
+        copy_failed: "Copying failed: the link is selected, copy it with Ctrl+C (⌘+C on a Mac)."
+        email_body: "Hi,\n\nJoin my table “%{name}” on JDR Online: %{link}\n\nSee you soon!"
+        email_subject: "Invitation to my table “%{name}”"
+        hint: "Send this link to your players: they can follow it as soon as the creation of the table is over."
+        invite: "Invite"
+        link: "Invitation link"
+        regenerate: "Generate a link"
+        regenerate_confirm_button: "Replace the link"
+        regenerate_confirmation: "Generate a new link? The old one will stop working."
+        send_by_email: "Send by email"
+        title: "Invite your players"
+      participants:
+        badges:
+          game_master: "GM"
+          pending: "Pending"
+          player: "Player"
+        no_players: "No player invited yet."
+        remove: "Remove"
+        remove_player: "Remove %{username}"
+        title: "Participants"
+      show:
+        back: "Back"
+        change: "Change"
+        finish: "Finish the creation"
+        finish_and_join: "Finish and join the game"
+        no_description: "No description"
+        ready: "Invite your players, or go back to a step to change it. “Finish the creation” opens it to your players."
+        ready_title: "Your table is ready"
+        see_less: "See less"
+        see_more: "See more"
+        sheet_template: "Sheet template:"
+      update:
+        finished: "Table ready: your players can join it."
     edit:
       coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
       title: "Game settings"

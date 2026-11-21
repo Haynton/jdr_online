@@ -10,13 +10,13 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     sign_in @user
   end
 
-  test "the first step shows the five steps, the covers and the templates of the user's language, none chosen" do
+  test "the first step shows the four steps, the covers and the templates of the user's language, none chosen" do
     SheetTemplate.create!(name: "Heroic fantasy", locale: "en")
     get new_game_table_path
 
     assert_response :success
     # The lines that join the steps are list items too, hidden from screen readers
-    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 5
+    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 4
     assert_select "ol > li[aria-current=step]", text: /Informations/
     assert_select "ol > li", text: /Bientôt/, count: 2
     assert_select "input[type=radio][name='game_table[cover_image]']", count: GameTable::COVER_IMAGES.size
@@ -44,6 +44,18 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     assert_select "main h1", text: "Créer un modèle"
   end
 
+  test "the covers can be filtered by theme with pills, hidden until the filter controller shows them" do
+    get new_game_table_path
+
+    assert_select "fieldset[data-controller='card-row table-filter']" do
+      assert_select "div[hidden][role=group][aria-label=?] button[aria-pressed=false][data-group=theme]",
+                    "Filtrer par thème", count: GameTable::COVER_THEME_NAMES.size
+      assert_select "button[data-value=horror]", text: "Horreur"
+      assert_select "li[data-table-filter-target=card][data-theme=fantasy] input[value=dragon]"
+      assert_select "li[hidden][data-table-filter-target=noMatch]", text: /Aucune couverture pour ce thème/
+    end
+  end
+
   test "the description is a text area that is not held to the height of the other fields" do
     get new_game_table_path
 
@@ -55,12 +67,13 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     assert_difference(["GameTable.count", "Participation.count"], 1) { post_new_table(sheet_template_id: @fantasy.id) }
 
     game_table = GameTable.last
-    assert_redirected_to game_tables_path(table: game_table.id)
-    # For screen readers only: the table itself shows large on "My tables", marked as a draft
+    assert_redirected_to game_table_summary_path(game_table)
+    # For screen readers only: on screen, the next step shows
     assert_equal "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment.", flash[:screen_reader_notice]
     assert_nil flash[:notice]
     follow_redirect!
     assert_select ".sr-only [role=status]", text: /Table créée en brouillon/
+    assert_equal "summary", game_table.reload.resume_creation_step
     assert game_table.draft?
     assert_equal "dragon", game_table.cover_image
     assert_equal @fantasy, game_table.sheet_template
@@ -106,7 +119,7 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     patch game_table_details_path(game_table),
           params: { game_table: { name: "Les Marches du Nord", cover_image: "wolf", sheet_template_id: @horror.id } }
 
-    assert_redirected_to game_tables_path(table: game_table.id)
+    assert_redirected_to game_table_summary_path(game_table)
     assert_equal @horror.snapshot, game_table.reload.template_snapshot
     assert_equal "wolf", game_table.cover_image
   end

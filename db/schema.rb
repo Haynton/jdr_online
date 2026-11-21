@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_21_103145) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_21_142316) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_103145) do
     t.datetime "updated_at", null: false
     t.string "cover_image", default: "sentinelle", null: false
     t.bigint "sheet_template_id"
+    t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
   end
 
@@ -37,11 +38,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_103145) do
     t.string "role", default: "player", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "accepted", null: false
     t.index ["game_table_id"], name: "index_participations_on_game_table_id"
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
     t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
+    t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 
   create_table "sheet_templates", force: :cascade do |t|

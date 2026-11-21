@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :participations, dependent: :destroy
-  has_many :game_tables, through: :participations
+  # Only the tables the user takes part in: an invitation still pending does not open a table
+  has_many :game_tables, -> { merge(Participation.accepted) }, through: :participations
   has_many :sheet_templates, foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
 
   USERNAME_LENGTH = 3..20
@@ -22,6 +23,12 @@ class User < ApplicationRecord
                        length: { in: USERNAME_LENGTH, allow_blank: true },
                        format: { with: USERNAME_FORMAT },
                        uniqueness: { case_sensitive: false }
+
+  # The usernames that begin with what was typed, whatever the case (suggestions when inviting a player).
+  # sanitize_sql_like: a % or _ typed stays a plain character, not a wildcard
+  scope :username_starting_with, lambda { |typed_text|
+    where("lower(username) LIKE ?", "#{sanitize_sql_like(typed_text.downcase)}%")
+  }
 
   # Shown in the avatar
   def initials

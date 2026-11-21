@@ -1,26 +1,29 @@
-<%# Where the game master stands in the creation of a table: the five steps, joined by a line, the current one
-    stressed. NPCs and maps arrive with their milestone: marked as coming soon. On a phone, only the label of the
-    current step shows, the others stay for screen readers (step_label_classes) %>
+<%# Where the game master stands in the creation of a table: the four steps, joined by a line, the current one
+    stressed. A step reached already is a link to its page, to change it ("Change" under its label). NPCs and maps
+    arrive with their milestone: marked as coming soon. On a phone, only the label of the current step shows, the
+    others stay for screen readers (step_label_classes) %>
 <ol class="flex items-center gap-1.5 sm:gap-3" aria-label="<%= t(".label") %>">
-  <% creation_steps(current_step).each_with_index do |step, position| %>
+  <% creation_steps(current_step, game_table).each_with_index do |step, position| %>
     <% if position.positive? %>
       <li class="h-px min-w-2 flex-1 bg-line sm:min-w-3" aria-hidden="true"></li>
     <% end %>
-    <%= tag.li class: "flex shrink-0 items-center gap-2", aria: step_aria(step[:state]) do %>
-      <span class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold <%= step_marker_classes(step[:state]) %>" aria-hidden="true">
-        <% if step[:state] == :done %>
-          <%= render "shared/icons/check" %>
-        <% else %>
-          <%= step[:number] %>
-        <% end %>
-      </span>
-      <span class="text-[13px] leading-tight <%= step_label_classes(step[:state]) %>">
-        <span class="sr-only"><%= t(".step_number", number: step[:number]) %></span>
-        <%= t(".steps.#{step[:key]}") %>
-        <% if step[:state] == :coming_soon %>
-          <span class="block text-xs"><%= t(".coming_soon") %></span>
-        <% end %>
-      </span>
+    <%= tag.li class: "flex shrink-0 items-center", aria: step_aria(step[:state]) do %>
+      <%= content_tag(step[:path] ? :a : :div, href: step[:path], class: step_link_classes(step)) do %>
+        <span class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold <%= step_marker_classes(step[:state]) %>" aria-hidden="true">
+          <% if step[:state] == :done %>
+            <%= render "shared/icons/check" %>
+          <% else %>
+            <%= step[:number] %>
+          <% end %>
+        </span>
+        <span class="text-[13px] leading-tight <%= step_label_classes(step) %>">
+          <span class="sr-only"><%= t(".step_number", number: step[:number]) %></span>
+          <%= t(".steps.#{step[:key]}") %>
+          <% if step_note(step) %>
+            <span class="<%= step_note_classes(step) %>"><%= step_note(step) %></span>
+          <% end %>
+        </span>
+      <% end %>
     <% end %>
   <% end %>
 </ol>

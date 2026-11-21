@@ -28,7 +28,9 @@ module GameTablesHelper
 
   def stage_main_action_path(participation)
     game_table = participation.game_table
-    resuming_creation?(participation) ? edit_game_table_details_path(game_table) : game_table_path(game_table)
+    return game_table_path(game_table) unless resuming_creation?(participation)
+
+    creation_step_path(game_table, game_table.resume_creation_step)
   end
 
   def resuming_creation?(participation)

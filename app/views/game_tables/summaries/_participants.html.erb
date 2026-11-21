@@ -1,0 +1,22 @@
+<%# The participants of the table, beside the invitation: the game master, then each player invited by username,
+    pending until they accept, and the way to take an invitation back (never the game master) %>
+<section class="min-w-0 border-t border-line pt-5" aria-labelledby="participants-title">
+  <h2 id="participants-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
+  <ul class="mt-2 divide-y divide-line" aria-labelledby="participants-title">
+    <% table_participants(game_table).each do |participation| %>
+      <li class="flex min-h-14 items-center gap-3 py-2.5">
+        <%= render "shared/avatar", user: participation.user %>
+        <span class="min-w-0 truncate text-sm font-medium text-ink"><%= participation.user.username %></span>
+        <span class="<%= participant_badge_classes(participation) %>"><%= participant_badge_label(participation) %></span>
+        <% unless participation.game_master? %>
+          <%= button_to t(".remove"), game_table_player_invitation_path(game_table, participation), method: :delete,
+                        class: button_classes(:secondary, size: :compact), form: { class: "ml-auto" },
+                        aria: { label: t(".remove_player", username: participation.user.username) } %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <% if game_table.player_participations.none? %>
+    <p class="mt-2 text-sm text-muted"><%= t(".no_players") %></p>
+  <% end %>
+</section>

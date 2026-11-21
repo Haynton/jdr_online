@@ -9,7 +9,9 @@ module BadgesHelper
   # are almost the card color (1.18 and 1.04), the ring at 50 % of the text color reaches 3.49 and 3.78
   BADGE_VARIANT_CLASSES = {
     game_master: "bg-primary-soft text-primary-soft-ink ring-1 ring-inset ring-primary-soft-ink/50",
-    player: "bg-success-bg text-success-ink ring-1 ring-inset ring-success-ink/50"
+    player: "bg-success-bg text-success-ink ring-1 ring-inset ring-success-ink/50",
+    # Neutral: an invitation not answered yet is neither good nor bad news
+    pending: "bg-surface-raised text-ink ring-1 ring-inset ring-ink/30"
   }.freeze
 
   def badge_classes(variant)
