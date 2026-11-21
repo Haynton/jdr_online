@@ -1,11 +1,12 @@
 require "test_helper"
 
 class AuthPagesTest < ActionDispatch::IntegrationTest
-  test "each visitor page shows its title in a card, as the page heading" do
+  test "each visitor page shows its title straight on the page, as the page heading" do
     visitor_page_titles.each do |visitor_page_path, title|
       get visitor_page_path, headers: { "Accept-Language" => "fr" }
 
-      assert_select "section.bg-surface[aria-labelledby=auth-card-title] h1#auth-card-title", text: title
+      assert_select "section[aria-labelledby=auth-card-title] h1#auth-card-title", text: title
+      assert_select "section.bg-surface[aria-labelledby=auth-card-title]", count: 0
     end
   end
 

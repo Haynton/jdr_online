@@ -38,7 +38,9 @@ en:
         role: "Role"
         user_id: "Player"
       user:
+        email: "Email"
         locale: "Language"
+        remember_me: "Stay logged in"
         username: "Username"
     errors:
       models:
@@ -96,8 +98,11 @@ en:
     fr: "Français"
   pages:
     home:
-      title: "Home"
-      description: "Find me in app/views/pages/home.html.erb"
+      create_account: "Create an account"
+      description: "Character sheets, dice, map and game log shared live, to play online or around a real table."
+      eyebrow: "Role-playing with friends"
+      log_in: "Log in"
+      title: "Your game table, wherever your players are."
   settings:
     accounts:
       show:

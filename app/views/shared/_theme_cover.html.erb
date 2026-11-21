@@ -1,0 +1,4 @@
+<%# The same landscape at dawn (light theme) and at night (dark theme), behind the visitor pages.
+    Decoration only (empty alt). css_class places both images: the one of the other theme stays hidden %>
+<%= image_tag GameTable.cover_image_path("sentinelle"), alt: "", class: "#{css_class} dark:hidden" %>
+<%= image_tag GameTable.cover_image_path("citadelle"), alt: "", class: "#{css_class} hidden dark:block" %>

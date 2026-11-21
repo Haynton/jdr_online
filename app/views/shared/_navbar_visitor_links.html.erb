@@ -1,3 +1,4 @@
 <%= render "shared/theme_selector", compact: true %>
-<%= link_to t(".log_in"), new_user_session_path, class: "text-sm font-medium text-link hover:underline" %>
-<%= link_to t(".sign_up"), new_user_registration_path, class: button_classes(:primary, size: :compact) %>
+<%= link_to t(".log_in"), new_user_session_path, class: "#{button_classes(:secondary, size: :compact)} whitespace-nowrap" %>
+<%# Hidden on a phone, where the bar has no room for it: the home page offers to create an account right below %>
+<%= link_to t(".sign_up"), new_user_registration_path, class: "#{button_classes(:primary, size: :compact)} max-sm:hidden" %>

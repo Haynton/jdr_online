@@ -34,6 +34,6 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
     assert_select "nav", count: 0
     assert_select "header a[href=?] svg[aria-hidden=true]", root_path
     assert_select "header [role=group][data-controller=theme]"
-    assert_select "main.max-w-\\[420px\\]"
+    assert_select "main.max-w-\\[400px\\].justify-center"
   end
 end

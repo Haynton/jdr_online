@@ -15,19 +15,19 @@ class ButtonsHelperTest < ActionView::TestCase
     end
   end
 
-  test "the normal size is 44 px high and the default" do
-    assert_includes button_classes(:primary), "h-11"
+  test "the normal size is 40 px high and the default" do
+    assert_includes button_classes(:primary), "h-10"
     assert_equal button_classes(:primary, size: :normal), button_classes(:primary)
   end
 
-  test "the compact size is 36 px high" do
-    assert_includes button_classes(:secondary, size: :compact), "h-9"
+  test "the compact size keeps the same 40 px height, with narrower sides" do
+    assert_includes button_classes(:secondary, size: :compact), "h-10 px-3"
   end
 
-  test "the compact icon size is a 36 px square, with no side padding" do
+  test "the compact icon size is a 40 px square, with no side padding" do
     classes = button_classes(:quiet, size: :compact_icon).split
 
-    assert_includes classes, "size-9"
+    assert_includes classes, "size-10"
     assert_empty classes.grep(/\Apx-/)
   end
 
