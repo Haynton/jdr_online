@@ -57,6 +57,33 @@ class GameTableTest < ActiveSupport::TestCase
     assert_difference("Participation.count", -1) { game_table.destroy }
   end
 
+  test "the first step of the creation asks for a sheet template" do
+    game_table = GameTable.new(name: "Les Marches du Nord")
+
+    assert game_table.valid?
+    assert_not game_table.valid?(:details)
+    assert game_table.errors.of_kind?(:sheet_template, :blank)
+  end
+
+  test "choosing a template copies it into the table" do
+    sheet_template = SheetTemplate.new(name: "Fantasy", locale: "fr",
+                                       character_fields: { "fields" => [{ "key" => "hp" }] })
+    game_table = GameTable.new(name: "Les Marches du Nord")
+
+    game_table.use_sheet_template(sheet_template)
+
+    assert_equal sheet_template, game_table.sheet_template
+    assert_equal sheet_template.snapshot, game_table.template_snapshot
+  end
+
+  test "a table without a template has an empty copy" do
+    game_table = GameTable.new(name: "Les Marches du Nord", template_snapshot: { "character_fields" => {} })
+
+    game_table.use_sheet_template(nil)
+
+    assert_equal({}, game_table.template_snapshot)
+  end
+
   private
 
   def create_user
