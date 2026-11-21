@@ -1,0 +1,60 @@
+<%# First step of the creation of a table: name, description, cover and sheet template.
+    Shared by a new table (game_tables/new) and a draft taken up again (game_tables/details/edit).
+    The covers and the templates are rows of cards that scroll sideways (game_tables/_choice_row), like the row
+    of "My tables". Each card hides a real radio button (sr-only, the peer of the card), still moved with the arrow
+    keys and read by screen readers (game_table_creation_helper.rb). On a phone, a card takes a share of the row
+    (62 %), so that the next one shows cut off: the row says it scrolls. The texts of the cards use full keys:
+    inside a render layout block, a short key would be looked up for the row partial %>
+<%= simple_form_for game_table, url: url, method: method, html: { id: creation_form_id },
+                                defaults: { wrapper_html: { class: "max-w-xl" } } do |form| %>
+  <%= form_error_notification(form) %>
+
+  <%= form.input :name, required: true, autofocus: true, input_html: { maxlength: GameTable::NAME_MAX_LENGTH } %>
+  <%= form.input :description, as: :text, required: false, hint: t(".description_hint") %>
+
+  <%= render layout: "game_tables/choice_row", locals: { legend: t(".cover"), hint: t(".cover_hint") } do %>
+    <% GameTable::COVER_IMAGES.each do |cover_image| %>
+      <li class="relative w-[62%] shrink-0 sm:w-44">
+        <%= form.radio_button :cover_image, cover_image, class: "peer sr-only" %>
+        <%= form.label :cover_image, value: cover_image, class: choice_tile_classes do %>
+          <%= image_tag GameTable.cover_image_path(cover_image), alt: "", loading: "lazy", class: "aspect-video w-full object-cover" %>
+          <span class="block px-3 py-2 text-sm text-ink"><%= cover_choice_label(cover_image) %></span>
+        <% end %>
+        <span class="<%= choice_check_classes %>" aria-hidden="true"><%= render "shared/icons/check", css_class: "size-4" %></span>
+      </li>
+    <% end %>
+  <% end %>
+
+  <%= render layout: "game_tables/choice_row",
+             locals: { legend: safe_join([t(".sheet_template"), t("simple_form.required.html")], " "),
+                       hint: t(".sheet_template_hint"),
+                       error: form.error(:sheet_template, id: "sheet-template-error", class: choice_error_classes) } do %>
+    <li class="w-[62%] shrink-0 sm:w-56">
+      <%= link_to new_sheet_template_path, class: create_template_card_classes do %>
+        <span class="flex size-11 items-center justify-center rounded-full bg-brass text-page" aria-hidden="true">
+          <%= render "shared/icons/plus", css_class: "size-5" %>
+        </span>
+        <span class="font-semibold"><%= t("game_tables.details_form.create_template") %></span>
+      <% end %>
+    </li>
+    <% @available_sheet_templates.each do |sheet_template| %>
+      <li class="relative w-[62%] shrink-0 sm:w-56">
+        <%= form.radio_button :sheet_template_id, sheet_template.id, class: "peer sr-only", required: true,
+                              aria: sheet_template_choice_aria(game_table) %>
+        <%= form.label :sheet_template_id, value: sheet_template.id, class: choice_tile_classes do %>
+          <%# Until the game master uploads its picture (template builder): a plain gold scroll, the same for all %>
+          <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+            <%= render "shared/icons/scroll_text", css_class: "size-10" %>
+          </span>
+          <span class="block px-4 py-3 pr-10 font-semibold text-ink"><%= sheet_template.name %></span>
+        <% end %>
+        <span class="<%= choice_check_classes %>" aria-hidden="true"><%= render "shared/icons/check", css_class: "size-4" %></span>
+      </li>
+    <% end %>
+  <% end %>
+
+  <%# At the end of the form, on the right: where the eye ends up once everything is filled in %>
+  <div class="flex justify-end gap-3 pt-6">
+    <%= creation_actions(cancel_path: cancel_path) %>
+  </div>
+<% end %>

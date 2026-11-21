@@ -31,8 +31,10 @@ en:
   activerecord:
     attributes:
       game_table:
+        cover_image: "Cover"
         description: "Description"
         name: "Name"
+        sheet_template: "Sheet template"
       participation:
         game_table_id: "Table"
         role: "Role"
@@ -46,6 +48,10 @@ en:
         username: "Username"
     errors:
       models:
+        game_table:
+          attributes:
+            sheet_template:
+              blank: "choose a sheet template to go on"
         participation:
           attributes:
             game_table_id:
@@ -188,6 +194,11 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+  sheet_templates:
+    new:
+      back: "Back"
+      coming_soon: "The template builder is coming soon: you will create your character, NPC and item sheets there, with their picture."
+      title: "Create a template"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."
@@ -199,8 +210,46 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    covers:
+      citadelle: "The citadel"
+      dragon: "The dragon"
+      gobelins: "The goblins"
+      sentinelle: "The sentinel"
+      village: "The village"
+      wolf: "The wolf"
+    choice_row:
+      next: "Next choices"
+      previous: "Previous choices"
+    create:
+      created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
       title: "Create a table"
+    creation_actions:
+      cancel: "Cancel"
+      continue: "Continue"
+    creation_steps:
+      coming_soon: "Coming soon"
+      label: "Steps of the creation"
+      step_number: "Step %{number}:"
+      steps:
+        details: "Details"
+        invitations: "Invitations"
+        maps: "Maps"
+        npcs: "NPCs and enemies"
+        summary: "Summary"
+    details:
+      edit:
+        subtitle: "Your table is a draft: change its details whenever you like."
+        title: "Create a table"
+      update:
+        saved: "Details saved."
+    details_form:
+      cover: "Cover"
+      cover_hint: "The picture of your table: it shows it in “My tables” and at the top of its page."
+      create_template: "Create a template"
+      description_hint: "Optional. A few lines to introduce the setting to your players."
+      sheet_template: "Sheet template"
+      sheet_template_hint: "The fields of the character, NPC and item sheets. You can change it while the table is a draft."
     empty_stage:
       text: "The tables you create or join will show up here. Start with the first card below."
       title: "No table yet"
@@ -226,8 +275,7 @@ en:
       coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
       title: "Game settings"
     new:
-      back_to_tables: "Back to my tables"
-      coming_soon: "Creating a table is coming soon. You will choose a name, a setting and invite your players."
+      subtitle: "Give it a name, a cover and a sheet template. You will invite your players next."
       title: "Create a table"
     show:
       back_to_tables: "Back to my tables"
@@ -235,3 +283,4 @@ en:
     stage:
       game_settings: "Game settings"
       join_game: "Join the game"
+      resume_creation: "Resume the creation"

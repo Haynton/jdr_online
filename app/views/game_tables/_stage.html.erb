@@ -14,7 +14,7 @@
   <% end %>
   <div class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
     <div class="flex flex-wrap gap-3">
-      <%= link_to t("game_tables.stage.join_game"), game_table_path(game_table), class: button_classes(:primary) %>
+      <%= link_to stage_main_action_label(participation), stage_main_action_path(participation), class: button_classes(:primary) %>
       <%# Only the game master sets up the game: the server refuses everyone else as well (GameTablesController#edit).
           On a phone, the gear alone (its name for screen readers and as a tooltip): both buttons stay on one line %>
       <% if participation.game_master? %>

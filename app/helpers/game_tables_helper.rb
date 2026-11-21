@@ -21,6 +21,20 @@ module GameTablesHelper
     t("game_tables.roles.#{participation.role}")
   end
 
+  # The main button of the chosen table: its game master finishes setting up a draft, everyone else joins the game
+  def stage_main_action_label(participation)
+    resuming_creation?(participation) ? t("game_tables.stage.resume_creation") : t("game_tables.stage.join_game")
+  end
+
+  def stage_main_action_path(participation)
+    game_table = participation.game_table
+    resuming_creation?(participation) ? edit_game_table_details_path(game_table) : game_table_path(game_table)
+  end
+
+  def resuming_creation?(participation)
+    participation.game_master? && participation.game_table.draft?
+  end
+
   def table_players_label(game_table)
     t("game_tables.players", count: game_table.players_count)
   end

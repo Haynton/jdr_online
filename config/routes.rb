@@ -5,7 +5,12 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
   root to: "pages#home"
-  resources :game_tables, only: %i[index new show edit]
+  resources :game_tables, only: %i[index new create show edit] do
+    # First step of the creation, to take up a draft again (GameTables::DetailsController)
+    resource :details, only: %i[edit update], module: :game_tables
+  end
+  # Temporary page until the template builder exists
+  resources :sheet_templates, only: :new
 
   # Settings: one address per section, so the section menu is made of plain links
   get "settings", to: "settings/sections#index", as: :settings
