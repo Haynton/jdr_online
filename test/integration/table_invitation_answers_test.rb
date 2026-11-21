@@ -28,6 +28,18 @@ class TableInvitationAnswersTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the card of an invitation has a gold badge at its top and a dashed outline" do
+    invite_player
+    sign_in @player
+    get game_tables_path
+
+    assert_select "#{cards_row_selector} > li:nth-child(2) a" do
+      assert_select "span[aria-hidden=true].bg-primary-soft", text: "Invitation"
+      assert_select "svg path.stroke-brass[stroke-dasharray]", count: 1
+    end
+    assert_select "#{cards_row_selector} > li:first-child path[stroke-dasharray]", count: 0
+  end
+
   test "an invitation to a draft is not shown yet" do
     @game_table.update!(status: GameTable::DRAFT_STATUS)
     invite_player

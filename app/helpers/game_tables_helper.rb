@@ -24,6 +24,16 @@ module GameTablesHelper
     t("game_tables.roles.#{participation.role}")
   end
 
+  # An invitation calls for an answer: a badge at the top of its card (game_tables/_ogive_card).
+  # Hidden from screen readers: the text of the card already says "Invitation"
+  def table_card_attention_badge(participation)
+    return unless participation.pending?
+
+    tag.span(class: "#{badge_classes(:invitation)} gap-1.5 shadow-md", aria: { hidden: true }) do
+      render("shared/icons/mail", css_class: "size-3.5") + t("game_tables.invitation.label")
+    end
+  end
+
   # Beside the role: the status of the table, or who sent the invitation
   def table_detail_label(participation)
     game_table = participation.game_table
