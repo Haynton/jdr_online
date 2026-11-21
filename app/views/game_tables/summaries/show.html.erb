@@ -1,0 +1,52 @@
+<%# Last step of the creation: the table large over its cover, as "My tables" will show it, then the other steps in
+    a grid, the invitation link among them (decision: the link only works once the table is ready, which this page
+    does). Its two buttons finish the creation: back to "My tables", or into the game.
+    No page title above the cover (decision: it kept the picture away from the band of the steps, which already
+    says "Summary"): the name of the table is the title of the page %>
+<%= creation_page(current_step: "summary", flush_top: true) do %>
+  <%# From edge to edge of the content, right under the band of the steps, like the cover of "My tables" %>
+  <section class="relative isolate -mx-4 flex min-h-80 flex-col justify-end overflow-hidden px-4 pt-24 pb-8 sm:-mx-8 sm:px-8"
+           aria-labelledby="summary-table-title">
+    <%= image_tag @game_table.cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover cover-fade" %>
+    <div class="absolute inset-0 -z-10 bg-linear-to-t from-page via-page/80 to-transparent md:bg-linear-to-r md:via-page/70"></div>
+
+    <div class="flex max-w-xl flex-col items-start gap-2">
+      <p class="text-xs font-semibold tracking-widest uppercase">
+        <span class="text-brass"><%= t("game_tables.roles.game_master") %></span>
+        <span class="text-muted">· <%= t("game_tables.statuses.draft") %></span>
+      </p>
+      <h1 id="summary-table-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
+        <%= @game_table.name %>
+      </h1>
+      <p class="text-[15px] text-ink"><%= summary_description(@game_table) %></p>
+      <p class="text-sm text-ink">
+        <%= t(".sheet_template") %> <span class="font-semibold"><%= summary_sheet_template_name(@game_table) %></span>
+      </p>
+      <%= link_to t(".change"), edit_game_table_details_path(@game_table), class: "#{button_classes(:secondary, size: :compact)} mt-2" %>
+    </div>
+  </section>
+
+  <%# A grid without cards (decision): each part under a fine line, the invitation two columns wide %>
+  <div class="mt-8 grid gap-x-8 gap-y-6 md:grid-cols-2 lg:grid-cols-4">
+    <section class="border-t border-line pt-5">
+      <h2 class="text-base font-semibold text-ink"><%= t("game_tables.creation_steps.steps.npcs") %></h2>
+      <p class="mt-2 text-sm text-muted"><%= t(".npcs_coming_soon") %></p>
+    </section>
+
+    <section class="border-t border-line pt-5">
+      <h2 class="text-base font-semibold text-ink"><%= t("game_tables.creation_steps.steps.maps") %></h2>
+      <p class="mt-2 text-sm text-muted"><%= t(".maps_coming_soon") %></p>
+    </section>
+
+    <%= render "game_tables/summaries/invitation", game_table: @game_table, player_invitation: @player_invitation %>
+  </div>
+
+  <%# Finishing does not force the game master into the game: the main button leads back to "My tables" %>
+  <%= form_with url: game_table_summary_path(@game_table), method: :patch do |form| %>
+    <div class="mt-8 flex flex-wrap justify-end gap-3">
+      <%= link_to t(".back"), edit_game_table_details_path(@game_table), class: button_classes(:secondary) %>
+      <%= form.button t(".finish_and_join"), name: "join_game", value: "1", class: button_classes(:secondary) %>
+      <%= form.button t(".finish"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+<% end %>

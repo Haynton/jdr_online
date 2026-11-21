@@ -1,10 +1,14 @@
 <%# A page of the creation of a table. Use the creation_page helper (game_table_creation_helper.rb).
     Across the whole width beside the navigation, like "My tables": the band of the steps on top, then the content,
-    whose rows of cards run from edge to edge %>
+    whose rows of cards run from edge to edge. flush_top: the content touches the band (a cover from edge to edge) %>
 <header class="border-b border-line bg-surface px-4 py-4 sm:px-8 md:py-5">
   <%= render "game_tables/creation_steps", current_step: current_step %>
 </header>
-<main class="px-4 pt-8 pb-12 sm:px-8">
-  <%= render "shared/flashes" %>
+<main class="<%= creation_main_classes(flush_top) %>">
+  <%# Rendered only when there is a message: an empty block would push the content (and a cover) down.
+      Each message brings its own top margin (mt-4) %>
+  <% if page_messages? %>
+    <div class="<%= creation_messages_classes(flush_top) %>"><%= render "shared/flashes" %></div>
+  <% end %>
   <%= content %>
 </main>

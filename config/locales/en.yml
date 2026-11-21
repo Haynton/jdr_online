@@ -28,6 +28,18 @@
 #       enabled: "ON"
 
 en:
+  # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
+  activemodel:
+    attributes:
+      player_invitation:
+        username: "Invite a player by their username"
+    errors:
+      models:
+        player_invitation:
+          attributes:
+            username:
+              already_at_table: "this player is already at the table, or already invited"
+              not_found: "no player has this username"
   activerecord:
     attributes:
       game_table:
@@ -97,6 +109,11 @@ en:
       minimum_password_length:
         one: "%{count} character minimum"
         other: "%{count} characters minimum"
+  invitations:
+    show:
+      back_to_tables: "Back to my tables"
+      coming_soon: "Joining a table is coming soon: you will create your character, then enter the game."
+      title: "Invitation to “%{name}”"
   layouts:
     settings:
       back_to_settings: "Settings"
@@ -233,7 +250,6 @@ en:
       step_number: "Step %{number}:"
       steps:
         details: "Details"
-        invitations: "Invitations"
         maps: "Maps"
         npcs: "NPCs and enemies"
         summary: "Summary"
@@ -255,6 +271,14 @@ en:
       title: "No table yet"
     index:
       title: "My tables"
+    invite_tokens:
+      update:
+        regenerated: "New link created: the old one no longer works."
+    player_invitations:
+      create:
+        invited: "Invitation sent to %{username}, waiting for their answer."
+      destroy:
+        removed: "Invitation of %{username} taken back."
     players:
       one: "1 player"
       other: "%{count} players"
@@ -271,6 +295,38 @@ en:
     statuses:
       draft: "Draft"
       in_progress: "In progress"
+    summaries:
+      invitation:
+        copied: "Link copied."
+        copy: "Copy the link"
+        copy_failed: "Copying failed: the link is selected, copy it with Ctrl+C (⌘+C on a Mac)."
+        email_body: "Hi,\n\nJoin my table “%{name}” on JDR Online: %{link}\n\nSee you soon!"
+        email_subject: "Invitation to my table “%{name}”"
+        hint: "Send this link to your players: they can follow it as soon as the creation of the table is over."
+        invite: "Invite"
+        invited_players: "Invited players"
+        link: "Invitation link"
+        regenerate: "Create a new link"
+        regenerate_confirm_button: "Replace the link"
+        regenerate_confirmation: "Create a new link? The old one will stop working."
+        remove: "Remove"
+        remove_player: "Remove %{username}"
+        send_by_email: "Send by email"
+        statuses:
+          accepted: "Player"
+          pending: "Pending"
+        title: "Invitation"
+      show:
+        back: "Back"
+        change: "Change"
+        finish: "Finish the creation"
+        finish_and_join: "Finish and join the game"
+        maps_coming_soon: "Coming soon: maps will arrive with the board."
+        no_description: "No description"
+        npcs_coming_soon: "Coming soon: NPCs and enemies will arrive with the character sheets."
+        sheet_template: "Sheet template:"
+      update:
+        finished: "Table ready: your players can join it."
     edit:
       coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
       title: "Game settings"

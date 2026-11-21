@@ -6,9 +6,19 @@ Rails.application.routes.draw do
   }
   root to: "pages#home"
   resources :game_tables, only: %i[index new create show edit] do
-    # First step of the creation, to take up a draft again (GameTables::DetailsController)
-    resource :details, only: %i[edit update], module: :game_tables
+    # The steps of the creation of a draft (app/controllers/game_tables/). The first one of a new table is
+    # GameTablesController#new; NPCs and maps come with their milestone
+    scope module: :game_tables do
+      resource :details, only: %i[edit update]
+      # The summary holds the invitation link, and a new link replaces it from there
+      resource :summary, only: %i[show update]
+      resource :invite_token, only: :update
+      # Invited by their username, from the summary (the id of destroy is the one of the participation)
+      resources :player_invitations, only: %i[create destroy]
+    end
   end
+  # The invitation link given to the players. Temporary page until joining a table exists
+  resources :invitations, only: :show, param: :token
   # Temporary page until the template builder exists
   resources :sheet_templates, only: :new
 

@@ -29,9 +29,26 @@ module GameTableCreationHelper
   # A page of the creation: the band of the steps across the whole width, then the page content.
   # The block is captured here, while the page is still the current template, so that its short translation
   # keys (t(".title")) are looked up for the page and not for the partial (same as auth_card)
-  def creation_page(current_step:, &)
+  # flush_top: no space above the content, which touches the band of the steps (a cover from edge to edge)
+  def creation_page(current_step:, flush_top: false, &)
     content = capture(&)
-    content_for(:full_width_page) { render "game_tables/creation_page", current_step: current_step, content: content }
+    content_for(:full_width_page) do
+      render "game_tables/creation_page", current_step: current_step, flush_top: flush_top, content: content
+    end
+  end
+
+  def creation_main_classes(flush_top)
+    flush_top ? "px-4 pb-12 sm:px-8" : "px-4 pt-8 pb-12 sm:px-8"
+  end
+
+  # A message pulled up by its own top margin (mt-4) under the usual space, kept apart from what follows
+  def creation_messages_classes(flush_top)
+    flush_top ? "mb-4" : "-mt-4 mb-6"
+  end
+
+  # The messages shared/_flashes shows, the one for screen readers included
+  def page_messages?
+    flash[:notice].present? || flash[:alert].present? || flash[:screen_reader_notice].present?
   end
 
   # The id of the form of a step: its submit button points to it (form=), wherever the button sits
@@ -53,7 +70,7 @@ module GameTableCreationHelper
     CREATE_TEMPLATE_CARD_CLASSES
   end
 
-  # Cancel then Continue, at the end of the form on the right: Continue sends the form by its id
+  # Cancel then Continue, at the end of the form of the first step on the right: Continue sends the form by its id
   def creation_actions(cancel_path:)
     cancel_link = link_to(t("game_tables.creation_actions.cancel"), cancel_path, class: button_classes(:secondary))
     continue_button = button_tag(t("game_tables.creation_actions.continue"),
@@ -108,6 +125,14 @@ module GameTableCreationHelper
 
   def cover_choice_label(cover_image)
     t("game_tables.covers.#{cover_image}")
+  end
+
+  # The page of each step of the creation of a draft: where "Resume the creation" and "Change" lead
+  def creation_step_path(game_table, step)
+    case step
+    when "details" then edit_game_table_details_path(game_table)
+    when "summary" then game_table_summary_path(game_table)
+    end
   end
 
   private

@@ -1,4 +1,16 @@
 fr:
+  # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
+  activemodel:
+    attributes:
+      player_invitation:
+        username: "Inviter un joueur par son pseudo"
+    errors:
+      models:
+        player_invitation:
+          attributes:
+            username:
+              already_at_table: "ce joueur est déjà à la table, ou déjà invité"
+              not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
       game_table:
@@ -68,6 +80,11 @@ fr:
       minimum_password_length:
         one: "%{count} caractère minimum"
         other: "%{count} caractères minimum"
+  invitations:
+    show:
+      back_to_tables: "Retour à mes tables"
+      coming_soon: "Rejoindre une table arrive bientôt : vous créerez votre personnage, puis vous entrerez dans la partie."
+      title: "Invitation à « %{name} »"
   layouts:
     settings:
       back_to_settings: "Paramètres"
@@ -204,7 +221,6 @@ fr:
       step_number: "Étape %{number} :"
       steps:
         details: "Informations"
-        invitations: "Invitations"
         maps: "Cartes"
         npcs: "PNJ et ennemis"
         summary: "Récapitulatif"
@@ -226,6 +242,14 @@ fr:
       title: "Aucune table pour l'instant"
     index:
       title: "Mes tables"
+    invite_tokens:
+      update:
+        regenerated: "Nouveau lien créé : l'ancien ne fonctionne plus."
+    player_invitations:
+      create:
+        invited: "Invitation envoyée à %{username}, en attente de sa réponse."
+      destroy:
+        removed: "Invitation de %{username} retirée."
     players:
       one: "1 joueur"
       other: "%{count} joueurs"
@@ -242,6 +266,38 @@ fr:
     statuses:
       draft: "Brouillon"
       in_progress: "En cours"
+    summaries:
+      invitation:
+        copied: "Lien copié."
+        copy: "Copier le lien"
+        copy_failed: "Copie impossible : le lien est sélectionné, copiez-le avec Ctrl+C (⌘+C sur Mac)."
+        email_body: "Bonjour,\n\nRejoins ma table « %{name} » sur JDR en ligne : %{link}\n\nÀ bientôt !"
+        email_subject: "Invitation à ma table « %{name} »"
+        hint: "Envoyez ce lien à vos joueurs : ils pourront le suivre dès que la création de la table sera terminée."
+        invite: "Inviter"
+        invited_players: "Joueurs invités"
+        link: "Lien d'invitation"
+        regenerate: "Créer un nouveau lien"
+        regenerate_confirm_button: "Remplacer le lien"
+        regenerate_confirmation: "Créer un nouveau lien ? L'ancien ne fonctionnera plus."
+        remove: "Retirer"
+        remove_player: "Retirer %{username}"
+        send_by_email: "Envoyer par e-mail"
+        statuses:
+          accepted: "Joueur"
+          pending: "En attente"
+        title: "Invitation"
+      show:
+        back: "Retour"
+        change: "Modifier"
+        finish: "Terminer la création"
+        finish_and_join: "Terminer et rejoindre la partie"
+        maps_coming_soon: "Bientôt : les cartes arriveront avec le plateau."
+        no_description: "Aucune description"
+        npcs_coming_soon: "Bientôt : les PNJ et ennemis arriveront avec les fiches de personnage."
+        sheet_template: "Modèle de fiche :"
+      update:
+        finished: "Table prête : vos joueurs peuvent la rejoindre."
     edit:
       coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
       title: "Paramètres de la partie"

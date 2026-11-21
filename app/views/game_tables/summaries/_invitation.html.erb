@@ -1,0 +1,61 @@
+<%# The invitation card of the summary: the link of the table, to copy (clipboard_controller.js, which says so in a
+    live region; without JavaScript, the field selects it all) or to send by email (the player's own mail app,
+    message written already). A new link disables the old one: asked first in the confirmation window.
+    Then the players invited by their username, pending until they accept %>
+<section class="border-t border-line pt-5 md:col-span-2" data-controller="clipboard"
+         data-clipboard-copied-text-value="<%= t(".copied") %>" data-clipboard-failed-text-value="<%= t(".copy_failed") %>"
+         aria-labelledby="invitation-title">
+  <h2 id="invitation-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
+  <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
+
+  <label for="invitation-link" class="<%= field_label_classes %> mt-4"><%= t(".link") %></label>
+  <div class="flex gap-2">
+    <input id="invitation-link" type="text" readonly value="<%= invitation_url(game_table.invite_token) %>"
+           class="<%= read_only_field_classes %>" data-clipboard-target="source" data-action="focus->clipboard#selectAll">
+    <%# On a phone, the icon alone (its name for screen readers and as a tooltip): the link keeps room to show %>
+    <button type="button" hidden class="<%= button_classes(:secondary) %> shrink-0" title="<%= t(".copy") %>"
+            data-clipboard-target="button" data-action="clipboard#copy">
+      <%= render "shared/icons/link" %>
+      <span class="max-sm:sr-only"><%= t(".copy") %></span>
+    </button>
+  </div>
+  <%# Plain text color: the message also says when copying failed (the browser may refuse the clipboard) %>
+  <p class="mt-2 min-h-5 text-sm font-medium text-ink" role="status" data-clipboard-target="status"></p>
+
+  <div class="mt-2 flex flex-wrap gap-2">
+    <%= mail_to "", t(".send_by_email"), class: button_classes(:secondary, size: :compact),
+                subject: t(".email_subject", name: game_table.name),
+                body: t(".email_body", name: game_table.name, link: invitation_url(game_table.invite_token)) %>
+    <%= button_to t(".regenerate"), game_table_invite_token_path(game_table), method: :patch,
+                  class: button_classes(:secondary, size: :compact),
+                  form: { data: { turbo_confirm: t(".regenerate_confirmation"),
+                                  confirm_button: t(".regenerate_confirm_button") } } %>
+  </div>
+
+  <%# Or straight to a player of the app, by their username: they accept or refuse the invitation (pending until then).
+      The label sits above the field and the button, so that the button lines up with the field, error or not %>
+  <%= simple_form_for player_invitation, url: game_table_player_invitations_path(game_table), html: { class: "mt-6" } do |form| %>
+    <%# No required mark: a form of a single field %>
+    <%= form.label :username, required: false, class: field_label_classes %>
+    <div class="flex items-start gap-2">
+      <%= form.input :username, label: false, required: false, wrapper_html: { class: "mb-0 min-w-0 flex-1" },
+                                input_html: { autocomplete: "off" } %>
+      <%= form.button :submit, t(".invite"), class: "#{button_classes(:secondary)} shrink-0" %>
+    </div>
+  <% end %>
+
+  <% if game_table.player_participations.any? %>
+    <ul class="mt-4 divide-y divide-line" aria-label="<%= t(".invited_players") %>">
+      <% game_table.player_participations.each do |participation| %>
+        <li class="flex items-center gap-3 py-2.5">
+          <%= render "shared/avatar", user: participation.user %>
+          <span class="min-w-0 truncate text-sm font-medium text-ink"><%= participation.user.username %></span>
+          <span class="<%= invitation_status_badge_classes(participation) %>"><%= invitation_status_label(participation) %></span>
+          <%= button_to t(".remove"), game_table_player_invitation_path(game_table, participation), method: :delete,
+                        class: button_classes(:secondary, size: :compact), form: { class: "ml-auto" },
+                        aria: { label: t(".remove_player", username: participation.user.username) } %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

@@ -6,7 +6,8 @@ class GameTablesController < ApplicationController
   # "My tables": the page a user lands on after signing in. One card per table they run or play at,
   # newest first. The chosen table (?table=<id>) is shown large at the top, the newest one by default
   def index
-    @participations = current_user.participations
+    # A pending invitation does not show the table yet: the player accepts it first
+    @participations = current_user.participations.accepted
                                   .includes(game_table: { participations: :user })
                                   .order(created_at: :desc)
     @chosen_participation = chosen_participation
@@ -17,14 +18,15 @@ class GameTablesController < ApplicationController
     @game_table = GameTable.new
   end
 
-  # The new table is a draft: "My tables" shows it with "Resume the creation" until its last step.
-  # Its message is for screen readers only: on screen, the table itself shows large, marked as a draft
+  # The new table is a draft until the last step of its creation: "My tables" shows it with "Resume the creation".
+  # Its message is for screen readers only: on screen, the next step shows
   def create
     @game_table = GameTableCreator.new(user: current_user, attributes: game_table_details_params,
                                        sheet_template: chosen_sheet_template).call
     return render :new, status: :unprocessable_content unless @game_table.persisted?
 
-    redirect_to game_tables_path(table: @game_table.id), flash: { screen_reader_notice: t(".created") }
+    @game_table.reach_creation_step(GameTable.next_creation_step("details"))
+    redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".created") }
   end
 
   # Temporary page of a table. Only its participants reach it: anyone else gets a 404

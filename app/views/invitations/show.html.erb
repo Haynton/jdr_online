@@ -1,0 +1,7 @@
+<%# Temporary page of an invitation link, until joining a table exists (card #18 of the board) %>
+<%= page_header(title: t(".title", name: @game_table.name)) %>
+
+<section class="max-w-xl rounded-xl border border-line bg-surface px-6 py-5">
+  <p class="text-ink"><%= t(".coming_soon") %></p>
+  <%= link_to t(".back_to_tables"), game_tables_path, class: "mt-3 inline-block text-sm font-medium text-link hover:underline" %>
+</section>
