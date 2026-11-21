@@ -1,0 +1,169 @@
+{
+  "name": "Fantasy héroïque",
+  "locale": "fr",
+  "character_fields": {
+    "fields": [
+      { "key": "class", "label": "Classe", "type": "choice", "section": "Identité", "visible_to_others": true,
+        "options": ["Barbare", "Barde", "Clerc", "Druide", "Ensorceleur", "Guerrier", "Magicien", "Moine", "Occultiste", "Paladin", "Rôdeur", "Roublard"] },
+      { "key": "species", "label": "Espèce", "type": "choice", "section": "Identité", "visible_to_others": true,
+        "options": ["Demi-elfe", "Demi-orque", "Drakéide", "Elfe", "Gnome", "Halfelin", "Humain", "Nain", "Tieffelin"] },
+      { "key": "background", "label": "Historique", "type": "text", "section": "Identité" },
+      { "key": "experience", "label": "Expérience", "abbreviation": "XP", "type": "experience", "section": "Identité" },
+
+      { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "wisdom", "label": "Sagesse", "abbreviation": "SAG", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques", "visible_to_others": true },
+
+      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "on_rest": "reset_to_max", "section": "Combat", "visible_to_others": true },
+      { "key": "temp_hp", "label": "Points de vie temporaires", "abbreviation": "PV temp.", "type": "resource", "absorbs_damage_for": "hp", "section": "Combat" },
+      { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "type": "number", "min": 0, "max": 30, "section": "Combat", "visible_to_others": true },
+      { "key": "speed", "label": "Vitesse (m)", "type": "number", "min": 0, "max": 36, "section": "Combat" },
+      { "key": "proficiency_bonus", "label": "Bonus de maîtrise", "type": "number", "min": 2, "max": 6, "section": "Combat",
+        "help": "+2 aux niveaux 1 à 4, +3 aux niveaux 5 à 8, +4 aux niveaux 9 à 12, +5 aux niveaux 13 à 16, +6 aux niveaux 17 à 20." },
+      { "key": "inspiration", "label": "Inspiration", "type": "boolean", "section": "Combat" },
+
+      { "key": "strength_save", "label": "Sauvegarde de Force", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde",
+        "help": "Bonus de Force, plus le bonus de maîtrise si votre classe maîtrise cette sauvegarde." },
+      { "key": "dexterity_save", "label": "Sauvegarde de Dextérité", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde" },
+      { "key": "constitution_save", "label": "Sauvegarde de Constitution", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde" },
+      { "key": "intelligence_save", "label": "Sauvegarde d'Intelligence", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde" },
+      { "key": "wisdom_save", "label": "Sauvegarde de Sagesse", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde" },
+      { "key": "charisma_save", "label": "Sauvegarde de Charisme", "type": "number", "min": -5, "max": 20, "section": "Jets de sauvegarde" },
+
+      { "key": "acrobatics", "label": "Acrobaties (DEX)", "type": "number", "min": -5, "max": 20, "section": "Compétences",
+        "help": "Bonus de la caractéristique entre parenthèses, plus le bonus de maîtrise si vous maîtrisez la compétence." },
+      { "key": "arcana", "label": "Arcanes (INT)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "athletics", "label": "Athlétisme (FOR)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "stealth", "label": "Discrétion (DEX)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "animal_handling", "label": "Dressage (SAG)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "sleight_of_hand", "label": "Escamotage (DEX)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "history", "label": "Histoire (INT)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "intimidation", "label": "Intimidation (CHA)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "investigation", "label": "Investigation (INT)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "medicine", "label": "Médecine (SAG)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "nature", "label": "Nature (INT)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "perception", "label": "Perception (SAG)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "insight", "label": "Perspicacité (SAG)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "persuasion", "label": "Persuasion (CHA)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "religion", "label": "Religion (INT)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "performance", "label": "Représentation (CHA)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "survival", "label": "Survie (SAG)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+      { "key": "deception", "label": "Tromperie (CHA)", "type": "number", "min": -5, "max": 20, "section": "Compétences" },
+
+      { "key": "features", "label": "Capacités et sorts", "type": "text", "section": "Notes",
+        "help": "Capacités de classe et d'espèce, dons, sorts connus : à noter librement." }
+    ]
+  },
+  "npc_fields": {
+    "fields": [
+      { "key": "challenge", "label": "Facteur de puissance", "abbreviation": "FP", "type": "text", "section": "Identité" },
+      { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "type": "number", "min": 0, "max": 30, "section": "Combat" },
+      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "Combat" },
+      { "key": "speed", "label": "Vitesse (m)", "type": "number", "min": 0, "max": 36, "section": "Combat" },
+      { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "wisdom", "label": "Sagesse", "abbreviation": "SAG", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Caractéristiques" },
+      { "key": "attacks", "label": "Attaques", "type": "attacks", "section": "Combat" },
+      { "key": "traits", "label": "Capacités", "type": "text", "section": "Notes" }
+    ]
+  },
+  "item_fields": {
+    "fields": [
+      { "key": "category", "label": "Catégorie", "type": "choice", "options": ["Arme", "Armure", "Potion", "Équipement", "Trésor"] },
+      { "key": "damage", "label": "Dégâts", "type": "text" },
+      { "key": "armor_class", "label": "Classe d'armure", "type": "text" },
+      { "key": "effect", "label": "Effet", "type": "text" },
+      { "key": "weight", "label": "Poids (kg)", "type": "number", "min": 0, "max": 1000 },
+      { "key": "value", "label": "Valeur (po)", "type": "number", "min": 0, "max": 100000 }
+    ]
+  },
+  "rest_rules": [
+    { "key": "long_rest", "label": "Repos long" }
+  ],
+  "level_thresholds": [
+    { "level": 1, "experience": 0 }, { "level": 2, "experience": 300 }, { "level": 3, "experience": 900 },
+    { "level": 4, "experience": 2700 }, { "level": 5, "experience": 6500 }, { "level": 6, "experience": 14000 },
+    { "level": 7, "experience": 23000 }, { "level": 8, "experience": 34000 }, { "level": 9, "experience": 48000 },
+    { "level": 10, "experience": 64000 }, { "level": 11, "experience": 85000 }, { "level": 12, "experience": 100000 },
+    { "level": 13, "experience": 120000 }, { "level": 14, "experience": 140000 }, { "level": 15, "experience": 165000 },
+    { "level": 16, "experience": 195000 }, { "level": 17, "experience": 225000 }, { "level": 18, "experience": 265000 },
+    { "level": 19, "experience": 305000 }, { "level": 20, "experience": 355000 }
+  ],
+  "preset_characters": [
+    {
+      "name": "Gobelin", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 15 }, "hp": { "current": 7, "max": 7 }, "speed": { "value": 9 },
+        "strength": { "value": 8, "modifier": -1 }, "dexterity": { "value": 14, "modifier": 2 },
+        "constitution": { "value": 10, "modifier": 0 }, "intelligence": { "value": 10, "modifier": 0 },
+        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 8, "modifier": -1 },
+        "attacks": [
+          { "name": "Cimeterre", "to_hit": 4, "damage": "1d6+2 tranchants", "range": "Corps à corps, 1,50 m" },
+          { "name": "Arc court", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Distance, 24/96 m" }
+        ],
+        "traits": "Fuite agile : peut se désengager ou se cacher en action bonus à chacun de ses tours."
+      }
+    },
+    {
+      "name": "Loup", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 12 },
+        "strength": { "value": 12, "modifier": 1 }, "dexterity": { "value": 15, "modifier": 2 },
+        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 3, "modifier": -4 },
+        "wisdom": { "value": 12, "modifier": 1 }, "charisma": { "value": 6, "modifier": -2 },
+        "attacks": [
+          { "name": "Morsure", "to_hit": 4, "damage": "2d4+2 perforants", "range": "Corps à corps, 1,50 m" }
+        ],
+        "traits": "Ouïe et odorat aiguisés. Tactique de meute : avantage à l'attaque quand un allié se tient près de la cible. Une créature mordue réussit une sauvegarde de Force DD 11 ou tombe à terre."
+      }
+    },
+    {
+      "name": "Squelette", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 13, "max": 13 }, "speed": { "value": 9 },
+        "strength": { "value": 10, "modifier": 0 }, "dexterity": { "value": 14, "modifier": 2 },
+        "constitution": { "value": 15, "modifier": 2 }, "intelligence": { "value": 6, "modifier": -2 },
+        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 5, "modifier": -3 },
+        "attacks": [
+          { "name": "Épée courte", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Corps à corps, 1,50 m" },
+          { "name": "Arc court", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Distance, 24/96 m" }
+        ],
+        "traits": "Vulnérable aux dégâts contondants. Insensible au poison et à l'épuisement."
+      }
+    },
+    {
+      "name": "Bandit", "kind": "npc",
+      "sheet": {
+        "challenge": "1/8", "armor_class": { "value": 12 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 9 },
+        "strength": { "value": 11, "modifier": 0 }, "dexterity": { "value": 12, "modifier": 1 },
+        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 10, "modifier": 0 },
+        "wisdom": { "value": 10, "modifier": 0 }, "charisma": { "value": 10, "modifier": 0 },
+        "attacks": [
+          { "name": "Cimeterre", "to_hit": 3, "damage": "1d6+1 tranchants", "range": "Corps à corps, 1,50 m" },
+          { "name": "Arbalète légère", "to_hit": 3, "damage": "1d8+1 perforants", "range": "Distance, 24/96 m" }
+        ],
+        "traits": "Un brigand de grand chemin, prêt à négocier quand le combat tourne mal."
+      }
+    }
+  ],
+  "preset_items": [
+    { "name": "Potion de soins", "description": "Un liquide rouge qui scintille quand on l'agite.",
+      "properties": { "category": "Potion", "effect": "Rend 2d4+2 points de vie.", "weight": 0.25, "value": 50 } },
+    { "name": "Épée longue", "description": "Une lame droite à double tranchant.",
+      "properties": { "category": "Arme", "damage": "1d8 tranchants (1d10 à deux mains)", "weight": 1.5, "value": 15 } },
+    { "name": "Arc court", "description": "Un arc léger, maniable à cheval comme à pied.",
+      "properties": { "category": "Arme", "damage": "1d6 perforants, portée 24/96 m", "weight": 1, "value": 25 } },
+    { "name": "Armure de cuir", "description": "Un plastron et des épaulières de cuir bouilli.",
+      "properties": { "category": "Armure", "armor_class": "11 + modificateur de Dextérité", "weight": 5, "value": 10 } },
+    { "name": "Corde de chanvre (15 m)", "description": "Solide, mais lourde à porter.",
+      "properties": { "category": "Équipement", "weight": 5, "value": 1 } },
+    { "name": "Torche", "description": "Éclaire vivement sur 6 mètres pendant une heure.",
+      "properties": { "category": "Équipement", "weight": 0.5, "value": 0.01 } }
+  ]
+}

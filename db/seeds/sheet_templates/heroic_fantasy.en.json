@@ -1,0 +1,169 @@
+{
+  "name": "Heroic fantasy",
+  "locale": "en",
+  "character_fields": {
+    "fields": [
+      { "key": "class", "label": "Class", "type": "choice", "section": "Identity", "visible_to_others": true,
+        "options": ["Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"] },
+      { "key": "species", "label": "Species", "type": "choice", "section": "Identity", "visible_to_others": true,
+        "options": ["Dragonborn", "Dwarf", "Elf", "Gnome", "Half-elf", "Half-orc", "Halfling", "Human", "Tiefling"] },
+      { "key": "background", "label": "Background", "type": "text", "section": "Identity" },
+      { "key": "experience", "label": "Experience", "abbreviation": "XP", "type": "experience", "section": "Identity" },
+
+      { "key": "strength", "label": "Strength", "abbreviation": "STR", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+      { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+      { "key": "wisdom", "label": "Wisdom", "abbreviation": "WIS", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+      { "key": "charisma", "label": "Charisma", "abbreviation": "CHA", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities", "visible_to_others": true },
+
+      { "key": "hp", "label": "Hit points", "abbreviation": "HP", "type": "resource", "receives_damage": true, "on_rest": "reset_to_max", "section": "Combat", "visible_to_others": true },
+      { "key": "temp_hp", "label": "Temporary hit points", "abbreviation": "Temp HP", "type": "resource", "absorbs_damage_for": "hp", "section": "Combat" },
+      { "key": "armor_class", "label": "Armor class", "abbreviation": "AC", "type": "number", "min": 0, "max": 30, "section": "Combat", "visible_to_others": true },
+      { "key": "speed", "label": "Speed (ft)", "type": "number", "min": 0, "max": 120, "section": "Combat" },
+      { "key": "proficiency_bonus", "label": "Proficiency bonus", "type": "number", "min": 2, "max": 6, "section": "Combat",
+        "help": "+2 at levels 1 to 4, +3 at levels 5 to 8, +4 at levels 9 to 12, +5 at levels 13 to 16, +6 at levels 17 to 20." },
+      { "key": "inspiration", "label": "Inspiration", "type": "boolean", "section": "Combat" },
+
+      { "key": "strength_save", "label": "Strength saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws",
+        "help": "Strength bonus, plus your proficiency bonus if your class is proficient in this saving throw." },
+      { "key": "dexterity_save", "label": "Dexterity saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws" },
+      { "key": "constitution_save", "label": "Constitution saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws" },
+      { "key": "intelligence_save", "label": "Intelligence saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws" },
+      { "key": "wisdom_save", "label": "Wisdom saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws" },
+      { "key": "charisma_save", "label": "Charisma saving throw", "type": "number", "min": -5, "max": 20, "section": "Saving throws" },
+
+      { "key": "acrobatics", "label": "Acrobatics (DEX)", "type": "number", "min": -5, "max": 20, "section": "Skills",
+        "help": "Bonus of the ability in brackets, plus your proficiency bonus if you are proficient in the skill." },
+      { "key": "animal_handling", "label": "Animal Handling (WIS)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "arcana", "label": "Arcana (INT)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "athletics", "label": "Athletics (STR)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "deception", "label": "Deception (CHA)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "history", "label": "History (INT)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "insight", "label": "Insight (WIS)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "intimidation", "label": "Intimidation (CHA)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "investigation", "label": "Investigation (INT)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "medicine", "label": "Medicine (WIS)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "nature", "label": "Nature (INT)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "perception", "label": "Perception (WIS)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "performance", "label": "Performance (CHA)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "persuasion", "label": "Persuasion (CHA)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "religion", "label": "Religion (INT)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "sleight_of_hand", "label": "Sleight of Hand (DEX)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "stealth", "label": "Stealth (DEX)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+      { "key": "survival", "label": "Survival (WIS)", "type": "number", "min": -5, "max": 20, "section": "Skills" },
+
+      { "key": "features", "label": "Features and spells", "type": "text", "section": "Notes",
+        "help": "Class and species features, feats, known spells: write them down freely." }
+    ]
+  },
+  "npc_fields": {
+    "fields": [
+      { "key": "challenge", "label": "Challenge rating", "abbreviation": "CR", "type": "text", "section": "Identity" },
+      { "key": "armor_class", "label": "Armor class", "abbreviation": "AC", "type": "number", "min": 0, "max": 30, "section": "Combat" },
+      { "key": "hp", "label": "Hit points", "abbreviation": "HP", "type": "resource", "receives_damage": true, "section": "Combat" },
+      { "key": "speed", "label": "Speed (ft)", "type": "number", "min": 0, "max": 120, "section": "Combat" },
+      { "key": "strength", "label": "Strength", "abbreviation": "STR", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "wisdom", "label": "Wisdom", "abbreviation": "WIS", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "charisma", "label": "Charisma", "abbreviation": "CHA", "type": "number", "min": 1, "max": 30, "has_modifier": true, "section": "Abilities" },
+      { "key": "attacks", "label": "Attacks", "type": "attacks", "section": "Combat" },
+      { "key": "traits", "label": "Traits", "type": "text", "section": "Notes" }
+    ]
+  },
+  "item_fields": {
+    "fields": [
+      { "key": "category", "label": "Category", "type": "choice", "options": ["Weapon", "Armor", "Potion", "Gear", "Treasure"] },
+      { "key": "damage", "label": "Damage", "type": "text" },
+      { "key": "armor_class", "label": "Armor class", "type": "text" },
+      { "key": "effect", "label": "Effect", "type": "text" },
+      { "key": "weight", "label": "Weight (lb)", "type": "number", "min": 0, "max": 2000 },
+      { "key": "value", "label": "Value (gp)", "type": "number", "min": 0, "max": 100000 }
+    ]
+  },
+  "rest_rules": [
+    { "key": "long_rest", "label": "Long rest" }
+  ],
+  "level_thresholds": [
+    { "level": 1, "experience": 0 }, { "level": 2, "experience": 300 }, { "level": 3, "experience": 900 },
+    { "level": 4, "experience": 2700 }, { "level": 5, "experience": 6500 }, { "level": 6, "experience": 14000 },
+    { "level": 7, "experience": 23000 }, { "level": 8, "experience": 34000 }, { "level": 9, "experience": 48000 },
+    { "level": 10, "experience": 64000 }, { "level": 11, "experience": 85000 }, { "level": 12, "experience": 100000 },
+    { "level": 13, "experience": 120000 }, { "level": 14, "experience": 140000 }, { "level": 15, "experience": 165000 },
+    { "level": 16, "experience": 195000 }, { "level": 17, "experience": 225000 }, { "level": 18, "experience": 265000 },
+    { "level": 19, "experience": 305000 }, { "level": 20, "experience": 355000 }
+  ],
+  "preset_characters": [
+    {
+      "name": "Goblin", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 15 }, "hp": { "current": 7, "max": 7 }, "speed": { "value": 30 },
+        "strength": { "value": 8, "modifier": -1 }, "dexterity": { "value": 14, "modifier": 2 },
+        "constitution": { "value": 10, "modifier": 0 }, "intelligence": { "value": 10, "modifier": 0 },
+        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 8, "modifier": -1 },
+        "attacks": [
+          { "name": "Scimitar", "to_hit": 4, "damage": "1d6+2 slashing", "range": "Melee, 5 ft" },
+          { "name": "Shortbow", "to_hit": 4, "damage": "1d6+2 piercing", "range": "Ranged, 80/320 ft" }
+        ],
+        "traits": "Nimble Escape: can disengage or hide as a bonus action on each of its turns."
+      }
+    },
+    {
+      "name": "Wolf", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 40 },
+        "strength": { "value": 12, "modifier": 1 }, "dexterity": { "value": 15, "modifier": 2 },
+        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 3, "modifier": -4 },
+        "wisdom": { "value": 12, "modifier": 1 }, "charisma": { "value": 6, "modifier": -2 },
+        "attacks": [
+          { "name": "Bite", "to_hit": 4, "damage": "2d4+2 piercing", "range": "Melee, 5 ft" }
+        ],
+        "traits": "Keen hearing and smell. Pack tactics: advantage on attacks when an ally stands near the target. A bitten creature succeeds on a DC 11 Strength saving throw or falls prone."
+      }
+    },
+    {
+      "name": "Skeleton", "kind": "monster",
+      "sheet": {
+        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 13, "max": 13 }, "speed": { "value": 30 },
+        "strength": { "value": 10, "modifier": 0 }, "dexterity": { "value": 14, "modifier": 2 },
+        "constitution": { "value": 15, "modifier": 2 }, "intelligence": { "value": 6, "modifier": -2 },
+        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 5, "modifier": -3 },
+        "attacks": [
+          { "name": "Shortsword", "to_hit": 4, "damage": "1d6+2 piercing", "range": "Melee, 5 ft" },
+          { "name": "Shortbow", "to_hit": 4, "damage": "1d6+2 piercing", "range": "Ranged, 80/320 ft" }
+        ],
+        "traits": "Vulnerable to bludgeoning damage. Immune to poison and exhaustion."
+      }
+    },
+    {
+      "name": "Bandit", "kind": "npc",
+      "sheet": {
+        "challenge": "1/8", "armor_class": { "value": 12 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 30 },
+        "strength": { "value": 11, "modifier": 0 }, "dexterity": { "value": 12, "modifier": 1 },
+        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 10, "modifier": 0 },
+        "wisdom": { "value": 10, "modifier": 0 }, "charisma": { "value": 10, "modifier": 0 },
+        "attacks": [
+          { "name": "Scimitar", "to_hit": 3, "damage": "1d6+1 slashing", "range": "Melee, 5 ft" },
+          { "name": "Light crossbow", "to_hit": 3, "damage": "1d8+1 piercing", "range": "Ranged, 80/320 ft" }
+        ],
+        "traits": "A highway robber, ready to bargain when the fight turns sour."
+      }
+    }
+  ],
+  "preset_items": [
+    { "name": "Potion of healing", "description": "A red liquid that glimmers when shaken.",
+      "properties": { "category": "Potion", "effect": "Restores 2d4+2 hit points.", "weight": 0.5, "value": 50 } },
+    { "name": "Longsword", "description": "A straight, double-edged blade.",
+      "properties": { "category": "Weapon", "damage": "1d8 slashing (1d10 with two hands)", "weight": 3, "value": 15 } },
+    { "name": "Shortbow", "description": "A light bow, handy on horseback or on foot.",
+      "properties": { "category": "Weapon", "damage": "1d6 piercing, range 80/320 ft", "weight": 2, "value": 25 } },
+    { "name": "Leather armor", "description": "A breastplate and shoulder guards of boiled leather.",
+      "properties": { "category": "Armor", "armor_class": "11 + Dexterity modifier", "weight": 10, "value": 10 } },
+    { "name": "Hempen rope (50 ft)", "description": "Strong, but heavy to carry.",
+      "properties": { "category": "Gear", "weight": 10, "value": 1 } },
+    { "name": "Torch", "description": "Sheds bright light in a 20-foot radius for one hour.",
+      "properties": { "category": "Gear", "weight": 1, "value": 0.01 } }
+  ]
+}

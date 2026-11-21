@@ -8,6 +8,8 @@ class GameTable < ApplicationRecord
   # (decision: the exact list of statuses comes with the creation form)
   DRAFT_STATUS = "draft".freeze
 
+  # The template the table was made from, for information only: the table plays with template_snapshot
+  belongs_to :sheet_template, optional: true
   has_many :participations, dependent: :destroy
   has_many :users, through: :participations
 
