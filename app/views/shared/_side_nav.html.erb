@@ -34,7 +34,10 @@
 
   <%# md:mt-auto: from here on, pushed to the foot of the bar %>
   <div class="md:mt-auto md:flex md:flex-col">
-    <%= side_nav_link_to t(".my_tables"), game_tables_path, icon: "scroll_text" %>
+    <%# The invitations waiting for an answer show on "My tables", where the player answers them %>
+    <%= side_nav_link_with_count_to t(".my_tables"), game_tables_path, icon: "scroll_text",
+                                    count: pending_invitations_count,
+                                    count_label: t(".pending_invitations", count: pending_invitations_count) %>
   </div>
 
   <%= render "shared/account_nav" %>

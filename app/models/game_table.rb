@@ -89,6 +89,11 @@ class GameTable < ApplicationRecord
     player_participations.count(&:accepted?)
   end
 
+  # Read in Ruby, like the players: who sent the invitations of the table
+  def game_master
+    participations.detect(&:game_master?)&.user
+  end
+
   # Every invited player, pending or accepted, in the order they were invited (summary of the creation)
   def player_participations
     participations.select(&:player?).sort_by(&:created_at)

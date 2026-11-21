@@ -163,6 +163,12 @@ game_tables.last(2).each do |game_table|
   Participation.create!(user: users[0], game_table: game_table, role: "player")
 end
 
+# Luara has finished setting up one of her tables and invited Othna, who has not answered yet:
+# "My tables" of Othna shows the invitation (an invitation to a draft would wait)
+invited_table = game_tables[5]
+invited_table.finish_creation!
+Participation.create!(user: users[0], game_table: invited_table, role: "player", status: "pending")
+
 
 # ==========================================
 # Seeds completed

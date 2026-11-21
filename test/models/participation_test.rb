@@ -52,6 +52,28 @@ class ParticipationTest < ActiveSupport::TestCase
     assert_equal [@game_table], @player.game_tables.to_a
   end
 
+  test "my tables shows the accepted tables and the invitations to a ready table" do
+    accepted = @game_table.participations.create!(user: @player)
+    ready_table = GameTable.create!(name: "L'Ombre du Dragon", status: GameTable::READY_STATUS)
+    invitation = ready_table.participations.create!(user: @player, status: :pending)
+
+    assert_equal [accepted, invitation].sort_by(&:id), @player.participations.shown_in_my_tables.sort_by(&:id)
+  end
+
+  test "an invitation to a draft waits until the table is ready" do
+    @game_table.participations.create!(user: @player, status: :pending)
+
+    assert_empty @player.participations.shown_in_my_tables
+    assert_empty @player.participations.invitations_to_ready_tables
+  end
+
+  test "my tables never shows the invitations of another user" do
+    ready_table = GameTable.create!(name: "L'Ombre du Dragon", status: GameTable::READY_STATUS)
+    ready_table.participations.create!(user: @game_master, status: :pending)
+
+    assert_empty @player.participations.shown_in_my_tables
+  end
+
   private
 
   def create_user(username)

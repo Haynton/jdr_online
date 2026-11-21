@@ -4,12 +4,13 @@ class GameTablesController < ApplicationController
   before_action :set_available_sheet_templates, only: %i[new create]
 
   # "My tables": the page a user lands on after signing in. One card per table they run or play at,
-  # newest first. The chosen table (?table=<id>) is shown large at the top, the newest one by default
+  # newest first. The chosen table (?table=<id>) is shown large at the top, the newest one by default.
+  # The invitations come first: the newest one stays at the top until the player answers it
   def index
-    # A pending invitation does not show the table yet: the player accepts it first
-    @participations = current_user.participations.accepted
-                                  .includes(game_table: { participations: :user })
-                                  .order(created_at: :desc)
+    participations = current_user.participations.shown_in_my_tables
+                                 .preload(game_table: { participations: :user })
+                                 .order(created_at: :desc)
+    @participations = participations.partition(&:pending?).flatten
     @chosen_participation = chosen_participation
   end
 
