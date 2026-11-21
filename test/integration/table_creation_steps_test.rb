@@ -16,7 +16,8 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 4
-    assert_select "ol[aria-label] > li[aria-current=step]", text: /Récapitulatif/
+    assert_select "ol[aria-label] > li[aria-current=step]", text: /Invitation/
+    assert_select "main h2", text: "Votre table est prête"
     # The name of the table is the title of the page: no other title keeps the cover away from the band of the steps
     assert_select "h1#summary-table-title", text: "Les Marches du Nord"
     assert_select "main h1", count: 1
@@ -24,6 +25,48 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", game_table_summary_path(@game_table) do
       assert_select "button[name=join_game]", text: "Terminer et rejoindre la partie"
       assert_select "button:not([name=join_game])", text: "Terminer la création"
+    end
+  end
+
+  test "a long description can be cut, its whole text stays in the page for screen readers and without JavaScript" do
+    get game_table_summary_path(@game_table)
+
+    assert_select "[data-controller=read-more]" do
+      assert_select "p#summary-description[data-read-more-target=text]:not([data-clamped])"
+      assert_select "button[hidden][aria-controls=summary-description][aria-expanded=false]", text: "Voir plus"
+    end
+  end
+
+  test "the steps reached lead back to their page from the band, never the current one nor a later milestone" do
+    get game_table_summary_path(@game_table)
+
+    assert_select "ol[aria-label] a[href=?]", edit_game_table_details_path(@game_table), text: /Informations\s*Modifier/
+    assert_select "ol[aria-label] li[aria-current=step] a", count: 0
+    assert_select "ol[aria-label] a", count: 1
+
+    get edit_game_table_details_path(@game_table)
+
+    assert_select "ol[aria-label] a[href=?]", game_table_summary_path(@game_table), text: /Invitation\s*Ouvrir/
+  end
+
+  test "a step never reached stays closed in the band" do
+    @game_table.update!(creation_step: 1)
+
+    get edit_game_table_details_path(@game_table)
+
+    assert_select "ol[aria-label] a", count: 0
+  end
+
+  test "the participants show the game master first, then the invited players" do
+    invited_player = User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
+    @game_table.participations.create!(user: invited_player, role: :player, status: :pending)
+
+    get game_table_summary_path(@game_table)
+
+    assert_select "ul[aria-labelledby=participants-title] > li", count: 2 do |participants|
+      assert_match(/player\s*MJ/, participants.first.text)
+      assert_select participants.first, "form", count: 0
+      assert_match(/Luara\s*En attente/, participants.last.text)
     end
   end
 
@@ -45,7 +88,7 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to game_table_summary_path(@game_table)
     follow_redirect!
-    assert_select "ul[aria-label=?] li", "Joueurs invités", text: /Luara\s*En attente/
+    assert_select "ul[aria-labelledby=participants-title] li", text: /Luara\s*En attente/
   end
 
   test "usernames are suggested while typing: those beginning with the text, never someone already at the table" do

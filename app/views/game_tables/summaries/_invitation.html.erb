@@ -1,8 +1,8 @@
 <%# The invitation card of the summary: the link of the table, to copy (clipboard_controller.js, which says so in a
     live region; without JavaScript, the field selects it all) or to send by email (the player's own mail app,
     message written already). A new link disables the old one: asked first in the confirmation window.
-    Then the players invited by their username, pending until they accept %>
-<section class="border-t border-line pt-5 md:col-span-2" data-controller="clipboard"
+    Then the form that invites a player by their username (the list of players: summaries/_participants) %>
+<section class="min-w-0 border-t border-line pt-5" data-controller="clipboard"
          data-clipboard-copied-text-value="<%= t(".copied") %>" data-clipboard-failed-text-value="<%= t(".copy_failed") %>"
          aria-labelledby="invitation-title">
   <h2 id="invitation-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
@@ -45,20 +45,5 @@
       <%= form.button :submit, t(".invite"), class: "#{button_classes(:secondary)} shrink-0" %>
     </div>
     <datalist id="player-suggestions" data-username-suggestions-target="list"></datalist>
-  <% end %>
-
-  <% if game_table.player_participations.any? %>
-    <ul class="mt-4 divide-y divide-line" aria-label="<%= t(".invited_players") %>">
-      <% game_table.player_participations.each do |participation| %>
-        <li class="flex items-center gap-3 py-2.5">
-          <%= render "shared/avatar", user: participation.user %>
-          <span class="min-w-0 truncate text-sm font-medium text-ink"><%= participation.user.username %></span>
-          <span class="<%= invitation_status_badge_classes(participation) %>"><%= invitation_status_label(participation) %></span>
-          <%= button_to t(".remove"), game_table_player_invitation_path(game_table, participation), method: :delete,
-                        class: button_classes(:secondary, size: :compact), form: { class: "ml-auto" },
-                        aria: { label: t(".remove_player", username: participation.user.username) } %>
-        </li>
-      <% end %>
-    </ul>
   <% end %>
 </section>
