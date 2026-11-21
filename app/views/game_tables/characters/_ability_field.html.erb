@@ -1,0 +1,33 @@
+<%# An ability in its tile, everything inside (decisions): its name at the top, its modifier large in the middle
+    (+2, what is used in the game, kept up to date while the player types: character_sheet_controller.js), and at
+    the bottom its score between a "−" and a "+" (number_stepper_controller.js: they show that the value changes,
+    and are shown by the controller; without JavaScript, the score is typed). Tried before: a shield, with the score
+    in a circle on its point; a circle between two buttons looked odd %>
+<% error = sheet_field_error(character, field) %>
+<%# As wide as its "−", score and "+" (w-fit): the tile does not stretch to its column. The modifier has room above
+    and under it (my-4) %>
+<div class="flex w-fit flex-col items-center rounded-xl border border-line bg-surface px-2 pt-3 pb-2">
+  <%= label_tag sheet_field_id(field), field["label"],
+                class: "w-0 min-w-full truncate text-center text-[11px] font-semibold tracking-wider text-muted uppercase",
+                title: field["label"] %>
+  <p class="my-4 text-3xl leading-none font-bold text-ink tabular-nums">
+    <span class="sr-only"><%= t("game_tables.characters.new.modifier") %></span>
+    <output data-character-sheet-target="modifier" data-ability="<%= field["key"] %>"><%= format_bonus(modifier) %></output>
+  </p>
+  <div class="flex items-center gap-1" data-controller="number-stepper">
+    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t("game_tables.characters.new.decrease", ability: field["label"]) %>"
+            data-number-stepper-target="button" data-action="number-stepper#decrease">
+      <%= render "shared/icons/minus" %>
+    </button>
+    <%= sheet_ability_input(character, field) %>
+    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t("game_tables.characters.new.increase", ability: field["label"]) %>"
+            data-number-stepper-target="button" data-action="number-stepper#increase">
+      <%= render "shared/icons/plus" %>
+    </button>
+  </div>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %> text-center"><%= error %></p>
+  <% end %>
+</div>

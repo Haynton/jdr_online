@@ -1,0 +1,8 @@
+<%# One section of the character sheet: its title over a line, then its fields laid out by their types
+    (sheet_section_layout): ability tiles, rows of bonuses, or a flow of fields at their own widths.
+    The legend floats, so that it sits in the section and not in the border of the fieldset (see the choice rows) %>
+<fieldset class="mt-8 min-w-0 border-t border-line pt-6">
+  <legend class="float-left mb-4 w-full text-lg font-semibold tracking-tight text-ink"><%= section %></legend>
+  <%= render "game_tables/characters/section_#{sheet_section_layout(fields)}",
+             character: character, fields: fields, all_fields: all_fields, computed: computed %>
+</fieldset>

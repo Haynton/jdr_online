@@ -1,0 +1,30 @@
+<%# The character of a player, made before joining the game: its name, then the fields of the template of the table,
+    section after section, laid out by type like a sheet of a game (CharacterSheetsHelper). Across the whole width
+    beside the navigation. The values worked out from the others (modifiers, level, bonuses) follow what the player
+    types (character_sheet_controller.js), and the server works them out the same way (@computed_sheet_values) %>
+<% content_for :full_width_page do %>
+  <main class="px-4 py-10 sm:px-8">
+    <%= render "shared/flashes" %>
+    <%= page_header(title: t(".title"), subtitle: t(".subtitle", name: @game_table.name)) %>
+
+    <%= simple_form_for @character, url: game_table_character_path(@game_table), method: :post,
+                                    data: { controller: "character-sheet",
+                                            action: "input->character-sheet#recompute change->character-sheet#recompute",
+                                            character_sheet_level_thresholds_value: @game_table.level_thresholds.to_json } do |f| %>
+      <%= form_error_notification(f) %>
+      <div class="max-w-sm">
+        <%= f.input :name, autofocus: true, input_html: { autocomplete: "off" } %>
+      </div>
+
+      <% sheet_sections(@character.sheet_fields).each do |section, fields| %>
+        <%= render "game_tables/characters/section", section: section, fields: fields, character: @character,
+                                                    all_fields: @character.sheet_fields, computed: @computed_sheet_values %>
+      <% end %>
+
+      <div class="mt-8 flex flex-wrap justify-end gap-3 border-t border-line pt-6">
+        <%= link_to t(".later"), game_tables_path(table: @game_table.id), class: button_classes(:secondary) %>
+        <%= f.button :submit, t(".submit"), class: button_classes(:primary) %>
+      </div>
+    <% end %>
+  </main>
+<% end %>
