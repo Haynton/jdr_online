@@ -11,7 +11,21 @@
 # Delete existing records in dependency order
 Participation.destroy_all
 GameTable.destroy_all
+SheetTemplate.destroy_all
 User.destroy_all
+
+
+# ==========================================
+# Sheet templates
+# ==========================================
+
+# One JSON file per template and per language, read as UTF-8 for their accents.
+# Sources and licenses: db/seeds/sheet_templates/LICENSES.md
+Rails.root.glob("db/seeds/sheet_templates/*.json").sort.each do |template_file|
+  SheetTemplate.create!(JSON.parse(template_file.read(encoding: "UTF-8")))
+end
+
+heroic_fantasy = SheetTemplate.find_by!(locale: "fr", name: "Fantasy héroïque")
 
 
 # ==========================================
@@ -112,6 +126,12 @@ game_tables = GameTable.create!([
 ])
 
 
+# Every table plays with its own copy of the heroic fantasy template
+game_tables.each do |game_table|
+  game_table.update!(sheet_template: heroic_fantasy, template_snapshot: heroic_fantasy.snapshot)
+end
+
+
 # ==========================================
 # Participations
 # ==========================================
@@ -149,6 +169,7 @@ end
 # ==========================================
 
 puts "Seeds completed:"
+puts "- #{SheetTemplate.count} sheet templates created"
 puts "- #{User.count} users created"
 puts "- #{GameTable.count} game tables created"
 puts "- #{Participation.count} participations created"

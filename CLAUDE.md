@@ -423,7 +423,18 @@ Fait dans `style/p1-visitor-pages` :
 - Thème sombre : fonds unis en `#191919`, `page-deep` pour l'accueil et « Mes tables » (voir Couleurs et thème)
 - Textes : « Adresse e-mail » (au lieu de « Email », aussi dans Paramètres › Compte), « Rester connecté(e) » / « Stay logged in » (au lieu de « Se souvenir de moi ? »), espace insécable avant le « : » de l'aide du pseudo
 
+Fait dans `feature/p1-sheet-templates` (avancé du palier 4, pour pouvoir choisir un modèle à la création d'une table) :
+
+- Table `sheet_templates` (modèle `SheetTemplate`) : `name` (60 caractères), `owner_id` (vide pour un modèle fourni par l'application), `parent_id` (modèle d'origine), `locale`, colonnes JSONB `character_fields`, `npc_fields`, `item_fields`, `rest_rules`, `level_thresholds`, `preset_characters`, `preset_items`. Format des champs et des valeurs : document « Base de données » (Obsidian et Notion). `game_tables.sheet_template_id` ajouté : le modèle d'origine, pour information, vidé si le modèle est supprimé (la table garde sa copie `template_snapshot`)
+- `SheetTemplate#snapshot` : ce qu'une table copie (`SNAPSHOT_ATTRIBUTES`, sans `preset_characters`, qui deviendront des lignes `characters`). `SheetTemplate::FIELD_TYPES` : liste fermée des types (`number`, `resource`, `boolean`, `text`, `choice`, `experience`, `attacks`)
+- **Un modèle fourni par langue** (décision) : `locale` obligatoire pour un modèle fourni, vide pour un modèle de MJ (écrit dans ses mots). `SheetTemplate.available_to(user, locale:)` : les modèles fournis dans la langue de la page et ceux du MJ, jamais ceux d'un autre MJ
+- Deux modèles fournis, en français et en anglais, un fichier JSON par modèle et par langue dans `db/seeds/sheet_templates/`, chargés par `db/seeds.rb` : « Fantasy héroïque » (d'après le SRD 5.1, CC BY 4.0) et « Horreur cosmique » (d'après le moteur Basic Roleplaying de Chaosium, licence ORC). Sources, mentions obligatoires et choix faits pour respecter les licences : `db/seeds/sheet_templates/LICENSES.md`. **Aucun nom de jeu existant** (ce sont des marques). Les tables du seed prennent la fantasy et sa copie
+- Les fichiers sont vérifiés par `test/models/predefined_sheet_templates_test.rb` : modèle valide, mêmes clés dans chaque langue (les compétences sont rangées dans l'ordre alphabétique de chaque langue, d'où une comparaison sans ordre), clés uniques, types connus, valeurs des monstres et des objets dans la forme de leur type. Un nouveau modèle fourni : ses deux fichiers, et ces tests le vérifient
+- Pas encore de vérification d'un modèle saisi par un MJ : elle viendra avec l'éditeur de modèles
+
 À savoir :
+
+- Lire un fichier qui contient des accents en précisant l'encodage (`read(encoding: "UTF-8")`) : sans ça, une commande lancée dans un terminal sans langue réglée lit en US-ASCII et plante sur le premier « é »
 
 - Changer le MJ d'une table : passer l'ancien MJ en `player` **avant** de passer le nouveau en `game_master`, dans une même transaction. Dans l'autre ordre, l'index unique partiel (un seul MJ par table) refuse l'enregistrement
 
