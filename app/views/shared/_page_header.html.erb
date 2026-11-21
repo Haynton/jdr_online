@@ -1,5 +1,6 @@
 <%# Use the page_header helper (app/helpers/page_headers_helper.rb), not this partial directly.
-    The buttons go under the title on a phone, on its right from 640 px. 32 px under it, before the content %>
+    The buttons go under the title on a phone, on its right from 640 px. 32 px under it, before the content.
+    The buttons never shrink: beside a long subtitle, their text went onto two lines %>
 <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
   <div>
     <h1 class="text-[32px] leading-tight font-extrabold tracking-tight text-ink"><%= title %></h1>
@@ -8,6 +9,6 @@
     <% end %>
   </div>
   <% if actions %>
-    <div class="flex flex-wrap gap-3"><%= actions %></div>
+    <div class="flex shrink-0 flex-wrap gap-3"><%= actions %></div>
   <% end %>
 </header>
