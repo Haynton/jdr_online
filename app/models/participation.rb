@@ -9,6 +9,13 @@ class Participation < ApplicationRecord
     player: "player"
   }
 
+  # A player invited by their username is pending until they accept: the table is not theirs yet
+  # ("My tables", players counted). The creator of a table and the players who joined are accepted
+  enum :status, {
+    accepted: "accepted",
+    pending: "pending"
+  }
+
   validates :role, presence: true
   validates :user_id, uniqueness: { scope: :game_table_id, message: :already_at_table }
   validates :game_table_id,

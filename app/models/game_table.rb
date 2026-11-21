@@ -7,10 +7,17 @@ class GameTable < ApplicationRecord
   # Default of the status column: the table is not fully set up yet. Any other status counts as in progress
   # (decision: the exact list of statuses comes with the creation form)
   DRAFT_STATUS = "draft".freeze
+  # Set by the last step of the creation: players may join the table through its invitation link
+  READY_STATUS = "ready".freeze
   # The steps of the creation, in order: creation_step holds the number of the step reached (1 for "details").
-  CREATION_STEPS = %w[details npcs maps invitations summary].freeze
+  # The invitation link sits in the summary (decision): it only works once the table is ready, which the summary does
+  CREATION_STEPS = %w[details npcs maps summary].freeze
   # They come with their milestone (P4, P3): shown as coming soon until then, and skipped by the creation
   LATER_CREATION_STEPS = %w[npcs maps].freeze
+  AVAILABLE_CREATION_STEPS = (CREATION_STEPS - LATER_CREATION_STEPS).freeze
+
+  # The secret part of the invitation link, given to each new table. Regenerating it disables the old link
+  has_secure_token :invite_token
 
   # The template the table was made from, for information only: the table plays with template_snapshot
   belongs_to :sheet_template, optional: true
@@ -40,12 +47,40 @@ class GameTable < ApplicationRecord
     status == DRAFT_STATUS
   end
 
-  # Read in Ruby: "My tables" loads the participations of every table at once, without a query per card
+  # The step that comes after this one, skipping the steps of a later milestone
+  def self.next_creation_step(step)
+    AVAILABLE_CREATION_STEPS[AVAILABLE_CREATION_STEPS.index(step) + 1]
+  end
+
+  # Where "Resume the creation" leads: the step reached, or the last one before it that exists already
+  def resume_creation_step
+    reached_steps = CREATION_STEPS.first(creation_step.to_i.clamp(1, CREATION_STEPS.size))
+    (reached_steps & AVAILABLE_CREATION_STEPS).last
+  end
+
+  # Never goes back: taking up an earlier step again keeps the progress made
+  def reach_creation_step(step)
+    step_number = CREATION_STEPS.index(step) + 1
+    update!(creation_step: step_number) if step_number > creation_step.to_i
+  end
+
+  # The last step: the table is ready, players may join it
+  def finish_creation!
+    update!(status: READY_STATUS, creation_step: CREATION_STEPS.size)
+  end
+
+  # Read in Ruby: "My tables" loads the participations of every table at once, without a query per card.
+  # Only the players who accepted: a pending invitation does not count yet
   def players
-    participations.select(&:player?).map(&:user)
+    player_participations.select(&:accepted?).map(&:user)
   end
 
   def players_count
-    participations.count(&:player?)
+    player_participations.count(&:accepted?)
+  end
+
+  # Every invited player, pending or accepted, in the order they were invited (summary of the creation)
+  def player_participations
+    participations.select(&:player?).sort_by(&:created_at)
   end
 end
