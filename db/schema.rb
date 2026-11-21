@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_20_135913) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_21_103145) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,6 +27,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_135913) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "cover_image", default: "sentinelle", null: false
+    t.bigint "sheet_template_id"
+    t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
   end
 
   create_table "participations", force: :cascade do |t|
@@ -40,6 +42,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_135913) do
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
     t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
+  end
+
+  create_table "sheet_templates", force: :cascade do |t|
+    t.string "name", limit: 60, null: false
+    t.bigint "owner_id"
+    t.bigint "parent_id"
+    t.jsonb "character_fields", default: {}, null: false
+    t.jsonb "npc_fields", default: {}, null: false
+    t.jsonb "item_fields", default: {}, null: false
+    t.jsonb "rest_rules", default: [], null: false
+    t.jsonb "level_thresholds", default: [], null: false
+    t.jsonb "preset_characters", default: [], null: false
+    t.jsonb "preset_items", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "locale"
+    t.index ["owner_id"], name: "index_sheet_templates_on_owner_id"
+    t.index ["parent_id"], name: "index_sheet_templates_on_parent_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -57,6 +77,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_135913) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
   add_foreign_key "participations", "game_tables"
   add_foreign_key "participations", "users"
+  add_foreign_key "sheet_templates", "sheet_templates", column: "parent_id"
+  add_foreign_key "sheet_templates", "users", column: "owner_id"
 end
