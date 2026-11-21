@@ -254,7 +254,7 @@ fr:
       title: "Mes tables"
     invite_tokens:
       update:
-        regenerated: "Nouveau lien créé : l'ancien ne fonctionne plus."
+        regenerated: "Nouveau lien généré : l'ancien ne fonctionne plus."
     player_invitations:
       create:
         invited: "Invitation envoyée à %{username}, en attente de sa réponse."
@@ -287,9 +287,9 @@ fr:
         invite: "Inviter"
         invited_players: "Joueurs invités"
         link: "Lien d'invitation"
-        regenerate: "Créer un nouveau lien"
+        regenerate: "Générer un lien"
         regenerate_confirm_button: "Remplacer le lien"
-        regenerate_confirmation: "Créer un nouveau lien ? L'ancien ne fonctionnera plus."
+        regenerate_confirmation: "Générer un nouveau lien ? L'ancien ne fonctionnera plus."
         remove: "Retirer"
         remove_player: "Retirer %{username}"
         send_by_email: "Envoyer par e-mail"
