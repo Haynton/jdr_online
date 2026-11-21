@@ -37,6 +37,8 @@ en:
         game_table_id: "Table"
         role: "Role"
         user_id: "Player"
+      sheet_template:
+        name: "Name"
       user:
         email: "Email"
         locale: "Language"

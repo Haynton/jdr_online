@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_many :participations, dependent: :destroy
   has_many :game_tables, through: :participations
+  has_many :sheet_templates, foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
 
   USERNAME_LENGTH = 3..20
   # Letters (accents included), digits, dash and underscore: no space, so it reads the same everywhere

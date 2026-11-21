@@ -8,6 +8,8 @@ fr:
         game_table_id: "Table"
         role: "Rôle"
         user_id: "Joueur"
+      sheet_template:
+        name: "Nom"
       user:
         email: "Adresse e-mail"
         locale: "Langue"
