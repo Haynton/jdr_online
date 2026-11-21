@@ -17,8 +17,19 @@ module GameTablesHelper
     GameTable.cover_image_path(GameTable::DEFAULT_COVER_IMAGE)
   end
 
+  # An invitation not answered yet reads "Invitation" where a table shows the role of the user
   def table_role_label(participation)
+    return t("game_tables.invitation.label") if participation.pending?
+
     t("game_tables.roles.#{participation.role}")
+  end
+
+  # Beside the role: the status of the table, or who sent the invitation
+  def table_detail_label(participation)
+    game_table = participation.game_table
+    return t("game_tables.invitation.from", username: game_table.game_master&.username) if participation.pending?
+
+    table_status_label(game_table)
   end
 
   # The main button of the chosen table: its game master finishes setting up a draft, everyone else joins the game

@@ -17,6 +17,8 @@ Rails.application.routes.draw do
       resources :player_invitations, only: %i[create destroy]
       # Usernames suggested while typing the one to invite (JSON)
       resources :player_suggestions, only: :index
+      # The invited player answers from "My tables": accept (update) or decline (destroy)
+      resource :invitation_answer, only: %i[update destroy]
     end
   end
   # The invitation link given to the players. Temporary page until joining a table exists

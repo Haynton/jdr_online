@@ -254,6 +254,17 @@ fr:
       title: "Aucune table pour l'instant"
     index:
       title: "Mes tables"
+    invitation:
+      from: "de %{username}"
+      label: "Invitation"
+    invitation_answers:
+      accept: "Accepter"
+      decline: "Refuser"
+      decline_confirmation: "Refuser l'invitation à « %{name} » ?"
+      destroy:
+        declined: "Invitation à « %{name} » refusée."
+      update:
+        accepted: "Invitation acceptée : « %{name} » est dans vos tables."
     invite_tokens:
       update:
         regenerated: "Nouveau lien généré : l'ancien ne fonctionne plus."

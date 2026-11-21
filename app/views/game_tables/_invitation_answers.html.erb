@@ -1,0 +1,10 @@
+<%# The invited player answers the game master (GameTables::InvitationAnswersController). Accepting makes the table
+    one of theirs; declining removes the invitation, after a question: a stray click would lose it %>
+<% game_table = participation.game_table %>
+<div class="flex flex-wrap gap-3">
+  <%= button_to t(".accept"), game_table_invitation_answer_path(game_table), method: :patch, class: button_classes(:primary) %>
+  <%= button_to t(".decline"), game_table_invitation_answer_path(game_table), method: :delete,
+                class: button_classes(:secondary),
+                form: { data: { turbo_confirm: t(".decline_confirmation", name: game_table.name),
+                                confirm_button: t(".decline") } } %>
+</div>

@@ -6,7 +6,7 @@
   <%# ink at 75 % rather than muted: muted falls under 4.5 on the card veil of the light theme %>
   <span class="text-[11px] font-semibold tracking-widest uppercase">
     <span class="text-brass"><%= table_role_label(participation) %></span>
-    <span class="text-ink/75">· <%= table_status_label(game_table) %></span>
+    <span class="text-ink/75">· <%= table_detail_label(participation) %></span>
   </span>
   <span class="text-lg leading-tight font-semibold text-balance"><%= game_table.name %></span>
   <span class="text-[13px] text-ink/75"><%= table_players_label(game_table) %></span>

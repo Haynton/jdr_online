@@ -3,7 +3,7 @@
 <%= render layout: "game_tables/cover", locals: { cover_image_path: game_table.cover_image_path, title_id: "chosen-table-title" } do %>
   <p class="text-xs font-semibold tracking-widest uppercase">
     <span class="text-brass"><%= table_role_label(participation) %></span>
-    <span class="text-muted">· <%= table_status_label(game_table) %></span>
+    <span class="text-muted">· <%= table_detail_label(participation) %></span>
   </p>
   <h1 id="chosen-table-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
     <%= game_table.name %>
@@ -13,17 +13,12 @@
     <p class="line-clamp-2 max-w-md text-[15px] text-ink md:line-clamp-3 max-md:[@media(max-height:700px)]:hidden"><%= game_table.description %></p>
   <% end %>
   <div class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
-    <div class="flex flex-wrap gap-3">
-      <%= link_to stage_main_action_label(participation), stage_main_action_path(participation), class: button_classes(:primary) %>
-      <%# Only the game master sets up the game: the server refuses everyone else as well (GameTablesController#edit).
-          On a phone, the gear alone (its name for screen readers and as a tooltip): both buttons stay on one line %>
-      <% if participation.game_master? %>
-        <%= link_to edit_game_table_path(game_table), class: button_classes(:secondary), title: t("game_tables.stage.game_settings") do %>
-          <%= render "shared/icons/settings" %>
-          <span class="max-md:sr-only"><%= t("game_tables.stage.game_settings") %></span>
-        <% end %>
-      <% end %>
-    </div>
+    <%# An invitation not answered yet: accept or decline it, instead of joining the game %>
+    <% if participation.pending? %>
+      <%= render "game_tables/invitation_answers", participation: participation %>
+    <% else %>
+      <%= render "game_tables/table_actions", participation: participation %>
+    <% end %>
     <%= render "game_tables/players", game_table: game_table %>
   </div>
 <% end %>

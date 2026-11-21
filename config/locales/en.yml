@@ -283,6 +283,17 @@ en:
       title: "No table yet"
     index:
       title: "My tables"
+    invitation:
+      from: "from %{username}"
+      label: "Invitation"
+    invitation_answers:
+      accept: "Accept"
+      decline: "Decline"
+      decline_confirmation: "Decline the invitation to “%{name}”?"
+      destroy:
+        declined: "Invitation to “%{name}” declined."
+      update:
+        accepted: "Invitation accepted: “%{name}” is in your tables."
     invite_tokens:
       update:
         regenerated: "New link generated: the old one no longer works."
