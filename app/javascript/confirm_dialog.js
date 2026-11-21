@@ -8,6 +8,8 @@ export function confirmWithDialog(question, form, submitter) {
   prepare(dialog, question, settingsFrom(form, submitter))
   dialog.returnValue = ""
   dialog.showModal()
+  // showModal focuses the first button, Cancel, with a focus ring at once: the window takes the focus itself instead
+  dialog.focus()
 
   return new Promise((resolve) => {
     dialog.addEventListener("close", () => resolve(dialog.returnValue === "confirm"), { once: true })
