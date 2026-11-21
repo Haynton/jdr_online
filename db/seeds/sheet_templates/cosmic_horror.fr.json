@@ -1,0 +1,152 @@
+{
+  "name": "Horreur cosmique",
+  "locale": "fr",
+  "character_fields": {
+    "fields": [
+      { "key": "occupation", "label": "Profession", "type": "text", "section": "Identité", "visible_to_others": true },
+      { "key": "age", "label": "Âge", "type": "number", "min": 15, "max": 90, "section": "Identité", "visible_to_others": true },
+
+      { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "size", "label": "Taille", "abbreviation": "TAI", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "power", "label": "Pouvoir", "abbreviation": "POU", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+      { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "number", "min": 1, "max": 25, "section": "Caractéristiques", "visible_to_others": true },
+
+      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "État", "visible_to_others": true,
+        "help": "Au départ : (Constitution + Taille) / 2, arrondi au supérieur." },
+      { "key": "power_points", "label": "Points de pouvoir", "abbreviation": "PP", "type": "resource", "on_rest": "reset_to_max", "section": "État",
+        "help": "Au départ : égaux au Pouvoir." },
+      { "key": "sanity", "label": "Santé mentale", "abbreviation": "SM", "type": "resource", "section": "État",
+        "help": "Baisse face à l'horreur, au choix du MJ. Elle ne remonte pas avec le repos : seulement en fin d'enquête, si le MJ l'accorde." },
+      { "key": "terrified", "label": "Terrifié", "type": "boolean", "on_rest": "turn_off", "section": "État",
+        "help": "Le personnage cède à la peur : il fuit, se cache ou reste figé, au choix du MJ." },
+      { "key": "armor", "label": "Protection", "type": "number", "min": 0, "max": 10, "section": "État",
+        "help": "Points de dégâts retirés de chaque blessure (manteau épais, gilet pare-balles...)." },
+
+      { "key": "spot", "label": "Repérer", "type": "number", "min": 0, "max": 100, "section": "Compétences",
+        "help": "Chance de réussite en pourcentage : le jet réussit si le d100 fait ce score ou moins." },
+      { "key": "listen", "label": "Écouter", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "research", "label": "Recherche", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "insight", "label": "Psychologie", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "persuade", "label": "Persuasion", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "fast_talk", "label": "Baratin", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "stealth", "label": "Discrétion", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "dodge", "label": "Esquive", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "brawl", "label": "Bagarre", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "firearms", "label": "Armes à feu", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "first_aid", "label": "Premiers soins", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "medicine", "label": "Médecine", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "occult", "label": "Occultisme", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "history", "label": "Histoire", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "climb", "label": "Grimper", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "drive", "label": "Conduite", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "locksmith", "label": "Serrurerie", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+      { "key": "swim", "label": "Nager", "type": "number", "min": 0, "max": 100, "section": "Compétences" },
+
+      { "key": "backstory", "label": "Passé et liens", "type": "text", "section": "Notes" },
+      { "key": "scars", "label": "Séquelles", "type": "text", "section": "Notes",
+        "help": "Ce que l'horreur a laissé : phobies, cauchemars, manies. À noter avec le MJ." }
+    ]
+  },
+  "npc_fields": {
+    "fields": [
+      { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
+      { "key": "size", "label": "Taille", "abbreviation": "TAI", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
+      { "key": "power", "label": "Pouvoir", "abbreviation": "POU", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
+      { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
+      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "État" },
+      { "key": "armor", "label": "Protection", "type": "number", "min": 0, "max": 20, "section": "État" },
+      { "key": "dread", "label": "Effroi", "type": "text", "section": "État",
+        "help": "Santé mentale que perd celui qui voit la créature, à fixer par le MJ." },
+      { "key": "attacks", "label": "Attaques", "type": "attacks", "section": "Combat",
+        "help": "Le toucher est une chance en pourcentage." },
+      { "key": "traits", "label": "Particularités", "type": "text", "section": "Notes" }
+    ]
+  },
+  "item_fields": {
+    "fields": [
+      { "key": "category", "label": "Catégorie", "type": "choice", "options": ["Arme", "Soin", "Outil", "Document", "Artefact"] },
+      { "key": "damage", "label": "Dégâts", "type": "text" },
+      { "key": "effect", "label": "Effet", "type": "text" },
+      { "key": "uses", "label": "Utilisations", "type": "number", "min": 0, "max": 100 }
+    ]
+  },
+  "rest_rules": [
+    { "key": "rest", "label": "Nuit de repos" }
+  ],
+  "level_thresholds": [],
+  "preset_characters": [
+    {
+      "name": "Goule", "kind": "monster",
+      "sheet": {
+        "strength": { "value": 16 }, "constitution": { "value": 13 }, "size": { "value": 13 },
+        "power": { "value": 10 }, "dexterity": { "value": 13 },
+        "hp": { "current": 13, "max": 13 }, "armor": { "value": 0 },
+        "dread": "Une petite perte au premier regard, davantage si on la voit se nourrir.",
+        "attacks": [
+          { "name": "Griffes", "to_hit": 40, "damage": "1d6", "range": "Corps à corps" },
+          { "name": "Morsure", "to_hit": 30, "damage": "1d6, puis tient sa proie", "range": "Corps à corps" }
+        ],
+        "traits": "Créature voûtée à face de chien qui hante les cimetières et les tunnels sous la ville. Sent la terre humide ; se déplace sans bruit dans l'obscurité."
+      }
+    },
+    {
+      "name": "Profond", "kind": "monster",
+      "sheet": {
+        "strength": { "value": 15 }, "constitution": { "value": 12 }, "size": { "value": 15 },
+        "power": { "value": 11 }, "dexterity": { "value": 10 },
+        "hp": { "current": 14, "max": 14 }, "armor": { "value": 1 },
+        "dread": "Une perte modérée : sa démarche rappelle trop celle d'un homme.",
+        "attacks": [
+          { "name": "Griffes palmées", "to_hit": 35, "damage": "1d6+1", "range": "Corps à corps" },
+          { "name": "Trident", "to_hit": 30, "damage": "1d8", "range": "Corps à corps" }
+        ],
+        "traits": "Être des profondeurs aux écailles grises, venu d'une cité engloutie au large de la côte. Respire sous l'eau ; peau épaisse."
+      }
+    },
+    {
+      "name": "Mi-Go", "kind": "monster",
+      "sheet": {
+        "strength": { "value": 10 }, "constitution": { "value": 10 }, "size": { "value": 10 },
+        "power": { "value": 13 }, "dexterity": { "value": 14 },
+        "hp": { "current": 10, "max": 10 }, "armor": { "value": 0 },
+        "dread": "Une perte modérée, plus forte si on découvre ce qu'elle transporte.",
+        "attacks": [
+          { "name": "Pinces", "to_hit": 30, "damage": "1d6", "range": "Corps à corps" }
+        ],
+        "traits": "Créature fongique ailée venue d'au-delà des étoiles, qui mène d'étranges travaux dans les collines isolées. Vole lentement ; les photographies ne montrent qu'une tache floue."
+      }
+    },
+    {
+      "name": "Cultiste", "kind": "npc",
+      "sheet": {
+        "strength": { "value": 11 }, "constitution": { "value": 11 }, "size": { "value": 12 },
+        "power": { "value": 12 }, "dexterity": { "value": 11 },
+        "hp": { "current": 12, "max": 12 }, "armor": { "value": 0 },
+        "dread": "Aucune.",
+        "attacks": [
+          { "name": "Couteau rituel", "to_hit": 35, "damage": "1d4+1", "range": "Corps à corps" },
+          { "name": "Revolver", "to_hit": 25, "damage": "1d10", "range": "Distance, 15 m" }
+        ],
+        "traits": "Fidèle d'un culte secret. Se croit protégé par ce qu'il vénère, et peut connaître une incantation."
+      }
+    }
+  ],
+  "preset_items": [
+    { "name": "Lampe torche", "description": "Une lampe électrique à piles, au faisceau tremblant.",
+      "properties": { "category": "Outil", "effect": "Éclaire droit devant sur une dizaine de mètres.", "uses": 3 } },
+    { "name": "Revolver", "description": "Un revolver à six coups, lourd dans la poche.",
+      "properties": { "category": "Arme", "damage": "1d10, portée 15 m", "uses": 6 } },
+    { "name": "Fusil de chasse", "description": "Un fusil à deux coups, efficace de près.",
+      "properties": { "category": "Arme", "damage": "2d6 de près, 1d6 au-delà de 10 m", "uses": 2 } },
+    { "name": "Trousse de secours", "description": "Bandages, désinfectant et quelques ampoules.",
+      "properties": { "category": "Soin", "effect": "Un jet de Premiers soins réussi rend 1d3 points de vie.", "uses": 5 } },
+    { "name": "Journal d'un disparu", "description": "Un carnet taché d'eau, rempli d'une écriture de plus en plus nerveuse.",
+      "properties": { "category": "Document", "effect": "Le lire en entier donne un indice, contre un peu de santé mentale." } },
+    { "name": "Idole de pierre verte", "description": "Une statuette grasse au toucher, qui semble plus lourde qu'elle ne devrait.",
+      "properties": { "category": "Artefact", "effect": "Au choix du MJ." } }
+  ]
+}
