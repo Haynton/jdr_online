@@ -56,7 +56,7 @@ class SimpleFormFieldsTest < ActionView::TestCase
   test "a check box has its label text next to it, linked to the box" do
     I18n.with_locale(:en) { render_form { |form| form.input(:remember_me, as: :boolean) } }
 
-    assert_select "div.flex > input#user_remember_me + label.text-ink[for=user_remember_me]", text: "Remember me"
+    assert_select "div.flex > input#user_remember_me + label.text-ink[for=user_remember_me]", text: "Stay logged in"
   end
 
   test "no class left over from Bootstrap" do

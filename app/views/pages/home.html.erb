@@ -1,2 +1,28 @@
-<h1><%= t(".title") %></h1>
-<p><%= t(".description") %></p>
+<%# The home page of the visitors: one section over the cover, as tall as the screen under the top bar (4rem).
+    The text sits at the bottom on a phone (the landscape shows above it), on the left from 768 px %>
+<% use_deep_page_background %>
+<% content_for :full_width_page do %>
+  <main>
+    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <section class="relative isolate overflow-hidden" aria-labelledby="home-title">
+      <%= render "shared/theme_cover", css_class: "absolute inset-0 -z-20 size-full object-cover object-[70%_50%] md:object-center" %>
+      <%# No fade at the bottom (cover-fade): nothing follows the section, and in the light theme it washed the dawn out.
+          The veil stays behind the text only (bottom on a phone, left from 768 px), strong enough for its contrast %>
+      <div class="absolute inset-0 -z-10 bg-linear-to-t from-page-deep from-40% via-page-deep/60 via-65% to-transparent md:bg-linear-to-r md:from-page-deep/95 md:from-0% md:via-page-deep/80 md:via-40% md:to-transparent md:to-75%"></div>
+
+      <div class="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-[1120px] flex-col justify-end px-4 pt-40 pb-12 sm:px-8 md:justify-center md:py-16">
+        <div class="flex max-w-xl flex-col gap-4">
+          <p class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".eyebrow") %></p>
+          <h1 id="home-title" class="text-4xl leading-tight font-extrabold tracking-tight text-balance text-ink md:text-5xl">
+            <%= t(".title") %>
+          </h1>
+          <p class="max-w-md text-base text-ink md:text-lg"><%= t(".description") %></p>
+          <div class="mt-2 flex flex-wrap gap-3">
+            <%= link_to t(".create_account"), new_user_registration_path, class: button_classes(:primary) %>
+            <%= link_to t(".log_in"), new_user_session_path, class: button_classes(:secondary) %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<% end %>

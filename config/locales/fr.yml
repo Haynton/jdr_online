@@ -9,7 +9,9 @@ fr:
         role: "Rôle"
         user_id: "Joueur"
       user:
+        email: "Adresse e-mail"
         locale: "Langue"
+        remember_me: "Rester connecté(e)"
         username: "Pseudo"
     errors:
       models:
@@ -67,8 +69,11 @@ fr:
     fr: "Français"
   pages:
     home:
-      title: "Accueil"
-      description: "Retrouvez-moi dans app/views/pages/home.html.erb"
+      create_account: "Créer un compte"
+      description: "Fiches de personnage, dés, carte et fil de jeu partagés en direct, pour jouer en ligne ou autour d'une vraie table."
+      eyebrow: "Jeu de rôle entre amis"
+      log_in: "Se connecter"
+      title: "Votre table de jeu, où que soient vos joueurs."
   settings:
     accounts:
       show:
@@ -158,7 +163,7 @@ fr:
     # Read by Simple Form for every username field: sign up and settings
     hints:
       user:
-        username: "Visible des autres joueurs. De 3 à 20 caractères : lettres, chiffres, - et _."
+        username: "Visible des autres joueurs. De 3 à 20 caractères : lettres, chiffres, - et _."
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
