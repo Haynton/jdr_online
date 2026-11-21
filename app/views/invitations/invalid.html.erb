@@ -1,0 +1,6 @@
+<%# An invitation link that does not work: unknown token (the game master generated a new link) or a table still
+    being set up. A plain page of the app; the error pages of the app come later (card #87) %>
+<%= page_header(title: t(".title"), subtitle: t(".text")) do %>
+  <%# Like the logo: "My tables" for a signed in user, the home page for a visitor %>
+  <%= link_to t(".back"), logo_path, class: button_classes(:secondary) %>
+<% end %>
