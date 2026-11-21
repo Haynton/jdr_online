@@ -66,6 +66,18 @@ module GameTableChoicesHelper
     { controller: "card-row table-filter", action: "table-filter:changed->card-row#toggleButtons" }
   end
 
+  # The hint leaves room on its right for what sits at the top right of the row: the arrows alone (from 768 px),
+  # or the pills and the arrows (from 1024 px)
+  def choice_row_hint_classes(filterable:)
+    filterable ? "max-w-xl text-xs text-muted lg:max-w-[calc(100%-26rem)]" : "max-w-xl text-xs text-muted md:pr-24"
+  end
+
+  def choice_row_controls_classes(filterable:)
+    return "absolute top-0 right-0" unless filterable
+
+    "mt-3 flex items-center gap-4 lg:absolute lg:top-0 lg:right-0 lg:mt-0"
+  end
+
   # One pill per theme of the covers (GameTable::COVER_THEMES), in the "theme" group
   def cover_filters
     GameTable::COVER_THEME_NAMES.map do |theme|

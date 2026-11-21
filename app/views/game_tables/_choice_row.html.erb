@@ -12,28 +12,32 @@
 <%= tag.fieldset class: "relative mb-8 min-w-0", data: choice_row_data(filterable: filters.present?) do %>
   <legend class="<%= choice_legend_classes %>"><%= legend %></legend>
   <% if local_assigns[:hint] %>
-    <p class="max-w-xl text-xs text-muted md:pr-24"><%= hint %></p>
+    <p class="<%= choice_row_hint_classes(filterable: filters.present?) %>"><%= hint %></p>
   <% end %>
-  <%# Rendered hidden: shown by the controller, without which they would do nothing %>
-  <% if filters.present? %>
-    <div hidden role="group" aria-label="<%= t(".filter") %>"
-         class="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto" data-table-filter-target="pills">
-      <% filters.each do |filter| %>
-        <button type="button" aria-pressed="false" class="<%= filter_pill_classes %>"
-                data-table-filter-target="pill" data-group="<%= filter[:group] %>" data-value="<%= filter[:value] %>"
-                data-action="table-filter#toggle"><%= filter[:label] %></button>
-      <% end %>
+  <%# The pills and the arrows together, like the row of "My tables": at the top right on a large screen, the pills
+      under the hint below that (the arrows only from 768 px) %>
+  <div class="<%= choice_row_controls_classes(filterable: filters.present?) %>">
+    <%# Rendered hidden: shown by the controller, without which they would do nothing %>
+    <% if filters.present? %>
+      <div hidden role="group" aria-label="<%= t(".filter") %>"
+           class="no-scrollbar flex min-w-0 items-center gap-2 overflow-x-auto" data-table-filter-target="pills">
+        <% filters.each do |filter| %>
+          <button type="button" aria-pressed="false" class="<%= filter_pill_classes %>"
+                  data-table-filter-target="pill" data-group="<%= filter[:group] %>" data-value="<%= filter[:value] %>"
+                  data-action="table-filter#toggle"><%= filter[:label] %></button>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="hidden shrink-0 gap-2 md:flex">
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+              aria-label="<%= t(".previous") %>" data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
+        <%= render "shared/icons/chevron_left" %>
+      </button>
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+              aria-label="<%= t(".next") %>" data-card-row-target="nextButton" data-action="card-row#scrollNext">
+        <%= render "shared/icons/chevron_right" %>
+      </button>
     </div>
-  <% end %>
-  <div class="absolute top-0 right-0 hidden gap-2 md:flex">
-    <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
-            aria-label="<%= t(".previous") %>" data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
-      <%= render "shared/icons/chevron_left" %>
-    </button>
-    <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
-            aria-label="<%= t(".next") %>" data-card-row-target="nextButton" data-action="card-row#scrollNext">
-      <%= render "shared/icons/chevron_right" %>
-    </button>
   </div>
   <ul class="no-scrollbar row-edge-fade -mx-4 mt-3 flex gap-3 overflow-x-auto px-4 py-1.5 [--row-edge:1.25rem] sm:-mx-8 sm:px-8 sm:[--row-edge:2.5rem] md:mt-5"
       data-card-row-target="row"
