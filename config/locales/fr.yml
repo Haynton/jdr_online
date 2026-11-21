@@ -173,6 +173,9 @@ fr:
     side_nav:
       label: "Navigation principale"
       my_tables: "Mes tables"
+      pending_invitations:
+        one: "1 invitation en attente"
+        other: "%{count} invitations en attente"
       collapse: "Replier le menu"
       expand: "Déplier le menu"
     account_nav:

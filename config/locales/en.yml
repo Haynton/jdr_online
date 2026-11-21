@@ -202,6 +202,9 @@ en:
     side_nav:
       label: "Main navigation"
       my_tables: "My tables"
+      pending_invitations:
+        one: "1 invitation waiting"
+        other: "%{count} invitations waiting"
       collapse: "Collapse the menu"
       expand: "Expand the menu"
     account_nav:
