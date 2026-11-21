@@ -225,14 +225,16 @@ fr:
       cancel: "Annuler"
       continue: "Continuer"
     creation_steps:
+      change: "Modifier"
       coming_soon: "Bientôt"
       label: "Étapes de la création"
+      open: "Ouvrir"
       step_number: "Étape %{number} :"
       steps:
         details: "Informations"
         maps: "Cartes"
         npcs: "PNJ et ennemis"
-        summary: "Récapitulatif"
+        summary: "Invitation"
     details:
       edit:
         subtitle: "Votre table est en brouillon : modifiez ses informations quand vous voulez."
@@ -285,26 +287,31 @@ fr:
         email_subject: "Invitation à ma table « %{name} »"
         hint: "Envoyez ce lien à vos joueurs : ils pourront le suivre dès que la création de la table sera terminée."
         invite: "Inviter"
-        invited_players: "Joueurs invités"
         link: "Lien d'invitation"
         regenerate: "Générer un lien"
         regenerate_confirm_button: "Remplacer le lien"
         regenerate_confirmation: "Générer un nouveau lien ? L'ancien ne fonctionnera plus."
+        send_by_email: "Envoyer par e-mail"
+        title: "Inviter vos joueurs"
+      participants:
+        badges:
+          game_master: "MJ"
+          pending: "En attente"
+          player: "Joueur"
+        no_players: "Aucun joueur invité pour l'instant."
         remove: "Retirer"
         remove_player: "Retirer %{username}"
-        send_by_email: "Envoyer par e-mail"
-        statuses:
-          accepted: "Joueur"
-          pending: "En attente"
-        title: "Invitation"
+        title: "Participants"
       show:
         back: "Retour"
         change: "Modifier"
         finish: "Terminer la création"
         finish_and_join: "Terminer et rejoindre la partie"
-        maps_coming_soon: "Bientôt : les cartes arriveront avec le plateau."
         no_description: "Aucune description"
-        npcs_coming_soon: "Bientôt : les PNJ et ennemis arriveront avec les fiches de personnage."
+        ready: "Invitez vos joueurs, ou revenez sur une étape pour la modifier. « Terminer la création » l'ouvre à vos joueurs."
+        ready_title: "Votre table est prête"
+        see_less: "Voir moins"
+        see_more: "Voir plus"
         sheet_template: "Modèle de fiche :"
       update:
         finished: "Table prête : vos joueurs peuvent la rejoindre."

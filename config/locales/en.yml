@@ -254,14 +254,16 @@ en:
       cancel: "Cancel"
       continue: "Continue"
     creation_steps:
+      change: "Change"
       coming_soon: "Coming soon"
       label: "Steps of the creation"
+      open: "Open"
       step_number: "Step %{number}:"
       steps:
         details: "Details"
         maps: "Maps"
         npcs: "NPCs and enemies"
-        summary: "Summary"
+        summary: "Invitation"
     details:
       edit:
         subtitle: "Your table is a draft: change its details whenever you like."
@@ -314,26 +316,31 @@ en:
         email_subject: "Invitation to my table “%{name}”"
         hint: "Send this link to your players: they can follow it as soon as the creation of the table is over."
         invite: "Invite"
-        invited_players: "Invited players"
         link: "Invitation link"
         regenerate: "Generate a link"
         regenerate_confirm_button: "Replace the link"
         regenerate_confirmation: "Generate a new link? The old one will stop working."
+        send_by_email: "Send by email"
+        title: "Invite your players"
+      participants:
+        badges:
+          game_master: "GM"
+          pending: "Pending"
+          player: "Player"
+        no_players: "No player invited yet."
         remove: "Remove"
         remove_player: "Remove %{username}"
-        send_by_email: "Send by email"
-        statuses:
-          accepted: "Player"
-          pending: "Pending"
-        title: "Invitation"
+        title: "Participants"
       show:
         back: "Back"
         change: "Change"
         finish: "Finish the creation"
         finish_and_join: "Finish and join the game"
-        maps_coming_soon: "Coming soon: maps will arrive with the board."
         no_description: "No description"
-        npcs_coming_soon: "Coming soon: NPCs and enemies will arrive with the character sheets."
+        ready: "Invite your players, or go back to a step to change it. “Finish the creation” opens it to your players."
+        ready_title: "Your table is ready"
+        see_less: "See less"
+        see_more: "See more"
         sheet_template: "Sheet template:"
       update:
         finished: "Table ready: your players can join it."

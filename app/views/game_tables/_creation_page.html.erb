@@ -1,8 +1,12 @@
 <%# A page of the creation of a table. Use the creation_page helper (game_table_creation_helper.rb).
     Across the whole width beside the navigation, like "My tables": the band of the steps on top, then the content,
     whose rows of cards run from edge to edge. flush_top: the content touches the band (a cover from edge to edge) %>
-<header class="border-b border-line bg-surface px-4 py-4 sm:px-8 md:py-5">
-  <%= render "game_tables/creation_steps", current_step: current_step %>
+<%# The band stays at the top of the screen: its steps lead back to the pages reached. It slides away while the page
+    scrolls down and comes back when it scrolls up (hide_on_scroll_controller.js), or when a step gets the focus %>
+<header class="sticky top-0 z-20 border-b border-line bg-surface px-4 py-4 data-scrolled-away:-translate-y-full motion-safe:transition-transform motion-safe:duration-200 sm:px-8 md:py-5"
+        data-controller="hide-on-scroll"
+        data-action="scroll@window->hide-on-scroll#update focusin->hide-on-scroll#show">
+  <%= render "game_tables/creation_steps", current_step: current_step, game_table: game_table %>
 </header>
 <main class="<%= creation_main_classes(flush_top) %>">
   <%# Spaced out only around a message shown on screen: one for screen readers only ("Table created as a draft"),
