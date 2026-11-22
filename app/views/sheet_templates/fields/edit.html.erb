@@ -1,0 +1,44 @@
+<%# The template editor, the form of a field: its general settings (label, help, section...) then those of its type
+    (min, max, options, rule...), each drawn by its kind of input (SheetTemplates::FieldFormHelper). The key and the
+    type never change; the effects and the descriptions of the options will have their own editor. On a refusal, the
+    errors of the template (SheetTemplateValidator) at the top, the values typed kept %>
+<%= link_to sheet_template_fields_path(@sheet_template), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
+  <%= render "shared/icons/chevron_left" %>
+  <%= t(".back") %>
+<% end %>
+<%= page_header(title: @field["label"], subtitle: t(".subtitle", type: field_type_name(@field), key: @field["key"])) %>
+
+<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
+  <% if @sheet_template.errors.any? %>
+    <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
+    <%= render layout: "shared/message", locals: { variant: :error } do %>
+      <p class="font-semibold"><%= t("sheet_templates.fields.edit.refused") %></p>
+      <ul class="mt-1 list-disc pl-5">
+        <% @sheet_template.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <%= simple_form_for :field, url: sheet_template_field_path(@sheet_template, @field["key"]), method: :patch,
+                              html: { class: "mt-4 first:mt-0" },
+                              defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
+    <% field_parameter_groups(@field).each do |group, parameters| %>
+      <%= settings_group(title: t(".groups.#{group}")) do %>
+        <div class="border-b border-line py-4">
+          <% parameters.each do |parameter| %>
+            <%= field_parameter_input(form, parameter, @form_context) %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+    <% if @field["effects"].present? || @field["descriptions"].present? %>
+      <p class="mt-4 text-sm text-muted"><%= t(".effects_soon") %></p>
+    <% end %>
+    <div class="mt-6 flex flex-wrap justify-end gap-3">
+      <%= link_to t(".cancel"), sheet_template_fields_path(@sheet_template), class: button_classes(:secondary) %>
+      <%= form.button :submit, t(".save"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+</div>

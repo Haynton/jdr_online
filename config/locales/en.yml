@@ -96,10 +96,12 @@ en:
           invalid_key: "%{part}: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_label: "%{part} › %{field}: the label must be filled in, on one line, in %{count} characters at most"
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
+          invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_spell_group_label: "The group of spells “%{group}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
+          min_above_max: "%{part} › %{field}: the minimum (%{min}) is above the maximum (%{max})"
           missing_hit_die: "%{part} › %{field}: every class must give its hit die (hit_die)"
           missing_parameter: "%{part} › %{field}: the setting “%{parameter}” is required"
           missing_spell_group_parameter: "The group of spells “%{group}”: the setting “%{parameter}” is required"
@@ -114,6 +116,7 @@ en:
           unknown_modifier: "%{part} › %{field}: the modifier rule “%{modifier}” is unknown"
           unknown_option: "%{part} › %{field}: “%{setting}” describes an option that does not exist (%{option})"
           unknown_parameter: "%{part} › %{field}: the setting “%{parameter}” is unknown for this type of field"
+          unknown_parameter_value: "%{part} › %{field}: the value “%{value}” of the setting “%{parameter}” is unknown"
           unknown_rule: "%{part} › %{field}: the computing rule “%{rule}” is unknown"
           unknown_section: "The step “%{step}” names a section that does not exist: %{section}"
           unknown_spell_group_changes: "The group of spells “%{group}”: the change rule “%{changes}” is unknown"
@@ -286,6 +289,24 @@ en:
       copy_name: "%{name} (copy)"
       create:
         created: "Template “%{name}” created."
+    fields:
+      edit:
+        back: "Character sheet"
+        cancel: "Cancel"
+        effects_soon: "The effects and the descriptions of the options will be editable soon. The options of a list that has some are not renamed: their effects depend on them."
+        groups:
+          general: "General"
+          type: "Settings of the type"
+        refused: "The template was not saved:"
+        save: "Save"
+        subtitle: "Type: %{type} · key: %{key}"
+      index:
+        edit: "Edit"
+        edit_label: "Edit %{label}"
+        subtitle: "The fields the players fill in, section by section."
+        title: "Character sheet"
+      update:
+        updated: "Field “%{label}” saved."
     contents:
       catalog:
         feature:
@@ -324,6 +345,118 @@ en:
       predefined_title: "Provided templates"
       subtitle: "The character sheets of your tables: their fields, their creation steps and their catalog."
       title: "My templates"
+    parameters:
+      abbreviation:
+        hint: "Short form, beside a bonus (STR, DEX). Optional."
+        label: "Abbreviation"
+      absorbs_damage_for:
+        hint: "The resource this pool protects: it goes down first."
+        label: "Protects"
+      at_creation:
+        hint: "Unticked: the field is only used during the game (temporary hit points)."
+        label: "Asked at creation"
+      based_on:
+        hint: "The ability whose modifier goes into the value."
+        label: "Ability"
+      class_from:
+        hint: "The list whose option picked gives the hit die and the spells."
+        label: "Class field"
+      column:
+        hint: "Right: in the right column of its section."
+        label: "Column"
+        values:
+          aside: "Right"
+      count:
+        hint: "How many options the player may tick at most."
+        label: "Number of choices"
+      from:
+        hint: "The list whose option picked gives this field (the background, the class)."
+        label: "Source list"
+      from_table:
+        hint: "Filled by a setting of the table, never asked to the player."
+        label: "Given by the table"
+        values:
+          starting_level: "Starting level of the table"
+      granted:
+        hint: "One per line, among the options: always ticked, not counted in the number of choices."
+        label: "Options always known"
+      help:
+        hint: "A sentence that explains the field, under it or in its (i) note. Optional."
+        label: "Help"
+      initial_from:
+        hint: "The computed field that fills this value once the character is complete."
+        label: "Starting value"
+      internal:
+        hint: "Worked out to fill another field, shown nowhere."
+        label: "Internal"
+      label:
+        hint: "The name of the field, as the players read it."
+        label: "Label"
+      level_from:
+        hint: "The field that gives the level of the character."
+        label: "Level field"
+      max:
+        hint: "The highest value allowed. Optional."
+        label: "Maximum"
+      max_per_ability:
+        hint: "The highest bonus on a single ability."
+        label: "Most on one ability"
+      min:
+        hint: "The lowest value allowed. Optional."
+        label: "Minimum"
+      modifier:
+        hint: "How the score gives its modifier."
+        label: "Modifier rule"
+        values:
+          half_above_ten: "(score − 10) / 2, rounded down"
+      on_rest:
+        hint: "What the value becomes after a rest."
+        label: "After a rest"
+        values:
+          reset_to_max: "Back to its maximum"
+          turn_off: "Switched off"
+      options:
+        hint: "One option per line, in the order of the list."
+        label: "Options"
+      proficiency:
+        hint: "The computed field that gives the proficiency bonus."
+        label: "Proficiency bonus"
+      receives_damage:
+        hint: "The resource that goes down when the character is hurt (one field only)."
+        label: "Takes the damage"
+      required:
+        hint: "The player must fill it in to finish their character."
+        label: "Required"
+      rule:
+        hint: "How the value is worked out from the other fields."
+        label: "Computing rule"
+        values:
+          ability_modifier: "Modifier of an ability"
+          hit_dice_by_class: "Hit dice by class"
+          hit_points_by_level: "Hit points by level"
+          proficiency_by_level: "Proficiency bonus by level"
+          spell_attack_bonus: "Spell attack bonus"
+          spell_save_dc: "Spell save DC"
+          starting_gold: "Gold of the starting equipment"
+          unarmored_armor_class: "Armour class without armour"
+      section:
+        hint: "The group of the sheet where the field shows."
+        label: "Section"
+      short:
+        hint: "A single line instead of a text area."
+        label: "Short text"
+      step:
+        hint: "The gap between two values (0.5 for half metres). Empty: whole numbers."
+        label: "Step"
+      summary_only:
+        hint: "Shown on the summary, not on the page of its step."
+        label: "Summary only"
+      total:
+        hint: "The total bonus the player places on their abilities."
+        label: "Points to spread"
+      visible_to_others:
+        hint: "The other players of the table can read it."
+        label: "Seen by the other players"
     show:
       back: "My templates"
       catalog: "Catalog"
@@ -335,7 +468,8 @@ en:
       delete_confirmation: "Delete the template “%{name}” and its catalog? This cannot be undone."
       delete_description: "The template and all its catalog are deleted for good."
       edit_contents: "Edit the contents"
-      edit_contents_soon: "Soon: its sections, fields, creation steps and catalog."
+      edit_contents_soon: "Soon: adding or removing fields, the creation steps and the catalog."
+      edit_fields: "Edit the fields"
       general_group: "General"
       rename: "Rename"
       used_by_tables:
@@ -358,6 +492,17 @@ en:
         picks: "several picks"
         resource: "resource"
         text: "text"
+      kinds:
+        asked_at_creation: "yes or no"
+        boolean: "yes or no"
+        choice: "a value of its list"
+        decimal: "a number above 0"
+        integer: "a whole number"
+        lines: "a list of texts"
+        long_text: "a text"
+        reference: "the key of a field"
+        section: "a section name"
+        text: "a text"
       parts:
         character_fields: "Character sheet"
         item_fields: "Item sheet"

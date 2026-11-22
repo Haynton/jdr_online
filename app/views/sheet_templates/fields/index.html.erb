@@ -1,0 +1,21 @@
+<%# The template editor, the fields of the character sheet: one group per section, in the order of the template, one
+    row per field (its label, its type) with "Edit", which opens its form. Laid out like a section of the settings %>
+<%= link_to sheet_template_path(@sheet_template), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
+  <%= render "shared/icons/chevron_left" %>
+  <%= @sheet_template.name %>
+<% end %>
+<%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+
+<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
+  <% sheet_sections(@sheet_template.character_fields.to_h["fields"].to_a).each do |section, fields| %>
+    <%= settings_group(title: section) do %>
+      <% fields.each do |field| %>
+        <%= setting_row(label: field["label"], label_id: "field-#{field['key']}", description: field_type_name(field).upcase_first) do %>
+          <%# Named with the field: "Modifier Points de vie" for a screen reader, among many links %>
+          <%= link_to t(".edit"), edit_sheet_template_field_path(@sheet_template, field["key"]),
+                      class: button_classes(:secondary), aria: { label: t(".edit_label", label: field["label"]) } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
