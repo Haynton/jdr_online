@@ -92,6 +92,19 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a number with a step of a half takes decimals, with a comma too, but only multiples of its step" do
+    fields = [{ "key" => "speed", "label" => "Vitesse (m)", "type" => "number", "min" => 0, "max" => 36,
+                "step" => 0.5, "section" => "Combat" }]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    post game_table_character_path(@game_table), params: { character: { name: "Aldric", sheet: { speed: "10.3" } } }
+    assert_response :unprocessable_content
+    assert_select "input[name=?][step='0.5'][aria-invalid=true]", "character[sheet][speed]"
+
+    post game_table_character_path(@game_table), params: { character: { name: "Aldric", sheet: { speed: "10,5" } } }
+    assert_in_delta 10.5, @participation.reload.character.sheet["speed"]
+  end
+
   test "a state of the game (at_creation false) is neither asked nor stored at creation" do
     fields = SHEET_FIELDS.map { |field| field["key"] == "inspiration" ? field.merge("at_creation" => false) : field }
     @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })

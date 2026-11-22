@@ -94,7 +94,8 @@ module CharacterSheetsHelper
 
   # The bounds of the field (min and max of the template; an experience or a resource starts at 0)
   def sheet_number_options(character, field)
-    bounds = { min: %w[number ability].include?(field["type"]) ? field["min"] : 0, max: field["max"] }
+    bounds = { min: %w[number ability].include?(field["type"]) ? field["min"] : 0, max: field["max"],
+               step: field["step"] }.compact
     sheet_control_options(character, field).merge(class: SimpleFormFieldClasses::INPUT, **bounds)
   end
 
