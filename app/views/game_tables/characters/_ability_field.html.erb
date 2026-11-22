@@ -4,29 +4,27 @@
     and are shown by the controller; without JavaScript, the score is typed). Tried before: a shield, with the score
     in a circle on its point; a circle between two buttons looked odd %>
 <% error = sheet_field_error(character, field) %>
-<%# As wide as its "−", score and "+" (w-fit): the tile does not stretch to its column. The modifier has room above
-    and under it (my-4) %>
-<div class="flex w-fit flex-col items-center rounded-xl border border-line bg-surface px-2 pt-3 pb-2">
+<%# A fixed width, the one of its "−", score and "+" (154 px, like the combat boxes): neither its column nor the
+    "Assign" list can stretch it (decision). The modifier has room above and under it (my-4) %>
+<div class="flex w-[9.625rem] flex-col items-center rounded-xl border border-line bg-surface px-2 pt-3 pb-2">
   <%= label_tag sheet_field_id(field), field["label"],
-                class: "w-0 min-w-full truncate text-center text-[11px] font-semibold tracking-wider text-muted uppercase",
+                class: "w-full truncate text-center text-[11px] font-semibold tracking-wider text-muted uppercase",
                 title: field["label"] %>
   <p class="my-4 text-3xl leading-none font-bold text-ink tabular-nums">
     <span class="sr-only"><%= t("game_tables.characters.new.modifier") %></span>
     <output data-character-sheet-target="modifier" data-ability="<%= field["key"] %>"><%= format_bonus(modifier) %></output>
   </p>
-  <div class="flex items-center gap-1" data-controller="number-stepper">
-    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
-            aria-label="<%= t("game_tables.characters.new.decrease", ability: field["label"]) %>"
-            data-number-stepper-target="button" data-action="number-stepper#decrease">
-      <%= render "shared/icons/minus" %>
-    </button>
-    <%= sheet_ability_input(character, field) %>
-    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
-            aria-label="<%= t("game_tables.characters.new.increase", ability: field["label"]) %>"
-            data-number-stepper-target="button" data-action="number-stepper#increase">
-      <%= render "shared/icons/plus" %>
-    </button>
-  </div>
+  <%= render "game_tables/characters/stepper", field: field, input: sheet_ability_input(character, field) %>
+  <%# After "Roll the dice": the results to place on this ability (ability_roll_controller.js). No name: it is not
+      sent, it only fills the score above, which stays free to change %>
+  <% if local_assigns[:rollable] %>
+    <div hidden class="relative mt-2 w-full" data-ability-roll-target="choice">
+      <select class="<%= CharacterSheetsHelper::SELECT_CLASSES %>" data-action="ability-roll#place"
+              data-score-input="<%= sheet_field_id(field) %>"
+              aria-label="<%= t("game_tables.characters.new.place_result_on", label: field["label"]) %>"></select>
+      <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+    </div>
+  <% end %>
   <% if error %>
     <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %> text-center"><%= error %></p>
   <% end %>

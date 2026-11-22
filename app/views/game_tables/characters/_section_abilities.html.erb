@@ -1,11 +1,32 @@
-<%# The abilities in tiles as wide as their "−", score and "+" (154 px; decision: a tile stretched to its column
-    left empty room around them). Two, three or six per line, by the width of the section itself (container query,
-    whatever the screen and the side navigation): 2 + 2 + 2, 3 + 3 or 6, never one tile alone on its line %>
-<div class="@container clear-left">
+<%# The abilities in tiles of a fixed width (154 px). Two, three or six per line, by the width of their section
+    (container query, whatever the screen and the side navigation): 2 + 2 + 2, 3 + 3 or 6, never one tile alone.
+    When the template says how its abilities are rolled, a "Roll the dice" button above them (decision, after a d20
+    in a column of its own), its method beside it, then the results as chips (ability_roll_controller.js: the
+    server rolls); each tile offers them in its "Assign" list. An aid, not a check (decision): the player can roll
+    again, or type their own scores. Shown by the controller: nothing without JavaScript %>
+<% game_table = character.game_table %>
+<%= tag.div class: "@container clear-left", data: ability_roll_data(game_table) do %>
+  <% if ability_roll_available?(game_table) %>
+    <div hidden class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2" data-ability-roll-target="controls">
+      <button type="button" class="<%= button_classes(:secondary) %>" data-ability-roll-target="button" data-action="ability-roll#roll">
+        <%= render "shared/icons/dices" %>
+        <span data-ability-roll-target="buttonLabel"><%= t("game_tables.characters.new.roll") %></span>
+      </button>
+      <p class="text-sm text-muted"><%= ability_roll_method_text(game_table) %></p>
+    </div>
+    <div hidden class="mb-4 flex flex-wrap gap-2" role="status" data-ability-roll-target="results"></div>
+    <template data-ability-roll-target="chipTemplate">
+      <span class="inline-flex items-baseline gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
+        <span class="text-sm font-bold text-ink tabular-nums" data-total></span>
+        <span class="text-xs text-muted tabular-nums" data-dice></span>
+      </span>
+    </template>
+  <% end %>
   <div class="grid w-fit grid-cols-2 gap-3 @lg:grid-cols-3 @5xl:grid-cols-6">
     <% fields.each do |field| %>
       <%= render "game_tables/characters/ability_field", character: character, field: field,
-                                                        modifier: computed[:modifiers][field["key"]] %>
+                                                        modifier: computed[:modifiers][field["key"]],
+                                                        rollable: ability_roll_available?(game_table) %>
     <% end %>
   </div>
-</div>
+<% end %>

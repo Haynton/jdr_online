@@ -32,7 +32,7 @@ module GameTables
     end
 
     def build_character
-      sheet = CharacterSheetBuilder.new(fields: @game_table.character_sheet_fields,
+      sheet = CharacterSheetBuilder.new(fields: @game_table.character_creation_fields,
                                         submitted_values: character_params[:sheet]).call
       @participation.build_character(game_table: @game_table, kind: :pc, name: character_params[:name], sheet: sheet)
     end

@@ -1,0 +1,17 @@
+<%# A number between a "−" and a "+" (decision: they show that the value changes), in an ability tile or a combat
+    box: number_stepper_controller.js takes it down or up by one within its bounds, then tells the live calculation.
+    The buttons are named after the field ("Decrease Strength") and shown by the controller: without JavaScript,
+    the number is typed. input: the number field itself (sheet_stepper_input) %>
+<div class="flex items-center gap-1" data-controller="number-stepper">
+  <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
+          aria-label="<%= t("game_tables.characters.new.decrease", label: field["label"]) %>"
+          data-number-stepper-target="button" data-action="number-stepper#decrease">
+    <%= render "shared/icons/minus" %>
+  </button>
+  <%= input %>
+  <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %>"
+          aria-label="<%= t("game_tables.characters.new.increase", label: field["label"]) %>"
+          data-number-stepper-target="button" data-action="number-stepper#increase">
+    <%= render "shared/icons/plus" %>
+  </button>
+</div>
