@@ -5,8 +5,8 @@
 class SheetTemplate < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
-  # What the template is for, a few lines shown on its cards and its page (decision: short)
-  DESCRIPTION_MAX_LENGTH = 500
+  # What the template is for, shown on its cards and in its banner (decision: 150 characters, 2 lines of its banner)
+  DESCRIPTION_MAX_LENGTH = 150
   # The icons a template may show, by theme of the covers (GameTable::COVER_THEMES), the scroll by default: a closed
   # list, each a partial of shared/icons (SheetTemplatesHelper::ICON_PARTIALS)
   ICONS = {

@@ -455,8 +455,6 @@ fr:
       no_tables: "Aucune table ne l'utilise pour l'instant."
       presentation_title: "Présentation"
       save: "Enregistrer"
-      see_less: "Voir moins"
-      see_more: "Voir plus"
       tables_title: "Tables qui l'utilisent"
       used_by_tables:
         one: "Utilisé par 1 table : il ne peut pas être supprimé pour l'instant."

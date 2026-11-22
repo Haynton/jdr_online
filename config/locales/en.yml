@@ -484,8 +484,6 @@ en:
       no_tables: "No table uses it yet."
       presentation_title: "Presentation"
       save: "Save"
-      see_less: "See less"
-      see_more: "See more"
       tables_title: "Tables that use it"
       used_by_tables:
         one: "Used by 1 table: it cannot be deleted for now."
