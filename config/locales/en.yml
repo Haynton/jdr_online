@@ -44,6 +44,7 @@ en:
     attributes:
       character:
         name: "Character name"
+        spells: "Spells"
       game_table:
         cover_image: "Cover"
         description: "Description"
@@ -70,6 +71,10 @@ en:
           attributes:
             participation_id:
               already_has_character: "already has a character at this table"
+            spells:
+              spell_not_offered: "A spell chosen is not offered to your class and level."
+              too_many_cantrips: "Too many cantrips: %{count} at most."
+              too_many_prepared: "Too many prepared spells: %{count} at most."
         game_table:
           attributes:
             sheet_template:
@@ -264,6 +269,32 @@ en:
         later: "Later"
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
+      spell_choices:
+        casting_time: "Casting time: %{text}"
+        changes:
+          level_up_one: "You can replace one of them each time you gain a level."
+          long_rest: "You can change the whole list after each long rest."
+          long_rest_one: "You can replace one of them after each long rest."
+        chosen: "%{chosen} of %{allowed} chosen"
+        chosen_only: "My choices"
+        components: "Components: %{list}"
+        concentration: "Concentration"
+        details: "Details"
+        filter_casting: "Concentration and ritual"
+        filter_chosen: "Selection"
+        filter_level: "Level"
+        filter_school: "School"
+        higher_levels: "At higher levels."
+        hint_cantrips: "Cast at will, without a spell slot."
+        hint_prepared: "Cast with your spell slots, up to the highest level you can cast."
+        level: "Level %{level}"
+        no_match: "No spell matches these criteria."
+        none: "No spell to choose for now."
+        prepared_level: "Prepared spells of level %{level}"
+        ritual: "Ritual"
+        search: "Search for a spell"
+        title_cantrips: "Cantrips"
+        title_prepared: "Prepared spells"
       steps:
         sheet: "Sheet"
         summary: "Summary"

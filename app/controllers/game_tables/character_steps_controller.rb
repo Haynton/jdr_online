@@ -21,7 +21,8 @@ module GameTables
     def update
       return complete_character if @step.summary?
 
-      @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name])
+      @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
+                                  spell_keys: step_params[:spell_keys])
       next_step = @character.creation_steps.after(@step)
       @character.reach_creation_step(next_step.key) if params[:go_to].blank?
       return render_step_again unless @character.save
@@ -80,7 +81,7 @@ module GameTables
 
     # Nothing sent on the summary, whose button only confirms
     def step_params
-      params.fetch(:character, {}).permit(:name, sheet: {})
+      params.fetch(:character, {}).permit(:name, sheet: {}, spell_keys: [])
     end
   end
 end

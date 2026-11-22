@@ -29,6 +29,7 @@ class Character < ApplicationRecord
   validates :participation, presence: true, if: :pc?
   validates :participation_id, uniqueness: { message: :already_has_character }, if: :pc?
   validates_with CharacterSheetValidator
+  validates_with CharacterSpellsValidator
 
   # The fields that must be filled in the step being saved ("required": the class, the species...),
   # checked by CharacterSheetValidator
@@ -44,13 +45,22 @@ class Character < ApplicationRecord
   end
 
   # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option
-  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier)
-  def fill_step(step, sheet_values:, name: nil)
+  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier), and the spells its new class
+  # does not offer go. The step that chooses the spells copies those chosen (spell_keys)
+  def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
     filled_values = CharacterSheetBuilder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
                                      .call(sheet.except(*step.field_keys).merge(filled_values))
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
+    return choose_spells(spell_keys) if step.chooses_spells
+
+    self.spells = spell_choices.keep_offered(spells)
+  end
+
+  # The spells this character may choose: its class, its level (SpellChoices)
+  def spell_choices
+    SpellChoices.new(self)
   end
 
   # Once complete, the values the game will change start from what was worked out at creation (initial_from: the hit
@@ -78,6 +88,15 @@ class Character < ApplicationRecord
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)
   def computed_sheet_values
     CharacterSheetCalculator.new(fields: sheet_fields, sheet: sheet, level_thresholds: game_table.level_thresholds).call
+  end
+
+  # A copy of each spell chosen (decision: the catalog changing never changes a character). A key not offered stays as
+  # a bare key, refused by CharacterSpellsValidator
+  def choose_spells(spell_keys)
+    choices = spell_choices
+    self.spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
+      choices.copy_of(spell_key) || { "key" => spell_key }
+    end
   end
 
   # CharacterSheetValidator adds its errors per field ("sheet.strength"), so that each one shows under its field.

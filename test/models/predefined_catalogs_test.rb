@@ -42,6 +42,21 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     assert_equal({ 0 => 27, 1 => 57, 2 => 57 }, spells_by_level)
   end
 
+  test "every class with spells has enough of them to choose from, at levels 1 to 4" do
+    each_catalog do |catalog_file, catalog, sheet_template|
+      class_list = sheet_template.character_fields["fields"].find { |field| field["key"] == "class" }
+      class_list["effects"].each do |class_option, effects|
+        next unless (spellcasting = effects["spellcasting"])
+
+        assert_includes SpellChoices::PREPARED_CHANGES, spellcasting["prepared_changes"], class_option
+
+        (1..4).each do |level|
+          assert_enough_spells(catalog, class_option, spellcasting, level, "#{catalog_file.basename} #{class_option}")
+        end
+      end
+    end
+  end
+
   test "the loader fills the catalog of the template, and updates it when run again" do
     catalog_file = Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.fr.json")
     sheet_template = create_template_of(catalog_file)
@@ -59,6 +74,16 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     CATALOG_FILES.each do |catalog_file|
       yield catalog_file, read_json(catalog_file), create_template_of(catalog_file)
     end
+  end
+
+  def assert_enough_spells(catalog, class_option, spellcasting, level, context)
+    levels = catalog["entries"].select { |entry| entry.dig("properties", "classes").include?(class_option) }
+                               .map { |entry| entry.dig("properties", "level") }
+    highest_level = spellcasting["max_spell_level"][level - 1]
+
+    assert_operator levels.count(0), :>=, spellcasting["cantrips"][level - 1], "#{context}: cantrips at #{level}"
+    assert_operator levels.count { |spell_level| spell_level.between?(1, highest_level) }, :>=,
+                    spellcasting["prepared"][level - 1], "#{context}: prepared spells at #{level}"
   end
 
   # The template the file belongs to, made from its own file of db/seeds/sheet_templates
