@@ -18,15 +18,16 @@ class CharacterSheetBuilder
       next if field["type"] == "computed"
       next if typed_value.blank? && CHECK_BOX_TYPES.exclude?(field["type"])
 
-      sheet[field["key"]] = convert(field["type"], typed_value)
+      sheet[field["key"]] = convert(field, typed_value)
     end
   end
 
   private
 
-  def convert(type, typed_value)
-    case type
-    when "number", "ability", "experience" then integer_or_typed_value(typed_value)
+  def convert(field, typed_value)
+    case field["type"]
+    when "number" then number_or_typed_value(field, typed_value)
+    when "ability", "experience" then integer_or_typed_value(typed_value)
     when "resource" then full_resource(typed_value)
     # The check box sends "1" when checked, the hidden field before it "0". For a bonus, it is its proficiency
     when *CHECK_BOX_TYPES then typed_value == "1"
@@ -36,6 +37,17 @@ class CharacterSheetBuilder
 
   def integer_or_typed_value(typed_value)
     Integer(typed_value.to_s.strip, 10, exception: false) || typed_value
+  end
+
+  # A number with a step under 1 takes decimals, typed with a point or a comma (10,5 m); a whole value stays an
+  # integer (9, not 9.0)
+  def number_or_typed_value(field, typed_value)
+    return integer_or_typed_value(typed_value) if field["step"].to_f.zero? || field["step"].to_f >= 1
+
+    number = Float(typed_value.to_s.strip.tr(",", "."), exception: false)
+    return typed_value unless number
+
+    number == number.to_i ? number.to_i : number
   end
 
   # At creation, the player gives the maximum: the character starts full

@@ -67,6 +67,44 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_select "input[type=text][name=?]", "character[sheet][hit_dice]"
   end
 
+  test "a list with effects gives them to the live calculation, and its skills get a count to pick" do
+    class_effects = { "Mage" => { "proficient" => ["arcana"],
+                                  "skill_choices" => { "count" => 1, "from" => ["arcana"] } } }
+    fields = [
+      { "key" => "class", "label" => "Classe", "type" => "choice", "section" => "Identité",
+        "options" => %w[Mage Guerrier], "effects" => class_effects },
+      { "key" => "intelligence", "label" => "Intelligence", "type" => "ability", "modifier" => "half_above_ten",
+        "section" => "Caractéristiques" },
+      { "key" => "arcana", "label" => "Arcanes", "type" => "bonus", "based_on" => "intelligence",
+        "section" => "Compétences" }
+    ]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    get new_game_table_character_path(@game_table)
+
+    assert_select "select[name=?][data-character-sheet-target=effectChoice][data-action=?]",
+                  "character[sheet][class]", "character-sheet#applyEffects" do |selects|
+      assert_equal class_effects, JSON.parse(selects.first["data-effects"])
+    end
+    assert_select "[data-character-sheet-target=bonusRow][data-key=arcana]", text: /Proposée/
+    assert_select "p[hidden][role=status][data-character-sheet-target=skillChoices]" do |paragraphs|
+      assert_includes paragraphs.first["data-template"], "choisissez"
+    end
+  end
+
+  test "a number with a step of a half takes decimals, with a comma too, but only multiples of its step" do
+    fields = [{ "key" => "speed", "label" => "Vitesse (m)", "type" => "number", "min" => 0, "max" => 36,
+                "step" => 0.5, "section" => "Combat" }]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    post game_table_character_path(@game_table), params: { character: { name: "Aldric", sheet: { speed: "10.3" } } }
+    assert_response :unprocessable_content
+    assert_select "input[name=?][step='0.5'][aria-invalid=true]", "character[sheet][speed]"
+
+    post game_table_character_path(@game_table), params: { character: { name: "Aldric", sheet: { speed: "10,5" } } }
+    assert_in_delta 10.5, @participation.reload.character.sheet["speed"]
+  end
+
   test "a state of the game (at_creation false) is neither asked nor stored at creation" do
     fields = SHEET_FIELDS.map { |field| field["key"] == "inspiration" ? field.merge("at_creation" => false) : field }
     @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })

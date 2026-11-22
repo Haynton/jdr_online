@@ -94,7 +94,8 @@ module CharacterSheetsHelper
 
   # The bounds of the field (min and max of the template; an experience or a resource starts at 0)
   def sheet_number_options(character, field)
-    bounds = { min: %w[number ability].include?(field["type"]) ? field["min"] : 0, max: field["max"] }
+    bounds = { min: %w[number ability].include?(field["type"]) ? field["min"] : 0, max: field["max"],
+               step: field["step"] }.compact
     sheet_control_options(character, field).merge(class: SimpleFormFieldClasses::INPUT, **bounds)
   end
 
@@ -109,11 +110,21 @@ module CharacterSheetsHelper
   end
 
   # The chevron of CollectionSelectInput, over the native select
+  # A list whose options have effects (SheetTemplate::CHOICE_EFFECTS): the live calculation applies them when
+  # the player picks an option (character_sheet_controller.js#applyEffects)
+  def sheet_choice_effects_data(field)
+    return {} unless field["effects"]
+
+    { character_sheet_target: "effectChoice", effects: field["effects"].to_json,
+      action: "character-sheet#applyEffects" }
+  end
+
   def sheet_select(character, field)
     tag.div(class: "relative") do
       select_tag(sheet_field_name(field),
                  options_for_select(field["options"], sheet_field_value(character, field)),
-                 sheet_control_options(character, field).merge(class: SELECT_CLASSES, include_blank: true)) +
+                 sheet_control_options(character, field).merge(class: SELECT_CLASSES, include_blank: true,
+                                                               data: sheet_choice_effects_data(field))) +
         render("shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES)
     end
   end

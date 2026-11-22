@@ -6,7 +6,11 @@ Ces mentions doivent aussi apparaître dans les mentions légales de l'applicati
 
 ## Fantasy héroïque (`heroic_fantasy.*.json`)
 
-D'après le System Reference Document 5.1, sous licence Creative Commons Attribution 4.0. Mention d'attribution, telle que demandée par l'éditeur :
+La fiche du personnage suit les règles de 2024 : classes, historiques, espèces, sorts par niveau, d'après le System Reference Document 5.2, sous licence Creative Commons Attribution 4.0. Les données ont été relevées sur l'API ouverte dnd5eapi.co (`/api/2024`), qui publie le SRD 5.2, et ne sont jamais appelées par l'application. Mention d'attribution, telle que donnée par l'éditeur (à revérifier sur https://www.dndbeyond.com/srd avant une mise en ligne publique) :
+
+> This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
+
+Les PNJ, les monstres et les objets prêts à l'emploi viennent encore du System Reference Document 5.1, sous la même licence. Mention d'attribution, telle que demandée par l'éditeur :
 
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.
 

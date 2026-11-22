@@ -19,7 +19,8 @@ class CharacterSheetValidator < ActiveModel::Validator
   # nil when the value fits its field, otherwise the type of the error and its options
   def value_error(field, value)
     case field&.dig("type")
-    when "number", "ability" then number_error(value, minimum: field["min"], maximum: field["max"])
+    when "number" then number_error(value, minimum: field["min"], maximum: field["max"], step: field["step"])
+    when "ability" then number_error(value, minimum: field["min"], maximum: field["max"])
     when "experience" then number_error(value, minimum: 0)
     when "resource" then resource_error(value)
     # A bonus stores only its proficiency, ticked or not; a computed field is never stored (else branch)
@@ -30,11 +31,22 @@ class CharacterSheetValidator < ActiveModel::Validator
     end
   end
 
-  def number_error(value, minimum:, maximum: nil)
-    return [:not_an_integer] unless value.is_a?(Integer)
+  def number_error(value, minimum:, maximum: nil, step: nil)
+    return (decimal_step?(step) ? [:invalid] : [:not_an_integer]) unless allowed_number?(value, step)
     return [:greater_than_or_equal_to, { count: minimum }] if minimum && value < minimum
 
     [:less_than_or_equal_to, { count: maximum }] if maximum && value > maximum
+  end
+
+  # A step under 1 (half metres: 10.5) allows the multiples of that step; otherwise only integers
+  def allowed_number?(value, step)
+    return value.is_a?(Integer) unless decimal_step?(step)
+
+    value.is_a?(Numeric) && ((value / step.to_f).round(6) % 1).zero?
+  end
+
+  def decimal_step?(step)
+    step.to_f.positive? && step.to_f < 1
   end
 
   # A resource is its current value and its maximum ("PV 8 / 12"): at creation, both are the maximum
