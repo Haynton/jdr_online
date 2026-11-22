@@ -5,7 +5,8 @@ require "test_helper"
 class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   TEMPLATES_DIRECTORY = Rails.root.join("db/seeds/sheet_templates")
   TEMPLATE_FILES = TEMPLATES_DIRECTORY.glob("*.json").sort
-  FIELD_DEFINITIONS = %w[character_fields npc_fields item_fields].freeze
+  # spell_fields: only the templates that have spells (not the cosmic horror)
+  FIELD_DEFINITIONS = %w[character_fields npc_fields item_fields spell_fields].freeze
 
   test "every file makes a valid predefined template" do
     each_template do |template_file, template|
@@ -37,7 +38,7 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   test "every field has a unique key and a known type" do
     each_template do |template_file, template|
       FIELD_DEFINITIONS.each do |definition|
-        fields = template.dig(definition, "fields")
+        fields = template.dig(definition, "fields").to_a
         keys = fields.pluck("key")
 
         assert_equal keys.uniq, keys, "#{template_file.basename}: #{definition} has a key twice"
@@ -45,6 +46,16 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
         modifier_rules = fields.select { |field| field["type"] == "ability" }.pluck("modifier")
         assert_empty modifier_rules - SheetTemplate::MODIFIER_RULES, "#{template_file.basename}: unknown modifier"
       end
+    end
+  end
+
+  test "the classes of a spell are the options of the class list of the sheet" do
+    each_template do |template_file, template|
+      spell_classes = template.dig("spell_fields", "fields").to_a.find { |field| field["key"] == "classes" }
+      next unless spell_classes
+
+      class_list = template.dig("character_fields", "fields").find { |field| field["key"] == "class" }
+      assert_equal class_list["options"].sort, spell_classes["options"].sort, template_file.basename.to_s
     end
   end
 
@@ -184,7 +195,7 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
 
   # Sorted: each language lists the skills in the alphabetical order of their own labels
   def field_keys_of(template)
-    FIELD_DEFINITIONS.to_h { |definition| [definition, template.dig(definition, "fields").pluck("key").sort] }
+    FIELD_DEFINITIONS.to_h { |definition| [definition, template.dig(definition, "fields").to_a.pluck("key").sort] }
   end
 
   # Effects of SheetTemplate::CHOICE_EFFECTS only, naming fields of the sheet of the right type

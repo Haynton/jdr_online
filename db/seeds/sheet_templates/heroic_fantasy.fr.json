@@ -185,6 +185,21 @@
       { "key": "value", "label": "Valeur (po)", "type": "number", "min": 0, "max": 100000 }
     ]
   },
+  "spell_fields": {
+    "fields": [
+      { "key": "level", "label": "Niveau", "type": "number", "min": 0, "max": 9, "required": true },
+      { "key": "school", "label": "École", "type": "choice", "options": ["Abjuration", "Divination", "Enchantement", "Évocation", "Illusion", "Invocation", "Nécromancie", "Transmutation"], "required": true },
+      { "key": "casting_time", "label": "Temps d'incantation", "type": "text", "short": true },
+      { "key": "range", "label": "Portée", "type": "text", "short": true },
+      { "key": "components", "label": "Composantes", "type": "picks", "options": ["V", "S", "M"] },
+      { "key": "material", "label": "Composante matérielle", "type": "text", "short": true },
+      { "key": "duration", "label": "Durée", "type": "text", "short": true },
+      { "key": "concentration", "label": "Concentration", "type": "boolean" },
+      { "key": "ritual", "label": "Rituel", "type": "boolean" },
+      { "key": "classes", "label": "Classes", "type": "picks", "options": ["Barbare", "Barde", "Clerc", "Druide", "Ensorceleur", "Guerrier", "Magicien", "Moine", "Occultiste", "Paladin", "Rôdeur", "Roublard"], "required": true },
+      { "key": "higher_levels", "label": "Aux niveaux supérieurs", "type": "text" }
+    ]
+  },
   "rest_rules": [
     { "key": "long_rest", "label": "Repos long" }
   ],

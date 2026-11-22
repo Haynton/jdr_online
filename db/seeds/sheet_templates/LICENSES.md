@@ -10,6 +10,8 @@ La fiche du personnage suit les règles de 2024 : classes, historiques, espèces
 
 > This work includes material from the System Reference Document 5.2 ("SRD 5.2") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
+Les sorts du catalogue (`db/seeds/catalogs/heroic_fantasy_spells.*.json`, sorts mineurs et niveaux 1 et 2 pour l'instant) viennent aussi du SRD 5.2, relevés sur la même API. Le texte anglais est celui du SRD, corrigé là où la source était mal extraite (paragraphes, tableau d'Augure, statistiques du destrier) ; le texte français est notre traduction du SRD, jamais celle d'un livre publié, avec les distances en mètres (1,50 mètre pour 5 pieds). Même mention d'attribution que ci-dessus.
+
 Les PNJ, les monstres et les objets prêts à l'emploi viennent encore du System Reference Document 5.1, sous la même licence. Mention d'attribution, telle que demandée par l'éditeur :
 
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.

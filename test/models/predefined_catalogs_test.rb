@@ -1,0 +1,74 @@
+require "test_helper"
+
+# The predefined catalogs are files of db/seeds/catalogs (the spells of the heroic fantasy, from the SRD 5.2):
+# these tests read them and check them against their template, as the seed would load them
+class PredefinedCatalogsTest < ActiveSupport::TestCase
+  CATALOG_FILES = Rails.root.glob("db/seeds/catalogs/*.json").sort
+
+  test "every entry of every file is valid for its template" do
+    each_catalog do |catalog_file, catalog, sheet_template|
+      catalog["entries"].each do |entry_attributes|
+        entry = sheet_template.catalog_entries.build(kind: catalog["kind"], **entry_attributes.symbolize_keys)
+
+        assert entry.valid?, "#{catalog_file.basename} #{entry.key}: #{entry.errors.full_messages.to_sentence}"
+      end
+    end
+  end
+
+  test "the languages of a catalog share the same keys and levels: only the texts change" do
+    CATALOG_FILES.group_by { |catalog_file| catalog_file.basename.to_s.split(".").first }.each_value do |versions|
+      keys_and_levels = versions.map do |catalog_file|
+        read_json(catalog_file)["entries"].to_h { |entry| [entry["key"], entry.dig("properties", "level")] }
+      end
+
+      assert_equal 1, keys_and_levels.uniq.size, "#{versions.map(&:basename).join(', ')} do not share the same entries"
+    end
+  end
+
+  test "keys and names are unique in a file" do
+    each_catalog do |catalog_file, catalog|
+      %w[key name].each do |attribute|
+        values = catalog["entries"].pluck(attribute)
+
+        assert_equal values.uniq, values, "#{catalog_file.basename}: a #{attribute} twice"
+      end
+    end
+  end
+
+  test "the heroic fantasy has the spells of levels 0 to 2 of the SRD 5.2" do
+    spells = read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.en.json"))["entries"]
+    spells_by_level = spells.group_by { |spell| spell.dig("properties", "level") }.transform_values(&:size)
+
+    assert_equal({ 0 => 27, 1 => 57, 2 => 57 }, spells_by_level)
+  end
+
+  test "the loader fills the catalog of the template, and updates it when run again" do
+    catalog_file = Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.fr.json")
+    sheet_template = create_template_of(catalog_file)
+
+    CatalogLoader.new(catalog_file).call
+    CatalogLoader.new(catalog_file).call
+
+    assert_equal 141, sheet_template.catalog_entries.spells.count
+    assert_equal "Projectile magique", sheet_template.catalog_entries.find_by(key: "magic-missile").name
+  end
+
+  private
+
+  def each_catalog
+    CATALOG_FILES.each do |catalog_file|
+      yield catalog_file, read_json(catalog_file), create_template_of(catalog_file)
+    end
+  end
+
+  # The template the file belongs to, made from its own file of db/seeds/sheet_templates
+  def create_template_of(catalog_file)
+    template_name, locale = catalog_file.basename(".json").to_s.split(".")
+    template_file = Rails.root.join("db/seeds/sheet_templates/#{template_name.delete_suffix('_spells')}.#{locale}.json")
+    SheetTemplate.find_or_create_by!(read_json(template_file))
+  end
+
+  def read_json(file)
+    JSON.parse(file.read(encoding: "UTF-8"))
+  end
+end
