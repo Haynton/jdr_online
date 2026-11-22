@@ -46,8 +46,8 @@
       <section aria-labelledby="template-presentation-title">
         <h2 id="template-presentation-title" class="mb-3 text-base font-semibold text-ink"><%= t(".presentation_title") %></h2>
         <%= form.input :name, required: true, input_html: { autocomplete: "off" } %>
-        <%# 2 lines: 150 characters fit (maxlength stops the typing there, the model refuses beyond) %>
-        <%= form.input :description, input_html: { maxlength: SheetTemplate::DESCRIPTION_MAX_LENGTH, rows: 2, class: "min-h-0" } %>
+        <%# 3 lines: 150 characters seen at once (maxlength stops the typing there, the model refuses beyond) %>
+        <%= form.input :description, input_html: { maxlength: SheetTemplate::DESCRIPTION_MAX_LENGTH, rows: 3, class: "min-h-0" } %>
         <%= render "sheet_templates/icon_choices", form: form, sheet_template: @sheet_template %>
         <%= render "sheet_templates/banner_color_choices", form: form, sheet_template: @sheet_template %>
       </section>
