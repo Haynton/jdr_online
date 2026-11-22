@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { applyChoiceEffects } from "choice_effects"
 import { computedValue } from "computed_rules"
 import { modifierOf } from "modifier_rules"
 
@@ -32,37 +33,24 @@ export default class extends Controller {
     this.showSkillChoices()
   }
 
-  // The effects of the option picked in a list (SheetTemplate::CHOICE_EFFECTS): its saving throws are ticked, those
-  // of the option picked before are unticked (decision: replaced). Only an aid: the player can still change any box.
-  // Runs before recompute, which the change then reaches on the form
+  // The effects of the option picked in a list, each by its twin (app/javascript/choice_effects): its saving throws
+  // are ticked, those of the option picked before are unticked (decision: replaced), its speed is written. Only an
+  // aid: the player can still change any box. Runs before recompute, which the change then reaches on the form
   applyEffects({ target: select }) {
     const effectsByOption = JSON.parse(select.dataset.effects)
     const previousEffects = effectsByOption[this.appliedOptions[select.id]] ?? {}
     const pickedEffects = effectsByOption[select.value] ?? {}
-    this.tickBonusFields(previousEffects.proficient, false)
-    this.tickBonusFields(pickedEffects.proficient, true)
-    this.writeFields(previousEffects.set, pickedEffects.set)
+    applyChoiceEffects(previousEffects, pickedEffects, this.page())
     this.appliedOptions[select.id] = select.value
   }
 
-  // set: the values of the option picked are written (speed, size of a species); a field the option picked before
-  // had filled, and the new one does not, is emptied
-  writeFields(previousValues = {}, pickedValues = {}) {
-    Object.keys(previousValues).filter((fieldKey) => !(fieldKey in pickedValues))
-      .forEach((fieldKey) => this.writeField(fieldKey, ""))
-    Object.entries(pickedValues).forEach(([fieldKey, value]) => this.writeField(fieldKey, value))
-  }
-
-  writeField(fieldKey, value) {
-    const field = this.element.querySelector(`#character_sheet_${fieldKey}`)
-    if (field) field.value = `${value}`
-  }
-
-  tickBonusFields(fieldKeys = [], isTicked) {
-    fieldKeys.forEach((fieldKey) => {
-      const checkBox = this.element.querySelector(`#character_sheet_${fieldKey}`)
-      if (checkBox) checkBox.checked = isTicked
-    })
+  // What the effects may change on the page: a box ticked or not, a field written (a field of another step is left)
+  page() {
+    const fieldOf = (fieldKey) => this.element.querySelector(`#character_sheet_${fieldKey}`)
+    return {
+      tickBox: (fieldKey, isTicked) => { const checkBox = fieldOf(fieldKey); if (checkBox) checkBox.checked = isTicked },
+      writeField: (fieldKey, value) => { const field = fieldOf(fieldKey); if (field) field.value = `${value}` }
+    }
   }
 
   // The skills offered by the options picked (skill_choices) are marked, and the count of those ticked is written

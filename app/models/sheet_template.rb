@@ -19,20 +19,8 @@ class SheetTemplate < ApplicationRecord
   MODIFIER_RULES = ModifierRules.keys.freeze
   COMPUTED_RULES = ComputedRules.keys.freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
-  # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
-  # Applied on the sheet: hit_die (the sides of the hit dice, hit_dice_by_class); proficient (the bonus fields
-  # ticked: saving throws of a class, skills of a background); skill_choices (how many bonus fields to pick, count,
-  # among a list, from); set (values written in fields: the speed and size of a species); spellcasting (ability,
-  # then by level from 1 to 20: cantrips, prepared spells, highest spell level).
-  # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
-  # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
-  # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class).
-  # starting_equipment: the options of the starting equipment (CharacterSheets::StartingEquipment), picked in an
-  # equipment_option field
-  CHOICE_EFFECTS = %w[
-    hit_die proficient skill_choices set spellcasting unarmored_defense
-    ability_bonus_choices training tools features_by_level traits origin_feat starting_equipment
-  ].freeze
+  # list: one class per effect (ChoiceEffects, app/models/choice_effects)
+  CHOICE_EFFECTS = ChoiceEffects.keys.freeze
 
   belongs_to :owner, class_name: "User", optional: true
   belongs_to :parent, class_name: "SheetTemplate", optional: true

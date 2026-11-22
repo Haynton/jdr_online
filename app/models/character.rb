@@ -56,12 +56,15 @@ class Character < ApplicationRecord
                                                       .call(sheet.except(*step.field_keys).merge(filled_values))
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
-    # On another step, a class changed drops an equipment choice it does not offer; on the equipment step, what was
-    # sent is checked instead (CharacterSheetValidator), never dropped without a word
-    self.sheet = CharacterSheets::StartingEquipment.new(self).keep_offered(sheet) unless step.chooses_equipment
-    return choose_spells(spell_keys) if step.chooses_spells
+    fill_behaviors(step, spell_keys: spell_keys)
+  end
 
-    self.spells = spell_choices.keep_offered(spells)
+  # Each behavior of the creation (CreationStepBehaviors) keeps what was picked on its own step, and on the other steps
+  # drops what a class changed no longer offers (the starting equipment, the spells)
+  def fill_behaviors(step, spell_keys:)
+    CreationStepBehaviors.all.each do |behavior|
+      step.behaviors.include?(behavior) ? behavior.fill(self, spell_keys: spell_keys) : behavior.keep_offered(self)
+    end
   end
 
   # The spells this character may choose: its class, its level (CharacterSheets::SpellChoices)

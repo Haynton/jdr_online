@@ -44,11 +44,8 @@
                                                                   computed: computed, wide: header %>
       <% end %>
     <% end %>
-    <% if step.chooses_equipment %>
-      <%= render "character_sheets/summary/equipment", character: character %>
-    <% end %>
-    <% if step.chooses_spells %>
-      <%= render "character_sheets/summary/spells", character: character %>
+    <% step.behaviors.each do |behavior| %>
+      <%= render behavior.summary_partial, character: character %>
     <% end %>
   </div>
 </section>
