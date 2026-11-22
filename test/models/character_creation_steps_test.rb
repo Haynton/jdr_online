@@ -42,6 +42,25 @@ class CharacterCreationStepsTest < ActiveSupport::TestCase
     assert_equal(-1, steps.rank(nil))
   end
 
+  test "a draft resumes at the furthest step reached, or the one before when that step is gone" do
+    steps = CharacterCreationSteps.new(game_table: @game_table, sheet: { "class" => "Guerrier" })
+
+    assert_equal "class", steps.furthest_reached("spells").key
+    assert_equal "description", steps.furthest_reached("description").key
+    assert_equal "class", steps.furthest_reached(nil).key
+  end
+
+  test "a step with nothing to fill in is a block of the summary only, not a page" do
+    steps_with_combat = STEPS + [{ "key" => "combat", "label" => "Combat", "sections" => ["Identité"],
+                                   "summary_only" => true }]
+    @game_table.template_snapshot = { "character_fields" => { "creation_steps" => steps_with_combat,
+                                                              "fields" => FIELDS } }
+    steps = CharacterCreationSteps.new(game_table: @game_table, sheet: {})
+
+    assert_not_includes steps.all.map(&:key), "combat"
+    assert_includes steps.summary_blocks.map(&:key), "combat"
+  end
+
   test "a template without steps asks everything, with the name, in one step" do
     @game_table.template_snapshot = { "character_fields" => { "fields" => FIELDS } }
     steps = CharacterCreationSteps.new(game_table: @game_table, sheet: {})

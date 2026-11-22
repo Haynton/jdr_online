@@ -13,8 +13,15 @@ class SheetTemplate < ApplicationRecord
   # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters.
   # bonus: the modifier of an ability (based_on), plus a proficiency (proficiency, the key of a computed field) when
   # the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
-  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES
-  FIELD_TYPES = %w[number resource ability boolean text choice experience attacks bonus computed].freeze
+  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES.
+  # picks: several options of a list (options), count at most, stored as an array; granted: options always known,
+  # shown and never stored (the Common tongue among the languages).
+  # ability_bonuses: what an option of the list named in from raises (its ability_bonus_choices: the background),
+  # spread by the player as +2 and +1, or +1 to each; stored apart from the scores, { "intelligence" => 2 }, and added
+  # to them for the modifiers (CharacterSheetCalculator)
+  FIELD_TYPES = %w[
+    number resource ability ability_bonuses boolean text choice picks experience attacks bonus computed
+  ].freeze
   # How the modifier of an ability is worked out. half_above_ten: (score - 10) / 2, rounded down (14 gives +2)
   MODIFIER_RULES = %w[half_above_ten].freeze
   # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").

@@ -9,6 +9,8 @@ module StepsBandHelper
     upcoming: "border border-field-line text-muted",
     coming_soon: "border border-dashed border-field-line text-muted"
   }.freeze
+  # Beyond it, the labels of the other steps show from 1280 px only (step_label_classes)
+  MAX_STEPS_WITH_LABELS = 4
 
   # The page around a step: band, the rendered band of the steps; the block is captured here, while the page is
   # still the current template, so that its short translation keys (t(".title")) are looked up for the page and
@@ -26,18 +28,28 @@ module StepsBandHelper
 
   # A link looks like one: its label in ink, "Change" or "Open" under it in the color of links, a background
   # when hovered (only ink on surface-raised: muted falls under 4.5 in the light theme). The negative margins keep
-  # the marker in line with the other steps; wider on the right, where the label would touch the edge
-  def step_link_classes(step)
+  # the marker in line with the other steps; wider on the right, where the label would touch the edge. While the
+  # label is hidden (step_label_classes), the round alone: the same space on both sides (decision: the hover was
+  # wider on the right of an empty place)
+  def step_link_classes(step, step_count = 0)
     return "flex items-center gap-2" unless step[:path]
 
-    "-my-1.5 -ml-1.5 flex items-center gap-2 rounded-lg py-1.5 pr-3 pl-1.5 hover:bg-surface-raised"
+    side_classes = if step_count > MAX_STEPS_WITH_LABELS
+                     "-mr-1.5 pr-1.5 xl:mr-0 xl:pr-3"
+                   else
+                     "-mr-1.5 pr-1.5 sm:mr-0 sm:pr-3"
+                   end
+    "-my-1.5 -ml-1.5 flex items-center gap-2 rounded-lg py-1.5 pl-1.5 #{side_classes} hover:bg-surface-raised"
   end
 
-  def step_label_classes(step)
+  # The other steps show their label from 640 px; on a band of more than four steps (the creation of a character),
+  # only from 1280 px: under it, five to seven labels and their "Change" ran past the edge of the screen (at 800 px,
+  # the summary was cut off). Hidden, a label stays for screen readers, and the current step always shows its own
+  def step_label_classes(step, step_count = 0)
     return "font-semibold text-ink" if step[:state] == :current
-    return "text-ink max-sm:sr-only" if step[:path]
 
-    "text-muted max-sm:sr-only"
+    hidden_classes = step_count > MAX_STEPS_WITH_LABELS ? "max-xl:sr-only" : "max-sm:sr-only"
+    "#{step[:path] ? 'text-ink' : 'text-muted'} #{hidden_classes}"
   end
 
   # Under the label: "Change" for a step done, "Open" for a later one reached already, "Soon" for a later milestone

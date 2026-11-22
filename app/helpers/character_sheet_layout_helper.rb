@@ -12,20 +12,27 @@ module CharacterSheetLayoutHelper
   FIELD_WIDTH_CLASSES = { "text" => "w-full", "choice" => "w-full" }.freeze
   SHORT_TEXT_WIDTH_CLASSES = "w-full".freeze
   # The groups of a flow, in this order (decision): lists and short texts in a grid of equal widths, then the
-  # boxes and tiles side by side, then the long texts across the width, then the switches, each on its line
-  FLOW_GROUPS = %i[lists boxes texts switches].freeze
+  # boxes and tiles side by side, then the groups of check boxes (picks: the languages), then the long texts across
+  # the width, then the switches, each on its line
+  FLOW_GROUPS = %i[lists boxes picks texts switches].freeze
   # How each group lays out its fields. The grid of lists follows the width of the section (container query):
-  # one list per line, two from 384 px, three from 512 px
+  # one list per line, two from 384 px, three from 512 px, six from 1024 px
   FLOW_GROUP_CLASSES = {
-    lists: "grid gap-x-4 @sm:grid-cols-2 @lg:grid-cols-3",
+    # Six per line from 1024 px of section: the short fields of the physical appearance on one line (Details step)
+    lists: "grid gap-x-4 @sm:grid-cols-2 @lg:grid-cols-3 @5xl:grid-cols-6",
     boxes: "flex flex-wrap items-start gap-3",
-    texts: "flex flex-col",
+    picks: "flex flex-col",
+    # Two by two from 768 px of section (the four texts of the Details step: appearance and personality, then
+    # backstory and features); four on one line made them too narrow
+    # Their text areas 144 px high (decision: they fill the screen better than the 96 px of a single text area)
+    texts: "grid gap-x-6 @3xl:grid-cols-2 [&_textarea]:min-h-36",
     switches: "flex flex-col gap-2"
   }.freeze
   # The partial that draws each type, wherever it is (characters/_<partial>)
   FIELD_PARTIALS = {
     "ability" => "ability_field", "number" => "stat_field", "resource" => "stat_field", "experience" => "stat_field",
-    "computed" => "stat_field", "boolean" => "switch_field", "bonus" => "bonus_field"
+    "computed" => "stat_field", "boolean" => "switch_field", "bonus" => "bonus_field",
+    "picks" => "picks_field"
   }.freeze
   # Their help is too long for a box: it goes under the row of the section, as a note
   BOXED_FIELD_TYPES = %w[number resource experience computed].freeze
@@ -43,16 +50,27 @@ module CharacterSheetLayoutHelper
     return :abilities if abilities_section?(fields)
     return :rows if rows_section?(fields)
     return :two_columns if fields.any? { |field| sheet_field_aside?(field) }
+    return :split if split_section?(fields)
 
     :flow
   end
 
+  # The abilities, with the bonus of the background placed on them (ability_bonuses) when the template has one
   def abilities_section?(fields)
-    fields.all? { |field| field["type"] == "ability" }
+    fields.any? { |field| field["type"] == "ability" } &&
+      fields.all? { |field| %w[ability ability_bonuses].include?(field["type"]) }
   end
 
   def rows_section?(fields)
     fields.all? { |field| field["type"] == "bonus" }
+  end
+
+  # Picks (with or without lists) beside long texts, nothing else: two columns across the width, the choices on the
+  # left, the texts on the right (in one flow, the texts stretched across the screen). Short fields alone with long
+  # texts stay in the flow: a line of short fields, then the texts (the Details step, decision)
+  def split_section?(fields)
+    groups = fields.map { |field| sheet_flow_group(field) }
+    groups.include?(:texts) && groups.include?(:picks) && (groups - %i[texts lists picks]).empty?
   end
 
   def sheet_field_aside?(field)
@@ -79,6 +97,12 @@ module CharacterSheetLayoutHelper
     FLOW_GROUPS.filter_map { |group| [group, grouped_fields[group]] if grouped_fields[group] }
   end
 
+  # The groups of a flow by line: the lists and the picks share one (the alignment beside the languages, decision:
+  # each on its line left too much empty space); every other group has its own
+  def sheet_flow_rows(fields)
+    sheet_flow_groups(fields).slice_when { |before, after| !(before.first == :lists && after.first == :picks) }.to_a
+  end
+
   def sheet_flow_group_classes(group)
     FLOW_GROUP_CLASSES.fetch(group)
   end
@@ -88,6 +112,7 @@ module CharacterSheetLayoutHelper
     when "choice" then :lists
     when "text" then field["short"] ? :lists : :texts
     when "boolean" then :switches
+    when "picks" then :picks
     else :boxes
     end
   end

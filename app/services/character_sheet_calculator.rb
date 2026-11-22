@@ -11,11 +11,13 @@ class CharacterSheetCalculator
     @level_thresholds = level_thresholds.to_a.sort_by { |threshold| threshold["level"] }
   end
 
-  # modifiers: by ability key (nil until a score is typed); values: the computed and bonus fields, by key
+  # scores: by ability key, the score raised by the bonus of the background (ability_bonuses), nil until typed;
+  # modifiers: worked out from those scores; values: the computed and bonus fields, by key
   def call
-    modifiers = ability_modifiers
+    scores = ability_scores
+    modifiers = ability_modifiers(scores)
     computed_values = computed_field_values(modifiers)
-    { modifiers: modifiers, values: computed_values.merge(bonus_values(modifiers, computed_values)) }
+    { scores: scores, modifiers: modifiers, values: computed_values.merge(bonus_values(modifiers, computed_values)) }
   end
 
   # The modifier of a score by the rule of its ability. half_above_ten: (score - 10) / 2, rounded down: 14 gives +2,
@@ -28,9 +30,27 @@ class CharacterSheetCalculator
 
   private
 
-  def ability_modifiers
+  def ability_fields
     @fields.select { |field| field["type"] == "ability" }
-           .to_h { |field| [field["key"], self.class.modifier(@sheet[field["key"]], field["modifier"])] }
+  end
+
+  # The score typed, plus the bonus placed on it (the bonus is kept apart, decision)
+  def ability_scores
+    ability_fields.to_h do |field|
+      score = @sheet[field["key"]]
+      [field["key"], score.is_a?(Integer) ? score + ability_bonuses[field["key"]].to_i : nil]
+    end
+  end
+
+  def ability_bonuses
+    @ability_bonuses ||= begin
+      bonus_field = @fields.find { |field| field["type"] == "ability_bonuses" }
+      bonus_field ? @sheet[bonus_field["key"]].to_h : {}
+    end
+  end
+
+  def ability_modifiers(scores)
+    ability_fields.to_h { |field| [field["key"], self.class.modifier(scores[field["key"]], field["modifier"])] }
   end
 
   def computed_field_values(modifiers)

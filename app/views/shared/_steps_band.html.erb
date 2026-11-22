@@ -1,14 +1,20 @@
 <%# The steps of a creation (a table, a character), joined by a line, the current one stressed. A step reached
     already is a link to its page, to change it ("Change" under its label). On a phone, only the label of the current
-    step shows, the others stay for screen readers (step_label_classes, StepsBandHelper).
-    steps: [{ number:, label:, state:, path: }], label: the name of the list for screen readers %>
+    step shows (under 1280 px for a band of more than five steps), the others stay for screen readers
+    (step_label_classes, StepsBandHelper).
+    steps: [{ key:, number:, label:, state:, path:, saves_form: }], label: the name of the list for screen readers.
+    saves_form: the page has a form to save before leaving (the creation of a character): the link carries its step
+    (data-save-step-key), and save_before_leaving_controller.js sends the form with it. Links, not buttons of the
+    form: a submit button before the form in the page would be the one Enter presses %>
 <ol class="flex items-center gap-1.5 sm:gap-3" aria-label="<%= label %>">
   <% steps.each_with_index do |step, position| %>
     <% if position.positive? %>
       <li class="h-px min-w-2 flex-1 bg-line sm:min-w-3" aria-hidden="true"></li>
     <% end %>
     <%= tag.li class: "flex shrink-0 items-center", aria: step_aria(step[:state]) do %>
-      <%= content_tag(step[:path] ? :a : :div, href: step[:path], class: step_link_classes(step)) do %>
+      <%# The label as a tooltip too: on a narrow screen, only the round of a step shows %>
+      <%= content_tag(step[:path] ? :a : :div, href: step[:path], class: step_link_classes(step, steps.size), title: step[:label],
+                      data: ({ save_step_key: step[:key] } if step[:saves_form])) do %>
         <span class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold <%= step_marker_classes(step[:state]) %>" aria-hidden="true">
           <% if step[:state] == :done %>
             <%= render "shared/icons/check" %>
@@ -16,7 +22,7 @@
             <%= step[:number] %>
           <% end %>
         </span>
-        <span class="text-[13px] leading-tight <%= step_label_classes(step) %>">
+        <span class="text-[13px] leading-tight <%= step_label_classes(step, steps.size) %>">
           <span class="sr-only"><%= t(".step_number", number: step[:number]) %></span>
           <%= step[:label] %>
           <% if step_note(step) %>

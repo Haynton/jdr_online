@@ -13,15 +13,20 @@ module GameTables
       @computed_sheet_values = @character.computed_sheet_values
     end
 
+    # "Later" in go_to: the step is saved, then "My tables"
+    LATER = "later".freeze
+
+    # Continue saves the step and opens the next one. A step of the band, Back or Later save it too (decision: moving
+    # between the steps never loses what was typed), then go where they point (go_to), without reaching the next step
     def update
       return complete_character if @step.summary?
 
       @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name])
       next_step = @character.creation_steps.after(@step)
-      @character.reach_creation_step(next_step.key)
+      @character.reach_creation_step(next_step.key) if params[:go_to].blank?
       return render_step_again unless @character.save
 
-      redirect_to game_table_character_step_path(@game_table, next_step.key)
+      redirect_to destination_after_save(next_step)
     end
 
     private
@@ -42,10 +47,13 @@ module GameTables
                                                   sheet: @game_table.character_values_from_table)
     end
 
-    # A step not reached yet (or unknown, or gone: no spells for this class) is not found
+    # A step not reached yet, unknown, or gone (no spells for this class, a step renamed in the template, an old
+    # bookmark) leads the player to the step they are at (decision), rather than to a page not found
     def set_step
       @step = @character.creation_steps.find(params[:step])
-      raise ActiveRecord::RecordNotFound unless @step && @character.creation_step_reached?(@step)
+      return if @step && @character.creation_step_reached?(@step)
+
+      redirect_to new_game_table_character_path(@game_table)
     end
 
     # For screen readers only: on screen, the page of the table follows
@@ -55,6 +63,14 @@ module GameTables
 
       redirect_to game_table_path(@game_table),
                   flash: { screen_reader_notice: t(".created", name: @character.name) }
+    end
+
+    # The step named in go_to (one not reached leads back to the current one, set_step), "My tables" for Later,
+    # otherwise the next step
+    def destination_after_save(next_step)
+      return game_tables_path(table: @game_table.id) if params[:go_to] == LATER
+
+      game_table_character_step_path(@game_table, params[:go_to].presence || next_step.key)
     end
 
     def render_step_again

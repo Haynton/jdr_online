@@ -16,7 +16,7 @@ module GameTables
     def resume_step_key(participation)
       character = participation.character
       steps = CharacterCreationSteps.new(game_table: participation.game_table, sheet: character&.sheet)
-      steps.find(character&.creation_step.to_s)&.key || steps.first.key
+      steps.furthest_reached(character&.creation_step).key
     end
   end
 end

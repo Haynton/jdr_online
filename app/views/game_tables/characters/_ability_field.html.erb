@@ -1,12 +1,16 @@
 <%# An ability in its tile, everything inside (decisions): its name at the top, its modifier large in the middle
-    (+2, what is used in the game, kept up to date while the player types: character_sheet_controller.js), and at
-    the bottom its score between a "−" and a "+" (number_stepper_controller.js: they show that the value changes,
-    and are shown by the controller; without JavaScript, the score is typed). Tried before: a shield, with the score
-    in a circle on its point; a circle between two buttons looked odd %>
+    (+2, what is used in the game, worked out on the final score and kept up to date while the player types:
+    character_sheet_controller.js), and at the bottom its score between a "−" and a "+" (number_stepper_controller.js:
+    they show that the value changes, and are shown by the controller; without JavaScript, the score is typed).
+    Tried before: a shield, with the score in a circle on its point; a circle between two buttons looked odd.
+    Every tile has the same size (decision): the bonus of the background is picked in the guide beside the tiles, and
+    goes into the score of the tile (decision, instead of a round in its corner): character_sheet_controller.js adds
+    it, keeps the score from going under it, writes "incl. +2 Soldier" under it, and takes it off when the form is
+    sent (the server keeps the score typed). Without JavaScript, the score typed, and nothing under it %>
 <% error = sheet_field_error(character, field) %>
-<%# A fixed width, the one of its "−", score and "+" (154 px, like the combat boxes): neither its column nor the
-    "Assign" list can stretch it (decision). The modifier has room above and under it (my-4) %>
-<div class="flex w-[9.625rem] flex-col items-center rounded-xl border border-line bg-surface px-2 pt-3 pb-2">
+<%# As wide as its column on a phone, 192 px from 640 px (characters/_section_abilities), never under the width of its "−",
+    score and "+" (154 px). The modifier has room above and under it (my-4) %>
+<div class="relative flex w-full min-w-[9.625rem] flex-col sm:w-48 items-center rounded-xl border border-line bg-surface px-1 pt-3 pb-2 sm:px-2">
   <%= label_tag sheet_field_id(field), field["label"],
                 class: "w-full truncate text-center text-[11px] font-semibold tracking-wider text-muted uppercase",
                 title: field["label"] %>
@@ -15,9 +19,18 @@
     <output data-character-sheet-target="modifier" data-ability="<%= field["key"] %>"><%= format_bonus(modifier) %></output>
   </p>
   <%= render "game_tables/characters/stepper", field: field, input: sheet_ability_input(character, field) %>
+  <%# Its line is kept in every tile, empty or not: the tiles keep the same height %>
+  <% if local_assigns[:bonus_field] %>
+    <p id="<%= sheet_field_id(field) %>_bonus" class="mt-1 h-4 text-xs leading-4 font-medium text-brass tabular-nums"
+       data-character-sheet-target="bonusNote" data-ability="<%= field["key"] %>"
+       data-template="<%= ability_bonus_note_template(character, bonus_field) %>"></p>
+  <% else %>
+    <p class="mt-1 h-4" aria-hidden="true"></p>
+  <% end %>
   <%# After "Roll the dice": the results to place on this ability (ability_roll_controller.js). No name: it is not
       sent, it only fills the score above, which stays free to change %>
   <% if local_assigns[:rollable] %>
+    <%# Shown by the controller as the page opens, disabled until the first roll: the tiles keep their height %>
     <div hidden class="relative mt-2 w-full" data-ability-roll-target="choice">
       <select class="<%= CharacterSheetsHelper::SELECT_CLASSES %>" data-action="ability-roll#place"
               data-score-input="<%= sheet_field_id(field) %>"

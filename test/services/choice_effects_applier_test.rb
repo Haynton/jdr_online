@@ -16,6 +16,15 @@ class ChoiceEffectsApplierTest < ActiveSupport::TestCase
     assert_equal({ "species" => "Tieffelin", "history" => false, "speed" => 9 }, sheet)
   end
 
+  test "the bonus placed on an ability the new background does not raise is taken off" do
+    fields = [{ "key" => "background", "type" => "choice", "effects" => { "Sage" => {}, "Soldat" => {} } },
+              { "key" => "ability_bonuses", "type" => "ability_bonuses", "from" => "background" }]
+    applier = ChoiceEffectsApplier.new(fields: fields, previous_sheet: { "background" => "Sage" })
+
+    assert_equal({ "background" => "Soldat" },
+                 applier.call("background" => "Soldat", "ability_bonuses" => { "intelligence" => 2 }))
+  end
+
   test "an option that did not change applies nothing: what was changed by hand stays" do
     applier = ChoiceEffectsApplier.new(fields: FIELDS, previous_sheet: { "species" => "Nain" })
 

@@ -9,9 +9,16 @@ export default class extends Controller {
   static targets = ["controls", "button", "buttonLabel", "results", "chipTemplate", "choice"]
   static values = { url: String, rerollLabel: String, placeholder: String }
 
+  // The lists of the tiles show from the start, disabled until a roll: the tiles keep their height
   connect() {
     this.controlsTarget.hidden = false
     this.rolledResults = []
+    this.choiceTargets.forEach((choice) => {
+      const select = choice.querySelector("select")
+      select.replaceChildren(new Option(this.placeholderValue, ""))
+      select.disabled = true
+      choice.hidden = false
+    })
   }
 
   async roll() {
@@ -30,12 +37,13 @@ export default class extends Controller {
     }
   }
 
-  // A result chosen in a tile goes into its score; the other lists stop offering it
+  // A result chosen in a tile goes into its score, with the bonus of the background the score shows
+  // (character_sheet_controller.js#showBonusInScore); the other lists stop offering it
   place(event) {
     const result = this.rolledResults[event.target.value]
     if (result) {
       const scoreInput = document.getElementById(event.target.dataset.scoreInput)
-      scoreInput.value = result.total
+      scoreInput.value = result.total + Number(scoreInput.dataset.shownBonus ?? 0)
       scoreInput.dispatchEvent(new Event("input", { bubbles: true }))
     }
     this.markPlacedResults()
@@ -58,7 +66,7 @@ export default class extends Controller {
       const select = choice.querySelector("select")
       const options = this.rolledResults.map(({ total }, index) => new Option(`${total}`, index))
       select.replaceChildren(new Option(this.placeholderValue, ""), ...options)
-      choice.hidden = false
+      select.disabled = false
     })
   }
 

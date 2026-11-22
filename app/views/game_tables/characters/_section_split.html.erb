@@ -1,0 +1,25 @@
+<%# A section of short choices and long texts (the Details step), across the width in two columns from 1024 px
+    (decision): on the left the short choices one under the other (alignment, then the languages), on the right the
+    long texts one under the other (appearance, personality, backstory, features). Each field keeps the look of its
+    type (sheet_field_partial). One column on a phone, the choices first %>
+<% texts, choices = fields.partition { |field| sheet_flow_group(field) == :texts } %>
+<%# The choices at the width of their content (448 px), the texts in the rest: two halves left a wide empty space
+    beside the choices %>
+<div class="clear-left grid gap-x-16 gap-y-2 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
+  <div class="flex min-w-0 flex-col">
+    <% if lead %>
+      <div class="max-w-sm"><%= lead %></div>
+    <% end %>
+    <% choices.each do |field| %>
+      <div class="<%= "max-w-xs" if sheet_flow_group(field) == :lists %>">
+        <%= render "game_tables/characters/#{sheet_field_partial(field)}",
+                   character: character, field: field, computed: computed, all_fields: all_fields %>
+      </div>
+    <% end %>
+  </div>
+  <div class="flex min-w-0 flex-col">
+    <% texts.each do |field| %>
+      <%= render "game_tables/characters/input_field", character: character, field: field, computed: computed %>
+    <% end %>
+  </div>
+</div>

@@ -143,7 +143,7 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     patch sheet_step_path, params: { character: { name: "", sheet: { strength: "14", athletics: "1" } } }
     get sheet_step_path
 
-    assert_select "form[data-controller=character-sheet]"
+    assert_select "form[data-controller~=character-sheet]"
     assert_select "label[for=character_sheet_strength]", text: "Force"
     assert_select "input[name=?][data-character-sheet-target=score][value='14']", "character[sheet][strength]"
     assert_select "output[data-character-sheet-target=modifier][data-ability=strength]", text: "+2"
@@ -172,7 +172,9 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_table_character_step_path(@game_table, "summary")
 
     follow_redirect!
+    assert_select "h2#summary_sheet", text: "Aldric"
     assert_select "dd", text: "Mage"
+    assert_select "div.rounded-lg", text: /Force\s+12/
     patch game_table_character_step_path(@game_table, "summary")
     assert_predicate character.reload, :complete?
     assert_redirected_to game_table_path(@game_table)
@@ -199,21 +201,97 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_select "p#character_sheet_strength_error", text: /20/
   end
 
-  test "the steps of the template come in order, each saving the draft, the spells only for a class with spells" do
+  test "the steps come in order, each saving the draft; a step not reached or unknown leads back to the current one" do
     use_template_with_steps
     sign_in @player
 
     get new_game_table_character_path(@game_table)
     assert_redirected_to game_table_character_step_path(@game_table, "class")
-    get game_table_character_step_path(@game_table, "origin")
-    assert_response :not_found
+    get game_table_character_step_path(@game_table, "description")
+    assert_redirected_to new_game_table_character_path(@game_table)
+    get game_table_character_step_path(@game_table, "renamed")
+    assert_redirected_to new_game_table_character_path(@game_table)
 
     patch game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: "Mage" } } }
     assert_redirected_to game_table_character_step_path(@game_table, "spells")
     patch game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: "Guerrier" } } }
     assert_redirected_to game_table_character_step_path(@game_table, "description")
     get game_table_character_step_path(@game_table, "spells")
-    assert_response :not_found
+    assert_redirected_to new_game_table_character_path(@game_table)
+  end
+
+  test "leaving a step by Back, Later or the band saves it, without reaching the next step" do
+    use_template_with_steps
+    sign_in @player
+    patch game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: "Mage" } } }
+    patch game_table_character_step_path(@game_table, "spells"),
+          params: { go_to: "class", character: { sheet: { spell_notes: "Boule de feu" } } }
+
+    assert_redirected_to game_table_character_step_path(@game_table, "class")
+    character = @participation.reload.character
+    assert_equal "Boule de feu", character.sheet["spell_notes"]
+    assert_equal "spells", character.creation_step
+    patch game_table_character_step_path(@game_table, "class"),
+          params: { go_to: "later", character: { sheet: { class: "Mage" } } }
+    assert_redirected_to game_tables_path(table: @game_table.id)
+    get game_table_character_step_path(@game_table, "spells")
+    assert_select "a[data-save-step-key=class]"
+    assert_select "form button[name=go_to][value=class]", text: "Retour"
+  end
+
+  test "a field of picks offers its options as check boxes, the granted ones shown, count at most" do
+    fields = [{ "key" => "languages", "label" => "Langues", "type" => "picks", "section" => "Identité", "count" => 2,
+                "granted" => ["Commun"], "options" => %w[Elfique Nain Orc] }]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    get sheet_step_path
+    assert_select "fieldset legend", text: "Langues"
+    assert_select "input[type=checkbox][disabled][checked]:not([name])", count: 1
+    assert_select "input[type=checkbox][name=?]", "character[sheet][languages][]", count: 3
+
+    patch sheet_step_path, params: { character: { name: "Aldric", sheet: { languages: ["", "Elfique", "Nain", "Orc"] } } }
+    assert_response :unprocessable_content
+    assert_select "fieldset[aria-invalid=true] p", text: /2 au plus/
+
+    patch sheet_step_path, params: { character: { name: "Aldric", sheet: { languages: ["", "Elfique"] } } }
+    assert_equal ["Elfique"], @participation.reload.character.sheet["languages"]
+    follow_redirect!
+    assert_select "dd", text: "Commun et Elfique"
+  end
+
+  test "the abilities a background raises take +0, +1 or +2, spread as the rules say, never past the maximum" do
+    fields = [
+      { "key" => "background", "label" => "Historique", "type" => "choice", "section" => "Origine",
+        "options" => %w[Sage], "effects" => { "Sage" => { "ability_bonus_choices" => %w[intelligence wisdom] } } },
+      { "key" => "intelligence", "label" => "Intelligence", "type" => "ability", "max" => 20,
+        "modifier" => "half_above_ten", "section" => "Caractéristiques" },
+      { "key" => "wisdom", "label" => "Sagesse", "type" => "ability", "max" => 20, "modifier" => "half_above_ten",
+        "section" => "Caractéristiques" },
+      { "key" => "ability_bonuses", "label" => "Bonus de l'historique", "type" => "ability_bonuses",
+        "from" => "background", "section" => "Caractéristiques" }
+    ]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    send_bonuses = lambda do |bonuses, intelligence: "15"|
+      patch sheet_step_path, params: { character: { name: "Aldric", sheet: {
+        background: "Sage", intelligence: intelligence, wisdom: "12", ability_bonuses: bonuses
+      } } }
+    end
+
+    send_bonuses.call({ intelligence: "2", wisdom: "2" })
+    assert_response :unprocessable_content
+    send_bonuses.call({ intelligence: "2", wisdom: "0" }, intelligence: "19")
+    assert_select "p", text: /dépasse 20 avec le bonus/
+    send_bonuses.call({ intelligence: "2", wisdom: "1" })
+    assert_equal({ "intelligence" => 2, "wisdom" => 1 }, @participation.reload.character.sheet["ability_bonuses"])
+
+    get sheet_step_path
+    assert_select "span#bonus_intelligence_label", text: "Intelligence"
+    assert_select "[role=radiogroup][aria-labelledby=bonus_intelligence_label] input[type=radio][value='2'][checked]"
+    assert_select "[data-character-sheet-target=bonusNote][data-ability=intelligence][data-template=?]",
+                  "dont +#{AbilityBonusesHelper::BONUS_PLACEHOLDER} Sage"
+    assert_select "output[data-character-sheet-target=finalScore][data-ability=intelligence]", text: "17"
+    assert_select "output[data-character-sheet-target=modifier][data-ability=intelligence]", text: "+3"
   end
 
   test "a required list keeps its step until it is picked" do
@@ -249,7 +327,7 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
                  @participation.reload.character.sheet)
   end
 
-  test "the lists with descriptions show a summary of the option picked, and the worked out values are kept at the end" do
+  test "the lists with descriptions show a summary of the option picked; the worked out values are kept at the end" do
     fields = [
       { "key" => "class", "label" => "Classe", "type" => "choice", "section" => "Personnage",
         "options" => %w[Mage Guerrier], "descriptions" => { "Mage" => "Un érudit.", "Guerrier" => "Un soldat." },
@@ -292,6 +370,9 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
   test "only a player of the table makes a character there" do
     sign_in @game_table.participations.game_master.first.user
     get new_game_table_character_path(@game_table)
+    assert_response :not_found
+    sign_in @game_table.participations.game_master.first.user
+    get game_table_character_step_path(@game_table, "sheet")
     assert_response :not_found
 
     @participation.update!(status: :pending)

@@ -1,15 +1,20 @@
 <%# A page of a creation in steps: a table, a character. Use the steps_page helper (steps_band_helper.rb), through
     creation_page (a table) or character_creation_page (a character). Across the whole width beside the navigation,
     like "My tables": the band of the steps on top (band, rendered already), then the content, whose rows of cards
-    run from edge to edge. flush_top: the content touches the band (a cover from edge to edge) %>
-<%# The band stays at the top of the screen: its steps lead back to the pages reached. It slides away while the page
-    scrolls down and comes back when it scrolls up (hide_on_scroll_controller.js), or when a step gets the focus %>
-<header class="sticky top-0 z-20 border-b border-line bg-surface px-4 py-4 data-scrolled-away:-translate-y-full motion-safe:transition-transform motion-safe:duration-200 sm:px-8 md:py-5"
-        data-controller="hide-on-scroll"
-        data-action="scroll@window->hide-on-scroll#update focusin->hide-on-scroll#show">
-  <%= band %>
-</header>
-<main class="<%= creation_main_classes(flush_top) %>">
-  <%= render "shared/flashes" %>
-  <%= content %>
-</main>
+    run from edge to edge. flush_top: the content touches the band (a cover from edge to edge).
+    The page is at least as high as the screen (on a phone, less the room kept under the floating bar), and its
+    content a column that fills it: the buttons of a step (mt-auto) sit at the bottom of the screen on a short page,
+    neither sticky nor fixed (decision) %>
+<div class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh">
+  <%# The band stays at the top of the screen: its steps lead back to the pages reached. It slides away while the
+      page scrolls down and comes back when it scrolls up (hide_on_scroll_controller.js), or when a step gets the focus %>
+  <header class="sticky top-0 z-20 border-b border-line bg-surface px-4 py-4 data-scrolled-away:-translate-y-full motion-safe:transition-transform motion-safe:duration-200 sm:px-8 md:py-5"
+          data-controller="hide-on-scroll"
+          data-action="scroll@window->hide-on-scroll#update focusin->hide-on-scroll#show">
+    <%= band %>
+  </header>
+  <main class="flex flex-1 flex-col <%= creation_main_classes(flush_top) %>">
+    <%= render "shared/flashes" %>
+    <%= content %>
+  </main>
+</div>

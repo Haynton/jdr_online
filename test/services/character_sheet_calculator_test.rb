@@ -97,6 +97,16 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil armor_class.call("class" => "Moine")
   end
 
+  test "the bonus of the background raises the score, and the modifier follows the score raised" do
+    fields = FIELDS + [{ "key" => "ability_bonuses", "type" => "ability_bonuses", "from" => "background" }]
+    computed = CharacterSheetCalculator.new(fields: fields, sheet: { "strength" => 13, "dexterity" => 14,
+                                                                     "ability_bonuses" => { "strength" => 2 } },
+                                            level_thresholds: []).call
+
+    assert_equal({ "strength" => 15, "dexterity" => 14 }, computed[:scores])
+    assert_equal({ "strength" => 2, "dexterity" => 2 }, computed[:modifiers])
+  end
+
   test "a bonus is the modifier of its ability, plus the proficiency when ticked" do
     values = calculate("strength" => 14, "dexterity" => 9, "athletics" => true, "stealth" => false)[:values]
 

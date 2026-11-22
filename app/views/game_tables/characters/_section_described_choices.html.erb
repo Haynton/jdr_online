@@ -1,17 +1,27 @@
-<%# The lists whose options have a description (class, species, background), with the name first (lead), and beside
-    them a summary of each option picked: its description, then what it brings (ChoiceSummariesHelper). On the left
-    from 1024 px, under the lists before. Every option is rendered, the one picked shown; described_choices_controller.js
-    shows the one picked while the player changes the list, and the summary is read again by screen readers (polite) %>
-<div class="clear-left grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+<%# The first step, in three columns from 1024 px (decision): the avatar, the fields (the name first, lead, then the
+    lists two by two: class, background, species, size), then a summary of each option picked: its description,
+    then what it brings (ChoiceSummariesHelper), plain text on the page, not in a card (decision). From 768 px, the
+    avatar and the fields side by side, the summary under them; on a phone, one under the other.
+    The avatar is a place kept for now: the upload comes with Active Storage and Cloudinary, it does nothing yet.
+    Every option is rendered, the one picked shown; described_choices_controller.js shows the one picked while the
+    player changes the list, and the summary is read again by screen readers (polite) %>
+<div class="clear-left grid gap-x-12 gap-y-8 md:grid-cols-[11rem_minmax(0,1fr)] lg:grid-cols-[12rem_minmax(0,1fr)_minmax(0,1fr)]"
      data-controller="described-choices" data-action="change->described-choices#show">
-  <div class="min-w-0">
+  <%# 128 px on a phone, where it would push the fields down; its column from 768 px %>
+  <div class="flex aspect-square w-32 flex-col items-center justify-center gap-1 self-start rounded-xl border-2 border-dashed border-field-line px-3 text-center text-muted md:w-full md:gap-2 md:px-4">
+    <%= render "shared/icons/user_round", css_class: "size-10" %>
+    <p class="text-sm font-medium text-ink"><%= t("game_tables.choice_summaries.avatar") %></p>
+    <p class="text-xs"><%= t("game_tables.choice_summaries.avatar_soon") %></p>
+  </div>
+  <%# The fields stay narrow (448 px at most, two lists per line from 640 px, decision): their texts are short %>
+  <div class="min-w-0 max-w-md">
     <% if lead %>
-      <div class="max-w-sm"><%= lead %></div>
+      <div><%= lead %></div>
     <% end %>
     <%= render "game_tables/characters/section_flow", character: character, fields: fields,
-                                                     all_fields: all_fields, computed: computed %>
+                                                     all_fields: all_fields, computed: computed, paired: true %>
   </div>
-  <aside class="flex flex-col gap-6 self-start rounded-xl bg-surface p-5 lg:sticky lg:top-6 lg:order-first"
+  <aside class="flex flex-col gap-6 self-start md:col-span-2 lg:sticky lg:top-6 lg:col-span-1"
          aria-label="<%= t("game_tables.choice_summaries.label") %>" aria-live="polite">
     <% described_choice_fields(fields).each do |field| %>
       <section>

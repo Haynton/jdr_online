@@ -29,6 +29,10 @@ class CharacterSheetBuilder
     when "number" then number_or_typed_value(field, typed_value)
     when "ability", "experience" then integer_or_typed_value(typed_value)
     when "resource" then full_resource(typed_value)
+    # The check boxes of the options picked; the hidden field before them sends "" so that none picked is a value too
+    when "picks" then Array(typed_value).compact_blank.map(&:to_s)
+    # One choice (0, 1 or 2) per ability raised; a bonus of 0 is left out
+    when "ability_bonuses" then ability_bonuses(typed_value)
     # The check box sends "1" when checked, the hidden field before it "0". For a bonus, it is its proficiency
     when *CHECK_BOX_TYPES then typed_value == "1"
     else typed_value.to_s.strip
@@ -48,6 +52,11 @@ class CharacterSheetBuilder
     return typed_value unless number
 
     number == number.to_i ? number.to_i : number
+  end
+
+  def ability_bonuses(typed_value)
+    bonuses = typed_value.to_h.transform_values { |bonus| Integer(bonus.to_s, 10, exception: false) || bonus }
+    bonuses.reject { |_ability_key, bonus| bonus.is_a?(Integer) && bonus.zero? }
   end
 
   # At creation, the player gives the maximum: the character starts full

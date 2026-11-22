@@ -8,7 +8,8 @@ import { Controller } from "@hotwired/stimulus"
 // A step of the creation shows only some fields: the others are read from what the server gives (sheet: the values
 // saved, effects: the effects of each list, calculated: its modifiers and computed values)
 export default class extends Controller {
-  static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices"]
+  static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices", "abilityBonus",
+    "finalScore", "bonusNote"]
   static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object }
 
   connect() {
@@ -17,10 +18,13 @@ export default class extends Controller {
   }
 
   recompute() {
+    this.scoreTargets.forEach((input) => this.showBonusInScore(input))
     const modifiers = this.abilityModifiers()
     const computedValues = this.computedValues(modifiers)
 
     this.modifierTargets.forEach((output) => { output.textContent = formatBonus(modifiers[output.dataset.ability]) })
+    this.finalScoreTargets.forEach((output) => { output.textContent = this.finalScore(output.dataset.ability) ?? "—" })
+    this.bonusNoteTargets.forEach((note) => this.writeBonusNote(note))
     this.computedTargets.forEach((output) => { output.textContent = formatComputed(computedValues[output.dataset.key]) })
     this.bonusTargets.forEach((output) => { output.textContent = formatBonus(this.bonusOf(output, modifiers)) })
     this.showSkillChoices()
@@ -95,9 +99,49 @@ export default class extends Controller {
   // The modifier of each score by the rule of its ability (SheetTemplate::MODIFIER_RULES). No score yet: no modifier
   abilityModifiers() {
     const modifiersOnPage = Object.fromEntries(this.scoreTargets.map((input) => {
-      return [input.dataset.ability, modifierOf(parseInteger(input.value), input.dataset.modifierRule)]
+      return [input.dataset.ability, modifierOf(this.finalScore(input.dataset.ability), input.dataset.modifierRule)]
     }))
     return { ...this.calculatedValue.modifiers, ...modifiersOnPage }
+  }
+
+  // The score of a tile includes the bonus of the background placed on it (decision): 13 typed with +2 shows 15,
+  // and the field cannot go under its part of bonus (its min is raised). The server keeps the score typed: the bonus
+  // is taken off when the form is sent (sendTypedScores). data-shown-bonus says what the field holds; as an
+  // attribute, it stays with a copy of the page by Turbo, which would otherwise add the bonus twice
+  showBonusInScore(input) {
+    const bonus = this.pickedBonus(input.dataset.ability)
+    const shownBonus = Number(input.dataset.shownBonus ?? 0)
+    const score = parseInteger(input.value)
+    input.dataset.typedMin ??= input.min
+    if (score !== null && bonus !== shownBonus) input.value = score + bonus - shownBonus
+    if (input.dataset.typedMin !== "") input.min = Number(input.dataset.typedMin) + bonus
+    input.dataset.shownBonus = bonus
+  }
+
+  // "incl. +2 Soldier" under the score of a tile, empty while its bonus is +0 (its line stays: same size for all)
+  writeBonusNote(note) {
+    const bonus = this.pickedBonus(note.dataset.ability)
+    note.textContent = bonus === 0 ? "" : note.dataset.template.replace("%{bonus}", bonus)
+  }
+
+  // The scores are sent as typed, without the bonus shown in them (formdata: the fields themselves stay as they are)
+  sendTypedScores({ formData }) {
+    this.scoreTargets.forEach((input) => {
+      const score = parseInteger(input.value)
+      if (score !== null) formData.set(input.name, score - Number(input.dataset.shownBonus ?? 0))
+    })
+  }
+
+  pickedBonus(abilityKey) {
+    const pickedChoice = this.abilityBonusTargets.find((choice) => choice.dataset.ability === abilityKey && choice.checked)
+    return Number(pickedChoice?.value ?? 0)
+  }
+
+  // The score typed plus the bonus of the background picked for it (+0, +1 or +2), as
+  // CharacterSheetCalculator#ability_scores: what the tile shows (showBonusInScore). Nothing typed: no score
+  finalScore(abilityKey) {
+    const input = this.scoreTargets.find((score) => score.dataset.ability === abilityKey)
+    return parseInteger(input?.value)
   }
 
   // The rules of SheetTemplate::COMPUTED_RULES, as in CharacterSheetCalculator#computed_value

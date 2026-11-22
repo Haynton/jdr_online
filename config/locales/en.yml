@@ -62,6 +62,9 @@ en:
         remember_me: "Stay logged in"
         username: "Username"
     errors:
+      messages:
+        ability_bonus_too_high: "goes past %{count} with the bonus"
+        too_many_picks: "%{count} at most"
       models:
         character:
           attributes:
@@ -261,19 +264,30 @@ en:
         later: "Later"
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
-        summary_intro: "Check your character before creating it. You can go back to a step to change it."
       steps:
         sheet: "Sheet"
         summary: "Summary"
       summary:
         answer_no: "No"
         answer_yes: "Yes"
-        proficient: "Proficient"
+        unnamed: "Unnamed character"
       update:
         created: "%{name} is ready. Welcome to the table!"
     characters:
       new:
+        about: "Help: %{label}"
+        bonus_included: "incl. +%{bonus} %{option}"
+        bonus_column: "Bonus"
+        bonus_done: "Bonus placed."
+        bonus_for: "Background bonus for %{label}"
+        bonus_left_one: "1 point left to place."
+        bonus_left_other: "%{count} points left to place."
+        bonus_pick_background: "Pick a background first, at the Character step."
+        bonus_raises_html: "%{option} raises %{abilities}."
+        bonus_rule: "Spread +2 and +1, or +1 to each."
+        bonus_too_many: "Too much bonus: +2 and +1, or +1 to each."
         decrease: "Decrease %{label}"
+        final_score: "Final score"
         increase: "Increase %{label}"
         modifier: "Modifier"
         note_html: "%{labels}: %{text}"
@@ -285,13 +299,18 @@ en:
         resource_hint: "Maximum value: your character starts full."
         roll: "Roll the dice"
         roll_method: "%{dice}d%{sides} per ability, keeping the %{kept} best. Assign each result, or type your own scores."
+        score_column: "Score"
+        scores_title: "Your scores"
         skill_choices: "%{option}: choose %{count} skills among those marked “Suggested”. Ticked: %{chosen} of %{count}."
+        type_scores: "Type your scores in the tiles."
     choice_row:
       filter: "Filter by theme"
       next: "Next choices"
       previous: "Previous choices"
     choice_summaries:
       ability_bonus_value: "%{abilities} (+2 and +1, or +1 to each)"
+      avatar: "Avatar"
+      avatar_soon: "Soon: a picture of your character."
       facts:
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"

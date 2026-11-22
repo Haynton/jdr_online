@@ -7,9 +7,9 @@
       { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },
       { "key": "skills", "label": "Skills", "sections": ["Saving throws", "Skills"] },
-      { "key": "equipment", "label": "Combat", "sections": ["Combat"] },
+      { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting" },
-      { "key": "details", "label": "Details", "sections": ["Identity", "Notes"] }
+      { "key": "details", "label": "Details", "sections": ["Details"] }
     ],
     "fields": [
       { "key": "class", "label": "Class", "type": "choice", "section": "Character", "required": true, "visible_to_others": true,
@@ -82,19 +82,29 @@
         } },
       { "key": "size", "label": "Size", "type": "choice", "section": "Character",
         "options": ["Small", "Medium"] },
-      { "key": "alignment", "label": "Alignment", "type": "choice", "section": "Identity",
+      { "key": "alignment", "label": "Alignment", "type": "choice", "section": "Character",
         "options": ["Lawful good", "Neutral good", "Chaotic good", "Lawful neutral", "Neutral", "Chaotic neutral", "Lawful evil", "Neutral evil", "Chaotic evil"] },
-      { "key": "level", "label": "Level", "type": "number", "from_table": "starting_level", "min": 1, "max": 20, "section": "Identity", "visible_to_others": true },
-      { "key": "appearance", "label": "Appearance", "type": "text", "column": "aside", "section": "Identity" },
-      { "key": "personality_traits", "label": "Personality traits", "type": "text", "column": "aside", "section": "Identity" },
-      { "key": "backstory", "label": "Backstory", "type": "text", "column": "aside", "section": "Identity" },
+      { "key": "languages", "label": "Languages", "type": "picks", "section": "Character", "count": 2, "granted": ["Common"],
+        "options": ["Common Sign Language", "Draconic", "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc"],
+        "help": "You speak Common, and two languages of your choice." },
+      { "key": "level", "label": "Level", "type": "number", "from_table": "starting_level", "min": 1, "max": 20, "section": "Details", "visible_to_others": true },
+      { "key": "age", "label": "Age", "type": "text", "short": true, "section": "Details" },
+      { "key": "height", "label": "Height", "type": "text", "short": true, "section": "Details" },
+      { "key": "weight", "label": "Weight", "type": "text", "short": true, "section": "Details" },
+      { "key": "eyes", "label": "Eyes", "type": "text", "short": true, "section": "Details" },
+      { "key": "hair", "label": "Hair", "type": "text", "short": true, "section": "Details" },
+      { "key": "skin", "label": "Skin", "type": "text", "short": true, "section": "Details" },
+      { "key": "appearance", "label": "Appearance", "type": "text", "section": "Details" },
+      { "key": "personality_traits", "label": "Personality traits", "type": "text", "section": "Details" },
+      { "key": "backstory", "label": "Backstory", "type": "text", "section": "Details" },
 
-      { "key": "strength", "label": "Strength", "abbreviation": "STR", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "wisdom", "label": "Wisdom", "abbreviation": "WIS", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "charisma", "label": "Charisma", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "strength", "label": "Strength", "abbreviation": "STR", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "wisdom", "label": "Wisdom", "abbreviation": "WIS", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "charisma", "label": "Charisma", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
+      { "key": "ability_bonuses", "label": "Background bonus", "type": "ability_bonuses", "from": "background", "section": "Abilities" },
 
       { "key": "max_hp", "label": "Hit points", "type": "computed", "rule": "hit_points_by_level", "class_from": "class", "level_from": "level", "based_on": "constitution", "section": "Combat",
         "help": "At level 1: the highest roll of the hit die of the class, plus the Constitution modifier. Then, at each level, the average of the die plus the Constitution modifier." },
@@ -145,8 +155,8 @@
       { "key": "stealth", "label": "Stealth", "type": "bonus", "based_on": "dexterity", "proficiency": "proficiency_bonus", "section": "Skills" },
       { "key": "survival", "label": "Survival", "type": "bonus", "based_on": "wisdom", "proficiency": "proficiency_bonus", "section": "Skills" },
 
-      { "key": "features", "label": "Features and spells", "type": "text", "section": "Notes",
-        "help": "Class and species features, feats, known spells: write them down freely." }
+      { "key": "features", "label": "Features", "type": "text", "section": "Details",
+        "help": "Class and species features, feats: write them down freely." }
     ]
   },
   "npc_fields": {
