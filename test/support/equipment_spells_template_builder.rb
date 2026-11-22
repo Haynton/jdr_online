@@ -73,16 +73,18 @@ module EquipmentSpellsTemplateBuilder
 
   def spell_fields
     { "fields" => [
-      { "key" => "level", "type" => "number", "min" => 0, "max" => 9, "required" => true },
-      { "key" => "school", "type" => "choice", "options" => ["Évocation"] },
-      { "key" => "classes", "type" => "picks", "options" => %w[Mage Prêtre Guerrier], "required" => true }
+      { "key" => "level", "label" => "Niveau", "type" => "number", "min" => 0, "max" => 9, "required" => true },
+      { "key" => "school", "label" => "École", "type" => "choice", "options" => ["Évocation"] },
+      { "key" => "classes", "label" => "Classes", "type" => "picks", "options" => %w[Mage Prêtre Guerrier],
+        "required" => true }
     ] }
   end
 
   def item_fields
     { "fields" => [
-      { "key" => "category", "type" => "choice", "options" => ["Arme", "Armure", "Instrument de musique"] },
-      { "key" => "group", "type" => "choice", "options" => ["musical_instrument"] }
+      { "key" => "category", "label" => "Catégorie", "type" => "choice",
+        "options" => ["Arme", "Armure", "Instrument de musique"] },
+      { "key" => "group", "label" => "Groupe", "type" => "choice", "options" => ["musical_instrument"] }
     ] }
   end
 end

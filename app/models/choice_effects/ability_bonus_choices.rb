@@ -1,6 +1,6 @@
 module ChoiceEffects
-  # The abilities a background raises (rules of 2024: +2 and +1, or +1 to each), placed by the player in an
-  # ability_bonuses field
+  # The abilities a background raises, placed by the player in an ability_bonuses field by its rule (rules of 2024: +2
+  # and +1, or +1 to each)
   class AbilityBonusChoices < Base
     KEY = "ability_bonus_choices".freeze
     TARGET_TYPE = "ability".freeze
@@ -13,8 +13,15 @@ module ChoiceEffects
       labels = labels_of(value, fields_by_key)
       return [] if labels.empty?
 
-      [[fact_label(:ability_bonus),
-        I18n.t("game_tables.choice_summaries.ability_bonus_value", abilities: labels.to_sentence)]]
+      [[fact_label(:ability_bonus), with_rule(labels.to_sentence, fields_by_key)]]
+    end
+
+    # The abilities, then the rule in the words of the game (the help of the ability_bonuses field), when it has one
+    def with_rule(abilities, fields_by_key)
+      rule = fields_by_key.values.find { |field| field["type"] == "ability_bonuses" }&.dig("help")
+      return abilities if rule.blank?
+
+      I18n.t("game_tables.choice_summaries.ability_bonus_value", abilities: abilities, rule: rule.delete_suffix("."))
     end
 
     # A bonus placed on an ability the new background does not raise means nothing: it is taken off (emptied when none

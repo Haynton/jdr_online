@@ -1,5 +1,6 @@
 module SheetTemplates
-  # The fields of each part (the sheet of a character, of an NPC, of an item, of a spell): a key used once, a type of
+  # The fields of each part (the sheet of a character, of an NPC, of an item, of a spell): a key in snake_case used
+  # once, a label that can be shown, a type of
   # the registry, only the settings its type declares and those it needs, references to a field of the right type,
   # known rules, descriptions and effects of options that exist, a single field that receives the damage
   class FieldsCheck < Check
@@ -26,8 +27,17 @@ module SheetTemplates
       type = FieldTypes.find(field["type"])
       return [[:unknown_type, context(part, field).merge(type: field["type"].to_s)]] unless type
 
-      parameter_errors(part, field, type) + reference_errors(part, field, type, fields) +
+      name_errors(part, field) + parameter_errors(part, field, type) + reference_errors(part, field, type, fields) +
         rule_errors(part, field, fields) + option_errors(part, field)
+    end
+
+    def name_errors(part, field)
+      errors = []
+      errors << [:invalid_key, context(part).merge(key: field["key"].to_s)] unless valid_key?(field["key"])
+      unless valid_label?(field["label"])
+        errors << [:invalid_label, context(part, field).merge(count: LABEL_MAX_LENGTH)]
+      end
+      errors
     end
 
     def parameter_errors(part, field, type)

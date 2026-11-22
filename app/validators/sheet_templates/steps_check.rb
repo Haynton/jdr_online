@@ -28,7 +28,15 @@ module SheetTemplates
       parameter_errors = (step.keys - STEP_PARAMETERS).map do |parameter|
         [:unknown_step_parameter, { step: name, parameter: parameter }]
       end
-      section_errors + parameter_errors + effect_errors(step, name)
+      section_errors + parameter_errors + effect_errors(step, name) + step_name_errors(step, name)
+    end
+
+    # Its key is a part of the address of its page (/steps/character), its label is shown in the band of the steps
+    def step_name_errors(step, name)
+      errors = []
+      errors << [:invalid_step_key, { step: name, key: step["key"].to_s }] unless valid_key?(step["key"])
+      errors << [:invalid_step_label, { step: name, count: LABEL_MAX_LENGTH }] unless valid_label?(step["label"])
+      errors
     end
 
     def effect_errors(step, name)
