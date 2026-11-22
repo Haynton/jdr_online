@@ -50,6 +50,25 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil hit_dice.call({})
   end
 
+  test "the spells of a class use its spellcasting ability and the proficiency" do
+    class_effects = { "Magicien" => { "hit_die" => 6, "spellcasting" => { "ability" => "strength" } },
+                      "Guerrier" => { "hit_die" => 10 } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects }] +
+             %w[spell_save_dc spell_attack_bonus].map do |rule|
+               { "key" => rule, "type" => "computed", "rule" => rule, "class_from" => "class",
+                 "proficiency" => "proficiency_bonus" }
+             end
+    spells = lambda do |sheet|
+      values = CharacterSheetCalculator.new(fields: fields, sheet: sheet, level_thresholds: LEVEL_THRESHOLDS)
+                                       .call[:values]
+      values.values_at("spell_save_dc", "spell_attack_bonus")
+    end
+
+    assert_equal ["13", 5], spells.call("class" => "Magicien", "strength" => 16, "level" => 1)
+    assert_equal [nil, nil], spells.call("class" => "Guerrier", "strength" => 16)
+    assert_equal [nil, nil], spells.call("class" => "Magicien")
+  end
+
   test "a bonus is the modifier of its ability, plus the proficiency when ticked" do
     values = calculate("strength" => 14, "dexterity" => 9, "athletics" => true, "stealth" => false)[:values]
 

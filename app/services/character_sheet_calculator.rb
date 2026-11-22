@@ -43,15 +43,33 @@ class CharacterSheetCalculator
     when "proficiency_by_level" then threshold_of_level(field["level_from"])&.dig("proficiency_bonus")
     when "ability_modifier" then modifiers[field["based_on"]]
     when "hit_dice_by_class" then hit_dice(field)
+    when "spell_save_dc" then spell_attack(field, modifiers)&.then { |attack| (8 + attack).to_s }
+    when "spell_attack_bonus" then spell_attack(field, modifiers)
     end
   end
 
-  # "3d8": one die per level, its sides the hit_die of the class chosen (effects of the class field).
-  # nil until a class of the list is chosen
+  # "3d8": one die per level, its sides the hit_die of the class chosen. nil until a class of the list is chosen
   def hit_dice(field)
-    class_field = @fields.find { |candidate| candidate["key"] == field["class_from"] }
-    sides = class_field&.dig("effects", @sheet[field["class_from"]].to_s, "hit_die")
+    sides = class_effects(field)["hit_die"]
     "#{typed_level(field['level_from'])}d#{sides}" if sides
+  end
+
+  # The proficiency plus the modifier of the spellcasting ability of the class chosen. nil for a class without spells,
+  # or until that ability has a score. The save DC is a plain number: a text, like the hit dice ("13", not "+13")
+  def spell_attack(field, modifiers)
+    modifier = modifiers[class_effects(field).dig("spellcasting", "ability")]
+    modifier + proficiency_of(field) if modifier
+  end
+
+  def proficiency_of(field)
+    proficiency_field = @fields.find { |candidate| candidate["key"] == field["proficiency"] }
+    proficiency_field ? computed_value(proficiency_field, {}).to_i : 0
+  end
+
+  # The effects of the option chosen in the list class_from ({} before a choice)
+  def class_effects(field)
+    class_field = @fields.find { |candidate| candidate["key"] == field["class_from"] }
+    class_field&.dig("effects", @sheet[field["class_from"]].to_s) || {}
   end
 
   # nil while the ability has no score: a bonus cannot be worked out yet

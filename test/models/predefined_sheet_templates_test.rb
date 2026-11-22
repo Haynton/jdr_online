@@ -3,7 +3,8 @@ require "test_helper"
 # The predefined templates are written by hand in db/seeds/sheet_templates: these tests read the files
 # and check that they follow the format of the design notes ("Base de données", the template builder)
 class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
-  TEMPLATE_FILES = Rails.root.glob("db/seeds/sheet_templates/*.json").sort
+  TEMPLATES_DIRECTORY = Rails.root.join("db/seeds/sheet_templates")
+  TEMPLATE_FILES = TEMPLATES_DIRECTORY.glob("*.json").sort
   FIELD_DEFINITIONS = %w[character_fields npc_fields item_fields].freeze
 
   test "every file makes a valid predefined template" do
@@ -96,28 +97,39 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   test "the effects of a list are known, for its own options, and name fields that exist" do
     each_template do |template_file, template|
       fields = template.dig("character_fields", "fields")
-      bonus_keys = fields.select { |field| field["type"] == "bonus" }.pluck("key")
-
       fields.select { |field| field["effects"] }.each do |field|
         assert_empty field["effects"].keys - field["options"], "#{template_file.basename}: options of #{field['key']}"
         field["effects"].each do |option, effects|
-          assert_known_effects(effects, bonus_keys, "#{template_file.basename}: #{option}")
+          assert_known_effects(effects, fields, "#{template_file.basename}: #{option}")
         end
       end
     end
   end
 
-  test "the hit dice read a list whose every option gives its hit die" do
+  test "the rules that read the class point to a list whose every option gives its hit die" do
     each_template do |template_file, template|
       fields = template.dig("character_fields", "fields")
-      fields.select { |field| field["rule"] == "hit_dice_by_class" }.each do |hit_dice|
-        class_field = fields.find { |field| field["key"] == hit_dice["class_from"] }
+      fields.select { |field| field["class_from"] }.each do |computed|
+        class_field = fields.find { |field| field["key"] == computed["class_from"] }
 
-        assert_equal "choice", class_field&.dig("type"), "#{template_file.basename}: class_from of #{hit_dice['key']}"
+        assert_equal "choice", class_field&.dig("type"), "#{template_file.basename}: class_from of #{computed['key']}"
         assert class_field["options"].all? { |option| class_field.dig("effects", option, "hit_die").is_a?(Integer) },
                "#{template_file.basename}: every class needs its hit_die"
       end
     end
+  end
+
+  test "the 2024 heroic fantasy gives its classes, backgrounds and species their effects" do
+    template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.fr.json"))
+    fields = template.dig("character_fields", "fields").index_by { |field| field["key"] }
+
+    assert_equal 12, fields["class"]["effects"].size
+    assert_equal %w[Acolyte Criminel Sage Soldat], fields["background"]["options"]
+    assert_equal 9, fields["species"]["effects"].size
+    assert_equal({ "speed" => 10.5, "size" => "Moyenne" }, fields["species"]["effects"]["Goliath"]["set"])
+    wizard = fields["class"]["effects"]["Magicien"]
+    assert_includes wizard.dig("skill_choices", "from"), "nature"
+    assert_equal [3, 4, 1], wizard["spellcasting"].values_at("cantrips", "prepared", "max_spell_level").map(&:first)
   end
 
   test "the ready-made characters only fill fields of the NPC sheet, in the shape of their type" do
@@ -161,15 +173,29 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     FIELD_DEFINITIONS.to_h { |definition| [definition, template.dig(definition, "fields").pluck("key").sort] }
   end
 
-  # Effects of SheetTemplate::CHOICE_EFFECTS only; the ticks and the skills offered are bonus fields of the sheet
-  def assert_known_effects(effects, bonus_keys, context)
+  # Effects of SheetTemplate::CHOICE_EFFECTS only, naming fields of the sheet of the right type
+  def assert_known_effects(effects, fields, context)
+    keys_of_type = ->(type) { fields.select { |field| field["type"] == type }.pluck("key") }
     assert_empty effects.keys - SheetTemplate::CHOICE_EFFECTS, context
-    assert_empty effects["proficient"].to_a - bonus_keys, "#{context}: proficient"
-    skill_choices = effects["skill_choices"]
-    return unless skill_choices
+    assert_empty effects["proficient"].to_a - keys_of_type.call("bonus"), "#{context}: proficient"
+    assert_empty effects["ability_bonus_choices"].to_a - keys_of_type.call("ability"), "#{context}: ability bonus"
+    assert_empty effects["set"].to_h.keys - fields.pluck("key"), "#{context}: set"
+    assert_skill_choices(effects["skill_choices"], keys_of_type.call("bonus"), context) if effects["skill_choices"]
+    assert_spellcasting(effects["spellcasting"], keys_of_type.call("ability"), context) if effects["spellcasting"]
+  end
 
+  def assert_skill_choices(skill_choices, bonus_keys, context)
     assert_empty skill_choices["from"] - bonus_keys, "#{context}: skill_choices"
     assert_includes 1..skill_choices["from"].size, skill_choices["count"], "#{context}: count of skill_choices"
+  end
+
+  # One value per level, from 1 to 20
+  def assert_spellcasting(spellcasting, ability_keys, context)
+    assert_includes ability_keys, spellcasting["ability"], "#{context}: spellcasting ability"
+    %w[cantrips prepared max_spell_level].each do |table|
+      assert_equal 20, spellcasting[table].size, "#{context}: #{table}"
+      assert spellcasting[table].all?(Integer), "#{context}: #{table}"
+    end
   end
 
   # One shape per type (design notes, "Valeurs d'une fiche")

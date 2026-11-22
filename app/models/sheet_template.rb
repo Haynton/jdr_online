@@ -20,13 +20,22 @@ class SheetTemplate < ApplicationRecord
   # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
   # proficiency_by_level: the proficiency_bonus, in level_thresholds, of the level typed in the field level_from.
   # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
-  # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8"
-  COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class].freeze
+  # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8".
+  # spell_save_dc: 8 + the proficiency (proficiency) + the modifier of the spellcasting ability of the class chosen
+  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5)
+  COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus].freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
-  # list. Only an aid: the player can still tick or untick anything (decision).
-  # hit_die: the sides of the hit dice (hit_dice_by_class). proficient: the bonus fields ticked (saving throws),
-  # unticked when another option is chosen. skill_choices: how many bonus fields to pick (count) among a list (from)
-  CHOICE_EFFECTS = %w[hit_die proficient skill_choices].freeze
+  # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
+  # Applied on the sheet: hit_die (the sides of the hit dice, hit_dice_by_class); proficient (the bonus fields
+  # ticked: saving throws of a class, skills of a background); skill_choices (how many bonus fields to pick, count,
+  # among a list, from); set (values written in fields: the speed and size of a species); spellcasting (ability,
+  # then by level from 1 to 20: cantrips, prepared spells, highest spell level).
+  # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
+  # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
+  CHOICE_EFFECTS = %w[
+    hit_die proficient skill_choices set spellcasting
+    ability_bonus_choices training tools features_by_level traits origin_feat
+  ].freeze
 
   belongs_to :owner, class_name: "User", optional: true
   belongs_to :parent, class_name: "SheetTemplate", optional: true

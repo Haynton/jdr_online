@@ -31,9 +31,25 @@ export default class extends Controller {
   // Runs before recompute, which the change then reaches on the form
   applyEffects({ target: select }) {
     const effectsByOption = JSON.parse(select.dataset.effects)
-    this.tickBonusFields(effectsByOption[this.appliedOptions[select.id]]?.proficient, false)
-    this.tickBonusFields(effectsByOption[select.value]?.proficient, true)
+    const previousEffects = effectsByOption[this.appliedOptions[select.id]] ?? {}
+    const pickedEffects = effectsByOption[select.value] ?? {}
+    this.tickBonusFields(previousEffects.proficient, false)
+    this.tickBonusFields(pickedEffects.proficient, true)
+    this.writeFields(previousEffects.set, pickedEffects.set)
     this.appliedOptions[select.id] = select.value
+  }
+
+  // set: the values of the option picked are written (speed, size of a species); a field the option picked before
+  // had filled, and the new one does not, is emptied
+  writeFields(previousValues = {}, pickedValues = {}) {
+    Object.keys(previousValues).filter((fieldKey) => !(fieldKey in pickedValues))
+      .forEach((fieldKey) => this.writeField(fieldKey, ""))
+    Object.entries(pickedValues).forEach(([fieldKey, value]) => this.writeField(fieldKey, value))
+  }
+
+  writeField(fieldKey, value) {
+    const field = this.element.querySelector(`#character_sheet_${fieldKey}`)
+    if (field) field.value = `${value}`
   }
 
   tickBonusFields(fieldKeys = [], isTicked) {
@@ -86,19 +102,39 @@ export default class extends Controller {
       const valuesByRule = {
         proficiency_by_level: () => this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus,
         ability_modifier: () => modifiers[output.dataset.basedOn],
-        hit_dice_by_class: () => this.hitDice(output)
+        hit_dice_by_class: () => this.hitDice(output),
+        spell_save_dc: () => { const attack = this.spellAttack(output, modifiers); return attack === null ? null : `${8 + attack}` },
+        spell_attack_bonus: () => this.spellAttack(output, modifiers)
       }
       return [output.dataset.key, valuesByRule[output.dataset.rule]?.() ?? null]
     }))
   }
 
-  // "3d8": one die per level, its sides the hit_die of the class chosen (effects of its list). Nothing until a class
-  // of the list is chosen
+  // "3d8": one die per level, its sides the hit_die of the class chosen. Nothing until a class of the list is chosen
   hitDice(output) {
-    const classSelect = this.element.querySelector(`#character_sheet_${output.dataset.classFrom}`)
-    const effectsByOption = JSON.parse(classSelect?.dataset.effects || "{}")
-    const sides = effectsByOption[classSelect?.value]?.hit_die
+    const sides = this.classEffects(output.dataset.classFrom).hit_die
     return sides ? `${this.typedLevel(output.dataset.levelFrom)}d${sides}` : null
+  }
+
+  // The proficiency plus the modifier of the spellcasting ability of the class chosen; nothing for a class without
+  // spells, or until that ability has a score. The save DC adds 8 and reads as a plain number (a text, like 3d8)
+  spellAttack(output, modifiers) {
+    const modifier = modifiers[this.classEffects(output.dataset.classFrom).spellcasting?.ability]
+    if (modifier === null || modifier === undefined) return null
+
+    return modifier + this.proficiencyOf(output.dataset.proficiency)
+  }
+
+  // The proficiency bonus of the level typed, from the computed field named (its rule: proficiency_by_level)
+  proficiencyOf(fieldKey) {
+    const output = this.computedTargets.find((computed) => computed.dataset.key === fieldKey)
+    return output ? (this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus ?? 0) : 0
+  }
+
+  // The effects of the option chosen in a list ({} before a choice)
+  classEffects(fieldKey) {
+    const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
+    return JSON.parse(select?.dataset.effects || "{}")[select?.value] ?? {}
   }
 
   bonusOf(output, modifiers, computedValues) {
