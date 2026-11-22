@@ -3,9 +3,10 @@ module SheetTemplates
   # declares them: a key used once, sections that exist, every field asked at creation in a step, one step (and only
   # one) that asks the name, a known effect for a step that depends on one, only the settings a step knows
   class StepsCheck < Check
-    STEP_PARAMETERS = %w[
-      key label sections asks_name only_with_effect summary_only chooses_spells chooses_equipment
-    ].freeze
+    # Its own settings, then the behaviors it may turn on (CreationStepBehaviors)
+    STEP_PARAMETERS = (
+      %w[key label sections asks_name only_with_effect summary_only] + CreationStepBehaviors.keys
+    ).freeze
 
     def call
       steps = @sheet_template.character_fields.to_h["creation_steps"]

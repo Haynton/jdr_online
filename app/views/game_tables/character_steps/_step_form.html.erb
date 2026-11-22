@@ -24,10 +24,9 @@
                                                 page_title: character_step_label(step) %>
   <% end %>
 
-  <% if step.chooses_equipment %>
-    <%= render "game_tables/character_steps/equipment_choices", character: character %>
-  <% elsif step.chooses_spells %>
-    <%= render "game_tables/character_steps/spell_choices", character: character, after_sections: sections.any? %>
+  <%# What the step chooses beside its fields: the starting equipment, the spells (CreationStepBehaviors) %>
+  <% step.behaviors.each do |behavior| %>
+    <%= render behavior.form_partial, character: character, after_sections: sections.any? %>
   <% end %>
 
   <%= render layout: "game_tables/character_steps/actions", locals: { character: character, step: step, saves: true } do %>
