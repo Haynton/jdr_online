@@ -14,6 +14,8 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
   test "the band of the editor leads to the fields, listed by section with their type, no key shown" do
     get sheet_template_path(@template)
     assert_select "ol a[href=?]", sheet_template_fields_path(@template), text: /Fiche du personnage/
+    assert_equal ["Informations", "Étapes de création", "Fiche du personnage", "Catalogue"],
+                 css_select("ol li > [title]").pluck("title")
 
     get sheet_template_fields_path(@template)
     assert_response :success

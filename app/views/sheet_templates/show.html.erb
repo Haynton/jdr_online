@@ -9,17 +9,17 @@
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <% banner_color = @sheet_template.banner_color_in_database %>
 <%= template_editor_page(sheet_template: @sheet_template, current_step: :informations, flush_top: true) do %>
-  <section class="relative isolate -mx-4 overflow-hidden px-4 pt-7 pb-6 sm:-mx-8 sm:px-8 <%= banner_classes(banner_color, :background) %>"
+  <section class="relative isolate -mx-4 overflow-hidden px-4 pt-10 pb-8 sm:-mx-8 sm:px-8 <%= banner_classes(banner_color, :background) %>"
            aria-labelledby="template-title">
     <%# Its icon, large and decorative, as the picture of a cover %>
-    <%= sheet_template_icon(@sheet_template.icon_in_database, css_class: "pointer-events-none absolute -right-4 -bottom-8 -z-10 size-48 opacity-20 md:right-10 #{banner_classes(banner_color, :accent)}") %>
+    <%= sheet_template_icon(@sheet_template.icon_in_database, css_class: "pointer-events-none absolute -right-4 -bottom-10 -z-10 size-56 opacity-20 md:right-10 #{banner_classes(banner_color, :accent)}") %>
     <p class="text-xs font-semibold tracking-widest uppercase <%= banner_classes(banner_color, :accent) %>">
       <%= t(".eyebrow") %>
       <% if (origin = sheet_template_origin(@sheet_template)) %>
         · <%= origin %>
       <% end %>
     </p>
-    <h1 id="template-title" class="mt-1.5 text-3xl leading-tight font-bold tracking-tight text-balance text-ink">
+    <h1 id="template-title" class="mt-2 text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-4xl">
       <%= @sheet_template.name_in_database %>
     </h1>
     <% if @sheet_template.description_in_database.present? %>
@@ -82,7 +82,8 @@
   </div>
 
   <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation: Back
-      (to "My templates") then Next (the step "Character sheet"), the order of the band %>
+      (to "My templates") then Next, the next step of the band that exists ("Creation steps" is coming soon: for now,
+      "Character sheet") %>
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-8">
     <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
     <%= link_to t(".next"), sheet_template_fields_path(@sheet_template), class: button_classes(:primary) %>
