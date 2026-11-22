@@ -54,10 +54,14 @@ export default class extends Controller {
   }
 
   // The skills offered by the options picked (skill_choices) are marked, and the count of those ticked is written
-  // under the title of their section. Nothing to show while no option offers any
+  // under the title of their section. Nothing to show while no option offers any. A skill another option already
+  // gives (proficient: the background ticks its own) is neither offered nor counted: the player picks the others
   showSkillChoices() {
-    const offers = this.pickedEffects().filter(({ effects }) => effects.skill_choices)
-    const offeredKeys = new Set(offers.flatMap(({ effects }) => effects.skill_choices.from))
+    const pickedEffects = this.pickedEffects()
+    const offers = pickedEffects.filter(({ effects }) => effects.skill_choices)
+    const grantedKeys = new Set(pickedEffects.flatMap(({ effects }) => effects.proficient ?? []))
+    const offeredKeys = new Set(offers.flatMap(({ effects }) => effects.skill_choices.from)
+      .filter((fieldKey) => !grantedKeys.has(fieldKey)))
     this.bonusRowTargets.forEach((row) => row.toggleAttribute("data-offered", offeredKeys.has(row.dataset.key)))
     this.skillChoicesTargets.forEach((paragraph) => this.writeSkillChoices(paragraph, offers, offeredKeys))
   }
