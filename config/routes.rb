@@ -19,8 +19,10 @@ Rails.application.routes.draw do
       resources :player_suggestions, only: :index
       # The invited player answers from "My tables": accept (update) or decline (destroy)
       resource :invitation_answer, only: %i[update destroy]
-      # The character of the player, made before joining the game
-      resource :character, only: %i[new create]
+      # The character of the player, made before joining the game: new leads to the step to fill in, then each step
+      # of the creation shows and saves the draft (/game_tables/:id/character/steps/:step, CharacterCreationSteps)
+      resource :character, only: :new
+      resources :character_steps, only: %i[show update], path: "character/steps", param: :step
       # "Roll the dice" of the abilities on that sheet: the server rolls, nothing is stored (JSON)
       resource :ability_roll, only: :create
     end

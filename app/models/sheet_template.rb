@@ -22,8 +22,14 @@ class SheetTemplate < ApplicationRecord
   # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
   # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8".
   # spell_save_dc: 8 + the proficiency (proficiency) + the modifier of the spellcasting ability of the class chosen
-  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5)
-  COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus].freeze
+  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5).
+  # hit_points_by_level: at level 1 the hit die of the class plus the modifier of based_on (Constitution), then at each
+  # level the average of the die (half plus one) plus that modifier. unarmored_armor_class: 10 + the modifier of
+  # based_on (Dexterity), + the modifier of the unarmored_defense of the class (barbarian, monk). Both plain numbers
+  COMPUTED_RULES = %w[
+    proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
+    hit_points_by_level unarmored_armor_class
+  ].freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
   # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
   # Applied on the sheet: hit_die (the sides of the hit dice, hit_dice_by_class); proficient (the bonus fields
@@ -32,8 +38,9 @@ class SheetTemplate < ApplicationRecord
   # then by level from 1 to 20: cantrips, prepared spells, highest spell level).
   # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
   # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
+  # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class)
   CHOICE_EFFECTS = %w[
-    hit_die proficient skill_choices set spellcasting
+    hit_die proficient skill_choices set spellcasting unarmored_defense
     ability_bonus_choices training tools features_by_level traits origin_feat
   ].freeze
 

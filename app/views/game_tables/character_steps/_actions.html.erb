@@ -1,0 +1,12 @@
+<%# The buttons at the end of a step, on the right: Back (to the step before, none on the first one), Later (the
+    draft is kept: "My tables" offers to resume it), then the button of the step. Rendered as a layout around that
+    button: render layout: "game_tables/character_steps/actions", locals: { character:, step: } do ... end %>
+<% back_path = previous_character_step_path(character, step) %>
+<div class="mt-10 flex flex-wrap justify-end gap-3">
+  <% if back_path %>
+    <%= link_to t("game_tables.character_steps.show.back"), back_path, class: button_classes(:secondary) %>
+  <% end %>
+  <%= link_to t("game_tables.character_steps.show.later"), game_tables_path(table: character.game_table.id),
+              class: button_classes(:secondary) %>
+  <%= yield %>
+</div>

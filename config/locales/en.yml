@@ -203,6 +203,11 @@ en:
       sign_up: "Sign up"
     password_visibility_button:
       show_password: "Show password"
+    steps_band:
+      change: "Change"
+      coming_soon: "Coming soon"
+      open: "Open"
+      step_number: "Step %{number}:"
     theme_choice:
       dark: "Dark"
       light: "Light"
@@ -247,13 +252,29 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
-    characters:
-      create:
+    character_steps:
+      band_label: "Steps of your character"
+      show:
+        back: "Back"
+        change: "Change"
+        continue: "Continue"
+        later: "Later"
+        submit: "Create my character"
+        subtitle: "Your character for the table “%{name}”."
+        summary_intro: "Check your character before creating it. You can go back to a step to change it."
+      steps:
+        sheet: "Sheet"
+        summary: "Summary"
+      summary:
+        answer_no: "No"
+        answer_yes: "Yes"
+        proficient: "Proficient"
+      update:
         created: "%{name} is ready. Welcome to the table!"
+    characters:
       new:
         decrease: "Decrease %{label}"
         increase: "Increase %{label}"
-        later: "Later"
         modifier: "Modifier"
         note_html: "%{labels}: %{text}"
         offered: "Suggested"
@@ -265,13 +286,24 @@ en:
         roll: "Roll the dice"
         roll_method: "%{dice}d%{sides} per ability, keeping the %{kept} best. Assign each result, or type your own scores."
         skill_choices: "%{option}: choose %{count} skills among those marked “Suggested”. Ticked: %{chosen} of %{count}."
-        submit: "Create my character"
-        subtitle: "For the table “%{name}”."
-        title: "Your character"
     choice_row:
       filter: "Filter by theme"
       next: "Next choices"
       previous: "Previous choices"
+    choice_summaries:
+      ability_bonus_value: "%{abilities} (+2 and +1, or +1 to each)"
+      facts:
+        ability_bonus: "Abilities raised"
+        hit_die: "Hit die"
+        origin_feat: "Origin feat"
+        proficient: "Proficiencies"
+        skill_choices: "Skills"
+        spellcasting: "Spellcasting ability"
+      label: "Summary of your choices"
+      nothing_picked: "Nothing picked yet."
+      skill_choices_value:
+        one: "1 to choose"
+        other: "%{count} to choose"
     cover_themes:
       fantasy: "Fantasy"
       horror: "Horror"
@@ -295,11 +327,7 @@ en:
       cancel: "Cancel"
       continue: "Continue"
     creation_steps:
-      change: "Change"
-      coming_soon: "Coming soon"
       label: "Steps of the creation"
-      open: "Open"
-      step_number: "Step %{number}:"
       steps:
         details: "Details"
         maps: "Maps"
@@ -409,4 +437,5 @@ en:
       game_settings: "Game settings"
       create_character: "Create my character"
       join_game: "Join the game"
+      resume_character: "Resume my character"
       resume_creation: "Resume the creation"

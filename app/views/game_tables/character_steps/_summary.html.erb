@@ -1,0 +1,50 @@
+<%# The last step: what each step holds, with "Change" to go back to it, then "Create my character", which makes it
+    complete. A name still missing is said here, with the step that asks it. The whole sheet, with its values worked
+    out, comes with the next steps of the creation %>
+<% computed = character.computed_sheet_values %>
+<p class="max-w-2xl text-muted"><%= t("game_tables.character_steps.show.summary_intro") %></p>
+
+<% if character.errors.any? %>
+  <div class="mt-6 max-w-2xl">
+    <%= render layout: "shared/message", locals: { variant: :error } do %>
+      <% character.errors.full_messages.each do |message| %>
+        <p class="first-letter:uppercase"><%= message %></p>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<% character.creation_steps.all.reject(&:summary?).each do |step| %>
+  <section class="mt-10" aria-labelledby="summary_<%= step.key %>">
+    <div class="flex items-center justify-between gap-4">
+      <h2 id="summary_<%= step.key %>" class="text-lg font-semibold tracking-tight text-ink"><%= character_step_label(step) %></h2>
+      <%= link_to game_table_character_step_path(character.game_table, step.key),
+                  class: button_classes(:secondary, size: :compact) do %>
+        <%= t("game_tables.character_steps.show.change") %>
+        <span class="sr-only"><%= character_step_label(step) %></span>
+      <% end %>
+    </div>
+    <dl class="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+      <% if step.asks_name && character.name.present? %>
+        <div>
+          <dt class="text-xs font-medium text-muted"><%= Character.human_attribute_name(:name) %></dt>
+          <dd class="text-sm text-ink"><%= character.name %></dd>
+        </div>
+      <% end %>
+      <% character_summary_rows(character, step, computed).each do |label, value| %>
+        <div>
+          <dt class="text-xs font-medium text-muted"><%= label %></dt>
+          <dd class="text-sm break-words whitespace-pre-line text-ink"><%= value %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </section>
+<% end %>
+
+<%= form_with url: game_table_character_step_path(character.game_table, CharacterCreationSteps::SUMMARY),
+              method: :patch do %>
+  <% summary_step = character.creation_steps.find(CharacterCreationSteps::SUMMARY) %>
+  <%= render layout: "game_tables/character_steps/actions", locals: { character: character, step: summary_step } do %>
+    <%= button_tag t("game_tables.character_steps.show.submit"), type: :submit, class: button_classes(:primary) %>
+  <% end %>
+<% end %>

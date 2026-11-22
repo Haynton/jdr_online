@@ -45,7 +45,28 @@ class CharacterSheetCalculator
     when "hit_dice_by_class" then hit_dice(field)
     when "spell_save_dc" then spell_attack(field, modifiers)&.then { |attack| (8 + attack).to_s }
     when "spell_attack_bonus" then spell_attack(field, modifiers)
+    when "hit_points_by_level" then hit_points(field, modifiers)&.to_s
+    when "unarmored_armor_class" then unarmored_armor_class(field, modifiers)&.to_s
     end
+  end
+
+  # Level 1: the highest roll of the die, then its average (half plus one) at each level, the modifier added each time.
+  # A plain number, kept as a text like the hit dice ("8", not "+8"). nil until the class and the ability are known
+  def hit_points(field, modifiers)
+    sides = class_effects(field)["hit_die"]
+    modifier = modifiers[field["based_on"]]
+    return unless sides && modifier
+
+    sides + modifier + ((typed_level(field["level_from"]) - 1) * ((sides / 2) + 1 + modifier))
+  end
+
+  # 10 + the modifier of based_on, + the modifier of the ability of the unarmored defense of the class (barbarian,
+  # monk). nil until based_on has a score
+  def unarmored_armor_class(field, modifiers)
+    modifier = modifiers[field["based_on"]]
+    return unless modifier
+
+    10 + modifier + modifiers[class_effects(field)["unarmored_defense"]].to_i
   end
 
   # "3d8": one die per level, its sides the hit_die of the class chosen. nil until a class of the list is chosen

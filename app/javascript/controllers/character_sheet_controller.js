@@ -4,10 +4,12 @@ import { Controller } from "@hotwired/stimulus"
 // the proficiency bonus of the level typed, the initiative, and the bonus of each saving throw and skill (modifier,
 // plus the proficiency when ticked). Same rules as CharacterSheetCalculator (app/services), which works them out
 // on the server: changing one means changing the other. Nothing here is sent: the server stores only what was typed.
-// It also applies the effects of an option picked in a list (the class ticks its saving throws, offers its skills)
+// It also applies the effects of an option picked in a list (the class ticks its saving throws, offers its skills).
+// A step of the creation shows only some fields: the others are read from what the server gives (sheet: the values
+// saved, effects: the effects of each list, calculated: its modifiers and computed values)
 export default class extends Controller {
   static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices"]
-  static values = { levelThresholds: Array }
+  static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object }
 
   connect() {
     this.appliedOptions = Object.fromEntries(this.effectChoiceTargets.map((select) => [select.id, select.value]))
@@ -20,9 +22,7 @@ export default class extends Controller {
 
     this.modifierTargets.forEach((output) => { output.textContent = formatBonus(modifiers[output.dataset.ability]) })
     this.computedTargets.forEach((output) => { output.textContent = formatComputed(computedValues[output.dataset.key]) })
-    this.bonusTargets.forEach((output) => {
-      output.textContent = formatBonus(this.bonusOf(output, modifiers, computedValues))
-    })
+    this.bonusTargets.forEach((output) => { output.textContent = formatBonus(this.bonusOf(output, modifiers)) })
     this.showSkillChoices()
   }
 
@@ -82,18 +82,22 @@ export default class extends Controller {
   }
 
   // [{ option: "Magicien", effects: { ... } }] for each list with effects, once an option is picked
+  // A list of another step (the class, on the skills step) gives the option saved
   pickedEffects() {
-    return this.effectChoiceTargets.flatMap((select) => {
-      const effects = JSON.parse(select.dataset.effects)[select.value]
-      return effects ? [{ option: select.value, effects }] : []
+    return Object.keys(this.effectsValue).flatMap((fieldKey) => {
+      const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
+      const option = select ? select.value : this.sheetValue[fieldKey]
+      const effects = this.effectsValue[fieldKey][option]
+      return effects ? [{ option, effects }] : []
     })
   }
 
   // The modifier of each score by the rule of its ability (SheetTemplate::MODIFIER_RULES). No score yet: no modifier
   abilityModifiers() {
-    return Object.fromEntries(this.scoreTargets.map((input) => {
+    const modifiersOnPage = Object.fromEntries(this.scoreTargets.map((input) => {
       return [input.dataset.ability, modifierOf(parseInteger(input.value), input.dataset.modifierRule)]
     }))
+    return { ...this.calculatedValue.modifiers, ...modifiersOnPage }
   }
 
   // The rules of SheetTemplate::COMPUTED_RULES, as in CharacterSheetCalculator#computed_value
@@ -104,7 +108,9 @@ export default class extends Controller {
         ability_modifier: () => modifiers[output.dataset.basedOn],
         hit_dice_by_class: () => this.hitDice(output),
         spell_save_dc: () => { const attack = this.spellAttack(output, modifiers); return attack === null ? null : `${8 + attack}` },
-        spell_attack_bonus: () => this.spellAttack(output, modifiers)
+        spell_attack_bonus: () => this.spellAttack(output, modifiers),
+        hit_points_by_level: () => asText(this.hitPoints(output, modifiers)),
+        unarmored_armor_class: () => asText(this.unarmoredArmorClass(output, modifiers))
       }
       return [output.dataset.key, valuesByRule[output.dataset.rule]?.() ?? null]
     }))
@@ -125,24 +131,47 @@ export default class extends Controller {
     return modifier + this.proficiencyOf(output.dataset.proficiency)
   }
 
-  // The proficiency bonus of the level typed, from the computed field named (its rule: proficiency_by_level)
+  // Level 1: the highest roll of the die, then its average (half plus one) at each level, the modifier added each time
+  hitPoints(output, modifiers) {
+    const sides = this.classEffects(output.dataset.classFrom).hit_die
+    const modifier = modifiers[output.dataset.basedOn]
+    if (!sides || modifier === null || modifier === undefined) return null
+
+    return sides + modifier + (this.typedLevel(output.dataset.levelFrom) - 1) * (Math.floor(sides / 2) + 1 + modifier)
+  }
+
+  // 10 + the modifier of basedOn, + the modifier of the ability of the unarmored defense of the class
+  unarmoredArmorClass(output, modifiers) {
+    const modifier = modifiers[output.dataset.basedOn]
+    if (modifier === null || modifier === undefined) return null
+
+    return 10 + modifier + (modifiers[this.classEffects(output.dataset.classFrom).unarmored_defense] ?? 0)
+  }
+
+  // The proficiency bonus of the level, from the computed field named (its rule: proficiency_by_level), or the value
+  // the server worked out when that field is on another step
   proficiencyOf(fieldKey) {
     const output = this.computedTargets.find((computed) => computed.dataset.key === fieldKey)
-    return output ? (this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus ?? 0) : 0
+    if (!output) return this.calculatedValue.values?.[fieldKey] ?? 0
+
+    return this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus ?? 0
   }
 
-  // The effects of the option chosen in a list ({} before a choice)
+  // The effects of the option chosen in a list ({} before a choice): from the list on the page, or from the value
+  // saved on another step
   classEffects(fieldKey) {
     const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
-    return JSON.parse(select?.dataset.effects || "{}")[select?.value] ?? {}
+    if (select) return JSON.parse(select.dataset.effects || "{}")[select.value] ?? {}
+
+    return this.effectsValue[fieldKey]?.[this.sheetValue[fieldKey]] ?? {}
   }
 
-  bonusOf(output, modifiers, computedValues) {
+  bonusOf(output, modifiers) {
     const modifier = modifiers[output.dataset.basedOn]
     if (modifier === null || modifier === undefined) return null
 
     const isProficient = document.getElementById(output.dataset.proficientBox)?.checked
-    return modifier + (isProficient ? (computedValues[output.dataset.proficiency] ?? 0) : 0)
+    return modifier + (isProficient ? this.proficiencyOf(output.dataset.proficiency) : 0)
   }
 
   // The threshold of the level typed in the field levelFrom: the last one at or under it
@@ -157,8 +186,13 @@ export default class extends Controller {
     return parseInteger(this.fieldValue(levelFrom)) ?? 1
   }
 
+  // The value typed on the page, or the one saved on another step (the level, given by the table)
   fieldValue(fieldKey) {
-    return this.element.querySelector(`#character_sheet_${fieldKey}`)?.value
+    const field = this.element.querySelector(`#character_sheet_${fieldKey}`)
+    if (field) return field.value
+
+    const savedValue = this.sheetValue[fieldKey]
+    return savedValue === undefined || savedValue === null ? undefined : `${savedValue}`
   }
 }
 
@@ -184,4 +218,9 @@ function formatBonus(value) {
 // Same as format_computed_value: a text as it is (hit dice: 3d8), a number as a bonus
 function formatComputed(value) {
   return typeof value === "string" ? value : formatBonus(value)
+}
+
+// A plain number (hit points, armour class) is kept as a text, so that it reads 8 and not +8, as on the server
+function asText(number) {
+  return number === null || number === undefined ? null : `${number}`
 }

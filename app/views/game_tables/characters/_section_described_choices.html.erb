@@ -1,0 +1,39 @@
+<%# The lists whose options have a description (class, species, background), with the name first (lead), and beside
+    them a summary of each option picked: its description, then what it brings (ChoiceSummariesHelper). On the left
+    from 1024 px, under the lists before. Every option is rendered, the one picked shown; described_choices_controller.js
+    shows the one picked while the player changes the list, and the summary is read again by screen readers (polite) %>
+<div class="clear-left grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+     data-controller="described-choices" data-action="change->described-choices#show">
+  <div class="min-w-0">
+    <% if lead %>
+      <div class="max-w-sm"><%= lead %></div>
+    <% end %>
+    <%= render "game_tables/characters/section_flow", character: character, fields: fields,
+                                                     all_fields: all_fields, computed: computed %>
+  </div>
+  <aside class="flex flex-col gap-6 self-start rounded-xl bg-surface p-5 lg:sticky lg:top-6 lg:order-first"
+         aria-label="<%= t("game_tables.choice_summaries.label") %>" aria-live="polite">
+    <% described_choice_fields(fields).each do |field| %>
+      <section>
+        <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= field["label"] %></h3>
+        <p class="mt-2 text-sm text-muted" data-described-choices-target="empty" data-field="<%= field["key"] %>"
+           <%= "hidden" if choice_picked?(character, field) %>><%= t("game_tables.choice_summaries.nothing_picked") %></p>
+        <% field["options"].each do |option| %>
+          <%= tag.div hidden: choice_option_hidden?(character, field, option), class: "mt-1",
+                      data: { described_choices_target: "option", field: field["key"], option: option } do %>
+            <p class="text-lg font-semibold tracking-tight text-ink"><%= option %></p>
+            <p class="mt-1 text-sm text-ink"><%= field.dig("descriptions", option) %></p>
+            <dl class="mt-3 flex flex-col gap-1.5 text-sm">
+              <% choice_option_facts(field, option, all_fields).each do |label, text| %>
+                <div class="flex flex-wrap gap-x-2">
+                  <dt class="text-muted"><%= label %></dt>
+                  <dd class="font-medium text-ink"><%= text %></dd>
+                </div>
+              <% end %>
+            </dl>
+          <% end %>
+        <% end %>
+      </section>
+    <% end %>
+  </aside>
+</div>

@@ -12,9 +12,17 @@ class CharacterSheetValidator < ActiveModel::Validator
       error_type, error_options = value_error(fields_by_key[key], value)
       character.errors.add(:"sheet.#{key}", error_type, **error_options.to_h) if error_type
     end
+    validate_required_fields(character)
   end
 
   private
+
+  # The fields marked required in the step being saved (Character#fill_step): the step stays until they are filled
+  def validate_required_fields(character)
+    character.required_sheet_fields.to_a.each do |field|
+      character.errors.add(:"sheet.#{field['key']}", :blank) if character.sheet[field["key"]].blank?
+    end
+  end
 
   # nil when the value fits its field, otherwise the type of the error and its options
   def value_error(field, value)

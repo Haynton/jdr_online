@@ -174,6 +174,11 @@ fr:
       sign_up: "S'inscrire"
     password_visibility_button:
       show_password: "Afficher le mot de passe"
+    steps_band:
+      change: "Modifier"
+      coming_soon: "Bientôt"
+      open: "Ouvrir"
+      step_number: "Étape %{number} :"
     theme_choice:
       dark: "Sombre"
       light: "Clair"
@@ -218,13 +223,29 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
-    characters:
-      create:
+    character_steps:
+      band_label: "Étapes de votre personnage"
+      show:
+        back: "Retour"
+        change: "Modifier"
+        continue: "Continuer"
+        later: "Plus tard"
+        submit: "Créer mon personnage"
+        subtitle: "Votre personnage pour la table « %{name} »."
+        summary_intro: "Vérifiez votre personnage avant de le créer. Vous pouvez revenir sur une étape pour la modifier."
+      steps:
+        sheet: "Fiche"
+        summary: "Récapitulatif"
+      summary:
+        answer_no: "Non"
+        answer_yes: "Oui"
+        proficient: "Maîtrise"
+      update:
         created: "%{name} est prêt(e). Bienvenue à la table !"
+    characters:
       new:
         decrease: "Diminuer %{label}"
         increase: "Augmenter %{label}"
-        later: "Plus tard"
         modifier: "Modificateur"
         note_html: "%{labels} : %{text}"
         offered: "Proposée"
@@ -236,13 +257,24 @@ fr:
         roll: "Lancer les dés"
         roll_method: "%{dice}d%{sides} par caractéristique, en gardant les %{kept} meilleurs. Attribuez chaque résultat, ou tapez vos propres scores."
         skill_choices: "%{option} : choisissez %{count} compétences parmi celles marquées « Proposée ». Cochées : %{chosen} sur %{count}."
-        submit: "Créer mon personnage"
-        subtitle: "Pour la table « %{name} »."
-        title: "Votre personnage"
     choice_row:
       filter: "Filtrer par thème"
       next: "Choix suivants"
       previous: "Choix précédents"
+    choice_summaries:
+      ability_bonus_value: "%{abilities} (+2 et +1, ou +1 à chacune)"
+      facts:
+        ability_bonus: "Caractéristiques augmentées"
+        hit_die: "Dé de vie"
+        origin_feat: "Don d'origine"
+        proficient: "Maîtrises"
+        skill_choices: "Compétences"
+        spellcasting: "Caractéristique des sorts"
+      label: "Résumé de vos choix"
+      nothing_picked: "Rien de choisi pour l'instant."
+      skill_choices_value:
+        one: "1 au choix"
+        other: "%{count} au choix"
     cover_themes:
       fantasy: "Fantasy"
       horror: "Horreur"
@@ -266,11 +298,7 @@ fr:
       cancel: "Annuler"
       continue: "Continuer"
     creation_steps:
-      change: "Modifier"
-      coming_soon: "Bientôt"
       label: "Étapes de la création"
-      open: "Ouvrir"
-      step_number: "Étape %{number} :"
       steps:
         details: "Informations"
         maps: "Cartes"
@@ -380,4 +408,5 @@ fr:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"
       join_game: "Rejoindre la partie"
+      resume_character: "Reprendre mon personnage"
       resume_creation: "Reprendre la création"

@@ -30,7 +30,7 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
 
   test "the sheet offers the roll, its method, and a list to place a result on each ability" do
     sign_in @player
-    get new_game_table_character_path(@game_table)
+    get game_table_character_step_path(@game_table, "sheet")
 
     assert_select "[data-controller~=ability-roll][data-ability-roll-url-value=?]",
                   game_table_ability_roll_path(@game_table)
@@ -43,7 +43,7 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
   test "without a roll method in the template, there is nothing to roll" do
     @game_table.update!(template_snapshot: { "character_fields" => { "fields" => ABILITIES } })
     sign_in @player
-    get new_game_table_character_path(@game_table)
+    get game_table_character_step_path(@game_table, "sheet")
     assert_select "[data-controller~=ability-roll]", count: 0
 
     post game_table_ability_roll_path(@game_table), as: :json

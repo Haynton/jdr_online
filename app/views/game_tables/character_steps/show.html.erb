@@ -1,0 +1,13 @@
+<%# A step of the creation of a character (CharacterCreationSteps): the band of the steps, then the fields of the
+    sections of this step, laid out by type like a sheet of a game (CharacterSheetsHelper), or the summary.
+    Across the whole width beside the navigation. The values worked out from the others follow what the player types
+    (character_sheet_controller.js), and the server works them out the same way (@computed_sheet_values) %>
+<%= character_creation_page(character: @character, current_step: @step) do %>
+  <%= page_header(title: character_step_label(@step), subtitle: t(".subtitle", name: @game_table.name)) %>
+  <% if @step.summary? %>
+    <%= render "game_tables/character_steps/summary", character: @character %>
+  <% else %>
+    <%= render "game_tables/character_steps/step_form", character: @character, step: @step,
+                                                        computed: @computed_sheet_values %>
+  <% end %>
+<% end %>

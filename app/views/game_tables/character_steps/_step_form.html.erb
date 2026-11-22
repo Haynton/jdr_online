@@ -1,0 +1,24 @@
+<%# The form of one step: its sections (game_tables/characters/_section), the name first when the step asks it,
+    then Back, Later and Continue at the end, on the right. Continue saves the draft and opens the next step %>
+<%= simple_form_for character, url: game_table_character_step_path(character.game_table, step.key), method: :patch,
+                               data: character_sheet_form_data(character, computed) do |f| %>
+  <%= form_error_notification(f) %>
+  <%# Asked by the step that names the character; required to finish, not for the draft %>
+  <% if step.asks_name %>
+    <% name_input = capture { f.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
+  <% end %>
+  <% sections = sheet_sections(step.fields) %>
+  <% if sections.empty? && name_input %>
+    <div class="max-w-sm"><%= name_input %></div>
+  <% end %>
+
+  <% sections.each_with_index do |(section, fields), position| %>
+    <%= render "game_tables/characters/section", section: section, fields: fields, character: character,
+                                                all_fields: character.sheet_fields, computed: computed,
+                                                lead: (name_input if position.zero?) %>
+  <% end %>
+
+  <%= render layout: "game_tables/character_steps/actions", locals: { character: character, step: step } do %>
+    <%= f.button :submit, t("game_tables.character_steps.show.continue"), class: button_classes(:primary) %>
+  <% end %>
+<% end %>

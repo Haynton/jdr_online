@@ -69,6 +69,34 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_equal [nil, nil], spells.call("class" => "Magicien")
   end
 
+  test "the hit points take the highest die at level 1, then its average at each level, Constitution each time" do
+    class_effects = { "Magicien" => { "hit_die" => 6 } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },
+                       { "key" => "max_hp", "type" => "computed", "rule" => "hit_points_by_level",
+                         "class_from" => "class", "level_from" => "level", "based_on" => "strength" }]
+    hit_points = lambda do |sheet|
+      CharacterSheetCalculator.new(fields: fields, sheet: sheet, level_thresholds: []).call[:values]["max_hp"]
+    end
+
+    assert_equal "8", hit_points.call("class" => "Magicien", "strength" => 14)
+    assert_equal "20", hit_points.call("class" => "Magicien", "strength" => 14, "level" => 3)
+    assert_nil hit_points.call("strength" => 14)
+  end
+
+  test "the armour class without armour is 10 and Dexterity, plus the ability of the unarmored defense" do
+    class_effects = { "Moine" => { "hit_die" => 8, "unarmored_defense" => "strength" }, "Magicien" => { "hit_die" => 6 } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },
+                       { "key" => "base_armor_class", "type" => "computed", "rule" => "unarmored_armor_class",
+                         "class_from" => "class", "based_on" => "dexterity" }]
+    armor_class = lambda do |sheet|
+      CharacterSheetCalculator.new(fields: fields, sheet: sheet, level_thresholds: []).call[:values]["base_armor_class"]
+    end
+
+    assert_equal "12", armor_class.call("class" => "Magicien", "dexterity" => 14, "strength" => 16)
+    assert_equal "15", armor_class.call("class" => "Moine", "dexterity" => 14, "strength" => 16)
+    assert_nil armor_class.call("class" => "Moine")
+  end
+
   test "a bonus is the modifier of its ability, plus the proficiency when ticked" do
     values = calculate("strength" => 14, "dexterity" => 9, "athletics" => true, "stealth" => false)[:values]
 

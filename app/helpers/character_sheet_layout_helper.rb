@@ -35,9 +35,11 @@ module CharacterSheetLayoutHelper
     fields.group_by { |field| field["section"] }
   end
 
-  # abilities: tiles in a grid, with the dice roll; rows: saving throws and skills, their help said once;
-  # two_columns: a section with fields in its right column (column: aside, the personality); flow: anything else
+  # described_choices: lists whose options have a description (class, species, background), beside a summary of the
+  # options picked; abilities: tiles in a grid, with the dice roll; rows: saving throws and skills, their help said
+  # once; two_columns: a section with fields in its right column (column: aside, the personality); flow: anything else
   def sheet_section_layout(fields)
+    return :described_choices if fields.any? { |field| field["descriptions"] }
     return :abilities if abilities_section?(fields)
     return :rows if rows_section?(fields)
     return :two_columns if fields.any? { |field| sheet_field_aside?(field) }
