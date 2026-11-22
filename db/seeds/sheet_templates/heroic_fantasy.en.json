@@ -12,6 +12,12 @@
       { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Details", "sections": ["Details"] }
     ],
+    "spell_groups": [
+      { "key": "cantrips", "label": "Cantrips", "help": "Cast at will, without a spell slot.",
+        "min_level": 0, "max_level": 0, "count_from": "cantrips", "changes": "level_up_one" },
+      { "key": "prepared", "label": "Prepared spells", "help": "Cast with your spell slots, up to the highest level you can cast.",
+        "min_level": 1, "max_level_from": "max_spell_level", "count_from": "prepared", "changes_from": "prepared_changes" }
+    ],
     "fields": [
       { "key": "class", "label": "Class", "type": "choice", "section": "Character", "required": true, "visible_to_others": true,
         "options": ["Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"],

@@ -1,21 +1,22 @@
 module ChoiceEffects
-  # The spells of a class: its ability, then by level from 1 to 20 the cantrips, the prepared spells and the highest
-  # spell level, and how its prepared spells change in the game (CharacterSheets::SpellChoices)
+  # The spells of a class: its ability, then its tables, one number per level from 1 to 20, which the groups of spells
+  # of the template read (character_fields.spell_groups: count_from, max_level_from; heroic fantasy: cantrips,
+  # prepared, max_spell_level), and its own rules the groups may read (changes_from: prepared_changes). Read by
+  # CharacterSheets::SpellChoices; that each table a group names is there is checked by SheetTemplates::SpellGroupsCheck
   class Spellcasting < Base
     KEY = "spellcasting".freeze
     TARGET_TYPE = "ability".freeze
-    LEVEL_TABLES = %w[cantrips prepared max_spell_level].freeze
     LEVELS = 20
 
     def target_keys(value)
       [value.to_h["ability"].to_s]
     end
 
+    # Every table (a list) gives one number per level
     def value_errors(value, **)
-      spellcasting = value.to_h
-      table_errors = LEVEL_TABLES.reject { |table| level_table?(spellcasting[table]) }
-                                 .map { |table| [:invalid_level_table, { table: table }] }
-      table_errors + prepared_changes_errors(spellcasting["prepared_changes"])
+      value.to_h.select { |_name, table| table.is_a?(Array) }
+           .reject { |_name, table| level_table?(table) }
+           .map { |name, _table| [:invalid_level_table, { table: name }] }
     end
 
     def facts(value, fields_by_key)
@@ -23,17 +24,15 @@ module ChoiceEffects
       ability ? [[fact_label(:spellcasting), ability]] : []
     end
 
-    private
-
-    # One number per level, from 1 to 20
-    def level_table?(values)
-      values.is_a?(Array) && values.size == LEVELS && values.all?(Integer)
+    # The number of a table at a level (1 to 20), 0 without the table
+    def self.level_table?(table)
+      table.is_a?(Array) && table.size == LEVELS && table.all?(Integer)
     end
 
-    def prepared_changes_errors(changes)
-      return [] if changes.nil? || CharacterSheets::SpellChoices::PREPARED_CHANGES.include?(changes)
+    private
 
-      [[:unknown_effect_value, { effect: "prepared_changes", value: changes }]]
+    def level_table?(table)
+      self.class.level_table?(table)
     end
   end
 end

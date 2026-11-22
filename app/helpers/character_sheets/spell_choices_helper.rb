@@ -48,11 +48,10 @@ module CharacterSheets
         school: spell.properties["school"], casting: castings.join(" ") }
     end
 
-    # What the group is, then when its spells can be changed during the game (rules of 2024: a cantrip per level gained;
-    # the prepared spells after a long rest or per level, by class, CharacterSheets::SpellChoices#prepared_changes)
-    def spell_group_hint(group, spell_choices)
-      change = group.kind == :cantrips ? "level_up_one" : spell_choices.prepared_changes
-      [t("#{SCOPE}.hint_#{group.kind}"), (t("#{SCOPE}.changes.#{change}") if change)].compact.join(" ")
+    # What the group is (its help, in the words of the template), then when its spells can be changed during the game
+    # (its changes: a cantrip per level gained; the prepared spells after a long rest or per level, by class)
+    def spell_group_hint(group)
+      [group.help, (t("#{SCOPE}.changes.#{group.changes}") if group.changes)].compact_blank.join(" ")
     end
 
     # The pills of the filters, by group: levels and schools of the spells offered, concentration and ritual, then the
@@ -60,7 +59,7 @@ module CharacterSheets
     # [[:level, [["0", "Sorts mineurs"], ["1", "Niveau 1"]]], [:school, [...]], ...]
     def spell_filter_groups(groups)
       spells = groups.flat_map(&:spells)
-      sorting_groups = { level: spell_level_pills(spells), school: spell_school_pills(spells) }
+      sorting_groups = { level: spell_level_pills(groups), school: spell_school_pills(spells) }
       sorting_groups.select { |_group, pills| pills.size > 1 }
                     .merge(casting: spell_casting_pills(spells), chosen: [["chosen", t("#{SCOPE}.chosen_only")]])
                     .reject { |_group, pills| pills.empty? }.to_a
@@ -102,21 +101,30 @@ module CharacterSheets
       group.spells.group_by(&:level).sort
     end
 
-    # The spells chosen, for the summary sheet: [["Sorts mineurs", [...]], ["Niveau 1", [...]]]
+    # The spells chosen, for the summary sheet: [["Sorts mineurs", [...]], ["Sorts préparés de niveau 1", [...]]]
     def summary_spell_groups(character)
+      declared_groups = character.game_table.spell_groups
       character.spells.sort_by { |spell| [spell["level"].to_i, spell["name"].to_s] }
                .group_by { |spell| spell["level"].to_i }
-               .map { |level, spells| [summary_spell_level_title(level), spells] }
+               .map { |level, spells| [summary_spell_level_title(declared_groups, level), spells] }
     end
 
     private
 
-    def summary_spell_level_title(level)
-      level.zero? ? t("#{SCOPE}.title_cantrips") : t("#{SCOPE}.prepared_level", level: level)
+    # The label of the group of that level, with the level when the group spans several ("Sorts préparés de niveau 1")
+    def summary_spell_level_title(declared_groups, level)
+      declared_group = declared_groups.find { |candidate| CharacterSheets::SpellChoices.covers_level?(candidate, level) }
+      return t("#{SCOPE}.level", level: level) unless declared_group
+      return declared_group["label"] unless CharacterSheets::SpellChoices.several_levels?(declared_group)
+
+      t("#{SCOPE}.group_level", group: declared_group["label"], level: level)
     end
 
-    def spell_level_pills(spells)
-      spells.map(&:level).uniq.sort.map { |level| [level.to_s, spell_level_title(level)] }
+    # A level alone in its group is named by the group ("Sorts mineurs"), the others by their number ("Niveau 1")
+    def spell_level_pills(groups)
+      groups.flat_map do |group|
+        group.spells.map(&:level).uniq.sort.map { |level| [level.to_s, spell_level_title(group, level)] }
+      end
     end
 
     def spell_school_pills(spells)
@@ -129,8 +137,8 @@ module CharacterSheets
                               .map { |property| [property, t("#{SCOPE}.#{property}")] }
     end
 
-    def spell_level_title(level)
-      level.zero? ? t("#{SCOPE}.title_cantrips") : t("#{SCOPE}.level", level: level)
+    def spell_level_title(group, level)
+      group.several_levels ? t("#{SCOPE}.level", level: level) : group.label
     end
 
     def spell_chosen_count(character, group)
