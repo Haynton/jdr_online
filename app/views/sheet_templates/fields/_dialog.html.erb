@@ -1,0 +1,14 @@
+<%# The window of the form of a field, over the creation path (SheetTemplates::FieldDialogHelper; decision: a window
+    like the settings one, rather than a page, which left a large empty room beside the form, or a panel on the right,
+    tried and refused): centered, 880 px wide at most, as tall as its form up to the screen (16 px of margin on a
+    phone). Empty until a field is clicked, its form then loads into the frame and frame_dialog_controller.js opens it. A native <dialog> opened
+    with showModal: Escape closes it, the keyboard focus stays inside, the page behind is inert. Its title bar comes
+    with the form (the name of the field). open:flex only: a display class on a closed <dialog> would show it.
+    tabindex="-1": the controller focuses the window itself when it opens, not its close cross %>
+<dialog id="field-dialog" aria-labelledby="field-dialog-title" tabindex="-1" data-turbo-prefetch="false"
+        class="m-auto max-h-[min(760px,calc(100dvh-2rem))] w-[min(880px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-controller="frame-dialog"
+        data-action="turbo:frame-load->frame-dialog#open click->frame-dialog#closeOnBackdrop close->frame-dialog#empty turbo:submit-end->frame-dialog#closeOnSuccess turbo:before-cache@document->frame-dialog#close">
+  <%= turbo_frame_tag SheetTemplates::FieldDialogHelper::FRAME, class: "flex min-h-0 flex-1 flex-col",
+                                                               data: { frame_dialog_target: "frame" } %>
+</dialog>

@@ -68,10 +68,15 @@ class SheetTemplatesTest < ActionDispatch::IntegrationTest
     assert_equal ["Pour ma campagne.", "castle"], mine.reload.values_at(:description, :icon)
     follow_redirect!
     assert_select "#template-description", text: "Pour ma campagne."
+    assert_select "textarea[maxlength='150']"
     assert_select "input[type=radio][name='sheet_template[icon]'][value=castle][checked]"
     assert_select "label[title=?] input[value=castle]", "Château"
     get sheet_templates_path
     assert_select "a[href=?]", sheet_template_path(mine), text: /Pour ma campagne\./
+
+    patch sheet_template_path(mine), params: { sheet_template: { name: "Mes Royaumes", description: "x" * 151 } }
+    assert_response :unprocessable_content
+    assert_equal "Pour ma campagne.", mine.reload.description
 
     patch sheet_template_path(mine), params: { sheet_template: { name: "Mes Royaumes", icon: "dragon" } }
     assert_response :unprocessable_content

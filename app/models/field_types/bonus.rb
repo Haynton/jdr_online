@@ -19,6 +19,13 @@ module FieldTypes
       true
     end
 
+    # The modifier of its ability, and the proficiency when the box is ticked, if it has one
+    def calculation_key(field)
+      return "sheet_templates.calculations.bonus_with_proficiency" if field["proficiency"]
+
+      "sheet_templates.calculations.bonus"
+    end
+
     # A conversion, not a question: it turns the "1" or "0" sent by the check box into true or false
     def convert(typed_value, _field) # rubocop:disable Naming/PredicateMethod
       typed_value == "1"

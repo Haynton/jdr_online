@@ -264,6 +264,22 @@ fr:
       gold: "Or"
       night: "Nuit"
       stone: "Pierre"
+    # How a value is worked out, in the template editor: the fields it reads named by their label
+    calculations:
+      bonus: "Le modificateur de %{ability}."
+      bonus_with_proficiency: "Le modificateur de %{ability}, plus le %{proficiency} quand la case de maîtrise est cochée."
+      modifiers:
+        half_above_ten: "Le modificateur : la valeur moins 10, divisée par 2, arrondie à l'entier inférieur (14 donne +2, 9 donne −1)."
+      no_field: "—"
+      rules:
+        ability_modifier: "Le modificateur de %{ability}."
+        hit_dice_by_class: "Un dé par niveau (%{level}), dont la taille dépend de la classe choisie (%{class})."
+        hit_points_by_level: "Au premier niveau, le plus grand résultat du dé de vie de la classe (%{class}) plus le modificateur de %{ability} ; à chaque niveau suivant (%{level}), la moyenne du dé plus ce modificateur."
+        proficiency_by_level: "D'après le niveau (%{level}), selon les paliers du modèle."
+        spell_attack_bonus: "Le %{proficiency} plus le modificateur de la caractéristique des sorts de la classe (%{class})."
+        spell_save_dc: "8, plus le %{proficiency}, plus le modificateur de la caractéristique des sorts de la classe (%{class})."
+        starting_gold: "L'or de l'équipement de départ choisi par le joueur."
+        unarmored_armor_class: "10 plus le modificateur de %{ability}, plus la défense sans armure de la classe (%{class}) si elle en a une."
     duplicates:
       copy_name: "%{name} (copie)"
       create:
@@ -272,26 +288,55 @@ fr:
       band_label: "Étapes de l'éditeur de modèles"
       steps:
         catalog: "Catalogue"
-        character_sheet: "Fiche du personnage"
-        creation_steps: "Étapes de création"
+        creation_path: "Parcours de création"
         informations: "Informations"
     fields:
       edit:
         about: "Aide : %{label}"
         cancel: "Annuler"
+        close: "Fermer"
         effects_soon: "Les effets et les descriptions des options se modifieront bientôt. Les options d'une liste qui en a ne se renomment pas : leurs effets en dépendent."
         groups:
-          general: "Général"
-          type: "Réglages du type"
+          calculation: "Calcul"
+          general: "Textes"
+          type: "Valeurs"
         refused: "Le modèle n'a pas été enregistré :"
         save: "Enregistrer"
         subtitle: "%{type}, section « %{section} »"
       index:
-        back: "Mes modèles"
-        subtitle: "Les champs que les joueurs remplissent, section par section."
-        title: "Fiche du personnage"
+        back: "Retour"
+        only_with_effect: "Seulement si l'option choisie donne %{effect}"
+        subtitle: "Les étapes que suit un joueur pour créer son personnage, avec les champs de chacune. Cliquez un champ pour le modifier."
+        summary_only: "Affichée seulement au récapitulatif"
+        title: "Parcours de création"
+      path_step:
+        add_field_soon: "Ajouter un champ · Bientôt"
+        left_out: "Remplis en partie"
+        left_out_hint: "Ces sections ne sont demandées à aucune étape de la création."
+        single_page: "Une seule page"
+        single_page_hint: "Ce modèle demande toute la fiche sur une seule page."
       update:
         updated: "Champ « %{label} » enregistré."
+    creation_path:
+      effects:
+        ability_bonus_choices: "des bonus de caractéristiques"
+        features_by_level: "des capacités par niveau"
+        hit_die: "un dé de vie"
+        origin_feat: "un don d'origine"
+        proficient: "des maîtrises"
+        set: "des valeurs écrites"
+        skill_choices: "des compétences à choisir"
+        spellcasting: "des sorts"
+        starting_equipment: "un équipement de départ"
+        tools: "des outils"
+        training: "des formations"
+        traits: "des traits"
+        unarmored_defense: "une défense sans armure"
+      notes:
+        computed: "Calculé"
+        from_table: "Donné par la table"
+        in_game: "En partie"
+        internal: "Interne"
     contents:
       from: "D'après « %{name} »"
     destroy:
@@ -455,8 +500,6 @@ fr:
       no_tables: "Aucune table ne l'utilise pour l'instant."
       presentation_title: "Présentation"
       save: "Enregistrer"
-      see_less: "Voir moins"
-      see_more: "Voir plus"
       tables_title: "Tables qui l'utilisent"
       used_by_tables:
         one: "Utilisé par 1 table : il ne peut pas être supprimé pour l'instant."

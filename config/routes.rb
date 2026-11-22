@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     resource :duplicate, only: :create, module: :sheet_templates
     # The fields of the character sheet, by section, then the form of one of them (named by its key)
     resources :fields, only: %i[index edit update], module: :sheet_templates, param: :key
+    # The name of a creation step, the only change of a step in a template duplicated from a working one (its steps
+    # and their order stay: its computing rules rely on them)
   end
 
   # Settings: one address per section, so the section menu is made of plain links

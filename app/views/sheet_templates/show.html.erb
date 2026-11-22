@@ -19,21 +19,13 @@
         · <%= origin %>
       <% end %>
     </p>
-    <h1 id="template-title" class="mt-2 text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-4xl">
+    <h1 id="template-title" class="mt-3 text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-4xl">
       <%= @sheet_template.name_in_database %>
     </h1>
-    <% if @sheet_template.description_in_database.present? %>
-      <%# A long description is cut after 2 lines, "See more" shows it all (read_more_controller.js), as on a table %>
-      <div class="mt-1.5 flex max-w-2xl flex-col items-start gap-1" data-controller="read-more"
-           data-read-more-more-label-value="<%= t(".see_more") %>" data-read-more-less-label-value="<%= t(".see_less") %>">
-        <p id="template-description" class="text-[15px] text-ink data-clamped:line-clamp-2" data-read-more-target="text"><%= @sheet_template.description_in_database %></p>
-        <button type="button" hidden class="text-sm font-medium hover:underline <%= banner_classes(banner_color, :accent) %>" aria-expanded="false"
-                aria-controls="template-description" data-read-more-target="button" data-action="read-more#toggle">
-          <%= t(".see_more") %>
-        </button>
-      </div>
-    <% end %>
-    <ul class="mt-4 flex flex-wrap gap-2" aria-label="<%= t(".contents_title") %>">
+    <%# Its description, 150 characters at most: its room kept even empty, so that the banner keeps the same height
+        (decision): 2 lines from 640 px, 4 on a phone (150 characters take about 3 lines and a half there) %>
+    <p id="template-description" class="mt-3 line-clamp-4 min-h-[4lh] max-w-2xl text-[15px] break-words text-ink sm:line-clamp-2 sm:min-h-[2lh]"><%= @sheet_template.description_in_database %></p>
+    <ul class="mt-5 flex flex-wrap gap-2" aria-label="<%= t(".contents_title") %>">
       <% sheet_template_figures(@sheet_template).each do |label, value| %>
         <li class="flex min-w-20 items-baseline gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5">
           <span class="text-base font-bold text-ink tabular-nums"><%= number_with_delimiter(value) %></span>
@@ -54,6 +46,7 @@
       <section aria-labelledby="template-presentation-title">
         <h2 id="template-presentation-title" class="mb-3 text-base font-semibold text-ink"><%= t(".presentation_title") %></h2>
         <%= form.input :name, required: true, input_html: { autocomplete: "off" } %>
+        <%# 3 lines: 150 characters seen at once (maxlength stops the typing there, the model refuses beyond) %>
         <%= form.input :description, input_html: { maxlength: SheetTemplate::DESCRIPTION_MAX_LENGTH, rows: 3, class: "min-h-0" } %>
         <%= render "sheet_templates/icon_choices", form: form, sheet_template: @sheet_template %>
         <%= render "sheet_templates/banner_color_choices", form: form, sheet_template: @sheet_template %>
@@ -82,8 +75,7 @@
   </div>
 
   <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation: Back
-      (to "My templates") then Next, the next step of the band that exists ("Creation steps" is coming soon: for now,
-      "Character sheet") %>
+      (to "My templates") then Next (the creation path), the order of the band %>
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-8">
     <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
     <%= link_to t(".next"), sheet_template_fields_path(@sheet_template), class: button_classes(:primary) %>

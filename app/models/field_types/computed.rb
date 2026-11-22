@@ -24,5 +24,10 @@ module FieldTypes
     def stored?
       false
     end
+
+    # The sentence of its rule ("10 + le modificateur de Dextérité..."), nil for a rule the registry does not know
+    def calculation_key(field)
+      "sheet_templates.calculations.rules.#{field['rule']}" if ComputedRules.find(field["rule"])
+    end
   end
 end

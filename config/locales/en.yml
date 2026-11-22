@@ -293,6 +293,22 @@ en:
       gold: "Gold"
       night: "Night"
       stone: "Stone"
+    # How a value is worked out, in the template editor: the fields it reads named by their label
+    calculations:
+      bonus: "The modifier of %{ability}."
+      bonus_with_proficiency: "The modifier of %{ability}, plus the %{proficiency} when the proficiency box is ticked."
+      modifiers:
+        half_above_ten: "The modifier: the score minus 10, divided by 2, rounded down (14 gives +2, 9 gives −1)."
+      no_field: "—"
+      rules:
+        ability_modifier: "The modifier of %{ability}."
+        hit_dice_by_class: "One die per level (%{level}), its size set by the class chosen (%{class})."
+        hit_points_by_level: "At first level, the highest roll of the hit die of the class (%{class}) plus the modifier of %{ability}; at each level after (%{level}), the average of the die plus that modifier."
+        proficiency_by_level: "From the level (%{level}), following the thresholds of the template."
+        spell_attack_bonus: "The %{proficiency} plus the modifier of the spellcasting ability of the class (%{class})."
+        spell_save_dc: "8, plus the %{proficiency}, plus the modifier of the spellcasting ability of the class (%{class})."
+        starting_gold: "The gold of the starting equipment the player chose."
+        unarmored_armor_class: "10 plus the modifier of %{ability}, plus the unarmored defense of the class (%{class}) if it has one."
     duplicates:
       copy_name: "%{name} (copy)"
       create:
@@ -301,26 +317,55 @@ en:
       band_label: "Steps of the template editor"
       steps:
         catalog: "Catalog"
-        character_sheet: "Character sheet"
-        creation_steps: "Creation steps"
+        creation_path: "Creation path"
         informations: "Information"
     fields:
       edit:
         about: "Help: %{label}"
         cancel: "Cancel"
+        close: "Close"
         effects_soon: "The effects and the descriptions of the options will be editable soon. The options of a list that has some are not renamed: their effects depend on them."
         groups:
-          general: "General"
-          type: "Settings of the type"
+          calculation: "Calculation"
+          general: "Texts"
+          type: "Values"
         refused: "The template was not saved:"
         save: "Save"
         subtitle: "%{type}, section “%{section}”"
       index:
-        back: "My templates"
-        subtitle: "The fields the players fill in, section by section."
-        title: "Character sheet"
+        back: "Back"
+        only_with_effect: "Only if the option chosen gives %{effect}"
+        subtitle: "The steps a player follows to make their character, with the fields of each. Click a field to edit it."
+        summary_only: "Shown only on the summary"
+        title: "Creation path"
+      path_step:
+        add_field_soon: "Add a field · Soon"
+        left_out: "Filled in the game"
+        left_out_hint: "No step of the creation asks these sections."
+        single_page: "A single page"
+        single_page_hint: "This template asks the whole sheet on a single page."
       update:
         updated: "Field “%{label}” saved."
+    creation_path:
+      effects:
+        ability_bonus_choices: "ability bonuses"
+        features_by_level: "features by level"
+        hit_die: "a hit die"
+        origin_feat: "an origin feat"
+        proficient: "proficiencies"
+        set: "values written"
+        skill_choices: "skills to choose"
+        spellcasting: "spells"
+        starting_equipment: "a starting equipment"
+        tools: "tools"
+        training: "training"
+        traits: "traits"
+        unarmored_defense: "an unarmored defense"
+      notes:
+        computed: "Worked out"
+        from_table: "Given by the table"
+        in_game: "In the game"
+        internal: "Internal"
     contents:
       from: "Based on “%{name}”"
     destroy:
@@ -484,8 +529,6 @@ en:
       no_tables: "No table uses it yet."
       presentation_title: "Presentation"
       save: "Save"
-      see_less: "See less"
-      see_more: "See more"
       tables_title: "Tables that use it"
       used_by_tables:
         one: "Used by 1 table: it cannot be deleted for now."

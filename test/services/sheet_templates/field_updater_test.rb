@@ -7,25 +7,29 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
     @template = SheetTemplates::Duplicator.new(original: original, owner: game_master).call
   end
 
-  test "each setting is converted by its kind; an empty one is taken out, an unticked box too" do
-    assert update("level", label: "Niveau du héros", help: "", max: "15", required: "1", at_creation: "1",
-                           section: "Notes")
+  test "each tuned setting is converted by its kind, an empty one taken out; the label and the build stay" do
+    assert update("level", label: "Niveau du héros", help: "", max: "15", required: "1", at_creation: "0",
+                           section: "Combat", from_table: "")
 
     level = field("level")
-    assert_equal "Niveau du héros", level["label"]
+    assert_equal "Niveau", level["label"]
     assert_equal 15, level["max"]
-    assert_equal true, level["required"]
     assert_not level.key?("help")
+    assert_equal ["Notes", "starting_level"], level.values_at("section", "from_table")
+    assert_not level.key?("required")
     assert_not level.key?("at_creation")
     assert_equal "number", level["type"]
   end
 
-  test "an unticked asked at creation says false; a decimal step keeps its fraction, a round one is whole" do
-    assert update("level", label: "Niveau", section: "Notes", at_creation: "0", step: "0,5")
-    assert_equal false, field("level")["at_creation"]
+  test "a step is tuned only where the field has one; a decimal keeps its fraction, a round one is whole" do
+    assert update("level", step: "0,5")
+    assert_not field("level").key?("step")
+
+    with_level_step(1)
+    assert update("level", step: "0,5")
     assert_in_delta 0.5, field("level")["step"]
 
-    assert update("level", label: "Niveau", section: "Notes", at_creation: "1", step: "2")
+    assert update("level", step: "2")
     assert_equal 2, field("level")["step"]
   end
 
@@ -35,15 +39,15 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
       "fields" => @template.character_fields["fields"] + [eyes]
     ))
 
-    assert update("eyes", label: "Yeux", section: "Notes", options: "Verts\r\n\r\nBruns\r\nVerts\r\n")
+    assert update("eyes", label: "Yeux", options: "Verts\r\n\r\nBruns\r\nVerts\r\n")
     assert_equal %w[Verts Bruns], field("eyes")["options"]
   end
 
   test "the key, the type and the options of a list with effects never change" do
     original_options = field("class")["options"]
 
-    assert update("class", label: "Vocation", section: "Classe", options: "Barde", key: "job", type: "text")
-    assert_equal "Vocation", field("class")["label"]
+    assert update("class", help: "Votre vocation", options: "Barde", key: "job", type: "text")
+    assert_equal "Votre vocation", field("class")["help"]
     assert_equal original_options, field("class")["options"]
     assert_equal "choice", field("class")["type"]
   end
@@ -63,6 +67,13 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
   end
 
   private
+
+  def with_level_step(step)
+    fields = @template.character_fields["fields"].map do |candidate|
+      candidate["key"] == "level" ? candidate.merge("step" => step) : candidate
+    end
+    @template.update!(character_fields: @template.character_fields.merge("fields" => fields))
+  end
 
   def update(field_key, **values)
     SheetTemplates::FieldUpdater.new(sheet_template: @template, field_key: field_key,

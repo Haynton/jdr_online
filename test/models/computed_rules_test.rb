@@ -36,6 +36,17 @@ class ComputedRulesTest < ActiveSupport::TestCase
     end
   end
 
+  test "the template editor says every rule in a sentence, in each language" do
+    I18n.available_locales.each do |locale|
+      ComputedRules.keys.each do |key|
+        assert I18n.exists?("sheet_templates.calculations.rules.#{key}", locale), "#{locale}: #{key}"
+      end
+      ModifierRules.keys.each do |key|
+        assert I18n.exists?("sheet_templates.calculations.modifiers.#{key}", locale), "#{locale}: #{key}"
+      end
+    end
+  end
+
   test "the lists of the template come from the registries" do
     assert_equal ComputedRules.keys, SheetTemplate::COMPUTED_RULES
     assert_equal ModifierRules.keys, SheetTemplate::MODIFIER_RULES

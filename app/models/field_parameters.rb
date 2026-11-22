@@ -20,6 +20,23 @@ module FieldParameters
     "key" => :fixed, "type" => :fixed, "effects" => :fixed, "descriptions" => :fixed
   }.freeze
 
+  # What the game master tunes on a template duplicated from a working one (decision: the window of a field asks only
+  # these): its help, its abbreviation and its numbers (bounds, step, options of a list, how many to pick, the points
+  # of a bonus). Not its label (decision: the label of a field of a working template stays; it is chosen when a field
+  # is added, or in the editor from scratch). The others build the sheet (section, column, asked at creation,
+  # internal, shown on the summary only, the rule of a value and the fields it reads...): changed on a duplicated
+  # template they would break its creation, they belong to the editor from scratch (later)
+  TUNED = %w[help abbreviation min max step options count granted total max_per_ability].freeze
+  # Tuned only where the field already has one: an abbreviation names an ability (FOR), a step a speed in half metres
+  SHOWN_WHEN_SET = %w[abbreviation step].freeze
+
+  # Whether the game master tunes this setting of this field on a duplicated template
+  def self.tuned?(parameter, field)
+    return false unless TUNED.include?(parameter)
+
+    SHOWN_WHEN_SET.exclude?(parameter) || field.key?(parameter)
+  end
+
   # The values of each closed list, read when asked (the rules come from their registries). column: aside, the right
   # column of its section. from_table: the value the table gives (its starting level). on_rest: what a rest does
   # (back to its maximum, or switched off)

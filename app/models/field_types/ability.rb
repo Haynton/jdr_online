@@ -15,6 +15,11 @@ module FieldTypes
       :tiles
     end
 
+    # The sentence of the rule of its modifier, nil for a rule the registry does not know
+    def calculation_key(field)
+      "sheet_templates.calculations.modifiers.#{field['modifier']}" if ModifierRules.find(field["modifier"])
+    end
+
     def convert(typed_value, _field)
       integer_or_typed_value(typed_value)
     end

@@ -3,8 +3,9 @@
 # setting, by its kind of input (FieldParameters): a whole number, a list of options (one per line), true for a
 # ticked box... A setting left empty is taken out of the field (the
 # template keeps only what is set), an unticked box too, except "asked at creation", whose absence means yes.
-# What never changes: the key and the type (fixed), the effects and the descriptions of the options, and the options
-# of a list that has effects or descriptions (renaming one would break them). The template as a whole is then checked
+# Only the settings the game master tunes on a duplicated template change (FieldParameters.tuned?: its words and its
+# numbers); the others are kept as they are, whatever is sent. The options of a list that has effects or descriptions
+# never change either (renaming one would break them). The template as a whole is then checked
 # (SheetTemplateValidator): false with its errors, the field left as it was in the database
 module SheetTemplates
   class FieldUpdater
@@ -23,7 +24,7 @@ module SheetTemplates
     # The settings of the field the editor may change, in the order of its type (common ones first)
     def self.editable_parameters(field)
       type = FieldTypes.of(field)
-      type.parameters.reject { |parameter| fixed?(parameter, field, type) }
+      type.parameters.select { |parameter| FieldParameters.tuned?(parameter, field) && !fixed?(parameter, field, type) }
     end
 
     def self.fixed?(parameter, field, type)
