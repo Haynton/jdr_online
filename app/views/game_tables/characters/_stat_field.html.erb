@@ -1,0 +1,21 @@
+<%# The look of a number, a resource or a computed value, wherever it is on the sheet (decision: one look per type,
+    the level as the hit points): a box as wide as an ability tile, its name at the top, on two lines at most (room
+    kept for two lines, so that the values line up; the full name stays as a tooltip), then the number between "−"
+    and "+", or the computed value large (initiative, proficiency, hit dice). Its help is a note under the row %>
+<% error = sheet_field_error(character, field) %>
+<div class="flex w-[9.625rem] flex-col items-center gap-2 rounded-xl border border-line bg-surface px-2 pt-3 pb-2.5">
+  <% if sheet_stat_computed?(field) %>
+    <p id="<%= sheet_field_id(field) %>_label" class="<%= stat_label_classes %>" title="<%= field["label"] %>"><%= field["label"] %></p>
+    <%= tag.output format_computed_value(computed[:values][field["key"]]),
+                   class: "flex h-10 items-center text-xl font-bold text-ink tabular-nums",
+                   aria: { labelledby: "#{sheet_field_id(field)}_label",
+                           describedby: sheet_field_note_ids(field).join(" ").presence },
+                   data: computed_value_data(field) %>
+  <% else %>
+    <%= label_tag sheet_field_id(field), field["label"], class: stat_label_classes, title: field["label"] %>
+    <%= render "game_tables/characters/stepper", field: field, input: sheet_stepper_input(character, field) %>
+  <% end %>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %> text-center"><%= error %></p>
+  <% end %>
+</div>

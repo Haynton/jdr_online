@@ -54,9 +54,27 @@ class GameTable < ApplicationRecord
     template_snapshot.to_h.dig("character_fields", "fields") || []
   end
 
+  # The fields asked when a player makes their character: all but the states of the game (at_creation: false,
+  # decision: the inspiration or the temporary hit points only change during the game)
+  def character_creation_fields
+    character_sheet_fields.reject { |field| field["at_creation"] == false }
+  end
+
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each
   def level_thresholds
     template_snapshot.to_h["level_thresholds"] || []
+  end
+
+  # The abilities of the character sheet (fields of the ability type), the ones the dice can roll
+  def ability_fields
+    character_sheet_fields.select { |field| field["type"] == "ability" }
+  end
+
+  # How the template rolls the abilities ({ "dice" => 4, "sides" => 6, "keep_highest" => 3 }), or nil: no roll
+  def ability_roll_method
+    return nil if ability_fields.empty?
+
+    template_snapshot.to_h.dig("character_fields", "ability_roll")
   end
 
   # Players join through the invitation link once the creation is over

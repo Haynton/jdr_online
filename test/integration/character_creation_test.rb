@@ -32,9 +32,51 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_select "fieldset legend", text: "Caractéristiques"
     assert_select "select[name=?] option", "character[sheet][class]", count: 3
     assert_select "input[type=number][name=?][min='1'][max='20']", "character[sheet][strength]"
-    assert_select "input[type=checkbox][name=?][value='1']", "character[sheet][inspiration]"
+    assert_select "label[for=character_sheet_inspiration]", text: "Inspiration"
+    assert_select "input[type=checkbox][role=switch][name=?][value='1']:not([checked])", "character[sheet][inspiration]"
     assert_select "textarea[name=?]", "character[sheet][background]"
     assert_select "p", text: "En quelques mots"
+  end
+
+  test "the character part is in two columns, the combat in boxes with minus and plus" do
+    fields = [
+      { "key" => "class", "label" => "Classe", "type" => "choice", "section" => "Identité", "options" => %w[Mage] },
+      { "key" => "level", "label" => "Niveau", "type" => "number", "min" => 1, "max" => 20, "section" => "Identité" },
+      { "key" => "ideals", "label" => "Idéaux", "type" => "text", "column" => "aside", "section" => "Identité" },
+      { "key" => "dexterity", "label" => "Dextérité", "type" => "ability", "modifier" => "half_above_ten",
+        "section" => "Caractéristiques" },
+      { "key" => "armor_class", "label" => "Classe d'armure", "type" => "number", "section" => "Combat" },
+      { "key" => "initiative", "label" => "Initiative", "type" => "computed", "rule" => "ability_modifier",
+        "based_on" => "dexterity", "section" => "Combat" },
+      { "key" => "hit_dice", "label" => "Dés de vie", "type" => "text", "short" => true, "section" => "Combat" }
+    ]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    post game_table_character_path(@game_table), params: { character: { name: "", sheet: { dexterity: "15" } } }
+
+    assert_select "fieldset:first-of-type .lg\\:grid-cols-2" do
+      assert_select "input[name=?]", "character[name]"
+      assert_select "textarea[name=?]", "character[sheet][ideals]"
+      assert_select ".rounded-xl [data-controller=number-stepper] input[name=?]", "character[sheet][level]"
+    end
+    assert_select "[data-controller=number-stepper]:has(input[name=?])", "character[sheet][armor_class]" do
+      assert_select "input[type=number][class*='appearance:textfield']"
+      assert_select "button[aria-label=?]", "Augmenter Classe d'armure"
+    end
+    assert_select "output[data-key=initiative]", text: "+2"
+    assert_select "input[type=text][name=?]", "character[sheet][hit_dice]"
+  end
+
+  test "a state of the game (at_creation false) is neither asked nor stored at creation" do
+    fields = SHEET_FIELDS.map { |field| field["key"] == "inspiration" ? field.merge("at_creation" => false) : field }
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    get new_game_table_character_path(@game_table)
+    assert_select "input[name=?]", "character[sheet][inspiration]", count: 0
+
+    post game_table_character_path(@game_table),
+         params: { character: { name: "Aldric", sheet: { inspiration: "1" } } }
+    assert_not @participation.reload.character.sheet.key?("inspiration")
   end
 
   test "the help of a short field is a note under its row, tied to the field" do
@@ -49,8 +91,8 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
   test "abilities show in tiles with their modifier, skills in rows with their worked out bonus" do
     fields = [
       { "key" => "experience", "label" => "Expérience", "type" => "experience", "section" => "Identité" },
-      { "key" => "strength", "label" => "Force", "abbreviation" => "FOR", "type" => "number", "min" => 1, "max" => 30,
-        "has_modifier" => true, "section" => "Caractéristiques" },
+      { "key" => "strength", "label" => "Force", "abbreviation" => "FOR", "type" => "ability", "min" => 1, "max" => 30,
+        "modifier" => "half_above_ten", "section" => "Caractéristiques" },
       { "key" => "proficiency_bonus", "label" => "Bonus de maîtrise", "type" => "computed",
         "rule" => "proficiency_by_level", "section" => "Combat" },
       { "key" => "athletics", "label" => "Athlétisme", "type" => "bonus", "based_on" => "strength",
@@ -71,7 +113,6 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
       assert_select "button[hidden][aria-label=?][data-action='number-stepper#decrease']", "Diminuer Force"
       assert_select "button[hidden][aria-label=?][data-action='number-stepper#increase']", "Augmenter Force"
     end
-    assert_select "output[data-character-sheet-target=level]", text: "1"
     assert_select "output[data-character-sheet-target=computed][data-key=proficiency_bonus]", text: "+2"
     assert_select "input[type=checkbox][name=?][checked]", "character[sheet][athletics]"
     assert_select "label[for=character_sheet_athletics] span", text: "FOR"

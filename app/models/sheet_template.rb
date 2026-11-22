@@ -7,15 +7,21 @@ class SheetTemplate < ApplicationRecord
   # What a game table copies when it picks this template. The ready-made NPCs and monsters are not in it:
   # they become rows of their own, which the game master can change (characters, later)
   SNAPSHOT_ATTRIBUTES = %w[character_fields npc_fields item_fields rest_rules level_thresholds preset_items].freeze
-  # The closed list of field types: a type is a behavior the app knows how to show and check, not a game.
+  # The closed list of field types: a type is a behavior the app knows how to show and check, not a game, and it has
+  # one look wherever it is on the sheet (decision, for the template builder: the game master picks a type, names it).
+  # ability: a score with a modifier worked out by its rule (modifier, one of MODIFIER_RULES).
   # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters.
-  # bonus: the modifier of an ability (based_on, a number field with has_modifier), plus a proficiency (proficiency,
-  # the key of a computed field) when the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
+  # bonus: the modifier of an ability (based_on), plus a proficiency (proficiency, the key of a computed field) when
+  # the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
   # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES
-  FIELD_TYPES = %w[number resource boolean text choice experience attacks bonus computed].freeze
+  FIELD_TYPES = %w[number resource ability boolean text choice experience attacks bonus computed].freeze
+  # How the modifier of an ability is worked out. half_above_ten: (score - 10) / 2, rounded down (14 gives +2)
+  MODIFIER_RULES = %w[half_above_ten].freeze
   # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
-  # proficiency_by_level: the proficiency_bonus of the level reached, in level_thresholds
-  COMPUTED_RULES = %w[proficiency_by_level].freeze
+  # proficiency_by_level: the proficiency_bonus, in level_thresholds, of the level typed in the field level_from.
+  # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
+  # hit_dice_by_class: one die per level (level_from), its sides by the class chosen (class_from, dice_by_class): "3d8"
+  COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class].freeze
 
   belongs_to :owner, class_name: "User", optional: true
   belongs_to :parent, class_name: "SheetTemplate", optional: true

@@ -12,13 +12,18 @@
                                             action: "input->character-sheet#recompute change->character-sheet#recompute",
                                             character_sheet_level_thresholds_value: @game_table.level_thresholds.to_json } do |f| %>
       <%= form_error_notification(f) %>
-      <div class="max-w-sm">
-        <%= f.input :name, autofocus: true, input_html: { autocomplete: "off" } %>
-      </div>
+      <%# The name opens the first section (the character part); alone when the template has no field %>
+      <% name_input = capture { f.input :name, autofocus: true, input_html: { autocomplete: "off" } } %>
+      <%# Only the fields asked at creation: the states of the game (at_creation: false) come with the game %>
+      <% sections = sheet_sections(@game_table.character_creation_fields) %>
+      <% if sections.empty? %>
+        <div class="max-w-sm"><%= name_input %></div>
+      <% end %>
 
-      <% sheet_sections(@character.sheet_fields).each do |section, fields| %>
+      <% sections.each_with_index do |(section, fields), position| %>
         <%= render "game_tables/characters/section", section: section, fields: fields, character: @character,
-                                                    all_fields: @character.sheet_fields, computed: @computed_sheet_values %>
+                                                    all_fields: @character.sheet_fields, computed: @computed_sheet_values,
+                                                    lead: (name_input if position.zero?) %>
       <% end %>
 
       <div class="mt-8 flex flex-wrap justify-end gap-3 border-t border-line pt-6">
