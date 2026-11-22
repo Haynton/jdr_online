@@ -29,8 +29,6 @@ module CharacterSheets
       texts: "grid gap-x-6 @3xl:grid-cols-2 [&_textarea]:min-h-36",
       switches: "flex flex-col gap-2"
     }.freeze
-    # Their help is too long for a box: it goes under the row of the section, as a note
-    BOXED_FIELD_TYPES = %w[number resource experience computed].freeze
 
     # The fields by section ("Caractéristiques", "Compétences"...), in the order of the template
     def sheet_sections(fields)
@@ -103,13 +101,7 @@ module CharacterSheets
     end
 
     def sheet_flow_group(field)
-      case field["type"]
-      when "choice" then :lists
-      when "text" then field["short"] ? :lists : :texts
-      when "boolean" then :switches
-      when "picks" then :picks
-      else :boxes
-      end
+      FieldTypes.of(field).flow_group(field)
     end
 
     def sheet_field_width_classes(field)
@@ -120,7 +112,7 @@ module CharacterSheets
 
     # A field in a box keeps its help out of it: the helps go under the row of its section, across the width
     def sheet_field_narrow?(field)
-      BOXED_FIELD_TYPES.include?(field["type"])
+      FieldTypes.of(field).boxed?
     end
 
     # The helps of the boxed fields of a section, under its row. Fields with the same help share one note
