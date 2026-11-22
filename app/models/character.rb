@@ -9,6 +9,8 @@ class Character < ApplicationRecord
   belongs_to :game_table
   # Only for a player character: the player who plays it
   belongs_to :participation, optional: true
+  # What it carries: the starting equipment, copied when the character is complete
+  has_many :inventory_items, dependent: :destroy
 
   enum :kind, {
     pc: "pc",
@@ -45,14 +47,17 @@ class Character < ApplicationRecord
   end
 
   # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option
-  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier), and the spells its new class
-  # does not offer go. The step that chooses the spells copies those chosen (spell_keys)
+  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier), and the starting equipment
+  # and the spells its new class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
   def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
     filled_values = CharacterSheetBuilder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
                                      .call(sheet.except(*step.field_keys).merge(filled_values))
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
+    # On another step, a class changed drops an equipment choice it does not offer; on the equipment step, what was
+    # sent is checked instead (CharacterSheetValidator), never dropped without a word
+    self.sheet = StartingEquipment.new(self).keep_offered(sheet) unless step.chooses_equipment
     return choose_spells(spell_keys) if step.chooses_spells
 
     self.spells = spell_choices.keep_offered(spells)
@@ -64,7 +69,8 @@ class Character < ApplicationRecord
   end
 
   # Once complete, the values the game will change start from what was worked out at creation (initial_from: the hit
-  # points, a resource, start full; the armour class, a number)
+  # points, a resource, start full; the armour class, a number; the gold), and the starting equipment becomes lines
+  # of its inventory, saved with it
   def complete_creation
     calculated_values = computed_sheet_values[:values]
     initial_values = sheet_fields.select { |field| field["initial_from"] }.filter_map do |field|
@@ -72,6 +78,7 @@ class Character < ApplicationRecord
       [field["key"], field["type"] == "resource" ? { "current" => value, "max" => value } : value] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
+    StartingEquipment.new(self).chosen_items.each { |item| inventory_items << InventoryItem.copy_of(item) }
     self.status = :complete
   end
 

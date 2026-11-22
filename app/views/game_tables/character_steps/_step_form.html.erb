@@ -12,8 +12,7 @@
   <% if step.asks_name %>
     <% name_input = capture { f.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
   <% end %>
-  <%# A field marked summary_only (the save DC and the attack of the spells, decision) is on the summary only %>
-  <% sections = sheet_sections(step.fields.reject { |field| field["summary_only"] }) %>
+  <% sections = sheet_sections(step_page_fields(step)) %>
   <% if sections.empty? && name_input %>
     <div class="max-w-sm"><%= name_input %></div>
   <% end %>
@@ -25,7 +24,9 @@
                                                 page_title: character_step_label(step) %>
   <% end %>
 
-  <% if step.chooses_spells %>
+  <% if step.chooses_equipment %>
+    <%= render "game_tables/character_steps/equipment_choices", character: character %>
+  <% elsif step.chooses_spells %>
     <%= render "game_tables/character_steps/spell_choices", character: character, after_sections: sections.any? %>
   <% end %>
 

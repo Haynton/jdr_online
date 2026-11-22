@@ -22,8 +22,10 @@ class SheetTemplate < ApplicationRecord
   # ability_bonuses: what an option of the list named in from raises (its ability_bonus_choices: the background),
   # spread by the player as +2 and +1, or +1 to each; stored apart from the scores, { "intelligence" => 2 }, and added
   # to them for the modifiers (CharacterSheetCalculator)
+  # equipment_option: the starting equipment picked among the options of the list named in from (its
+  # starting_equipment effect: the class, the background), { "option" => "a", "picks" => {...} } (StartingEquipment)
   FIELD_TYPES = %w[
-    number resource ability ability_bonuses boolean text choice picks experience attacks bonus computed
+    number resource ability ability_bonuses boolean text choice picks experience attacks bonus computed equipment_option
   ].freeze
   # How the modifier of an ability is worked out. half_above_ten: (score - 10) / 2, rounded down (14 gives +2)
   MODIFIER_RULES = %w[half_above_ten].freeze
@@ -35,10 +37,11 @@ class SheetTemplate < ApplicationRecord
   # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5).
   # hit_points_by_level: at level 1 the hit die of the class plus the modifier of based_on (Constitution), then at each
   # level the average of the die (half plus one) plus that modifier. unarmored_armor_class: 10 + the modifier of
-  # based_on (Dexterity), + the modifier of the unarmored_defense of the class (barbarian, monk). Both plain numbers
+  # based_on (Dexterity), + the modifier of the unarmored_defense of the class (barbarian, monk). Both plain numbers.
+  # starting_gold: the gold of the starting equipment options picked (equipment_option fields), a plain number
   COMPUTED_RULES = %w[
     proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
-    hit_points_by_level unarmored_armor_class
+    hit_points_by_level unarmored_armor_class starting_gold
   ].freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
   # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
@@ -48,10 +51,11 @@ class SheetTemplate < ApplicationRecord
   # then by level from 1 to 20: cantrips, prepared spells, highest spell level).
   # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
   # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
-  # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class)
+  # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class).
+  # starting_equipment: the options of the starting equipment (StartingEquipment), picked in an equipment_option field
   CHOICE_EFFECTS = %w[
     hit_die proficient skill_choices set spellcasting unarmored_defense
-    ability_bonus_choices training tools features_by_level traits origin_feat
+    ability_bonus_choices training tools features_by_level traits origin_feat starting_equipment
   ].freeze
 
   belongs_to :owner, class_name: "User", optional: true

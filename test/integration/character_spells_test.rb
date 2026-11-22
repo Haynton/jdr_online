@@ -6,7 +6,7 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
   setup do
     game_master = User.create!(email: "julien@example.com", username: "Julien", password: TEST_PASSWORD)
     @player = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
-    sheet_template = SpellTemplateBuilder.create_template
+    sheet_template = EquipmentSpellsTemplateBuilder.create_template
     @game_table = GameTable.create!(name: "La Crypte", status: GameTable::READY_STATUS, sheet_template: sheet_template,
                                     template_snapshot: sheet_template.snapshot)
     @game_table.participations.create!(user: game_master, role: :game_master)
@@ -88,8 +88,10 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
 
   private
 
+  # The class, then the equipment step, which comes before the spells
   def choose_class(option)
     patch game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: option } } }
+    patch game_table_character_step_path(@game_table, "equipment"), params: { character: { sheet: {} } }
   end
 
   def spells_step_path
