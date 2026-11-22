@@ -3,9 +3,6 @@ module SheetTemplates
   # the registry, only the settings its type declares and those it needs, references to a field of the right type,
   # known rules, descriptions and effects of options that exist, a single field that receives the damage
   class FieldsCheck < Check
-    # The rules that read the hit die of the class picked: every class must give it
-    RULES_READING_THE_HIT_DIE = %w[hit_dice_by_class hit_points_by_level].freeze
-
     def call
       PARTS.flat_map do |part|
         fields = fields_of(part)
@@ -59,19 +56,28 @@ module SheetTemplates
       errors << [:unknown_rule, context(part, field).merge(rule: field["rule"])] if unknown_rule?(field)
       errors << [:unknown_modifier, context(part, field).merge(modifier: field["modifier"])] if unknown_modifier?(field)
       errors << [:missing_hit_die, context(part, field)] if hit_die_missing?(field, fields)
-      errors
+      errors + rule_parameter_errors(part, field)
+    end
+
+    # The settings its rule reads (ComputedRules::Base#required_parameters): hit_dice_by_class without class_from
+    def rule_parameter_errors(part, field)
+      return [] unless field["type"] == "computed"
+
+      ComputedRules.of(field).required_parameters.reject { |parameter| field[parameter].present? }.map do |parameter|
+        [:missing_parameter, context(part, field).merge(parameter: parameter)]
+      end
     end
 
     def unknown_rule?(field)
-      field["type"] == "computed" && SheetTemplate::COMPUTED_RULES.exclude?(field["rule"])
+      field["type"] == "computed" && ComputedRules.find(field["rule"]).nil?
     end
 
     def unknown_modifier?(field)
-      field["type"] == "ability" && SheetTemplate::MODIFIER_RULES.exclude?(field["modifier"])
+      field["type"] == "ability" && ModifierRules.find(field["modifier"]).nil?
     end
 
     def hit_die_missing?(field, fields)
-      return false unless RULES_READING_THE_HIT_DIE.include?(field["rule"])
+      return false unless field["type"] == "computed" && ComputedRules.of(field).reads_hit_die?
 
       class_list = fields.find { |candidate| candidate["key"] == field["class_from"] }
       class_list && class_list["options"].to_a.any? { |option| !gives_hit_die?(class_list, option) }

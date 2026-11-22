@@ -1,4 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
+import { computedValue } from "computed_rules"
+import { modifierOf } from "modifier_rules"
 
 // Keeps the computed values of a character sheet up to date while the player types: the modifier of each ability,
 // the proficiency bonus of the level typed, the initiative, and the bonus of each saving throw and skill (modifier,
@@ -96,7 +98,7 @@ export default class extends Controller {
     })
   }
 
-  // The modifier of each score by the rule of its ability (SheetTemplate::MODIFIER_RULES). No score yet: no modifier
+  // The modifier of each score by the rule of its ability (modifier_rules). No score yet: no modifier
   abilityModifiers() {
     const modifiersOnPage = Object.fromEntries(this.scoreTargets.map((input) => {
       return [input.dataset.ability, modifierOf(this.finalScore(input.dataset.ability), input.dataset.modifierRule)]
@@ -144,61 +146,32 @@ export default class extends Controller {
     return parseInteger(input?.value)
   }
 
-  // The rules of SheetTemplate::COMPUTED_RULES, as in CharacterSheets::Calculator#computed_value
+  // Each computed field by its rule (app/javascript/computed_rules), as in CharacterSheets::Calculator
   computedValues(modifiers) {
+    const reader = this.sheetReader(modifiers)
     return Object.fromEntries(this.computedTargets.map((output) => {
-      const valuesByRule = {
-        proficiency_by_level: () => this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus,
-        ability_modifier: () => modifiers[output.dataset.basedOn],
-        hit_dice_by_class: () => this.hitDice(output),
-        spell_save_dc: () => { const attack = this.spellAttack(output, modifiers); return attack === null ? null : `${8 + attack}` },
-        spell_attack_bonus: () => this.spellAttack(output, modifiers),
-        hit_points_by_level: () => asText(this.hitPoints(output, modifiers)),
-        unarmored_armor_class: () => asText(this.unarmoredArmorClass(output, modifiers))
-      }
-      return [output.dataset.key, valuesByRule[output.dataset.rule]?.() ?? null]
+      return [output.dataset.key, computedValue(output.dataset.rule, output.dataset, reader)]
     }))
   }
 
-  // "3d8": one die per level, its sides the hit_die of the class chosen. Nothing until a class of the list is chosen
-  hitDice(output) {
-    const sides = this.classEffects(output.dataset.classFrom).hit_die
-    return sides ? `${this.typedLevel(output.dataset.levelFrom)}d${sides}` : null
+  // What the rules read on the sheet, as CharacterSheets::SheetReader on the server
+  sheetReader(modifiers) {
+    return {
+      modifier: (abilityKey) => modifiers[abilityKey] ?? null,
+      typedLevel: (levelKey) => this.typedLevel(levelKey),
+      thresholdOfLevel: (levelKey) => this.thresholdOfLevel(levelKey),
+      classEffects: (listKey) => this.classEffects(listKey),
+      proficiency: (proficiencyKey) => this.proficiencyOf(proficiencyKey)
+    }
   }
 
-  // The proficiency plus the modifier of the spellcasting ability of the class chosen; nothing for a class without
-  // spells, or until that ability has a score. The save DC adds 8 and reads as a plain number (a text, like 3d8)
-  spellAttack(output, modifiers) {
-    const modifier = modifiers[this.classEffects(output.dataset.classFrom).spellcasting?.ability]
-    if (modifier === null || modifier === undefined) return null
-
-    return modifier + this.proficiencyOf(output.dataset.proficiency)
-  }
-
-  // Level 1: the highest roll of the die, then its average (half plus one) at each level, the modifier added each time
-  hitPoints(output, modifiers) {
-    const sides = this.classEffects(output.dataset.classFrom).hit_die
-    const modifier = modifiers[output.dataset.basedOn]
-    if (!sides || modifier === null || modifier === undefined) return null
-
-    return sides + modifier + (this.typedLevel(output.dataset.levelFrom) - 1) * (Math.floor(sides / 2) + 1 + modifier)
-  }
-
-  // 10 + the modifier of basedOn, + the modifier of the ability of the unarmored defense of the class
-  unarmoredArmorClass(output, modifiers) {
-    const modifier = modifiers[output.dataset.basedOn]
-    if (modifier === null || modifier === undefined) return null
-
-    return 10 + modifier + (modifiers[this.classEffects(output.dataset.classFrom).unarmored_defense] ?? 0)
-  }
-
-  // The proficiency bonus of the level, from the computed field named (its rule: proficiency_by_level), or the value
-  // the server worked out when that field is on another step
+  // The proficiency bonus of the level, from the computed field named (by its rule), or the value the server worked
+  // out when that field is on another step
   proficiencyOf(fieldKey) {
     const output = this.computedTargets.find((computed) => computed.dataset.key === fieldKey)
     if (!output) return this.calculatedValue.values?.[fieldKey] ?? 0
 
-    return this.thresholdOfLevel(output.dataset.levelFrom)?.proficiency_bonus ?? 0
+    return computedValue(output.dataset.rule, output.dataset, this.sheetReader({})) ?? 0
   }
 
   // The effects of the option chosen in a list ({} before a choice): from the list on the page, or from the value
@@ -240,13 +213,6 @@ export default class extends Controller {
   }
 }
 
-// Same as CharacterSheets::Calculator.modifier. half_above_ten: (score - 10) / 2, rounded down: 14 gives +2, 9 gives -1
-function modifierOf(score, rule) {
-  if (score === null) return null
-
-  return rule === "half_above_ten" ? Math.floor((score - 10) / 2) : null
-}
-
 function parseInteger(text) {
   const trimmedText = (text ?? "").trim()
   return /^-?\d+$/.test(trimmedText) ? Number.parseInt(trimmedText, 10) : null
@@ -262,9 +228,4 @@ function formatBonus(value) {
 // Same as format_computed_value: a text as it is (hit dice: 3d8), a number as a bonus
 function formatComputed(value) {
   return typeof value === "string" ? value : formatBonus(value)
-}
-
-// A plain number (hit points, armour class) is kept as a text, so that it reads 8 and not +8, as on the server
-function asText(number) {
-  return number === null || number === undefined ? null : `${number}`
 }

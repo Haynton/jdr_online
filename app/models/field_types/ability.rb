@@ -1,5 +1,5 @@
 module FieldTypes
-  # An ability: a score in its tile, with its modifier worked out by its rule (modifier, SheetTemplate::MODIFIER_RULES)
+  # An ability: a score in its tile, with its modifier worked out by its rule (modifier, ModifierRules)
   class Ability < Base
     include NumberChecks
 

@@ -55,6 +55,13 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_modifier
   end
 
+  test "a computing rule gets the settings it reads" do
+    template = build_template { |fields| field(fields, "hit_dice").delete("class_from") }
+
+    assert_error template, :missing_parameter,
+                 "Fiche du personnage › Dés de vie\u00A0: le réglage « class_from » est obligatoire"
+  end
+
   test "every class gives its hit die to the rules that read it" do
     template = build_template { |fields| field(fields, "class")["effects"]["Guerrier"].delete("hit_die") }
 
