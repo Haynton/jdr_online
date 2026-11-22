@@ -44,6 +44,9 @@
                                                                   computed: computed, wide: header %>
       <% end %>
     <% end %>
+    <% if step.chooses_equipment %>
+      <%= render "game_tables/character_steps/summary_equipment", character: character %>
+    <% end %>
     <% if step.chooses_spells %>
       <%= render "game_tables/character_steps/summary_spells", character: character %>
     <% end %>

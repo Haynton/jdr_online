@@ -38,6 +38,13 @@ module CharacterCreationHelper
       character_sheet_calculated_value: computed.to_json }
   end
 
+  # The fields drawn by the sections of a step page: not those marked summary_only (the save DC and the attack of the
+  # spells, decision) or internal (the starting gold), nor the starting equipment, drawn by its own tab
+  # (equipment_choices)
+  def step_page_fields(step)
+    step.fields.reject { |field| field["summary_only"] || field["internal"] || field["type"] == "equipment_option" }
+  end
+
   private
 
   def character_step_link(character, step)

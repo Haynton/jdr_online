@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,6 +69,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_200000) do
     t.check_constraint "starting_level >= 1 AND starting_level <= 20", name: "game_tables_starting_level_check"
   end
 
+  create_table "inventory_items", force: :cascade do |t|
+    t.bigint "character_id", null: false
+    t.string "key"
+    t.string "name", limit: 60, null: false
+    t.text "description"
+    t.jsonb "properties", default: {}, null: false
+    t.integer "quantity", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_inventory_items_on_character_id"
+    t.check_constraint "quantity > 0", name: "inventory_items_quantity_positive"
+  end
+
   create_table "participations", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "game_table_id", null: false
@@ -122,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_200000) do
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
+  add_foreign_key "inventory_items", "characters"
   add_foreign_key "participations", "game_tables"
   add_foreign_key "participations", "users"
   add_foreign_key "sheet_templates", "sheet_templates", column: "parent_id"

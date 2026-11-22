@@ -1,7 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
-# Helpers shared by several tests (a template with spells: SpellTemplateBuilder)
+# Helpers shared by several tests (a template with equipment and spells: EquipmentSpellsTemplateBuilder)
 Rails.root.glob("test/support/**/*.rb").each { |support_file| require support_file }
 
 module ActiveSupport

@@ -34,11 +34,14 @@
                                                     data: { spell_choices_target: "search", action: "input->spell-choices#filter" } %>
         </div>
       </div>
-      <%# The groups set apart by a wider gap (24 px across, 12 px down; 8 px within a group), not by a line: wrapped, a line started or
-          ended a row, and a group that could not wrap ran past the screen (decision). From 640 px the groups and their
-          pills wrap; on a phone, one line that scrolls sideways (as the pills of "My tables") %>
-      <div class="no-scrollbar -mx-4 flex gap-x-6 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:gap-y-3 sm:overflow-visible sm:px-0">
-        <% spell_filter_groups(groups).each do |group, pills| %>
+      <%# The groups set apart by a line (decision), where the pills hold on one line: on a phone (one line that scrolls
+          sideways, as the pills of "My tables") and from 1280 px. Between the two, the groups and their pills wrap:
+          a line would start or end a row, so a wider gap sets them apart (24 px across, 12 px down; 8 px within) %>
+      <div class="no-scrollbar -mx-4 flex gap-x-3 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:gap-x-6 sm:gap-y-3 sm:overflow-visible sm:px-0 xl:gap-x-3">
+        <% spell_filter_groups(groups).each_with_index do |(group, pills), position| %>
+          <% if position.positive? %>
+            <span class="h-5 w-px shrink-0 self-center bg-line sm:hidden xl:block" aria-hidden="true"></span>
+          <% end %>
           <div class="flex shrink-0 gap-2 sm:min-w-0 sm:shrink sm:flex-wrap" role="group" aria-label="<%= spell_filter_label(group) %>">
             <% pills.each do |value, label| %>
               <button type="button" aria-pressed="false" class="<%= filter_pill_classes %>"

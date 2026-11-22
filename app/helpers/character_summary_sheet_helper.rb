@@ -28,7 +28,11 @@ module CharacterSummarySheetHelper
   # The fields of a step by group, in the order of SUMMARY_GROUPS, each group in the order of the template
   # The bonus of the background is not shown as a field: it is in the scores of the tiles already
   def summary_groups(fields)
-    shown_fields = fields.reject { |field| field["type"] == "ability_bonuses" }
+    # The bonus of the background is in the scores, the equipment in its own list (summary_equipment), and an internal
+    # value (the starting gold, which fills the gold of the sheet) is shown nowhere
+    shown_fields = fields.reject do |field|
+      field["internal"] || %w[ability_bonuses equipment_option].include?(field["type"])
+    end
     grouped_fields = shown_fields.group_by { |field| summary_group(field) }
     SUMMARY_GROUPS.filter_map { |group| [group, grouped_fields[group]] if grouped_fields[group] }
   end

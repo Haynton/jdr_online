@@ -16,13 +16,20 @@ class CharacterSheetBuilder
     @fields.each_with_object({}) do |field, sheet|
       typed_value = @submitted_values[field["key"]]
       next if field["type"] == "computed"
-      next if typed_value.blank? && CHECK_BOX_TYPES.exclude?(field["type"])
+      next if blank_value?(field, typed_value)
 
       sheet[field["key"]] = convert(field, typed_value)
     end
   end
 
   private
+
+  # An equipment option without an option picked is blank too (its picks alone mean nothing)
+  def blank_value?(field, typed_value)
+    return typed_value.to_h.stringify_keys["option"].blank? if field["type"] == "equipment_option"
+
+    typed_value.blank? && CHECK_BOX_TYPES.exclude?(field["type"])
+  end
 
   def convert(field, typed_value)
     case field["type"]
@@ -33,6 +40,7 @@ class CharacterSheetBuilder
     when "picks" then Array(typed_value).compact_blank.map(&:to_s)
     # One choice (0, 1 or 2) per ability raised; a bonus of 0 is left out
     when "ability_bonuses" then ability_bonuses(typed_value)
+    when "equipment_option" then equipment_option(typed_value)
     # The check box sends "1" when checked, the hidden field before it "0". For a bonus, it is its proficiency
     when *CHECK_BOX_TYPES then typed_value == "1"
     else typed_value.to_s.strip
@@ -57,6 +65,15 @@ class CharacterSheetBuilder
   def ability_bonuses(typed_value)
     bonuses = typed_value.to_h.transform_values { |bonus| Integer(bonus.to_s, 10, exception: false) || bonus }
     bonuses.reject { |_ability_key, bonus| bonus.is_a?(Integer) && bonus.zero? }
+  end
+
+  # The option picked (a, b, c) and the items of your choice of that option only (the lists of every option are
+  # sent: picks[a][2]), those not picked left out (StartingEquipment)
+  def equipment_option(typed_value)
+    value = typed_value.to_h.stringify_keys
+    option = value["option"].to_s
+    picks = value["picks"].to_h.stringify_keys[option].to_h.stringify_keys.compact_blank
+    { "option" => option, "picks" => picks }
   end
 
   # At creation, the player gives the maximum: the character starts full

@@ -2,7 +2,7 @@ require "test_helper"
 
 class SpellChoicesTest < ActiveSupport::TestCase
   setup do
-    sheet_template = SpellTemplateBuilder.create_template
+    sheet_template = EquipmentSpellsTemplateBuilder.create_template
     @game_table = GameTable.create!(name: "La Crypte", sheet_template: sheet_template,
                                     template_snapshot: sheet_template.snapshot)
   end

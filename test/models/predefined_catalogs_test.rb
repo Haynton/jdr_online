@@ -44,6 +44,8 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
 
   test "every class with spells has enough of them to choose from, at levels 1 to 4" do
     each_catalog do |catalog_file, catalog, sheet_template|
+      next unless catalog["kind"] == "spell"
+
       class_list = sheet_template.character_fields["fields"].find { |field| field["key"] == "class" }
       class_list["effects"].each do |class_option, effects|
         next unless (spellcasting = effects["spellcasting"])
@@ -53,6 +55,18 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
         (1..4).each do |level|
           assert_enough_spells(catalog, class_option, spellcasting, level, "#{catalog_file.basename} #{class_option}")
         end
+      end
+    end
+  end
+
+  test "every item of a starting equipment is in the catalog, and every group of your choice has items" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }.each do |catalog_file|
+      items = read_json(catalog_file)["entries"]
+      groups = items.filter_map { |item| item.dig("properties", "group") }.uniq
+      template = create_template_of(catalog_file)
+      starting_lines(template).each do |line|
+        known = line["choose"] ? (line["choose"] - groups).empty? : items.any? { |item| item["key"] == line["key"] }
+        assert known, "#{catalog_file.basename} #{line}"
       end
     end
   end
@@ -86,10 +100,20 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
                     spellcasting["prepared"][level - 1], "#{context}: prepared spells at #{level}"
   end
 
+  # Every line of every option of the starting equipment of the template (its classes and backgrounds)
+  def starting_lines(template)
+    template.character_fields["fields"].flat_map do |field|
+      field["effects"].to_h.values.flat_map do |effects|
+        effects.dig("starting_equipment", "options").to_a.flat_map { |option| option["items"].to_a }
+      end
+    end
+  end
+
   # The template the file belongs to, made from its own file of db/seeds/sheet_templates
   def create_template_of(catalog_file)
     template_name, locale = catalog_file.basename(".json").to_s.split(".")
-    template_file = Rails.root.join("db/seeds/sheet_templates/#{template_name.delete_suffix('_spells')}.#{locale}.json")
+    # heroic_fantasy_spells, heroic_fantasy_items: the template is the name without its kind
+    template_file = Rails.root.join("db/seeds/sheet_templates/#{template_name.sub(/_[a-z]+\z/, '')}.#{locale}.json")
     SheetTemplate.find_or_create_by!(read_json(template_file))
   end
 

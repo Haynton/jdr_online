@@ -9,7 +9,7 @@ class CharacterSheetValidator < ActiveModel::Validator
     character.sheet.each do |key, value|
       next if fields_by_key.dig(key, "type") == "ability_bonuses"
 
-      error_type, error_options = value_error(fields_by_key[key], value)
+      error_type, error_options = value_error(character, fields_by_key[key], value)
       character.errors.add(:"sheet.#{key}", error_type, **error_options.to_h) if error_type
     end
     validate_required_fields(character)
@@ -67,7 +67,10 @@ class CharacterSheetValidator < ActiveModel::Validator
     end
   end
 
-  def value_error(field, value)
+  # The starting equipment depends on the options picked elsewhere on the sheet (StartingEquipment)
+  def value_error(character, field, value)
+    return StartingEquipment.new(character).error_for(field, value) if field&.dig("type") == "equipment_option"
+
     FieldValueChecker.error_for(field, value)
   end
 end

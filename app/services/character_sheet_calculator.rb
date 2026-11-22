@@ -67,6 +67,7 @@ class CharacterSheetCalculator
     when "spell_attack_bonus" then spell_attack(field, modifiers)
     when "hit_points_by_level" then hit_points(field, modifiers)&.to_s
     when "unarmored_armor_class" then unarmored_armor_class(field, modifiers)&.to_s
+    when "starting_gold" then StartingEquipment.gold_from(fields: @fields, sheet: @sheet)&.to_s
     end
   end
 

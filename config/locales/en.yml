@@ -262,6 +262,25 @@ en:
   game_tables:
     character_steps:
       band_label: "Steps of your character"
+      equipment_choices:
+        armor_class: "AC %{value}"
+        choose_prompt: "Choose…"
+        gold: "%{count} gold pieces"
+        gold_instead: "%{count} gold pieces to buy your equipment yourself."
+        groups:
+          artisan_tools: "Artisan's tools"
+          gaming_set: "Gaming set"
+          holy_symbol: "Holy symbol"
+          musical_instrument: "Musical instrument"
+        item_count: "%{count} × %{name}"
+        items_option: "Items %{letter}"
+        or: " or "
+        pick_first: "Choose a class and a background first, on the Character step."
+        plus_gold: "+ %{count} gold pieces"
+        take_gold: "Take %{count} gold pieces"
+        take_items: "Take the items"
+        title: "Equipment"
+        weight: "%{value} lb"
       show:
         back: "Back"
         change: "Change"
