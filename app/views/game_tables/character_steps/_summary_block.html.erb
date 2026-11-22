@@ -4,7 +4,8 @@
     The header has the picture of the character on its left (decision), its place kept for now, as on the first step:
     the upload comes with Active Storage and Cloudinary. Decorative until then (hidden from screen readers).
     in_grid: the block sits in a column of the sheet (summary_columns), which spaces its blocks itself.
-    A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it %>
+    A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it. The block of the step
+    that chooses the spells lists them (summary_spells) %>
 <% header = local_assigns[:header] %>
 <% sections = step.fields.group_by { |field| field["section"] }
                          .reject { |_section, fields| summary_section_empty?(character, fields) } %>
@@ -42,6 +43,9 @@
         <%= render "game_tables/character_steps/summary_#{group}", character: character, fields: group_fields,
                                                                   computed: computed, wide: header %>
       <% end %>
+    <% end %>
+    <% if step.chooses_spells %>
+      <%= render "game_tables/character_steps/summary_spells", character: character %>
     <% end %>
   </div>
 </section>

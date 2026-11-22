@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_180100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,6 +41,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_180100) do
     t.datetime "updated_at", null: false
     t.string "status", default: "complete", null: false
     t.string "creation_step"
+    t.jsonb "spells", default: [], null: false
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
