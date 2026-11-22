@@ -51,22 +51,34 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "main ol input[name=label]", count: 0
   end
 
-  test "the form asks the settings of the type, each by its kind, the key and the type never" do
+  test "the form asks only what a game master tunes, its texts and its values, never what builds the sheet" do
     get edit_sheet_template_field_path(@template, "level")
 
     assert_response :success
     assert_select "main h1", text: "Niveau"
     assert_select "input[name='field[label]'][value=?]", "Niveau"
+    assert_select "textarea[name='field[help]']"
     assert_select "input[type=number][name='field[max]']"
-    assert_select "select[name='field[section]'] option[selected][value=?]", "Notes"
-    assert_select "select[name='field[from_table]'] option[selected]", text: "Niveau de départ de la table"
-    assert_select "select[name='field[initial_from]'] option[value=?]", "starting_gold", text: "Or de départ"
-    assert_select "select[name='field[initial_from]'] option[value='']", text: "Aucune"
+    assert_select "h2", text: "Textes"
+    assert_select "h2", text: "Valeurs"
     assert_select "button[aria-controls='parameter-max-help'][aria-label=?][hidden]", "Aide\u00A0: Maximum"
     assert_select "input[name='field[max]'][aria-describedby='parameter-max-help']"
     assert_select "main", text: /level\b/, count: 0
-    assert_select "input[type=checkbox][name='field[at_creation]'][checked]"
-    assert_select "[name='field[key]'], [name='field[type]']", count: 0
+    %w[key type section column required at_creation visible_to_others summary_only internal from_table initial_from
+       step abbreviation].each do |parameter|
+      assert_select "[name='field[#{parameter}]']", count: 0
+    end
+  end
+
+  test "a value worked out is said in a sentence that names the fields it reads" do
+    get edit_sheet_template_field_path(@template, "starting_gold")
+    assert_select "h2", text: "Calcul"
+    assert_select "p", text: "L'or de l'équipement de départ choisi par le joueur."
+    assert_select "[name='field[rule]']", count: 0
+
+    get edit_sheet_template_field_path(@template, "intelligence")
+    assert_select "p", text: /la valeur moins 10, divisée par 2/
+    assert_select "[name='field[modifier]']", count: 0
   end
 
   test "the options of a list with effects are not offered, and the page says why" do
@@ -76,19 +88,19 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Les effets et les descriptions des options se modifieront bientôt/
   end
 
-  test "saving changes the field and goes back to the list" do
+  test "saving changes the field and goes back to the list; what builds the sheet stays, whatever is sent" do
     patch sheet_template_field_path(@template, "level"),
-          params: { field: { label: "Rang", section: "Notes", from_table: "starting_level", max: "12",
-                             at_creation: "1" } }
+          params: { field: { label: "Rang", section: "Combat", from_table: "", max: "12", at_creation: "0" } }
 
     assert_redirected_to sheet_template_fields_path(@template)
     level = @template.reload.character_fields["fields"].find { |field| field["key"] == "level" }
-    assert_equal ["Rang", 12], level.values_at("label", "max")
+    assert_equal ["Rang", 12, "Notes", "starting_level"], level.values_at("label", "max", "section", "from_table")
+    assert_not level.key?("at_creation")
   end
 
   test "a refused value shows the errors of the template and keeps what was typed" do
     patch sheet_template_field_path(@template, "level"),
-          params: { field: { label: "Rang", section: "Notes", min: "10", max: "5", at_creation: "1" } }
+          params: { field: { label: "Rang", min: "10", max: "5" } }
 
     assert_response :unprocessable_content
     assert_select "[role=alert] li", text: /le minimum \(10\) dépasse le maximum \(5\)/

@@ -293,6 +293,22 @@ en:
       gold: "Gold"
       night: "Night"
       stone: "Stone"
+    # How a value is worked out, in the template editor: the fields it reads named by their label
+    calculations:
+      bonus: "The modifier of %{ability}."
+      bonus_with_proficiency: "The modifier of %{ability}, plus the %{proficiency} when the proficiency box is ticked."
+      modifiers:
+        half_above_ten: "The modifier: the score minus 10, divided by 2, rounded down (14 gives +2, 9 gives −1)."
+      no_field: "—"
+      rules:
+        ability_modifier: "The modifier of %{ability}."
+        hit_dice_by_class: "One die per level (%{level}), its size set by the class chosen (%{class})."
+        hit_points_by_level: "At first level, the highest roll of the hit die of the class (%{class}) plus the modifier of %{ability}; at each level after (%{level}), the average of the die plus that modifier."
+        proficiency_by_level: "From the level (%{level}), following the thresholds of the template."
+        spell_attack_bonus: "The %{proficiency} plus the modifier of the spellcasting ability of the class (%{class})."
+        spell_save_dc: "8, plus the %{proficiency}, plus the modifier of the spellcasting ability of the class (%{class})."
+        starting_gold: "The gold of the starting equipment the player chose."
+        unarmored_armor_class: "10 plus the modifier of %{ability}, plus the unarmored defense of the class (%{class}) if it has one."
     duplicates:
       copy_name: "%{name} (copy)"
       create:
@@ -310,8 +326,9 @@ en:
         close: "Close"
         effects_soon: "The effects and the descriptions of the options will be editable soon. The options of a list that has some are not renamed: their effects depend on them."
         groups:
-          general: "General"
-          type: "Settings of the type"
+          calculation: "Calculation"
+          general: "Texts"
+          type: "Values"
         refused: "The template was not saved:"
         save: "Save"
         subtitle: "%{type}, section “%{section}”"

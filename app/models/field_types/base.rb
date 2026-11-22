@@ -41,6 +41,12 @@ module FieldTypes
       :boxes
     end
 
+    # How its value is worked out, as the template editor says it in a sentence (the key of its text, read with the
+    # labels of the fields it reads: SheetTemplates::FieldFormHelper#field_calculation), nil for a value typed
+    def calculation_key(_field)
+      nil
+    end
+
     # A box keeps its help out of it: the help goes under the row of its section, as a note
     def boxed?
       false

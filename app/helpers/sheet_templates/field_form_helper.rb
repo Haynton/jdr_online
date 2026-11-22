@@ -10,6 +10,10 @@ module SheetTemplates
       hover:ring-2 hover:ring-brass
       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
     ].join(" ").freeze
+    # The fields a sentence of calculation may name, by the setting that names them
+    CALCULATION_FIELDS = {
+      ability: "based_on", level: "level_from", class: "class_from", proficiency: "proficiency"
+    }.freeze
     # The options of the input of each kind (a method per kind: one place to change how a kind is asked)
     INPUT_OPTIONS = {
       text: :text_input_options, long_text: :long_text_input_options, integer: :integer_input_options,
@@ -18,7 +22,7 @@ module SheetTemplates
       reference: :reference_input_options, section: :section_input_options
     }.freeze
 
-    # The settings of the field, the common ones then those of its type, without the fixed ones
+    # The settings the game master tunes, its texts (common to every type) then its values (those of its type)
     def field_parameter_groups(field)
       editable = SheetTemplates::FieldUpdater.editable_parameters(field)
       common, own = editable.partition { |parameter| FieldTypes::Base::COMMON_PARAMETERS.include?(parameter) }
@@ -87,6 +91,20 @@ module SheetTemplates
     # The sections of the sheet, in their order
     def section_input_options(_parameter, value, context)
       { collection: context[:fields].pluck("section").uniq, selected: value, include_blank: false }
+    end
+
+    # How the value of the field is worked out, in a sentence that names the fields it reads by their label
+    # ("10 + le modificateur de Dextérité..."), nil for a value typed by the player
+    def field_calculation(field, fields)
+      key = FieldTypes.of(field).calculation_key(field)
+      return unless key
+
+      labels = CALCULATION_FIELDS.transform_values { |parameter| calculation_field_label(field[parameter], fields) }
+      t(key, **labels)
+    end
+
+    def calculation_field_label(field_key, fields)
+      fields.find { |other| other["key"] == field_key }&.dig("label") || t("sheet_templates.calculations.no_field")
     end
 
     def field_type_name(field)
