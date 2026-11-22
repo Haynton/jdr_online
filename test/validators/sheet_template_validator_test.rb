@@ -144,6 +144,33 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_effect_value
   end
 
+  test "a group of spells has a key in snake_case, a label, its count, its levels and known settings" do
+    groups = [
+      { "key" => "Mineurs", "label" => "", "min_level" => 0, "color" => "red", "changes" => "every_morning" },
+      { "key" => "Mineurs", "label" => "Encore", "min_level" => 0, "max_level" => 0, "count_from" => "cantrips" }
+    ]
+    template = build_template(spell_groups: groups)
+
+    assert_error template, :invalid_spell_group_key
+    assert_error template, :invalid_spell_group_label
+    assert_error template, :unknown_spell_group_parameter
+    assert_error template, :missing_spell_group_parameter
+    assert_error template, :unknown_spell_group_changes
+    assert_error template, :duplicate_spell_group
+  end
+
+  test "every class that casts spells has the tables its groups read" do
+    template = build_template { |fields| class_effects(fields)["spellcasting"].delete("max_spell_level") }
+
+    assert_error template, :missing_spell_table,
+                 "Fiche du personnage › Classe › Guerrier\u00A0: la table «\u00A0max_spell_level\u00A0» des sorts " \
+                 "manque, le groupe «\u00A0Sorts préparés\u00A0» la lit"
+  end
+
+  test "a template without groups of spells needs no spell table" do
+    assert_predicate build_template(spell_groups: []), :valid?
+  end
+
   test "the starting equipment has one letter per option, each line an item or a known group" do
     template = build_template do |fields|
       class_effects(fields)["starting_equipment"]["options"] = [
@@ -198,12 +225,13 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   private
 
   # The template given to the block (its character fields) can be changed before it is built
-  def build_template(steps: DEFAULT_STEPS)
+  def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS)
     fields = character_fields
     yield fields if block_given?
     SheetTemplate.new(
       name: "Petit jeu", locale: "fr",
-      character_fields: { "fields" => fields, "creation_steps" => steps.map(&:dup) },
+      character_fields: { "fields" => fields, "creation_steps" => steps.map(&:dup),
+                          "spell_groups" => spell_groups.map(&:dup) },
       item_fields: { "fields" => [{ "key" => "group", "label" => "Groupe", "type" => "choice",
                                     "options" => ["weapon"] }] }
     )
