@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The summary of the options picked beside their lists (characters/_section_described_choices): each option of each
+// The summary of the options picked beside their lists (character_sheets/sections/_described_choices): each option of each
 // list is rendered by the server, the one picked shown. When the player changes a list, the summary of the option
 // now picked shows, or "nothing picked yet" when the list is emptied
 export default class extends Controller {

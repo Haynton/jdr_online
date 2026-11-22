@@ -67,9 +67,10 @@ class CharacterSheetValidator < ActiveModel::Validator
     end
   end
 
-  # The starting equipment depends on the options picked elsewhere on the sheet (StartingEquipment)
+  # The starting equipment depends on the options picked elsewhere on the sheet (CharacterSheets::StartingEquipment)
   def value_error(character, field, value)
-    return StartingEquipment.new(character).error_for(field, value) if field&.dig("type") == "equipment_option"
+    starting_equipment = CharacterSheets::StartingEquipment
+    return starting_equipment.new(character).error_for(field, value) if field&.dig("type") == "equipment_option"
 
     FieldValueChecker.error_for(field, value)
   end

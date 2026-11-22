@@ -1,5 +1,5 @@
 <%# The spells to choose (decision: a list filtered in the page, not a window): those of the class of the character
-    and of its level (SpellChoices), cantrips then prepared spells by level, each group with its count ("2 sur 3
+    and of its level (CharacterSheets::SpellChoices), cantrips then prepared spells by level, each group with its count ("2 sur 3
     choisis", in red past the number allowed). A search by name, without accents nor capitals, hides the other rows
     (spell_choices_controller.js, shown by it: without JavaScript, every row). One row per spell: a check box and its
     name, its school, casting time, range and duration, Concentration and Ritual, then its description folded under
@@ -20,14 +20,14 @@
   <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
 
   <% if groups.empty? %>
-    <p class="text-sm text-muted"><%= t("#{SpellChoicesHelper::SCOPE}.none") %></p>
+    <p class="text-sm text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.none") %></p>
   <% else %>
     <%# The search and the filters (decision: level, school, concentration and ritual, chosen only), shown by the
         controller. Pills of "My tables" (filter_pill_classes): within a group the values add up, between the groups
         they combine, a group with no pill pressed lets every spell through %>
     <div hidden class="flex flex-col gap-5" data-spell-choices-target="tools">
       <div class="w-full max-w-sm">
-        <%= label_tag "spell_search", t("#{SpellChoicesHelper::SCOPE}.search"), class: SimpleFormFieldClasses::LABEL %>
+        <%= label_tag "spell_search", t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"), class: SimpleFormFieldClasses::LABEL %>
         <div class="relative">
           <%= render "shared/icons/search", css_class: "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" %>
           <%= search_field_tag "spell_search", nil, class: "#{SimpleFormFieldClasses::INPUT} pl-9", autocomplete: "off",
@@ -53,14 +53,14 @@
       </div>
     </div>
     <p hidden class="text-sm text-muted" role="status" data-spell-choices-target="noMatch">
-      <%= t("#{SpellChoicesHelper::SCOPE}.no_match") %>
+      <%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.no_match") %>
     </p>
 
     <% groups.each do |group| %>
       <%= tag.fieldset class: "min-w-0", data: spell_group_data(group) do %>
         <%# The legend floats (as in game_tables/_choice_row): a legend in place sits in the border of the fieldset, and
             the count beside it would not line up %>
-        <legend class="float-left mr-6 text-lg leading-7 font-bold text-ink"><%= t("#{SpellChoicesHelper::SCOPE}.title_#{group.kind}") %></legend>
+        <legend class="float-left mr-6 text-lg leading-7 font-bold text-ink"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.title_#{group.kind}") %></legend>
         <%= tag.p spell_group_status(character, group), role: "status",
                   class: "text-sm leading-7 font-medium text-ink data-invalid:text-error-ink",
                   data: { spell_choices_target: "status", invalid: ("" if spell_group_over?(character, group)) } %>
@@ -69,7 +69,7 @@
         <% spells_by_level(group).each do |level, spells| %>
           <div data-spell-choices-target="block">
             <% if group.kind == :prepared %>
-              <h3 class="mt-5 text-[11px] font-semibold tracking-wider text-muted uppercase"><%= t("#{SpellChoicesHelper::SCOPE}.level", level: level) %></h3>
+              <h3 class="mt-5 text-[11px] font-semibold tracking-wider text-muted uppercase"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.level", level: level) %></h3>
             <% end %>
             <%# Each card at its own height (items-start): an open description does not stretch the cards beside it %>
             <ul class="mt-3 grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">

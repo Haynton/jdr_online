@@ -4,22 +4,22 @@
     option chosen, one line per item
     (decision: the packs are opened, their contents listed), and its gold. An item of your choice (an instrument, a
     holy symbol...) is a list in its line; its name holds the letter of its option (picks[a][2]): only the picks of
-    the option chosen are kept (CharacterSheetBuilder). Without a class or a background yet, a sentence sends back
+    the option chosen are kept (CharacterSheets::Builder). Without a class or a background yet, a sentence sends back
     to the Character step %>
-<% starting_equipment = StartingEquipment.new(character) %>
+<% starting_equipment = CharacterSheets::StartingEquipment.new(character) %>
 <% choices = starting_equipment.choices %>
 <%# The class and the background side by side from 1024 px (decision), each block a container for its lines %>
 <div class="grid items-start gap-12 lg:grid-cols-2">
   <% if choices.empty? %>
-    <p class="text-sm text-muted"><%= t("#{EquipmentChoicesHelper::SCOPE}.pick_first") %></p>
+    <p class="text-sm text-muted"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.pick_first") %></p>
   <% end %>
   <% choices.each do |choice| %>
     <% error = sheet_field_error(character, choice.field) %>
     <%= tag.fieldset class: "group @container min-w-0", aria: { invalid: (true if error) } do %>
       <legend class="text-lg leading-7 font-bold text-ink"><%= equipment_source_title(choice, character.sheet_fields) %></legend>
-      <div class="<%= EquipmentChoicesHelper::SWITCH_CLASSES %> mt-3">
+      <div class="<%= CharacterSheets::EquipmentChoicesHelper::SWITCH_CLASSES %> mt-3">
         <% choice.options.each do |option| %>
-          <label class="<%= EquipmentChoicesHelper::SWITCH_OPTION_CLASSES %>">
+          <label class="<%= CharacterSheets::EquipmentChoicesHelper::SWITCH_OPTION_CLASSES %>">
             <%= radio_button_tag equipment_option_input_name(choice, "option"), option["key"],
                                  equipment_option_checked?(choice, option), id: equipment_option_id(choice, option),
                                  class: "sr-only" %>
@@ -34,27 +34,27 @@
       <% choice.options.each do |option| %>
         <div class="<%= equipment_option_panel_classes(option) %> mt-4">
           <% if option["items"].blank? %>
-            <p class="text-sm text-muted"><%= t("#{EquipmentChoicesHelper::SCOPE}.gold_instead", count: option["gold"].to_i) %></p>
+            <p class="text-sm text-muted"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold_instead", count: option["gold"].to_i) %></p>
           <% else %>
             <ul class="divide-y divide-line border-y border-line">
               <% option["items"].each_with_index do |line, position| %>
                 <% if line["choose"] %>
                   <% pick_id = "#{equipment_option_id(choice, option)}_pick_#{position}" %>
-                  <li class="<%= EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
+                  <li class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
                     <div class="max-w-sm basis-full">
                       <%= label_tag pick_id, equipment_choose_label(line["choose"]), class: "text-xs font-medium text-muted" %>
                       <div class="relative mt-1">
                         <%= select_tag "#{equipment_option_input_name(choice, 'picks')}[#{option['key']}][#{position}]",
                                        equipment_pick_options(starting_equipment, line["choose"],
                                                               (choice.picks[position.to_s] if equipment_option_chosen?(choice, option))),
-                                       include_blank: t("#{EquipmentChoicesHelper::SCOPE}.choose_prompt"), id: pick_id,
-                                       class: CharacterSheetsHelper::SELECT_CLASSES %>
+                                       include_blank: t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.choose_prompt"), id: pick_id,
+                                       class: CharacterSheets::FieldsHelper::SELECT_CLASSES %>
                         <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
                       </div>
                     </div>
                   </li>
                 <% elsif (item = equipment_line_item(line, starting_equipment)) %>
-                  <li class="<%= EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
+                  <li class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
                     <span class="basis-full font-medium text-ink @xl:basis-auto"><%= equipment_item_text(item) %></span>
                     <%# An empty cell keeps its column in a wide block, and leaves no gap in a narrow one %>
                     <span class="text-muted empty:hidden @xl:empty:block"><%= item.entry.properties["category"] %></span>

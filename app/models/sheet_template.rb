@@ -10,20 +10,18 @@ class SheetTemplate < ApplicationRecord
   SNAPSHOT_ATTRIBUTES = %w[
     character_fields npc_fields item_fields spell_fields rest_rules level_thresholds preset_items
   ].freeze
-  # The closed list of field types: a type is a behavior the app knows how to show and check, not a game, and it has
-  # one look wherever it is on the sheet (decision, for the template builder: the game master picks a type, names it).
-  # ability: a score with a modifier worked out by its rule (modifier, one of MODIFIER_RULES).
-  # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters.
-  # bonus: the modifier of an ability (based_on), plus a proficiency (proficiency, the key of a computed field) when
-  # the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
-  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES.
-  # picks: several options of a list (options), count at most, stored as an array; granted: options always known,
-  # shown and never stored (the Common tongue among the languages).
-  # ability_bonuses: what an option of the list named in from raises (its ability_bonus_choices: the background),
-  # spread by the player as +2 and +1, or +1 to each; stored apart from the scores, { "intelligence" => 2 }, and added
-  # to them for the modifiers (CharacterSheetCalculator)
-  # equipment_option: the starting equipment picked among the options of the list named in from (its
-  # starting_equipment effect: the class, the background), { "option" => "a", "picks" => {...} } (StartingEquipment)
+  # The closed list of field types: a type is a behavior the app knows how to show and check, not a game, and it has one
+  # look wherever it is on the sheet (decision, for the template builder: the game master picks a type, names it).
+  # ability: a score with a modifier worked out by its rule (modifier, one of MODIFIER_RULES). attacks: a list of
+  # attacks (name, to hit, damage, range), for NPCs and monsters. bonus: the modifier of an ability (based_on), plus a
+  # proficiency (proficiency, the key of a computed field) when the player ticks it: the sheet only stores the tick
+  # (CharacterSheets::Calculator). computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES.
+  # picks: several options of a list (options), count at most, stored as an array; granted: options always known, shown
+  # and never stored (the Common tongue among the languages). ability_bonuses: what an option of the list named in from
+  # raises (its ability_bonus_choices: the background), spread by the player as +2 and +1, or +1 to each; stored apart
+  # from the scores, { "intelligence" => 2 }, and added to them for the modifiers (CharacterSheets::Calculator)
+  # equipment_option: the starting equipment picked among the options of the list named in from (its starting_equipment
+  # effect: the class, the background), { "option" => "a", "picks" => {...} } (CharacterSheets::StartingEquipment)
   FIELD_TYPES = %w[
     number resource ability ability_bonuses boolean text choice picks experience attacks bonus computed equipment_option
   ].freeze
@@ -52,7 +50,8 @@ class SheetTemplate < ApplicationRecord
   # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
   # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
   # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class).
-  # starting_equipment: the options of the starting equipment (StartingEquipment), picked in an equipment_option field
+  # starting_equipment: the options of the starting equipment (CharacterSheets::StartingEquipment), picked in an
+  # equipment_option field
   CHOICE_EFFECTS = %w[
     hit_die proficient skill_choices set spellcasting unarmored_defense
     ability_bonus_choices training tools features_by_level traits origin_feat starting_equipment

@@ -69,7 +69,7 @@ export default class extends Controller {
   }
 }
 
-// "Détection" and "detection" find each other, as SpellChoicesHelper#spell_search_name on the server
+// "Détection" and "detection" find each other, as CharacterSheets::SpellChoicesHelper#spell_search_name on the server
 function searchable(text) {
   return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim()
 }

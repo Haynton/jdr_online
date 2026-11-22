@@ -1,0 +1,13 @@
+<%# The starting equipment on the summary sheet: the items of the options chosen, how many, then the gold
+    (CharacterSheets::StartingEquipment) %>
+<% starting_equipment = CharacterSheets::StartingEquipment.new(character) %>
+<% items = starting_equipment.chosen_items %>
+<% if items.any? || starting_equipment.gold.positive? %>
+  <h3 class="mt-5 text-sm font-semibold text-ink"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.title") %></h3>
+  <ul class="mt-2 grid gap-x-6 gap-y-1 text-sm text-ink sm:grid-cols-2">
+    <% items.each do |item| %>
+      <li><%= equipment_item_text(item) %></li>
+    <% end %>
+    <li class="font-medium text-brass"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold", count: starting_equipment.gold) %></li>
+  </ul>
+<% end %>

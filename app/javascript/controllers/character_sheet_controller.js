@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Keeps the computed values of a character sheet up to date while the player types: the modifier of each ability,
 // the proficiency bonus of the level typed, the initiative, and the bonus of each saving throw and skill (modifier,
-// plus the proficiency when ticked). Same rules as CharacterSheetCalculator (app/services), which works them out
+// plus the proficiency when ticked). Same rules as CharacterSheets::Calculator (app/services), which works them out
 // on the server: changing one means changing the other. Nothing here is sent: the server stores only what was typed.
 // It also applies the effects of an option picked in a list (the class ticks its saving throws, offers its skills).
 // A step of the creation shows only some fields: the others are read from what the server gives (sheet: the values
@@ -138,13 +138,13 @@ export default class extends Controller {
   }
 
   // The score typed plus the bonus of the background picked for it (+0, +1 or +2), as
-  // CharacterSheetCalculator#ability_scores: what the tile shows (showBonusInScore). Nothing typed: no score
+  // CharacterSheets::Calculator#ability_scores: what the tile shows (showBonusInScore). Nothing typed: no score
   finalScore(abilityKey) {
     const input = this.scoreTargets.find((score) => score.dataset.ability === abilityKey)
     return parseInteger(input?.value)
   }
 
-  // The rules of SheetTemplate::COMPUTED_RULES, as in CharacterSheetCalculator#computed_value
+  // The rules of SheetTemplate::COMPUTED_RULES, as in CharacterSheets::Calculator#computed_value
   computedValues(modifiers) {
     return Object.fromEntries(this.computedTargets.map((output) => {
       const valuesByRule = {
@@ -240,7 +240,7 @@ export default class extends Controller {
   }
 }
 
-// Same as CharacterSheetCalculator.modifier. half_above_ten: (score - 10) / 2, rounded down: 14 gives +2, 9 gives -1
+// Same as CharacterSheets::Calculator.modifier. half_above_ten: (score - 10) / 2, rounded down: 14 gives +2, 9 gives -1
 function modifierOf(score, rule) {
   if (score === null) return null
 
@@ -252,7 +252,7 @@ function parseInteger(text) {
   return /^-?\d+$/.test(trimmedText) ? Number.parseInt(trimmedText, 10) : null
 }
 
-// Same as format_bonus (CharacterSheetValuesHelper): +2, -1, or a dash while it cannot be worked out
+// Same as format_bonus (CharacterSheets::ValuesHelper): +2, -1, or a dash while it cannot be worked out
 function formatBonus(value) {
   if (value === null || value === undefined) return "—"
 

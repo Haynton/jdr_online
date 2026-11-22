@@ -29,7 +29,7 @@ heroic_fantasy = SheetTemplate.find_by!(locale: "fr", name: "Fantasy héroïque"
 
 # Their catalogs (the spells for now), one file per template and per language, emptied with their template
 Rails.root.glob("db/seeds/catalogs/*.json").sort.each do |catalog_file|
-  CatalogLoader.new(catalog_file).call
+  Catalogs::Loader.new(catalog_file).call
 end
 
 

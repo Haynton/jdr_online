@@ -1,6 +1,6 @@
-# Checks the spells of a player character against what its class and level offer (SpellChoices): only spells offered,
-# and no more cantrips or prepared spells than allowed. The browser counts them as an aid; the server decides.
-# Errors go on spells, shown at the top of the Spells step
+# Checks the spells of a player character against what its class and level offer (CharacterSheets::SpellChoices): only
+# spells offered, and no more cantrips or prepared spells than allowed. The browser counts them as an aid; the server
+# decides. Errors go on spells, shown at the top of the Spells step
 class CharacterSpellsValidator < ActiveModel::Validator
   def validate(character)
     return unless character.pc? && character.game_table && character.spells.present?

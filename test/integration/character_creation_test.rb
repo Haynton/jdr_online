@@ -289,7 +289,7 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_select "span#bonus_intelligence_label", text: "Intelligence"
     assert_select "[role=radiogroup][aria-labelledby=bonus_intelligence_label] input[type=radio][value='2'][checked]"
     assert_select "[data-character-sheet-target=bonusNote][data-ability=intelligence][data-template=?]",
-                  "dont +#{AbilityBonusesHelper::BONUS_PLACEHOLDER} Sage"
+                  "dont +#{CharacterSheets::AbilityBonusesHelper::BONUS_PLACEHOLDER} Sage"
     assert_select "output[data-character-sheet-target=finalScore][data-ability=intelligence]", text: "17"
     assert_select "output[data-character-sheet-target=modifier][data-ability=intelligence]", text: "+3"
   end
