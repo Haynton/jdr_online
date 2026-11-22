@@ -1,8 +1,8 @@
 <%# Navigation of a signed in user, like an app. One element for both shapes:
     on a phone, a floating bar of icons centered above the bottom of the screen (under the thumb, always in view);
     from 768 px, a bar on the left, folded to its icons by default (64 px) and unfolded with its labels (240 px)
-    by the button under the logo (side_nav_controller.js). Only the logo and that button at the top; "My tables"
-    and the account entries (shared/_account_nav) sit together at the foot (decision).
+    by the button under the logo (side_nav_controller.js). Only the logo and that button at the top; "My tables",
+    "My templates" and the account entries (shared/_account_nav) sit together at the foot (decision).
     The labels stay for screen readers. The logo is left out on a phone: "My tables" already leads to the same page.
     The width slides open in 200 ms, the page beside it too (page_shell_classes); the texts stay on one line, cut by
     the edge of their link, and fade in once the bar is wide (side_nav_fading_text_classes) %>
@@ -32,12 +32,16 @@
     </button>
   </div>
 
-  <%# md:mt-auto: from here on, pushed to the foot of the bar %>
-  <div class="md:mt-auto md:flex md:flex-col">
+  <%# md:mt-auto: from here on, pushed to the foot of the bar. Side by side in the floating bar of a phone, with the
+      same gaps as the bar itself; one under the other from 768 px %>
+  <div class="flex items-center gap-1 md:mt-auto md:flex-col md:items-stretch md:gap-1.5">
     <%# The invitations waiting for an answer show on "My tables", where the player answers them %>
     <%= side_nav_link_with_count_to t(".my_tables"), game_tables_path, icon: "scroll_text",
                                     count: pending_invitations_count,
                                     count_label: t(".pending_invitations", count: pending_invitations_count) %>
+    <%# The templates of the game master, current on the page of one of them too %>
+    <%= side_nav_link_to t(".my_templates"), sheet_templates_path, icon: "library_big",
+                         current: sheet_templates_page? %>
   </div>
 
   <%= render "shared/account_nav" %>

@@ -268,6 +268,7 @@ en:
     side_nav:
       label: "Main navigation"
       my_tables: "My tables"
+      my_templates: "My templates"
       pending_invitations:
         one: "1 invitation waiting"
         other: "%{count} invitations waiting"
@@ -281,10 +282,67 @@ en:
       cancel: "Cancel"
       confirm: "Confirm"
   sheet_templates:
-    new:
-      back: "Back"
-      coming_soon: "The template builder is coming soon: you will create your character, NPC and item sheets there, with their picture."
-      title: "Create a template"
+    duplicates:
+      copy_name: "%{name} (copy)"
+      create:
+        created: "Template “%{name}” created."
+    contents:
+      catalog:
+        feature:
+          one: "1 feature"
+          other: "%{count} features"
+        item:
+          one: "1 item"
+          other: "%{count} items"
+        monster:
+          one: "1 enemy"
+          other: "%{count} enemies"
+        npc:
+          one: "1 NPC"
+          other: "%{count} NPCs"
+        spell:
+          one: "1 spell"
+          other: "%{count} spells"
+      empty_catalog: "No spells nor items."
+      fields:
+        one: "1 field"
+        other: "%{count} fields"
+      from: "Based on “%{name}”"
+      steps:
+        one: "1 creation step"
+        other: "%{count} creation steps"
+      single_page: "a single creation page"
+    destroy:
+      deleted: "Template “%{name}” deleted."
+      used_by_tables: "A table uses this template: it cannot be deleted."
+    index:
+      duplicate: "Duplicate"
+      duplicate_label: "Duplicate %{name}"
+      none: "No template yet. Duplicate a provided template to start your own."
+      own_title: "Your templates"
+      predefined_hint: "Duplicate one to make it your template, which you can then adapt to your game."
+      predefined_title: "Provided templates"
+      subtitle: "The character sheets of your tables: their fields, their creation steps and their catalog."
+      title: "My templates"
+    show:
+      back: "My templates"
+      catalog: "Catalog"
+      character_sheet: "Character sheet"
+      contents_group: "Contents"
+      danger_zone: "Danger zone"
+      delete: "Delete the template"
+      delete_button: "Delete"
+      delete_confirmation: "Delete the template “%{name}” and its catalog? This cannot be undone."
+      delete_description: "The template and all its catalog are deleted for good."
+      edit_contents: "Edit the contents"
+      edit_contents_soon: "Soon: its sections, fields, creation steps and catalog."
+      general_group: "General"
+      rename: "Rename"
+      used_by_tables:
+        one: "Used by 1 table: it cannot be deleted for now."
+        other: "Used by %{count} tables: it cannot be deleted for now."
+    update:
+      renamed: "Template renamed."
     validator:
       field_types:
         ability: "ability"

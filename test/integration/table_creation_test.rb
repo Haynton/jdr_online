@@ -34,14 +34,14 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the row of templates starts with the card that leads to the template builder" do
+  test "the row of templates starts with the card that leads to the templates of the game master" do
     get new_game_table_path
 
-    assert_select "fieldset ul li:first-child a[href=?]", new_sheet_template_path, text: /Créer un modèle/
-    get new_sheet_template_path
+    assert_select "fieldset ul li:first-child a[href=?]", sheet_templates_path, text: /Créer un modèle/
+    get sheet_templates_path
 
     assert_response :success
-    assert_select "main h1", text: "Créer un modèle"
+    assert_select "main h1", text: "Mes modèles"
   end
 
   test "the covers can be filtered by theme with pills, hidden until the filter controller shows them" do

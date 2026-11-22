@@ -31,8 +31,11 @@ Rails.application.routes.draw do
   resources :invitations, only: :show, param: :token do
     post :join, on: :member
   end
-  # Temporary page until the template builder exists
-  resources :sheet_templates, only: :new
+  # The templates of a game master (the template editor): the list (theirs, then the predefined ones), the page of
+  # one of them (rename, delete), and "Duplicate", which makes one of theirs from another
+  resources :sheet_templates, only: %i[index show update destroy] do
+    resource :duplicate, only: :create, module: :sheet_templates
+  end
 
   # Settings: one address per section, so the section menu is made of plain links
   get "settings", to: "settings/sections#index", as: :settings
