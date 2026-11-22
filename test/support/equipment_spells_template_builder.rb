@@ -3,7 +3,9 @@
 # equipment (the mage: 2 daggers and a musical instrument of their choice and 5 gold, or 55 gold; the warrior: chain
 # mail and 4 gold, or 60 gold), and a catalog of a few spells and items
 module EquipmentSpellsTemplateBuilder
-  SPELLCASTING = { "cantrips" => [2, 2, 3], "prepared" => [2, 3, 4], "max_spell_level" => [1, 1, 2],
+  # One number per level, from 1 to 20, as the validator of the template asks (SheetTemplateValidator)
+  SPELLCASTING = { "ability" => "intelligence", "cantrips" => [2, 2, 3] + ([3] * 17),
+                   "prepared" => [2, 3, 4] + ([4] * 17), "max_spell_level" => [1, 1, 2] + ([2] * 17),
                    "prepared_changes" => "long_rest" }.freeze
   SPELLS = [
     ["fire-bolt", "Trait de feu", 0, %w[Mage]], ["light", "Lumière", 0, %w[Mage Prêtre]],
@@ -46,7 +48,7 @@ module EquipmentSpellsTemplateBuilder
   def creation_steps
     [{ "key" => "class", "label" => "Classe", "sections" => ["Classe"] },
      { "key" => "equipment", "label" => "Équipement", "sections" => ["Équipement"], "chooses_equipment" => true },
-     { "key" => "spells", "label" => "Sorts", "sections" => ["Sorts"], "only_with_effect" => "spellcasting",
+     { "key" => "spells", "label" => "Sorts", "sections" => [], "only_with_effect" => "spellcasting",
        "chooses_spells" => true },
      { "key" => "description", "label" => "Description", "sections" => ["Notes"], "asks_name" => true }]
   end
@@ -62,6 +64,9 @@ module EquipmentSpellsTemplateBuilder
        "rule" => "starting_gold", "section" => "Équipement" },
      { "key" => "gold", "label" => "Pièces d'or", "type" => "number", "min" => 0, "at_creation" => false,
        "initial_from" => "starting_gold", "section" => "Équipement" },
+     # The ability of the spells, not asked at creation in this small template
+     { "key" => "intelligence", "label" => "Intelligence", "type" => "ability", "modifier" => "half_above_ten",
+       "at_creation" => false, "section" => "Notes" },
      { "key" => "level", "label" => "Niveau", "type" => "number", "from_table" => "starting_level", "section" => "Notes" },
      { "key" => "notes", "label" => "Notes", "type" => "text", "section" => "Notes" }]
   end
