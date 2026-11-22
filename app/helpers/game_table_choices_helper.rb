@@ -67,9 +67,9 @@ module GameTableChoicesHelper
   end
 
   # The hint leaves room on its right for what sits at the top right of the row: the arrows alone (from 768 px),
-  # or the pills and the arrows (from 1024 px)
+  # then the pills and the arrows (from 1024 px) when the row has pills
   def choice_row_hint_classes(filterable:)
-    room_on_the_right = filterable ? "lg:max-w-[calc(100%-26rem)]" : "md:pr-24"
+    room_on_the_right = filterable ? "md:pr-24 lg:max-w-[calc(100%-26rem)] lg:pr-0" : "md:pr-24"
     # clear-left: below the legend, which floats (see game_tables/_choice_row)
     "clear-left max-w-xl text-xs text-muted #{room_on_the_right}"
   end
@@ -78,6 +78,15 @@ module GameTableChoicesHelper
     return "absolute top-0 right-0" unless filterable
 
     "mt-3 flex items-center gap-4 lg:absolute lg:top-0 lg:right-0 lg:mt-0"
+  end
+
+  # Below 1024 px, the pills go under the hint but the arrows stay at the top right of the row (the fieldset), as in
+  # a row without pills. From 1024 px, they follow the pills, at the top right with them
+  def choice_row_arrows_classes(filterable:)
+    arrows_classes = "hidden shrink-0 gap-2 md:flex"
+    return arrows_classes unless filterable
+
+    "#{arrows_classes} md:absolute md:top-0 md:right-0 lg:static"
   end
 
   # One pill per theme of the covers (GameTable::COVER_THEMES), in the "theme" group
