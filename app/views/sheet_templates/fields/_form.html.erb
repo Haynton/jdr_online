@@ -1,8 +1,7 @@
-<%# The form of a field, the same in its window (in_dialog: true) and on its own page: only what the game master tunes
-    on a duplicated template (FieldParameters.tuned?), its texts (label, help, abbreviation) and its values (bounds,
-    options, how many to pick...), each drawn by its kind of input with its help on demand
-    (sheet_templates/fields/_parameter), then how its value is worked out, in a sentence. No technical key shown: a field named by another one is chosen by
-    its label. On a refusal, the errors of the template (SheetTemplateValidator) at the top, the values typed kept.
+<%# The form of a field, the same in its window (in_dialog: true) and on its own page: only what the game master
+    tunes on a duplicated template (FieldParameters.tuned?), its texts (help, abbreviation; never its label) and its
+    values (bounds, options, how many to pick...), each drawn by its kind of input with its help on demand
+    (sheet_templates/fields/_parameter), then how its value is worked out, in a sentence. No technical key shown. On a refusal, the errors of the template (SheetTemplateValidator) at the top, the values typed kept.
     In the window, the groups side by side once it is 672 px wide (container query: the window is narrower than the
     screen), the settings scroll, the buttons stay at its foot, "Cancel" closes it; on the page, the two groups side
     by side from 1024 px, the buttons at the bottom right. Full keys: the partial is rendered from both %>

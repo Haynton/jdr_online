@@ -7,12 +7,12 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
     @template = SheetTemplates::Duplicator.new(original: original, owner: game_master).call
   end
 
-  test "each tuned setting is converted by its kind, an empty one taken out; what builds the sheet stays" do
+  test "each tuned setting is converted by its kind, an empty one taken out; the label and the build stay" do
     assert update("level", label: "Niveau du héros", help: "", max: "15", required: "1", at_creation: "0",
                            section: "Combat", from_table: "")
 
     level = field("level")
-    assert_equal "Niveau du héros", level["label"]
+    assert_equal "Niveau", level["label"]
     assert_equal 15, level["max"]
     assert_not level.key?("help")
     assert_equal ["Notes", "starting_level"], level.values_at("section", "from_table")
@@ -22,14 +22,14 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
   end
 
   test "a step is tuned only where the field has one; a decimal keeps its fraction, a round one is whole" do
-    assert update("level", label: "Niveau", step: "0,5")
+    assert update("level", step: "0,5")
     assert_not field("level").key?("step")
 
     with_level_step(1)
-    assert update("level", label: "Niveau", step: "0,5")
+    assert update("level", step: "0,5")
     assert_in_delta 0.5, field("level")["step"]
 
-    assert update("level", label: "Niveau", step: "2")
+    assert update("level", step: "2")
     assert_equal 2, field("level")["step"]
   end
 
@@ -46,8 +46,8 @@ class SheetTemplatesFieldUpdaterTest < ActiveSupport::TestCase
   test "the key, the type and the options of a list with effects never change" do
     original_options = field("class")["options"]
 
-    assert update("class", label: "Vocation", options: "Barde", key: "job", type: "text")
-    assert_equal "Vocation", field("class")["label"]
+    assert update("class", help: "Votre vocation", options: "Barde", key: "job", type: "text")
+    assert_equal "Votre vocation", field("class")["help"]
     assert_equal original_options, field("class")["options"]
     assert_equal "choice", field("class")["type"]
   end
