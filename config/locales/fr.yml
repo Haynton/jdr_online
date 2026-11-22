@@ -20,6 +20,7 @@ fr:
         description: "Description"
         name: "Nom"
         sheet_template: "Modèle de fiche"
+        starting_level: "Niveau de départ"
       participation:
         game_table_id: "Table"
         role: "Rôle"
@@ -41,6 +42,8 @@ fr:
           attributes:
             sheet_template:
               blank: "choisissez un modèle de fiche pour continuer"
+            starting_level:
+              inclusion: "doit être compris entre 1 et 20"
         participation:
           attributes:
             game_table_id:

@@ -499,6 +499,12 @@ Fait dans `feature/p1-character-sheet-v2` (fiche inspirée de la feuille de pers
 - **Sorts mis de côté** (décision) : un premier essai (catalogue dans le JSON du modèle recopié dans chaque table, cases à cocher, puis fenêtre de recherche) est gardé sur la branche **locale** `feature/p1-spells-catalog` (commit `ed06aaf`, jamais poussée), et sa migration a été annulée dans la base locale. Voir « Plus tard » pour la conception retenue
 - Helpers : `CharacterSheetsHelper` (les champs), `CharacterSheetLayoutHelper` (les mises en page), `CharacterSheetStatsHelper` (la case d'un nombre et l'interrupteur), `CharacterSheetValuesHelper` (l'écriture des valeurs calculées), `AbilityRollsHelper` (le lancer)
 
+Fait dans `feature/p1-table-starting-level` :
+
+- **Décision : le MJ fixe le niveau de départ de la table** (1 par défaut), le joueur ne le tape plus. La création de personnage en étapes (règles D&D 2024, SRD 5.2) le lira pour remplir le champ niveau de la fiche
+- Colonne `game_tables.starting_level` (entier, non nul, 1 par défaut, contrainte `CHECK` de 1 à 20 : les tables plus anciennes commencent au niveau 1). `GameTable::STARTING_LEVELS` (`1..20`), mêmes bornes qu'en base, validées par `inclusion` (message dans `activerecord.errors.models.game_table.attributes.starting_level`)
+- **Pas encore de champ** (décision) : le niveau se choisira dans l'étape qui suit « Informations », pas encore faite ; ni à l'étape 1 (un essai l'y a placé : le niveau dépend du modèle de fiche, choisi après, et « Horreur cosmique » n'a pas de niveaux), ni au récapitulatif. À savoir pour ce champ : un `<select>` `required` doit commencer par une option vide (Rails refuse `include_blank: false` avec `required: true`) ; une liste qui a toujours une valeur se passe d'astérisque
+
 À savoir :
 
 - Un `<fieldset>` est par défaut aussi large que son contenu (`min-inline-size: min-content`) : une rangée qui défile dedans élargissait toute la page sur téléphone (1148 px). Lui donner `min-w-0`
