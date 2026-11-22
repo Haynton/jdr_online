@@ -13,9 +13,7 @@
       <% if content_for?(:full_width_page) %>
         <%= yield :full_width_page %>
       <% else %>
-        <div class="mx-4">
-          <%= render "shared/flashes" %>
-        </div>
+        <%= render "shared/flashes" %>
         <main class="mx-auto max-w-[1120px] px-4 py-10 sm:px-8">
           <%= yield %>
         </main>

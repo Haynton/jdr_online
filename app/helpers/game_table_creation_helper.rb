@@ -30,14 +30,6 @@ module GameTableCreationHelper
     flush_top ? "px-4 pb-12 sm:px-8" : "px-4 pt-8 pb-12 sm:px-8"
   end
 
-  # A message shown on screen, pulled up by its own top margin (mt-4) under the usual space, kept apart from what
-  # follows. No space at all without one: the screen reader message takes no room
-  def creation_messages_classes(flush_top)
-    return "" unless visible_messages?
-
-    flush_top ? "mb-4" : "-mt-4 mb-6"
-  end
-
   def creation_form_id
     CREATION_FORM_ID
   end

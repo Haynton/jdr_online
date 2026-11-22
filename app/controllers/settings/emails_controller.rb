@@ -6,8 +6,9 @@ module Settings
       # A copy from the database, not current_user: with a wrong password, Devise still puts the refused
       # email on the object, and the rest of the page would see it as the saved one
       @user_for_email = User.find(current_user.id)
+      # The field already shows the new email: the message is for screen readers only
       if @user_for_email.update_with_password(email_params)
-        return redirect_to(settings_account_path, notice: t(".updated"))
+        return redirect_to(settings_account_path, flash: { screen_reader_notice: t(".updated") })
       end
 
       @user_for_email.clean_up_passwords

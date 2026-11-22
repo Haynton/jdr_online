@@ -6,7 +6,8 @@ module GameTables
 
     def update
       @game_table.regenerate_invite_token
-      redirect_to game_table_summary_path(@game_table), notice: t(".regenerated")
+      # The new link shows in its field: the message is for screen readers only
+      redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".regenerated") }
     end
   end
 end

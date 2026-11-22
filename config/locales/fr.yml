@@ -182,6 +182,8 @@ fr:
       label: "Thème"
     theme_switch:
       dark_theme: "Thème sombre"
+    toast:
+      close: "Fermer le message"
     settings_dialog:
       close: "Fermer les paramètres"
       title: "Paramètres"

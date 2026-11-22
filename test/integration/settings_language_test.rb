@@ -1,12 +1,12 @@
 require "test_helper"
 
 class SettingsLanguageTest < ActionDispatch::IntegrationTest
-  test "the confirmation message shows inside the section card, under its title" do
+  test "the confirmation message is for screen readers only: the page already shows the new language" do
     sign_in create_user(locale: "fr")
     patch settings_locale_path, params: { user: { locale: "en" } }
     follow_redirect!
 
-    assert_select "#{section_card_selector} > header + div [role=status]", text: "Language saved."
+    assert_select "#{section_card_selector} > header + div .sr-only [role=status]", text: "Language saved."
   end
 
   test "the language row offers the browser language and each language, named by the row label" do
@@ -30,7 +30,7 @@ class SettingsLanguageTest < ActionDispatch::IntegrationTest
     assert_redirected_to settings_display_path
     follow_redirect!
     assert_select "html[lang=en]"
-    assert_select "[role=status]", text: "Language saved."
+    assert_select ".sr-only [role=status]", text: "Language saved."
   end
 
   test "choosing the browser language clears the saved language" do

@@ -7,7 +7,7 @@
 <% use_deep_page_background %>
 <% content_for :full_width_page do %>
   <main class="flex h-[calc(100dvh-5rem)] min-h-[34rem] min-w-0 flex-col md:h-auto md:min-h-dvh">
-    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <%= render "shared/flashes" %>
     <%= turbo_frame_tag "chosen_table", target: "_top", class: "flex min-h-0 flex-1 flex-col" do %>
       <% if @chosen_participation %>
         <%= render "game_tables/stage", participation: @chosen_participation %>
