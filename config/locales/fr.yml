@@ -67,10 +67,12 @@ fr:
           invalid_key: "%{part} : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_label: "%{part} › %{field} : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
+          invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_spell_group_label: "Le groupe de sorts « %{group} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
           missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
           missing_parameter: "%{part} › %{field} : le réglage « %{parameter} » est obligatoire"
           missing_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est obligatoire"
@@ -85,6 +87,7 @@ fr:
           unknown_modifier: "%{part} › %{field} : la règle de modificateur « %{modifier} » est inconnue"
           unknown_option: "%{part} › %{field} : « %{setting} » décrit une option qui n'existe pas (%{option})"
           unknown_parameter: "%{part} › %{field} : le réglage « %{parameter} » est inconnu pour ce type de champ"
+          unknown_parameter_value: "%{part} › %{field} : la valeur « %{value} » du réglage « %{parameter} » est inconnue"
           unknown_rule: "%{part} › %{field} : la règle de calcul « %{rule} » est inconnue"
           unknown_section: "L'étape « %{step} » cite une section qui n'existe pas : %{section}"
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
@@ -257,6 +260,24 @@ fr:
       copy_name: "%{name} (copie)"
       create:
         created: "Modèle « %{name} » créé."
+    fields:
+      edit:
+        back: "Fiche du personnage"
+        cancel: "Annuler"
+        effects_soon: "Les effets et les descriptions des options se modifieront bientôt. Les options d'une liste qui en a ne se renomment pas : leurs effets en dépendent."
+        groups:
+          general: "Général"
+          type: "Réglages du type"
+        refused: "Le modèle n'a pas été enregistré :"
+        save: "Enregistrer"
+        subtitle: "Type : %{type} · clé : %{key}"
+      index:
+        edit: "Modifier"
+        edit_label: "Modifier %{label}"
+        subtitle: "Les champs que les joueurs remplissent, section par section."
+        title: "Fiche du personnage"
+      update:
+        updated: "Champ « %{label} » enregistré."
     contents:
       catalog:
         feature:
@@ -295,6 +316,118 @@ fr:
       predefined_title: "Modèles fournis"
       subtitle: "Les fiches de personnage de vos tables : leurs champs, leurs étapes de création et leur catalogue."
       title: "Mes modèles"
+    parameters:
+      abbreviation:
+        hint: "Forme courte, à côté d'un bonus (FOR, DEX). Facultative."
+        label: "Abréviation"
+      absorbs_damage_for:
+        hint: "La ressource que cette réserve protège : elle baisse en premier."
+        label: "Protège"
+      at_creation:
+        hint: "Décoché : le champ ne sert qu'en partie (points de vie temporaires)."
+        label: "Demandé à la création"
+      based_on:
+        hint: "La caractéristique dont le modificateur entre dans le calcul."
+        label: "Caractéristique"
+      class_from:
+        hint: "La liste dont l'option choisie donne le dé de vie et les sorts."
+        label: "Champ de la classe"
+      column:
+        hint: "À droite : dans la colonne de droite de sa section."
+        label: "Colonne"
+        values:
+          aside: "À droite"
+      count:
+        hint: "Combien d'options le joueur peut cocher au plus."
+        label: "Nombre de choix"
+      from:
+        hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
+        label: "Liste d'origine"
+      from_table:
+        hint: "Rempli par un réglage de la table, jamais demandé au joueur."
+        label: "Donné par la table"
+        values:
+          starting_level: "Niveau de départ de la table"
+      granted:
+        hint: "Une par ligne, parmi les options : cochées d'office, sans compter dans le nombre de choix."
+        label: "Options toujours connues"
+      help:
+        hint: "Une phrase qui explique le champ, sous lui ou dans sa bulle (i). Facultative."
+        label: "Aide"
+      initial_from:
+        hint: "Le champ calculé qui remplit cette valeur quand le personnage est terminé."
+        label: "Valeur de départ"
+      internal:
+        hint: "Calculé pour remplir un autre champ, affiché nulle part."
+        label: "Interne"
+      label:
+        hint: "Le nom du champ, tel que les joueurs le lisent."
+        label: "Libellé"
+      level_from:
+        hint: "Le champ qui donne le niveau du personnage."
+        label: "Champ du niveau"
+      max:
+        hint: "La plus grande valeur permise. Facultatif."
+        label: "Maximum"
+      max_per_ability:
+        hint: "Le bonus le plus haut sur une seule caractéristique."
+        label: "Maximum par caractéristique"
+      min:
+        hint: "La plus petite valeur permise. Facultatif."
+        label: "Minimum"
+      modifier:
+        hint: "Comment le score donne son modificateur."
+        label: "Règle du modificateur"
+        values:
+          half_above_ten: "(score − 10) / 2, arrondi vers le bas"
+      on_rest:
+        hint: "Ce que devient la valeur après un repos."
+        label: "Après un repos"
+        values:
+          reset_to_max: "Revient au maximum"
+          turn_off: "S'éteint"
+      options:
+        hint: "Une option par ligne, dans l'ordre de la liste."
+        label: "Options"
+      proficiency:
+        hint: "Le champ calculé qui donne le bonus de maîtrise."
+        label: "Bonus de maîtrise"
+      receives_damage:
+        hint: "La ressource qui baisse quand le personnage est blessé (un seul champ)."
+        label: "Reçoit les dégâts"
+      required:
+        hint: "Le joueur doit le remplir pour terminer son personnage."
+        label: "Obligatoire"
+      rule:
+        hint: "Comment la valeur est calculée à partir des autres champs."
+        label: "Règle de calcul"
+        values:
+          ability_modifier: "Modificateur d'une caractéristique"
+          hit_dice_by_class: "Dés de vie selon la classe"
+          hit_points_by_level: "Points de vie selon le niveau"
+          proficiency_by_level: "Bonus de maîtrise selon le niveau"
+          spell_attack_bonus: "Attaque des sorts"
+          spell_save_dc: "DD des sorts"
+          starting_gold: "Or de l'équipement de départ"
+          unarmored_armor_class: "Classe d'armure sans armure"
+      section:
+        hint: "Le groupe de la fiche où le champ s'affiche."
+        label: "Section"
+      short:
+        hint: "Une seule ligne au lieu d'une zone de texte."
+        label: "Texte court"
+      step:
+        hint: "L'écart entre deux valeurs (0,5 pour des demi-mètres). Vide : des nombres entiers."
+        label: "Pas"
+      summary_only:
+        hint: "Affiché au récapitulatif, pas sur la page de son étape."
+        label: "Récapitulatif seulement"
+      total:
+        hint: "Le total du bonus que le joueur place sur ses caractéristiques."
+        label: "Points à répartir"
+      visible_to_others:
+        hint: "Les autres joueurs de la table peuvent le lire."
+        label: "Visible des autres joueurs"
     show:
       back: "Mes modèles"
       catalog: "Catalogue"
@@ -306,7 +439,8 @@ fr:
       delete_confirmation: "Supprimer le modèle « %{name} » et son catalogue ? C'est définitif."
       delete_description: "Le modèle et tout son catalogue sont supprimés définitivement."
       edit_contents: "Modifier le contenu"
-      edit_contents_soon: "Bientôt : ses sections, ses champs, ses étapes de création et son catalogue."
+      edit_contents_soon: "Bientôt : ajouter ou retirer des champs, les étapes de création et le catalogue."
+      edit_fields: "Modifier les champs"
       general_group: "Général"
       rename: "Renommer"
       used_by_tables:
@@ -329,6 +463,17 @@ fr:
         picks: "choix multiples"
         resource: "ressource"
         text: "texte"
+      kinds:
+        asked_at_creation: "oui ou non"
+        boolean: "oui ou non"
+        choice: "une valeur de sa liste"
+        decimal: "un nombre plus grand que 0"
+        integer: "un nombre entier"
+        lines: "une liste de textes"
+        long_text: "un texte"
+        reference: "la clé d'un champ"
+        section: "un nom de section"
+        text: "un texte"
       parts:
         character_fields: "Fiche du personnage"
         item_fields: "Fiche d'objet"

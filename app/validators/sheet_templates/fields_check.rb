@@ -27,8 +27,8 @@ module SheetTemplates
       type = FieldTypes.find(field["type"])
       return [[:unknown_type, context(part, field).merge(type: field["type"].to_s)]] unless type
 
-      name_errors(part, field) + parameter_errors(part, field, type) + reference_errors(part, field, type, fields) +
-        rule_errors(part, field, fields) + option_errors(part, field)
+      name_errors(part, field) + parameter_errors(part, field, type) + value_errors(part, field, type) +
+        reference_errors(part, field, type, fields) + rule_errors(part, field, fields) + option_errors(part, field)
     end
 
     def name_errors(part, field)
@@ -48,6 +48,35 @@ module SheetTemplates
         [:missing_parameter, context(part, field).merge(parameter: parameter)]
       end
       unknown + missing
+    end
+
+    # Each setting holds a value of its kind (FieldParameters: a whole number for max, true or false for required...),
+    # one of its list for a closed list, and a minimum under its maximum
+    def value_errors(part, field, type)
+      errors = (field.keys & type.parameters).filter_map do |parameter|
+        kind = FieldParameters.kind(parameter, type)
+        next if FieldParameters.valid_value?(kind, field[parameter])
+
+        expected = I18n.t("sheet_templates.validator.kinds.#{kind}")
+        [:invalid_parameter_value, context(part, field).merge(parameter: parameter, expected: expected)]
+      end
+      errors + closed_list_errors(part, field) + range_errors(part, field)
+    end
+
+    # The closed lists without a message of their own (the rules have theirs: unknown_rule, unknown_modifier)
+    def closed_list_errors(part, field)
+      %w[column from_table on_rest].filter_map do |parameter|
+        next if field[parameter].nil? || FieldParameters.choices(parameter).include?(field[parameter])
+
+        [:unknown_parameter_value, context(part, field).merge(parameter: parameter, value: field[parameter].to_s)]
+      end
+    end
+
+    def range_errors(part, field)
+      minimum, maximum = field.values_at("min", "max")
+      return [] unless minimum.is_a?(Integer) && maximum.is_a?(Integer) && minimum > maximum
+
+      [[:min_above_max, context(part, field).merge(min: minimum, max: maximum)]]
     end
 
     # based_on names an ability, level_from a number... (FieldTypes::Base#references)

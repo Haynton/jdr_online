@@ -49,6 +49,22 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :invalid_step_label
   end
 
+  test "each setting holds a value of its kind, of its list, and a minimum under its maximum" do
+    template = build_template do |fields|
+      field(fields, "level")["max"] = "vingt"
+      field(fields, "level")["min"] = 25
+      field(fields, "hp")["on_rest"] = "sleep"
+    end
+
+    assert_error template, :invalid_parameter_value,
+                 "Fiche du personnage › Niveau\u00A0: le réglage «\u00A0max\u00A0» doit être un nombre entier"
+    assert_error template, :unknown_parameter_value
+    template = build_template do |fields|
+      field(fields, "level")["min"] = 25
+    end
+    assert_error template, :min_above_max
+  end
+
   test "a type the registry does not know is refused" do
     template = build_template { |fields| fields << { "key" => "luck", "label" => "Chance", "type" => "luck" } }
 
