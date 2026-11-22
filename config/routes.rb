@@ -19,10 +19,14 @@ Rails.application.routes.draw do
       resources :player_suggestions, only: :index
       # The invited player answers from "My tables": accept (update) or decline (destroy)
       resource :invitation_answer, only: %i[update destroy]
+      # The character of the player, made before joining the game
+      resource :character, only: %i[new create]
     end
   end
-  # The invitation link given to the players. Temporary page until joining a table exists
-  resources :invitations, only: :show, param: :token
+  # The invitation link given to the players: the page shows the table, join makes the user a player
+  resources :invitations, only: :show, param: :token do
+    post :join, on: :member
+  end
   # Temporary page until the template builder exists
   resources :sheet_templates, only: :new
 

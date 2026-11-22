@@ -8,8 +8,14 @@ class SheetTemplate < ApplicationRecord
   # they become rows of their own, which the game master can change (characters, later)
   SNAPSHOT_ATTRIBUTES = %w[character_fields npc_fields item_fields rest_rules level_thresholds preset_items].freeze
   # The closed list of field types: a type is a behavior the app knows how to show and check, not a game.
-  # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters
-  FIELD_TYPES = %w[number resource boolean text choice experience attacks].freeze
+  # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters.
+  # bonus: the modifier of an ability (based_on, a number field with has_modifier), plus a proficiency (proficiency,
+  # the key of a computed field) when the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
+  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES
+  FIELD_TYPES = %w[number resource boolean text choice experience attacks bonus computed].freeze
+  # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
+  # proficiency_by_level: the proficiency_bonus of the level reached, in level_thresholds
+  COMPUTED_RULES = %w[proficiency_by_level].freeze
 
   belongs_to :owner, class_name: "User", optional: true
   belongs_to :parent, class_name: "SheetTemplate", optional: true

@@ -1,0 +1,15 @@
+<%# Any other section: each field at its own width (sheet_field_width_classes), side by side while there is room:
+    short numbers stay narrow, a choice is medium, a text takes the whole width. The helps of the short fields go
+    under the row, across the width: in their narrow column, a long help stood on eight lines (sheet_section_notes) %>
+<div class="clear-left flex flex-wrap items-start gap-x-4">
+  <% fields.each do |field| %>
+    <%= render "game_tables/characters/#{sheet_field_partial(field)}", character: character, field: field,
+                                                                     computed: computed %>
+  <% end %>
+</div>
+<% sheet_section_notes(fields).each do |note| %>
+  <p id="<%= note[:id] %>" class="max-w-3xl text-xs text-muted">
+    <%= t("game_tables.characters.new.note_html", labels: tag.span(note[:labels], class: "font-semibold text-ink"),
+                                                  text: note[:text]) %>
+  </p>
+<% end %>

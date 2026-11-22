@@ -30,9 +30,13 @@ class GameTablesController < ApplicationController
     redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".created") }
   end
 
-  # Temporary page of a table. Only its participants reach it: anyone else gets a 404
+  # Temporary page of a table. Only its participants reach it: anyone else gets a 404.
+  # A player makes their character first (decision): until then, the page leads to it
   def show
-    @game_table = current_user.game_tables.find(params[:id])
+    participation = current_user.participations.accepted.find_by!(game_table_id: params[:id])
+    return redirect_to new_game_table_character_path(participation.game_table) if participation.needs_character?
+
+    @game_table = participation.game_table
   end
 
   # Temporary settings page of a table. Only its game master reaches it: a player gets a 404 too

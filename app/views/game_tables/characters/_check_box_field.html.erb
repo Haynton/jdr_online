@@ -1,0 +1,10 @@
+<%# A check box beside its label, lined up with the fields around it (sheet_field_width_classes) %>
+<div class="<%= SimpleFormFieldClasses::FIELD_BLOCK %> <%= sheet_field_width_classes(field) %>">
+  <div class="flex h-10 items-center gap-2">
+    <%= sheet_check_box(character, field) %>
+    <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::CHECKBOX_LABEL %>
+  </div>
+  <% if field["help"] %>
+    <p class="<%= SimpleFormFieldClasses::HINT %>"><%= field["help"] %></p>
+  <% end %>
+</div>

@@ -1,0 +1,9 @@
+<%# A value the player does not type (the proficiency bonus): worked out by its rule (CharacterSheetCalculator),
+    shown read only where a field would be, kept up to date while the player types. Its help is a note under the row
+    of its section (_section_flow) %>
+<div class="<%= SimpleFormFieldClasses::FIELD_BLOCK %> <%= sheet_field_width_classes(field) %>">
+  <p id="<%= sheet_field_id(field) %>_label" class="<%= SimpleFormFieldClasses::LABEL %>"><%= field["label"] %></p>
+  <output class="<%= CharacterSheetsHelper::COMPUTED_VALUE_CLASSES %>" aria-labelledby="<%= sheet_field_id(field) %>_label"
+          aria-describedby="<%= sheet_field_note_ids(field).join(" ").presence %>"
+          data-character-sheet-target="computed" data-key="<%= field["key"] %>" data-rule="<%= field["rule"] %>"><%= format_bonus(computed[:values][field["key"]]) %></output>
+</div>

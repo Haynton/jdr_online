@@ -57,6 +57,33 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
+  test "a bonus is based on an ability with a modifier, and its proficiency is a computed field" do
+    each_template do |template_file, template|
+      fields = template.dig("character_fields", "fields")
+      ability_keys = fields.select { |field| field["has_modifier"] }.pluck("key")
+      computed_keys = fields.select { |field| field["type"] == "computed" }.pluck("key")
+
+      fields.select { |field| field["type"] == "bonus" }.each do |bonus|
+        assert_includes ability_keys, bonus["based_on"], "#{template_file.basename}: #{bonus['key']}"
+        assert_includes computed_keys, bonus["proficiency"], "#{template_file.basename}: #{bonus['key']}"
+      end
+    end
+  end
+
+  test "a computed field uses a known rule, and the levels give what the rule needs" do
+    each_template do |template_file, template|
+      computed_fields = template.dig("character_fields", "fields").select { |field| field["type"] == "computed" }
+
+      computed_fields.each do |field|
+        assert_includes SheetTemplate::COMPUTED_RULES, field["rule"], template_file.basename.to_s
+      end
+      next if computed_fields.none? { |field| field["rule"] == "proficiency_by_level" }
+
+      assert template["level_thresholds"].all? { |threshold| threshold["proficiency_bonus"].is_a?(Integer) },
+             "#{template_file.basename}: every level needs its proficiency_bonus"
+    end
+  end
+
   test "the ready-made characters only fill fields of the NPC sheet, in the shape of their type" do
     each_template do |template_file, template|
       field_types = template.dig("npc_fields", "fields").to_h { |field| [field["key"], field["type"]] }

@@ -232,10 +232,10 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", game_table_summary_path(@game_table), text: "Reprendre la création"
   end
 
-  test "the invitation link leads to a temporary page of the table" do
+  test "the invitation link of a draft does not work yet" do
     get invitation_path(@game_table.invite_token)
 
-    assert_response :success
-    assert_select "main h1", text: "Invitation à « Les Marches du Nord »"
+    assert_response :not_found
+    assert_select "main h1", text: "Ce lien d'invitation ne fonctionne plus"
   end
 end

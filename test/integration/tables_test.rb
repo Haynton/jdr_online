@@ -183,15 +183,27 @@ class TablesTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", game_table_path(game_table), count: 0
   end
 
-  test "a player can join the game but has no settings button" do
+  test "a player with a character can join the game but has no settings button" do
+    user = create_user(locale: "fr")
+    game_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
+    participation = game_table.participations.create!(user: user, role: :player)
+    participation.create_character!(game_table: game_table, name: "Aldric")
+    sign_in user
+    get game_tables_path
+
+    assert_select "a[href=?]", game_table_path(game_table), text: "Rejoindre la partie"
+    assert_select "a[href=?]", edit_game_table_path(game_table), count: 0
+  end
+
+  test "a player without a character creates it before joining the game" do
     user = create_user(locale: "fr")
     game_table = create_table_for(create_other_user, name: "L'Ombre du Dragon", cover_image: "dragon")
     game_table.participations.create!(user: user, role: :player)
     sign_in user
     get game_tables_path
 
-    assert_select "a[href=?]", game_table_path(game_table), text: "Rejoindre la partie"
-    assert_select "a[href=?]", edit_game_table_path(game_table), count: 0
+    assert_select "a[href=?]", new_game_table_character_path(game_table), text: "Créer mon personnage"
+    assert_select "a[href=?]", game_table_path(game_table), count: 0
   end
 
   test "the game master opens the temporary settings page of the game" do

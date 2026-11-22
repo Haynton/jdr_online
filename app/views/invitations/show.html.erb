@@ -1,7 +1,39 @@
-<%# Temporary page of an invitation link, until joining a table exists (card #18 of the board) %>
-<%= page_header(title: t(".title", name: @game_table.name)) %>
+<%# The page of an invitation link: the table large over its cover, as "My tables" and the summary of the creation
+    show a table (decision), with the gold line "Invitation · from <game master>" decided for the invitation cards.
+    As tall as the screen, the text at the bottom on a phone (the picture shows above it), on the left from 768 px.
+    A visitor gets the top bar of the visitors, creates an account or signs in, then comes back here
+    (InvitationsController#show); a signed in user joins the table, then makes their character %>
+<% use_deep_page_background %>
+<% content_for :full_width_page do %>
+  <main>
+    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <section class="relative isolate overflow-hidden" aria-labelledby="invitation-table-title">
+      <%= image_tag @game_table.cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover cover-fade" %>
+      <div class="absolute inset-0 -z-10 bg-linear-to-t from-page-deep via-page-deep/80 to-transparent md:bg-linear-to-r md:via-page-deep/70"></div>
 
-<section class="max-w-xl rounded-xl border border-line bg-surface px-6 py-5">
-  <p class="text-ink"><%= t(".coming_soon") %></p>
-  <%= link_to t(".back_to_tables"), game_tables_path, class: "mt-3 inline-block text-sm font-medium text-link hover:underline" %>
-</section>
+      <div class="<%= invitation_page_height_classes %> mx-auto flex max-w-[1120px] flex-col justify-end px-4 pt-40 pb-12 sm:px-8 md:justify-center md:py-16">
+        <div class="flex max-w-xl flex-col items-start gap-2">
+          <p class="text-xs font-semibold tracking-widest uppercase">
+            <span class="text-brass"><%= t("game_tables.invitation.label") %></span>
+            <span class="text-muted">· <%= t("game_tables.invitation.from", username: @game_table.game_master&.username) %></span>
+          </p>
+          <h1 id="invitation-table-title" class="text-3xl leading-tight font-bold tracking-tight text-balance text-ink md:text-[40px]">
+            <%= @game_table.name %>
+          </h1>
+          <% if @game_table.description.present? %>
+            <p class="line-clamp-3 max-w-md text-[15px] text-ink"><%= @game_table.description %></p>
+          <% end %>
+
+          <div class="mt-2 flex flex-wrap gap-3">
+            <% if user_signed_in? %>
+              <%= button_to t(".join"), join_invitation_path(@game_table.invite_token), class: button_classes(:primary) %>
+            <% else %>
+              <%= link_to t(".create_account"), new_user_registration_path, class: button_classes(:primary) %>
+              <%= link_to t(".sign_in"), new_user_session_path, class: button_classes(:secondary) %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<% end %>

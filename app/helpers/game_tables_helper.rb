@@ -42,16 +42,21 @@ module GameTablesHelper
     table_status_label(game_table)
   end
 
-  # The main button of the chosen table: its game master finishes setting up a draft, everyone else joins the game
+  # The main button of the chosen table: its game master finishes setting up a draft, a player without a character
+  # makes it, everyone else joins the game
   def stage_main_action_label(participation)
-    resuming_creation?(participation) ? t("game_tables.stage.resume_creation") : t("game_tables.stage.join_game")
+    return t("game_tables.stage.resume_creation") if resuming_creation?(participation)
+    return t("game_tables.stage.create_character") if participation.needs_character?
+
+    t("game_tables.stage.join_game")
   end
 
   def stage_main_action_path(participation)
     game_table = participation.game_table
-    return game_table_path(game_table) unless resuming_creation?(participation)
+    return creation_step_path(game_table, game_table.resume_creation_step) if resuming_creation?(participation)
+    return new_game_table_character_path(game_table) if participation.needs_character?
 
-    creation_step_path(game_table, game_table.resume_creation_step)
+    game_table_path(game_table)
   end
 
   def resuming_creation?(participation)

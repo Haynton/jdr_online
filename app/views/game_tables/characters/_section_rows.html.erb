@@ -1,0 +1,11 @@
+<%# Saving throws and skills: one tight row each, in two then three columns. Their help is said once, under the
+    title of the section, rather than under one of the rows %>
+<% sheet_section_helps(fields).each do |help| %>
+  <p class="clear-left mb-3 text-sm text-muted"><%= help %></p>
+<% end %>
+<div class="clear-left grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
+  <% fields.each do |field| %>
+    <%= render "game_tables/characters/bonus_field", character: character, field: field, all_fields: all_fields,
+                                                    value: computed[:values][field["key"]] %>
+  <% end %>
+</div>

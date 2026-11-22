@@ -1,0 +1,11 @@
+<%# The abilities in tiles as wide as their "−", score and "+" (154 px; decision: a tile stretched to its column
+    left empty room around them). Two, three or six per line, by the width of the section itself (container query,
+    whatever the screen and the side navigation): 2 + 2 + 2, 3 + 3 or 6, never one tile alone on its line %>
+<div class="@container clear-left">
+  <div class="grid w-fit grid-cols-2 gap-3 @lg:grid-cols-3 @5xl:grid-cols-6">
+    <% fields.each do |field| %>
+      <%= render "game_tables/characters/ability_field", character: character, field: field,
+                                                        modifier: computed[:modifiers][field["key"]] %>
+    <% end %>
+  </div>
+</div>

@@ -49,7 +49,7 @@ class TableInvitationAnswersTest < ActionDispatch::IntegrationTest
     assert_select "#{cards_row_selector} a", text: /La Crypte/, count: 0
   end
 
-  test "accepting makes the table one of mine, chosen at the top with join the game" do
+  test "accepting makes the table one of mine, chosen at the top with create my character" do
     invitation = invite_player
     sign_in @player
     patch game_table_invitation_answer_path(@game_table)
@@ -59,7 +59,7 @@ class TableInvitationAnswersTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select "section[aria-labelledby=chosen-table-title]" do
       assert_select "span", text: "Joueur"
-      assert_select "a[href=?]", game_table_path(@game_table), text: "Rejoindre la partie"
+      assert_select "a[href=?]", new_game_table_character_path(@game_table), text: "Créer mon personnage"
     end
   end
 

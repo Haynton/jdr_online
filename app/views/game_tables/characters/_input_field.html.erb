@@ -1,0 +1,21 @@
+<%# A field to fill in, at its own width: its label, its control, its help, its error.
+    The experience also shows the level it reaches (CharacterSheetCalculator, kept up to date while typing).
+    The help of a short field is a note under the row of its section (_section_flow) %>
+<% error = sheet_field_error(character, field) %>
+<% hint = sheet_field_hint(field) unless sheet_field_narrow?(field) %>
+<div class="<%= SimpleFormFieldClasses::FIELD_BLOCK %> <%= sheet_field_width_classes(field) %>">
+  <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::LABEL %>
+  <%= sheet_field_control(character, field) %>
+  <% if field["type"] == "experience" && computed[:level] %>
+    <p class="mt-1.5 text-xs text-muted">
+      <%= t("game_tables.characters.new.level") %>
+      <output class="font-semibold text-ink" data-character-sheet-target="level"><%= computed[:level] %></output>
+    </p>
+  <% end %>
+  <% if hint %>
+    <p class="<%= SimpleFormFieldClasses::HINT %>"><%= hint %></p>
+  <% end %>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+</div>

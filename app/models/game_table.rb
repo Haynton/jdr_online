@@ -33,6 +33,7 @@ class GameTable < ApplicationRecord
   belongs_to :sheet_template, optional: true
   has_many :participations, dependent: :destroy
   has_many :users, through: :participations
+  has_many :characters, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   validates :cover_image, inclusion: { in: COVER_IMAGES }
@@ -43,6 +44,21 @@ class GameTable < ApplicationRecord
   def use_sheet_template(sheet_template)
     self.sheet_template = sheet_template
     self.template_snapshot = sheet_template ? sheet_template.snapshot : {}
+  end
+
+  # The fields of a player character sheet, from the template copied into the table (none without a template)
+  def character_sheet_fields
+    template_snapshot.to_h.dig("character_fields", "fields") || []
+  end
+
+  # The levels of the template copied into the table, with the experience and the proficiency bonus of each
+  def level_thresholds
+    template_snapshot.to_h["level_thresholds"] || []
+  end
+
+  # Players join through the invitation link once the creation is over
+  def joinable?
+    !draft?
   end
 
   def self.cover_image_path(cover_image)
