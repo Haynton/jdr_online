@@ -1,44 +1,45 @@
-<%# The template editor, the form of a field: its general settings (label, help, section...) then those of its type
-    (min, max, options, rule...), each drawn by its kind of input (SheetTemplates::FieldFormHelper). The key and the
-    type never change; the effects and the descriptions of the options will have their own editor. On a refusal, the
-    errors of the template (SheetTemplateValidator) at the top, the values typed kept %>
-<%= link_to sheet_template_fields_path(@sheet_template), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
-  <%= render "shared/icons/chevron_left" %>
-  <%= t(".back") %>
-<% end %>
-<%= page_header(title: @field["label"], subtitle: t(".subtitle", type: field_type_name(@field), key: @field["key"])) %>
+<%# The template editor, the form of a field, laid out like a step of a creation: its general settings (label, help,
+    section...) and those of its type (min, max, options, rule...) side by side from 1024 px, each drawn by its kind of
+    input with its help on demand (sheet_templates/fields/_parameter), then the buttons at the bottom right. No
+    technical key shown: a field named by another one is chosen by its label. On a refusal, the errors of the
+    template (SheetTemplateValidator) at the top, the values typed kept %>
+<%= template_editor_page(sheet_template: @sheet_template, current_step: :character_sheet) do %>
+  <%= page_header(title: @field["label"], subtitle: t(".subtitle", type: field_type_name(@field).upcase_first, section: @field["section"])) %>
 
-<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
   <% if @sheet_template.errors.any? %>
-    <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
-    <%= render layout: "shared/message", locals: { variant: :error } do %>
-      <p class="font-semibold"><%= t("sheet_templates.fields.edit.refused") %></p>
-      <ul class="mt-1 list-disc pl-5">
-        <% @sheet_template.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    <% end %>
+    <div class="mb-6 max-w-3xl">
+      <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
+      <%= render layout: "shared/message", locals: { variant: :error } do %>
+        <p class="font-semibold"><%= t("sheet_templates.fields.edit.refused") %></p>
+        <ul class="mt-1 list-disc pl-5">
+          <% @sheet_template.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
   <% end %>
 
   <%= simple_form_for :field, url: sheet_template_field_path(@sheet_template, @field["key"]), method: :patch,
-                              html: { class: "mt-4 first:mt-0" },
-                              defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
-    <% field_parameter_groups(@field).each do |group, parameters| %>
-      <%= settings_group(title: t(".groups.#{group}")) do %>
-        <div class="border-b border-line py-4">
+                              html: { class: "flex flex-1 flex-col", data: { controller: "info-notes" } } do |form| %>
+    <div class="grid gap-x-16 gap-y-10 lg:grid-cols-2 lg:max-w-5xl">
+      <% field_parameter_groups(@field).each do |group, parameters| %>
+        <section aria-labelledby="parameters-<%= group %>">
+          <h2 id="parameters-<%= group %>" class="mb-4 text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".groups.#{group}") %></h2>
           <% parameters.each do |parameter| %>
-            <%= field_parameter_input(form, parameter, @form_context) %>
+            <%= render "sheet_templates/fields/parameter", form: form, parameter: parameter, context: @form_context %>
           <% end %>
-        </div>
+        </section>
       <% end %>
-    <% end %>
+    </div>
     <% if @field["effects"].present? || @field["descriptions"].present? %>
-      <p class="mt-4 text-sm text-muted"><%= t(".effects_soon") %></p>
+      <p class="mt-6 max-w-xl text-sm text-muted"><%= t(".effects_soon") %></p>
     <% end %>
-    <div class="mt-6 flex flex-wrap justify-end gap-3">
+
+    <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation %>
+    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
       <%= link_to t(".cancel"), sheet_template_fields_path(@sheet_template), class: button_classes(:secondary) %>
       <%= form.button :submit, t(".save"), class: button_classes(:primary) %>
     </div>
   <% end %>
-</div>
+<% end %>

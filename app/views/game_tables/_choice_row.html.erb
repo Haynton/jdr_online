@@ -9,10 +9,19 @@
     min-w-0: a fieldset is as wide as its content by default (min-inline-size: min-content), so the row widened
     the whole page instead of scrolling.
     The legend floats (float-left w-full, cleared by what follows): a plain legend sits in the border of the fieldset,
-    above its top, so the controls placed at top-0 lined up with the hint and touched the cards %>
+    above its top, so the controls placed at top-0 lined up with the hint and touched the cards.
+    heading_id (optional): a row of links and buttons, not of choices ("My templates"): a section named by its heading
+    instead of a fieldset and its legend (a fieldset is for the fields of a form), drawn the same %>
 <% filters = local_assigns[:filters] %>
-<%= tag.fieldset class: "relative mb-8 min-w-0", data: choice_row_data(filterable: filters.present?) do %>
-  <legend class="<%= choice_legend_classes %> float-left w-full"><%= legend %></legend>
+<% heading_id = local_assigns[:heading_id] %>
+<%= content_tag (heading_id ? :section : :fieldset), class: "relative mb-8 min-w-0",
+                aria: ({ labelledby: heading_id } if heading_id),
+                data: choice_row_data(filterable: filters.present?) do %>
+  <% if heading_id %>
+    <h2 id="<%= heading_id %>" class="<%= choice_legend_classes %> float-left w-full"><%= legend %></h2>
+  <% else %>
+    <legend class="<%= choice_legend_classes %> float-left w-full"><%= legend %></legend>
+  <% end %>
   <% if local_assigns[:hint] %>
     <p class="<%= choice_row_hint_classes(filterable: filters.present?) %>"><%= hint %></p>
   <% end %>

@@ -1,0 +1,21 @@
+<%# The icon of the template, chosen among SheetTemplate::ICONS (in the order of the themes of the covers: fantasy,
+    horror, science fiction). Compact (decision: the page holds in one screen): round pills of 36 px, all at the same
+    gap from each other (decision: groups by theme made two gaps). Each pill hides a real radio button (sr-only,
+    peer): moved with the arrow keys, read by screen readers, named by its icon ("Épées croisées"), also a tooltip.
+    The one chosen in its gold tonal with a gold ring, as a choice of the creation of a table %>
+<% chosen_icon = sheet_template.icon %>
+<fieldset class="mb-4 min-w-0">
+  <legend class="<%= SimpleFormFieldClasses::LABEL %>"><%= t("sheet_templates.show.icon") %></legend>
+  <div class="flex flex-wrap gap-2">
+    <% SheetTemplate::ICON_NAMES.each do |icon| %>
+      <label class="relative" title="<%= sheet_template_icon_label(icon) %>">
+        <%= form.radio_button :icon, icon, checked: chosen_icon == icon, class: "peer sr-only" %>
+        <span class="sr-only"><%= sheet_template_icon_label(icon) %></span>
+        <span class="<%= SheetTemplatesHelper::ICON_CHOICE_CLASSES %>" aria-hidden="true">
+          <%= sheet_template_icon(icon, css_class: "size-4") %>
+        </span>
+      </label>
+    <% end %>
+  </div>
+  <%= form.error :icon, class: SimpleFormFieldClasses::ERROR %>
+</fieldset>
