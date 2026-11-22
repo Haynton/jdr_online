@@ -1,0 +1,47 @@
+<%# One step on the summary sheet: its title (the name of the character for the step that names it, header: true),
+    "Change" to go back to the step, then its fields read-only, section after section (a subtitle when the step has
+    several, like the saving throws and the skills), grouped by type (CharacterSummarySheetHelper).
+    The header has the picture of the character on its left (decision), its place kept for now, as on the first step:
+    the upload comes with Active Storage and Cloudinary. Decorative until then (hidden from screen readers).
+    in_grid: the block sits in a column of the sheet (summary_columns), which spaces its blocks itself.
+    A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it %>
+<% header = local_assigns[:header] %>
+<% sections = step.fields.group_by { |field| field["section"] }
+                         .reject { |_section, fields| summary_section_empty?(character, fields) } %>
+<section class="<%= "mt-10" unless local_assigns[:in_grid] || header %> <%= "flex items-start gap-4 sm:gap-6" if header %> min-w-0"
+         aria-labelledby="summary_<%= step.key %>">
+  <% if header %>
+    <div class="flex size-16 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-field-line text-muted sm:size-24"
+         aria-hidden="true">
+      <%= render "shared/icons/user_round", css_class: "size-8 sm:size-10" %>
+    </div>
+  <% end %>
+  <div class="min-w-0 flex-1">
+    <div class="flex items-baseline justify-between gap-4">
+      <% if header %>
+        <h2 id="summary_<%= step.key %>" class="text-2xl font-bold tracking-tight text-ink">
+          <%= character.name.presence || t("game_tables.character_steps.summary.unnamed") %>
+        </h2>
+      <% else %>
+        <h2 id="summary_<%= step.key %>" class="text-xs font-semibold tracking-wider text-brass uppercase"><%= character_step_label(step) %></h2>
+      <% end %>
+      <% unless step.summary_only %>
+        <%= link_to game_table_character_step_path(character.game_table, step.key),
+                    class: "shrink-0 text-sm font-medium text-link hover:underline" do %>
+          <%= t("game_tables.character_steps.show.change") %>
+          <span class="sr-only"><%= character_step_label(step) %></span>
+        <% end %>
+      <% end %>
+    </div>
+    <% sections.each do |section, fields| %>
+      <% if sections.size > 1 %>
+        <h3 class="mt-5 text-sm font-semibold text-ink"><%= section %></h3>
+      <% end %>
+      <% fields = fields + summary_table_fields(character) if header && section == sections.keys.first %>
+      <% summary_groups(fields).each do |group, group_fields| %>
+        <%= render "game_tables/character_steps/summary_#{group}", character: character, fields: group_fields,
+                                                                  computed: computed, wide: header %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

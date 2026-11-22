@@ -55,9 +55,21 @@ class GameTable < ApplicationRecord
   end
 
   # The fields asked when a player makes their character: all but the states of the game (at_creation: false,
-  # decision: the inspiration or the temporary hit points only change during the game)
+  # decision: the inspiration or the temporary hit points only change during the game) and the values given by the
+  # table (from_table: the level, set by the game master)
   def character_creation_fields
-    character_sheet_fields.reject { |field| field["at_creation"] == false }
+    character_sheet_fields.reject { |field| field["at_creation"] == false || field["from_table"] }
+  end
+
+  # The steps declared by the template to make a character (CharacterCreationSteps), none for a single page
+  def character_creation_steps
+    template_snapshot.to_h.dig("character_fields", "creation_steps") || []
+  end
+
+  # What a new character starts with, given by the table: the level of the field marked from_table
+  def character_values_from_table
+    character_sheet_fields.select { |field| field["from_table"] == "starting_level" }
+                          .to_h { |field| [field["key"], starting_level] }
   end
 
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each

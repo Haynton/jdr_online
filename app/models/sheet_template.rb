@@ -13,8 +13,15 @@ class SheetTemplate < ApplicationRecord
   # attacks: a list of attacks (name, to hit, damage, range), for NPCs and monsters.
   # bonus: the modifier of an ability (based_on), plus a proficiency (proficiency, the key of a computed field) when
   # the player ticks it: the sheet only stores the tick (CharacterSheetCalculator).
-  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES
-  FIELD_TYPES = %w[number resource ability boolean text choice experience attacks bonus computed].freeze
+  # computed: a value the sheet never stores, worked out by one of the COMPUTED_RULES.
+  # picks: several options of a list (options), count at most, stored as an array; granted: options always known,
+  # shown and never stored (the Common tongue among the languages).
+  # ability_bonuses: what an option of the list named in from raises (its ability_bonus_choices: the background),
+  # spread by the player as +2 and +1, or +1 to each; stored apart from the scores, { "intelligence" => 2 }, and added
+  # to them for the modifiers (CharacterSheetCalculator)
+  FIELD_TYPES = %w[
+    number resource ability ability_bonuses boolean text choice picks experience attacks bonus computed
+  ].freeze
   # How the modifier of an ability is worked out. half_above_ten: (score - 10) / 2, rounded down (14 gives +2)
   MODIFIER_RULES = %w[half_above_ten].freeze
   # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
@@ -22,8 +29,14 @@ class SheetTemplate < ApplicationRecord
   # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
   # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8".
   # spell_save_dc: 8 + the proficiency (proficiency) + the modifier of the spellcasting ability of the class chosen
-  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5)
-  COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus].freeze
+  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5).
+  # hit_points_by_level: at level 1 the hit die of the class plus the modifier of based_on (Constitution), then at each
+  # level the average of the die (half plus one) plus that modifier. unarmored_armor_class: 10 + the modifier of
+  # based_on (Dexterity), + the modifier of the unarmored_defense of the class (barbarian, monk). Both plain numbers
+  COMPUTED_RULES = %w[
+    proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
+    hit_points_by_level unarmored_armor_class
+  ].freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
   # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
   # Applied on the sheet: hit_die (the sides of the hit dice, hit_dice_by_class); proficient (the bonus fields
@@ -32,8 +45,9 @@ class SheetTemplate < ApplicationRecord
   # then by level from 1 to 20: cantrips, prepared spells, highest spell level).
   # Kept for the creation steps, by key of the future catalog: ability_bonus_choices (the 3 abilities a background
   # raises: +2 and +1, or +1 to each), training (armour and weapons), tools, features_by_level, traits, origin_feat
+  # unarmored_defense: the ability whose modifier adds to the armour class without armour (unarmored_armor_class)
   CHOICE_EFFECTS = %w[
-    hit_die proficient skill_choices set spellcasting
+    hit_die proficient skill_choices set spellcasting unarmored_defense
     ability_bonus_choices training tools features_by_level traits origin_feat
   ].freeze
 

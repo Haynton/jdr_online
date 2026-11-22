@@ -34,6 +34,6 @@ class Participation < ApplicationRecord
 
   # A player makes their character before joining the game (decision); the game master has none to make
   def needs_character?
-    player? && character.nil?
+    player? && (character.nil? || character.draft?)
   end
 end

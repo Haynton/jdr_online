@@ -1,0 +1,8 @@
+<%# Long texts on the summary sheet (appearance, backstory...): the label, then the text with its line breaks.
+    An empty text is left out %>
+<% summary_texts(character, fields).each do |label, text| %>
+  <div class="mt-4">
+    <p class="text-xs text-muted"><%= label %></p>
+    <p class="mt-1 text-sm break-words whitespace-pre-line text-ink"><%= text %></p>
+  </div>
+<% end %>

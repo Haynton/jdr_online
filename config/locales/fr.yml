@@ -33,6 +33,9 @@ fr:
         remember_me: "Rester connecté(e)"
         username: "Pseudo"
     errors:
+      messages:
+        ability_bonus_too_high: "dépasse %{count} avec le bonus"
+        too_many_picks: "%{count} au plus"
       models:
         character:
           attributes:
@@ -174,6 +177,11 @@ fr:
       sign_up: "S'inscrire"
     password_visibility_button:
       show_password: "Afficher le mot de passe"
+    steps_band:
+      change: "Modifier"
+      coming_soon: "Bientôt"
+      open: "Ouvrir"
+      step_number: "Étape %{number} :"
     theme_choice:
       dark: "Sombre"
       light: "Clair"
@@ -218,13 +226,40 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
-    characters:
-      create:
-        created: "%{name} est prêt(e). Bienvenue à la table !"
-      new:
-        decrease: "Diminuer %{label}"
-        increase: "Augmenter %{label}"
+    character_steps:
+      band_label: "Étapes de votre personnage"
+      show:
+        back: "Retour"
+        change: "Modifier"
+        continue: "Continuer"
         later: "Plus tard"
+        submit: "Créer mon personnage"
+        subtitle: "Votre personnage pour la table « %{name} »."
+      steps:
+        sheet: "Fiche"
+        summary: "Récapitulatif"
+      summary:
+        answer_no: "Non"
+        answer_yes: "Oui"
+        unnamed: "Personnage sans nom"
+      update:
+        created: "%{name} est prêt(e). Bienvenue à la table !"
+    characters:
+      new:
+        about: "Aide : %{label}"
+        bonus_included: "dont +%{bonus} %{option}"
+        bonus_column: "Bonus"
+        bonus_done: "Bonus placés."
+        bonus_for: "Bonus de l'historique pour %{label}"
+        bonus_left_one: "Reste 1 point à placer."
+        bonus_left_other: "Reste %{count} points à placer."
+        bonus_pick_background: "Choisissez d'abord un historique, à l'étape Personnage."
+        bonus_raises_html: "%{option} augmente %{abilities}."
+        bonus_rule: "Répartissez +2 et +1, ou +1 à chacune."
+        bonus_too_many: "Trop de bonus : +2 et +1, ou +1 à chacune."
+        decrease: "Diminuer %{label}"
+        final_score: "Score final"
+        increase: "Augmenter %{label}"
         modifier: "Modificateur"
         note_html: "%{labels} : %{text}"
         offered: "Proposée"
@@ -235,14 +270,30 @@ fr:
         resource_hint: "Valeur maximale : votre personnage commence au maximum."
         roll: "Lancer les dés"
         roll_method: "%{dice}d%{sides} par caractéristique, en gardant les %{kept} meilleurs. Attribuez chaque résultat, ou tapez vos propres scores."
+        score_column: "Score"
+        scores_title: "Vos scores"
         skill_choices: "%{option} : choisissez %{count} compétences parmi celles marquées « Proposée ». Cochées : %{chosen} sur %{count}."
-        submit: "Créer mon personnage"
-        subtitle: "Pour la table « %{name} »."
-        title: "Votre personnage"
+        type_scores: "Tapez vos scores dans les tuiles."
     choice_row:
       filter: "Filtrer par thème"
       next: "Choix suivants"
       previous: "Choix précédents"
+    choice_summaries:
+      ability_bonus_value: "%{abilities} (+2 et +1, ou +1 à chacune)"
+      avatar: "Avatar"
+      avatar_soon: "Bientôt : une image de votre personnage."
+      facts:
+        ability_bonus: "Caractéristiques augmentées"
+        hit_die: "Dé de vie"
+        origin_feat: "Don d'origine"
+        proficient: "Maîtrises"
+        skill_choices: "Compétences"
+        spellcasting: "Caractéristique des sorts"
+      label: "Résumé de vos choix"
+      nothing_picked: "Rien de choisi pour l'instant."
+      skill_choices_value:
+        one: "1 au choix"
+        other: "%{count} au choix"
     cover_themes:
       fantasy: "Fantasy"
       horror: "Horreur"
@@ -266,11 +317,7 @@ fr:
       cancel: "Annuler"
       continue: "Continuer"
     creation_steps:
-      change: "Modifier"
-      coming_soon: "Bientôt"
       label: "Étapes de la création"
-      open: "Ouvrir"
-      step_number: "Étape %{number} :"
       steps:
         details: "Informations"
         maps: "Cartes"
@@ -380,4 +427,5 @@ fr:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"
       join_game: "Rejoindre la partie"
+      resume_character: "Reprendre mon personnage"
       resume_creation: "Reprendre la création"

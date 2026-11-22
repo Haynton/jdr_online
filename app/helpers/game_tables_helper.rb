@@ -46,6 +46,7 @@ module GameTablesHelper
   # makes it, everyone else joins the game
   def stage_main_action_label(participation)
     return t("game_tables.stage.resume_creation") if resuming_creation?(participation)
+    return t("game_tables.stage.resume_character") if participation.player? && participation.character&.draft?
     return t("game_tables.stage.create_character") if participation.needs_character?
 
     t("game_tables.stage.join_game")

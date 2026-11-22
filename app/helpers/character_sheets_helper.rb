@@ -48,15 +48,18 @@ module CharacterSheetsHelper
   end
 
   # A number between "−" and "+" (characters/_stepper), in a tile or a box
-  def sheet_stepper_input(character, field, data: {})
-    options = sheet_number_options(character, field).merge(class: STEPPER_INPUT_CLASSES,
+  def sheet_stepper_input(character, field, data: {}, autocomplete: nil)
+    options = sheet_number_options(character, field).merge(class: STEPPER_INPUT_CLASSES, autocomplete: autocomplete,
                                                            data: { number_stepper_target: "input", **data })
     number_field_tag(sheet_field_name(field), sheet_field_value(character, field), options)
   end
 
-  # The score of an ability: the live calculation reads it to work out its modifier
+  # The score of an ability: the live calculation reads it to work out its modifier, and shows the bonus of the
+  # background in it. autocomplete off: a browser that restored the score shown (bonus included) on coming back to
+  # the page would get the bonus added twice
   def sheet_ability_input(character, field)
-    sheet_stepper_input(character, field, data: { character_sheet_target: "score", ability: field["key"],
+    sheet_stepper_input(character, field, autocomplete: "off",
+                                          data: { character_sheet_target: "score", ability: field["key"],
                                                   modifier_rule: field["modifier"] })
   end
 

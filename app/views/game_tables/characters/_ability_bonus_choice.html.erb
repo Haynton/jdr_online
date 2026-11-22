@@ -1,0 +1,26 @@
+<%# One ability raised by the background, in the bonus block of the abilities step: its name, +0 | +1 | +2 and its
+    final score (the score typed plus the bonus), in the columns of AbilityBonusesHelper::BONUS_COLUMNS, shared with
+    the headings above the lines so that everything lines up. The choices look like the theme selector (field
+    background, the one picked a surface pill in bold), on real radio buttons hidden under their labels: arrows of
+    the keyboard and screen readers work. Picking one updates the tile (modifier, round in its corner) and what is
+    left to place %>
+<% placed_bonus = placed_ability_bonus(character, bonus_field, field["key"]) %>
+<li class="<%= AbilityBonusesHelper::BONUS_COLUMNS %> items-center">
+  <span id="bonus_<%= field["key"] %>_label" class="truncate text-sm text-ink"><%= field["label"] %></span>
+  <div class="inline-flex gap-1 rounded-lg bg-field p-1" role="radiogroup"
+       aria-labelledby="bonus_<%= field["key"] %>_label">
+    <% AbilityBonusesHelper::BONUS_CHOICES.each do |bonus| %>
+      <label class="flex h-8 w-11 cursor-pointer items-center justify-center rounded-md text-sm text-ink transition-colors hover:bg-surface/60 has-checked:bg-surface has-checked:font-semibold has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring">
+        <%= radio_button_tag ability_bonus_input_name(bonus_field, field["key"]), bonus, placed_bonus == bonus,
+                             id: nil, class: "sr-only",
+                             data: { ability_bonus_target: "choice", character_sheet_target: "abilityBonus",
+                                     ability: field["key"], action: "ability-bonus#update" } %>
+        +<%= bonus %>
+      </label>
+    <% end %>
+  </div>
+  <span class="text-center text-base font-bold text-ink tabular-nums">
+    <span class="sr-only"><%= t("game_tables.characters.new.final_score") %></span>
+    <output data-character-sheet-target="finalScore" data-ability="<%= field["key"] %>"><%= local_assigns[:final_score] || "—" %></output>
+  </span>
+</li>

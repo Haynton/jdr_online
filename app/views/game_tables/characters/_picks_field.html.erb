@@ -1,0 +1,39 @@
+<%# Several options of a list (type picks: the languages), wherever it is on the sheet: a group of check boxes named by
+    its label (fieldset and legend). The options always known (granted: the Common tongue) come first, ticked and
+    disabled, never sent; then the options to pick, count at most (said in the help, checked by the server).
+    The hidden field before them sends "" so that unticking every box empties the field %>
+<% error = sheet_field_error(character, field) %>
+<% hint = sheet_field_hint(field) %>
+<% picked = Array(character.sheet[field["key"]]) %>
+<% described_by = [("#{sheet_field_id(field)}_hint" if hint), ("#{sheet_field_id(field)}_error" if error)].compact %>
+<%= tag.fieldset class: "#{SimpleFormFieldClasses::FIELD_BLOCK} min-w-0",
+                 aria: { describedby: described_by.join(" ").presence, invalid: (true if error) } do %>
+  <legend class="<%= SimpleFormFieldClasses::LABEL %>"><%= field["label"] %></legend>
+  <%# The help right under the label, before the boxes (decision): it says what to pick %>
+  <% if hint %>
+    <p id="<%= sheet_field_id(field) %>_hint" class="-mt-0.5 mb-2.5 text-xs text-muted"><%= hint %></p>
+  <% end %>
+  <%= hidden_field_tag "character[sheet][#{field['key']}][]", "", id: nil %>
+  <%# Two columns as wide as their longest option (max-content, decision): « Langue des signes commune » never goes
+      onto two lines, and the options never spread across the screen. One column on a phone, where two would not fit %>
+  <div class="grid w-fit grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-[repeat(2,max-content)]">
+    <% field["granted"].to_a.each do |option| %>
+      <label class="flex items-start gap-2 text-sm text-muted">
+        <%= check_box_tag nil, option, true, disabled: true, id: nil, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
+        <%= option %>
+      </label>
+    <% end %>
+    <% field["options"].each_with_index do |option, index| %>
+      <% box_id = "#{sheet_field_id(field)}_#{index}" %>
+      <%# The box on the first line of its label, which may take two (« Langue des signes commune ») %>
+      <div class="flex items-start gap-2">
+        <%= check_box_tag "character[sheet][#{field['key']}][]", option, picked.include?(option),
+                          id: box_id, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
+        <%= label_tag box_id, option, class: SimpleFormFieldClasses::CHECKBOX_LABEL %>
+      </div>
+    <% end %>
+  </div>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+<% end %>

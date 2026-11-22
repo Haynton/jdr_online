@@ -1,11 +1,15 @@
-<%# One section of the character sheet: its title over a line, then its fields laid out by their types
-    (sheet_section_layout). lead: optional, what opens the section before its fields (the name of the character,
-    in the first section); a two-column section puts it at the top of its left column.
-    The legend floats, so that it sits in the section and not in the border of the fieldset (see the choice rows) %>
+<%# One section of the character sheet: its title, then its fields laid out by their types (sheet_section_layout).
+    No line between the sections (decision): the titles and the space are enough. lead: optional, what opens the
+    section before its fields (the name of the character, in the first section); a section in columns puts it at the
+    top of the column of its fields.
+    The legend floats, so that it sits in the section and not in the border of the fieldset (see the choice rows).
+    page_title: optional, the title of the page; a section of the same name keeps its title for screen readers only
+    ("Personnage" twice, decision) %>
 <% layout = sheet_section_layout(fields) %>
-<fieldset class="mt-8 min-w-0 border-t border-line pt-6">
-  <legend class="float-left mb-4 w-full text-lg font-semibold tracking-tight text-ink"><%= section %></legend>
-  <% if local_assigns[:lead] && layout != :two_columns %>
+<% repeats_page_title = section == local_assigns[:page_title] %>
+<fieldset class="mt-10 min-w-0 first-of-type:mt-0">
+  <legend class="<%= repeats_page_title ? "sr-only" : "float-left mb-4 w-full text-lg font-semibold tracking-tight text-ink" %>"><%= section %></legend>
+  <% if local_assigns[:lead] && %i[two_columns described_choices].exclude?(layout) %>
     <div class="clear-left max-w-sm"><%= lead %></div>
   <% end %>
   <%= render "game_tables/characters/section_#{layout}",

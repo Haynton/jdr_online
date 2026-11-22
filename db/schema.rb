@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -18,16 +18,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_100000) do
     t.bigint "game_table_id", null: false
     t.string "kind", default: "pc", null: false
     t.bigint "participation_id"
-    t.string "name", limit: 60, null: false
+    t.string "name", limit: 60
     t.jsonb "sheet", default: {}, null: false
     t.boolean "visible_to_players", default: true, null: false
     t.text "gm_notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "complete", null: false
+    t.string "creation_step"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
     t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
   end
 
   create_table "game_tables", force: :cascade do |t|

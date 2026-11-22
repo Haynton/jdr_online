@@ -16,14 +16,63 @@ class Character < ApplicationRecord
     monster: "monster"
   }
 
-  validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
+  # A player character is made in steps, saved as a draft after each one (CharacterCreationSteps), and complete
+  # once the player confirms the summary
+  enum :status, {
+    draft: "draft",
+    complete: "complete"
+  }
+
+  # The name is asked at the last step: a draft may have none yet
+  validates :name, presence: true, unless: :draft?
+  validates :name, length: { maximum: NAME_MAX_LENGTH }
   validates :participation, presence: true, if: :pc?
   validates :participation_id, uniqueness: { message: :already_has_character }, if: :pc?
   validates_with CharacterSheetValidator
 
+  # The fields that must be filled in the step being saved ("required": the class, the species...),
+  # checked by CharacterSheetValidator
+  attr_accessor :required_sheet_fields
+
   # The fields of a player character sheet: those of the template copied into the table
   def sheet_fields
     game_table.character_sheet_fields
+  end
+
+  def creation_steps
+    CharacterCreationSteps.new(game_table: game_table, sheet: sheet)
+  end
+
+  # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option
+  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier)
+  def fill_step(step, sheet_values:, name: nil)
+    filled_values = CharacterSheetBuilder.new(fields: step.fields, submitted_values: sheet_values).call
+    self.sheet = ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
+                                     .call(sheet.except(*step.field_keys).merge(filled_values))
+    self.name = name if step.asks_name
+    self.required_sheet_fields = step.required_fields
+  end
+
+  # Once complete, the values the game will change start from what was worked out at creation (initial_from: the hit
+  # points, a resource, start full; the armour class, a number)
+  def complete_creation
+    calculated_values = computed_sheet_values[:values]
+    initial_values = sheet_fields.select { |field| field["initial_from"] }.filter_map do |field|
+      value = calculated_values[field["initial_from"]]&.to_i
+      [field["key"], field["type"] == "resource" ? { "current" => value, "max" => value } : value] if value
+    end
+    self.sheet = sheet.merge(initial_values.to_h)
+    self.status = :complete
+  end
+
+  # The furthest step reached: never goes back, so that a step taken up again keeps the progress made
+  def reach_creation_step(step_key)
+    self.creation_step = step_key if creation_steps.rank(step_key) > creation_steps.rank(creation_step)
+  end
+
+  # A step reached already opens from the band of the steps; the first one is always open
+  def creation_step_reached?(step)
+    step == creation_steps.first || creation_steps.rank(step.key) <= creation_steps.rank(creation_step)
   end
 
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)

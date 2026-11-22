@@ -11,11 +11,13 @@ class CharacterSheetCalculator
     @level_thresholds = level_thresholds.to_a.sort_by { |threshold| threshold["level"] }
   end
 
-  # modifiers: by ability key (nil until a score is typed); values: the computed and bonus fields, by key
+  # scores: by ability key, the score raised by the bonus of the background (ability_bonuses), nil until typed;
+  # modifiers: worked out from those scores; values: the computed and bonus fields, by key
   def call
-    modifiers = ability_modifiers
+    scores = ability_scores
+    modifiers = ability_modifiers(scores)
     computed_values = computed_field_values(modifiers)
-    { modifiers: modifiers, values: computed_values.merge(bonus_values(modifiers, computed_values)) }
+    { scores: scores, modifiers: modifiers, values: computed_values.merge(bonus_values(modifiers, computed_values)) }
   end
 
   # The modifier of a score by the rule of its ability. half_above_ten: (score - 10) / 2, rounded down: 14 gives +2,
@@ -28,9 +30,27 @@ class CharacterSheetCalculator
 
   private
 
-  def ability_modifiers
+  def ability_fields
     @fields.select { |field| field["type"] == "ability" }
-           .to_h { |field| [field["key"], self.class.modifier(@sheet[field["key"]], field["modifier"])] }
+  end
+
+  # The score typed, plus the bonus placed on it (the bonus is kept apart, decision)
+  def ability_scores
+    ability_fields.to_h do |field|
+      score = @sheet[field["key"]]
+      [field["key"], score.is_a?(Integer) ? score + ability_bonuses[field["key"]].to_i : nil]
+    end
+  end
+
+  def ability_bonuses
+    @ability_bonuses ||= begin
+      bonus_field = @fields.find { |field| field["type"] == "ability_bonuses" }
+      bonus_field ? @sheet[bonus_field["key"]].to_h : {}
+    end
+  end
+
+  def ability_modifiers(scores)
+    ability_fields.to_h { |field| [field["key"], self.class.modifier(scores[field["key"]], field["modifier"])] }
   end
 
   def computed_field_values(modifiers)
@@ -45,7 +65,28 @@ class CharacterSheetCalculator
     when "hit_dice_by_class" then hit_dice(field)
     when "spell_save_dc" then spell_attack(field, modifiers)&.then { |attack| (8 + attack).to_s }
     when "spell_attack_bonus" then spell_attack(field, modifiers)
+    when "hit_points_by_level" then hit_points(field, modifiers)&.to_s
+    when "unarmored_armor_class" then unarmored_armor_class(field, modifiers)&.to_s
     end
+  end
+
+  # Level 1: the highest roll of the die, then its average (half plus one) at each level, the modifier added each time.
+  # A plain number, kept as a text like the hit dice ("8", not "+8"). nil until the class and the ability are known
+  def hit_points(field, modifiers)
+    sides = class_effects(field)["hit_die"]
+    modifier = modifiers[field["based_on"]]
+    return unless sides && modifier
+
+    sides + modifier + ((typed_level(field["level_from"]) - 1) * ((sides / 2) + 1 + modifier))
+  end
+
+  # 10 + the modifier of based_on, + the modifier of the ability of the unarmored defense of the class (barbarian,
+  # monk). nil until based_on has a score
+  def unarmored_armor_class(field, modifiers)
+    modifier = modifiers[field["based_on"]]
+    return unless modifier
+
+    10 + modifier + modifiers[class_effects(field)["unarmored_defense"]].to_i
   end
 
   # "3d8": one die per level, its sides the hit_die of the class chosen. nil until a class of the list is chosen

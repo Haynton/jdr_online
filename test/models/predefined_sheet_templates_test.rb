@@ -106,6 +106,20 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
+  test "every field asked at creation belongs to a step, and every step to sections of the sheet" do
+    each_template do |template_file, template|
+      steps = template.dig("character_fields", "creation_steps")
+      next unless steps
+
+      fields = template.dig("character_fields", "fields")
+      asked = fields.reject { |field| field["at_creation"] == false || field["from_table"] }
+      step_sections = steps.flat_map { |step| step["sections"] }
+      assert_empty asked.pluck("section").uniq - step_sections, "#{template_file.basename}: sections without a step"
+      assert_empty step_sections - fields.pluck("section"), "#{template_file.basename}: steps without fields"
+      assert_equal 1, steps.count { |step| step["asks_name"] }, "#{template_file.basename}: one step asks the name"
+    end
+  end
+
   test "the rules that read the class point to a list whose every option gives its hit die" do
     each_template do |template_file, template|
       fields = template.dig("character_fields", "fields")
