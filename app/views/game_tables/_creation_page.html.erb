@@ -9,8 +9,6 @@
   <%= render "game_tables/creation_steps", current_step: current_step, game_table: game_table %>
 </header>
 <main class="<%= creation_main_classes(flush_top) %>">
-  <%# Spaced out only around a message shown on screen: one for screen readers only ("Table created as a draft"),
-      or none, would otherwise leave an empty band above the content (a cover moved down after a redirect) %>
-  <div class="<%= creation_messages_classes(flush_top) %>"><%= render "shared/flashes" %></div>
+  <%= render "shared/flashes" %>
   <%= content %>
 </main>

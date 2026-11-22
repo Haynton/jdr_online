@@ -1,7 +1,8 @@
 <%# Use the settings_section helper (app/helpers/settings_helper.rb), not this partial directly.
     On the page, a card, like "My tables": the line under the title goes from one edge of the card to the other.
     In the settings window, no card: a header across the panel, then the rows, which scroll on their own
-    (settings_section_classes). The messages ("Language saved.") show at the top, next to the settings they confirm %>
+    (settings_section_classes). The messages ("Password changed.") are rendered here, inside the Turbo Frame of the
+    settings window, and float above it (shared/_flashes) %>
 <section class="<%= settings_section_classes(:section) %>" aria-labelledby="settings-section-title">
   <header class="<%= settings_section_classes(:header) %>">
     <h2 id="settings-section-title" class="<%= settings_section_classes(:title) %>"><%= title %></h2>

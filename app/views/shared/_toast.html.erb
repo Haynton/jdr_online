@@ -1,0 +1,18 @@
+<%# A message floating above the page (see shared/_flashes). Its close button is shown by toast_controller.js;
+    a success message also leaves by itself, an error stays until it is closed.
+    The label is read here: inside the block of render layout:, t(".close") would be looked up under shared/message %>
+<% close_label = t(".close") %>
+<div class="rounded-lg shadow-lg motion-safe:animate-fade-in"
+     data-controller="toast"
+     data-toast-auto-hide-value="<%= variant == :success %>">
+  <%= render layout: "shared/message", locals: { variant: variant } do %>
+    <div class="flex items-start gap-2">
+      <p class="min-w-0 flex-1"><%= message %></p>
+      <button type="button" hidden class="<%= toast_close_button_classes %>"
+              aria-label="<%= close_label %>" title="<%= close_label %>"
+              data-toast-target="closeButton" data-action="toast#close">
+        <%= render "shared/icons/x", css_class: "size-4" %>
+      </button>
+    </div>
+  <% end %>
+</div>

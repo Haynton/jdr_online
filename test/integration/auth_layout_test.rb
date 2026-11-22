@@ -16,15 +16,16 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
     assert_auth_layout
   end
 
-  test "a message keeps its distance from the title under it, and no space is left without one" do
+  test "a message floats above the page, so that the form does not move" do
     get game_tables_path
     follow_redirect!
 
-    assert_select "main > div.mb-6 [role=alert]", text: /Vous devez vous connecter|You need to sign in/
+    assert_select "main > div.fixed [data-controller=toast] [role=alert]",
+                  text: /Vous devez vous connecter|You need to sign in/
 
     get new_user_session_path
 
-    assert_select "main > div.mb-6", count: 0
+    assert_select "main > div.fixed", count: 0
   end
 
   test "the old account page leads to the account settings, and its old form changes nothing" do

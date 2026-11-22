@@ -3,7 +3,7 @@
 <% use_deep_page_background %>
 <% content_for :full_width_page do %>
   <main>
-    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <%= render "shared/flashes" %>
     <section class="relative isolate overflow-hidden" aria-labelledby="home-title">
       <%= render "shared/theme_cover", css_class: "absolute inset-0 -z-20 size-full object-cover object-[70%_50%] md:object-center" %>
       <%# A veil behind the text only, for its contrast %>

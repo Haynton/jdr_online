@@ -29,10 +29,32 @@ module MessagesHelper
     MESSAGE_VARIANTS.fetch(variant)[:icon]
   end
 
-  # The messages of shared/_flashes that show on screen (flash[:screen_reader_notice] does not): a layout keeps
-  # space under them only when there is one
+  # Above the page, out of its flow: at the bottom of a phone, over the floating navigation bar (56 px, 16 px from
+  # the bottom), in the bottom right corner from 768 px. Not at the top: an error, which stays until it is closed,
+  # covered the close button of the settings window, "Create a table" and the theme control
+  TOAST_STACK_CLASSES = "fixed inset-x-4 bottom-24 z-50 flex flex-col gap-2 " \
+                        "md:inset-x-auto md:right-6 md:bottom-6 md:w-96".freeze
+
+  # 24 px, the minimum size of a target (WCAG 2.5.8), in the color of the message text
+  TOAST_CLOSE_BUTTON_CLASSES = "-my-1 -mr-1.5 inline-flex size-6 shrink-0 cursor-pointer items-center " \
+                               "justify-center rounded-md hover:bg-current/10".freeze
+
+  # The messages of shared/_flashes that show on screen (flash[:screen_reader_notice] does not)
   def visible_messages?
-    flash[:notice].present? || flash[:alert].present?
+    visible_flash_messages.any?
+  end
+
+  # [[variant, message]], the success first
+  def visible_flash_messages
+    { success: flash[:notice], error: flash[:alert] }.compact_blank.to_a
+  end
+
+  def toast_stack_classes
+    TOAST_STACK_CLASSES
+  end
+
+  def toast_close_button_classes
+    TOAST_CLOSE_BUTTON_CLASSES
   end
 
   # Replaces Simple Form's f.error_notification. On screen, the red field and its message are enough;

@@ -1,15 +1,13 @@
-<%# Each layout decides where flashes sit and how wide they are %>
-<% if notice %>
-  <div class="mt-4">
-    <%= render layout: "shared/message", locals: { variant: :success } do %><%= notice %><% end %>
+<%# The messages shown on screen float above the page (shared/_toast): they never push its content down.
+    Wherever this partial is rendered, they land in the same corner of the screen %>
+<% if visible_messages? %>
+  <div class="<%= toast_stack_classes %>">
+    <% visible_flash_messages.each do |variant, message| %>
+      <%= render "shared/toast", variant: variant, message: message %>
+    <% end %>
   </div>
 <% end %>
-<% if alert %>
-  <div class="mt-4">
-    <%= render layout: "shared/message", locals: { variant: :error } do %><%= alert %><% end %>
-  </div>
-<% end %>
-<%# A message that only repeats what the page shows (see Users::SessionsController): for screen readers only %>
+<%# A message that only repeats what the page shows (see ScreenReaderNotice): for screen readers only %>
 <% if flash[:screen_reader_notice] %>
   <div class="sr-only">
     <%= render layout: "shared/message", locals: { variant: :success } do %><%= flash[:screen_reader_notice] %><% end %>

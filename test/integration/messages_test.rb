@@ -12,6 +12,36 @@ class MessagesTest < ActionDispatch::IntegrationTest
     assert_select "div[role=status].bg-success-bg.border-success-ink\\/70 > svg[aria-hidden=true]"
   end
 
+  test "a wrong password shows a floating error, with a close button shown by its controller" do
+    User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
+    post user_session_path, params: { user: { email: "player@example.com", password: "wrong password" } },
+                            headers: FRENCH_BROWSER.dup
+
+    assert_select "main > div.fixed [data-controller=toast][data-toast-auto-hide-value=false] [role=alert]",
+                  text: /Adresse e-mail ou mot de passe incorrect/i
+    assert_select "[data-controller=toast] button[hidden][aria-label=?]", "Fermer le message"
+  end
+
+  test "after a password reset, the signed in message is for screen readers only" do
+    user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
+    reset_token = user.send_reset_password_instructions
+    put user_password_path, params: { user: { reset_password_token: reset_token, password: "#{TEST_PASSWORD}2",
+                                              password_confirmation: "#{TEST_PASSWORD}2" } }
+    follow_redirect!
+
+    assert_select ".sr-only [role=status]", count: 1
+    assert_select "[data-controller=toast]", count: 0
+  end
+
+  test "after the account is deleted, the goodbye message is for screen readers only" do
+    sign_in User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD)
+    delete user_registration_path
+    follow_redirect!
+
+    assert_select ".sr-only [role=status]", count: 1
+    assert_select "[data-controller=toast]", count: 0
+  end
+
   test "an invalid sign up announces its errors to screen readers only, in french" do
     post user_registration_path,
          params: { user: { email: "", password: "", password_confirmation: "" } },

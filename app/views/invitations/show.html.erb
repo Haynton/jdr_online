@@ -6,7 +6,7 @@
 <% use_deep_page_background %>
 <% content_for :full_width_page do %>
   <main>
-    <div class="mx-4"><%= render "shared/flashes" %></div>
+    <%= render "shared/flashes" %>
     <section class="relative isolate overflow-hidden" aria-labelledby="invitation-table-title">
       <%= image_tag @game_table.cover_image_path, alt: "", class: "absolute inset-0 -z-20 size-full object-cover cover-fade" %>
       <div class="absolute inset-0 -z-10 bg-linear-to-t from-page-deep via-page-deep/80 to-transparent md:bg-linear-to-r md:via-page-deep/70"></div>

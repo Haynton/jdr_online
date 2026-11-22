@@ -4,9 +4,4 @@ module AuthCardsHelper
   def auth_card(title:, subtitle: nil, &)
     render "shared/auth_card", title: title, subtitle: subtitle, content: capture(&)
   end
-
-  # The messages sit above the title of the visitor pages: without this space, they touched it
-  def auth_messages_classes
-    visible_messages? ? "mb-6" : ""
-  end
 end

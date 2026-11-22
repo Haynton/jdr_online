@@ -211,6 +211,8 @@ en:
       label: "Theme"
     theme_switch:
       dark_theme: "Dark theme"
+    toast:
+      close: "Close the message"
     settings_dialog:
       close: "Close the settings"
       title: "Settings"
