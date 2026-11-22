@@ -29,6 +29,30 @@ class GameTableTest < ActiveSupport::TestCase
     assert_not game_table.draft?
   end
 
+  test "a new table starts at level 1" do
+    assert_equal 1, GameTable.new.starting_level
+  end
+
+  test "a starting level from 1 to 20 is accepted" do
+    [GameTable::STARTING_LEVELS.min, GameTable::STARTING_LEVELS.max].each do |starting_level|
+      assert GameTable.new(name: "Les Marches du Nord", starting_level: starting_level).valid?
+    end
+  end
+
+  test "a starting level below 1 or above 20 is refused" do
+    [0, 21, nil].each do |starting_level|
+      game_table = GameTable.new(name: "Les Marches du Nord", starting_level: starting_level)
+
+      assert game_table.tap(&:validate).errors.of_kind?(:starting_level, :inclusion)
+    end
+  end
+
+  test "the database refuses a starting level outside 1 to 20 too" do
+    game_table = GameTable.create!(name: "Les Marches du Nord")
+
+    assert_raises(ActiveRecord::StatementInvalid) { game_table.update_column(:starting_level, 21) }
+  end
+
   test "a cover outside the images of the app is refused" do
     game_table = GameTable.new(name: "Les Marches du Nord", cover_image: "../../secret")
 

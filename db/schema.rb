@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_21_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,8 +44,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_180000) do
     t.datetime "updated_at", null: false
     t.string "cover_image", default: "sentinelle", null: false
     t.bigint "sheet_template_id"
+    t.integer "starting_level", default: 1, null: false
     t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
+    t.check_constraint "starting_level >= 1 AND starting_level <= 20", name: "game_tables_starting_level_check"
   end
 
   create_table "participations", force: :cascade do |t|
