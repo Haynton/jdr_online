@@ -7,7 +7,7 @@ class CatalogEntry < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
   # The column of the template that declares the properties of each kind (the other kinds: later)
-  PROPERTY_FIELDS_COLUMNS = { "spell" => "spell_fields" }.freeze
+  PROPERTY_FIELDS_COLUMNS = { "spell" => "spell_fields", "item" => "item_fields" }.freeze
 
   belongs_to :sheet_template
 
