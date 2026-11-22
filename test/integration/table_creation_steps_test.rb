@@ -17,7 +17,7 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 4
     assert_select "ol[aria-label] > li[aria-current=step]", text: /Invitation/
-    assert_select "main h2", text: "Votre table est prête"
+    assert_select "main h2", text: "Votre table est prête", count: 0
     # The name of the table is the title of the page: no other title keeps the cover away from the band of the steps
     assert_select "h1#summary-table-title", text: "Les Marches du Nord"
     assert_select "main h1", count: 1

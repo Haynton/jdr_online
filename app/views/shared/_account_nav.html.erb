@@ -8,8 +8,9 @@
   <%= side_nav_link_to t(".settings"), settings_path, icon: "settings", current: settings_page? %>
 </div>
 
-<%# Under "My tables", at the foot of the bar (shared/_side_nav) %>
-<div class="hidden md:mt-1.5 md:flex md:flex-col md:gap-1.5">
+<%# Under "My tables", at the foot of the bar (shared/_side_nav). No margin of its own: every entry of the foot is
+    6 px from the next one, the gap of the bar (a margin here doubled it, decision) %>
+<div class="hidden md:flex md:flex-col md:gap-1.5">
   <%= side_nav_link_to t(".settings"), settings_display_path, icon: "settings", current: settings_page?,
                                                               data: settings_link_data %>
   <%# Asked first (shared/_confirm_dialog): a stray click in the bar no longer signs out %>
@@ -18,7 +19,7 @@
 
   <%# The username fades in once the navigation is unfolded, like the labels. The avatar keeps its place:
       4 px from the edge, the centre of the 40 px row while folded %>
-  <div class="mx-3 mt-1.5 flex h-10 items-center gap-3 overflow-hidden px-1" title="<%= current_user.username %>">
+  <div class="mx-3 flex h-10 items-center gap-3 overflow-hidden px-1" title="<%= current_user.username %>">
     <%= render "shared/avatar", user: current_user %>
     <span class="truncate text-[15px] text-ink <%= side_nav_fading_text_classes %>"><%= current_user.username %></span>
   </div>

@@ -1,6 +1,6 @@
 <%# Last step of the creation, named "Invitation" in the band: the table large over its cover, as "My tables" will
-    show it, a sentence that says what is left to do, then two columns: the invitation (link and username) and the
-    participants. Its two buttons finish the creation: back to "My tables", or into the game.
+    show it, then two columns: the invitation (link and username) and the participants. Its two buttons finish the
+    creation: back to "My tables", or into the game.
     No page title above the cover (decision: it kept the picture away from the band of the steps): the name of the
     table is the title of the page. NPCs and maps, coming soon, show only in the band of the steps (decision) %>
 <%= creation_page(current_step: "summary", game_table: @game_table, flush_top: true) do %>
@@ -36,26 +36,17 @@
     </div>
   </section>
 
-  <%# What is left to do, put forward: a title and a tonal check (never the filled plaque, kept for buttons) %>
-  <div class="mt-8 flex items-start gap-4">
-    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset" aria-hidden="true">
-      <%= render "shared/icons/check", css_class: "size-5" %>
-    </span>
-    <div>
-      <h2 class="text-xl font-bold tracking-tight text-ink md:text-2xl"><%= t(".ready_title") %></h2>
-      <p class="mt-1 max-w-2xl text-[15px] text-muted"><%= t(".ready") %></p>
-    </div>
-  </div>
-
-  <%# Two columns without cards (decision): each one under a fine line %>
-  <div class="mt-6 grid gap-x-12 gap-y-8 md:grid-cols-2">
+  <%# Two columns without cards (decision): each one under a fine line. No "Your table is ready" above them any more
+      (decision): the band of the steps and the buttons already say where the game master stands %>
+  <div class="mt-8 grid gap-x-12 gap-y-8 md:grid-cols-2">
     <%= render "game_tables/summaries/invitation", game_table: @game_table, player_invitation: @player_invitation %>
     <%= render "game_tables/summaries/participants", game_table: @game_table %>
   </div>
 
-  <%# Finishing does not force the game master into the game: the main button leads back to "My tables" %>
-  <%= form_with url: game_table_summary_path(@game_table), method: :patch do |form| %>
-    <div class="mt-8 flex flex-wrap justify-end gap-3">
+  <%# Finishing does not force the game master into the game: the main button leads back to "My tables". At the bottom
+      of the screen on a short page (mt-auto), with at least 40 px above, as on the steps of a character %>
+  <%= form_with url: game_table_summary_path(@game_table), method: :patch, class: "mt-auto pt-10" do |form| %>
+    <div class="flex flex-wrap justify-end gap-3">
       <%= link_to t(".back"), edit_game_table_details_path(@game_table), class: button_classes(:secondary) %>
       <%= form.button t(".finish_and_join"), name: "join_game", value: "1", class: button_classes(:secondary) %>
       <%= form.button t(".finish"), class: button_classes(:primary) %>
