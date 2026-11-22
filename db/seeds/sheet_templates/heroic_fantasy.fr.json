@@ -12,6 +12,12 @@
       { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Détails", "sections": ["Détails"] }
     ],
+    "spell_groups": [
+      { "key": "cantrips", "label": "Sorts mineurs", "help": "Lancés à volonté, sans emplacement de sort.",
+        "min_level": 0, "max_level": 0, "count_from": "cantrips", "changes": "level_up_one" },
+      { "key": "prepared", "label": "Sorts préparés", "help": "Lancés avec vos emplacements de sort, jusqu'au plus haut niveau que vous pouvez lancer.",
+        "min_level": 1, "max_level_from": "max_spell_level", "count_from": "prepared", "changes_from": "prepared_changes" }
+    ],
     "fields": [
       { "key": "class", "label": "Classe", "type": "choice", "section": "Personnage", "required": true, "visible_to_others": true,
         "options": ["Barbare", "Barde", "Clerc", "Druide", "Ensorceleur", "Guerrier", "Magicien", "Moine", "Occultiste", "Paladin", "Rôdeur", "Roublard"],

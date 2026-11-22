@@ -65,7 +65,8 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     assert_select "[role=alert]", text: /Un sort choisi n'est pas proposé à votre classe et à votre niveau\./
-    assert_select "[role=alert]", text: /Trop de sorts mineurs[[:space:]]: 2 au plus\./
+    assert_select "[role=alert]",
+                  text: /Trop de sorts choisis dans «[[:space:]]Sorts mineurs[[:space:]]»[[:space:]]: 2 au plus\./
     assert_select "p[role=status][data-invalid]", text: "3 sur 2 choisis"
     assert_empty character.spells
   end

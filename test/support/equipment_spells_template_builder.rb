@@ -7,6 +7,13 @@ module EquipmentSpellsTemplateBuilder
   SPELLCASTING = { "ability" => "intelligence", "cantrips" => [2, 2, 3] + ([3] * 17),
                    "prepared" => [2, 3, 4] + ([4] * 17), "max_spell_level" => [1, 1, 2] + ([2] * 17),
                    "prepared_changes" => "long_rest" }.freeze
+  # The groups of the heroic fantasy: the cantrips, then the prepared spells up to the highest level of the class
+  SPELL_GROUPS = [
+    { "key" => "cantrips", "label" => "Sorts mineurs", "help" => "Lancés à volonté.", "min_level" => 0,
+      "max_level" => 0, "count_from" => "cantrips", "changes" => "level_up_one" },
+    { "key" => "prepared", "label" => "Sorts préparés", "help" => "Lancés avec vos emplacements.", "min_level" => 1,
+      "max_level_from" => "max_spell_level", "count_from" => "prepared", "changes_from" => "prepared_changes" }
+  ].freeze
   SPELLS = [
     ["fire-bolt", "Trait de feu", 0, %w[Mage]], ["light", "Lumière", 0, %w[Mage Prêtre]],
     ["mage-hand", "Main du mage", 0, %w[Mage]], ["magic-missile", "Projectile magique", 1, %w[Mage]],
@@ -42,7 +49,7 @@ module EquipmentSpellsTemplateBuilder
   end
 
   def character_fields
-    { "creation_steps" => creation_steps, "fields" => fields }
+    { "creation_steps" => creation_steps, "spell_groups" => SPELL_GROUPS, "fields" => fields }
   end
 
   def creation_steps

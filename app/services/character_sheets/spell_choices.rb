@@ -1,16 +1,37 @@
-# The spells a character may choose at the Spells step, read from the option picked with a spellcasting effect (the
-# class) and the level of the character: its cantrips among the spells of level 0 of that class, its prepared spells
-# among those of level 1 up to the highest spell level it can cast (spellcasting: cantrips, prepared, max_spell_level,
-# by level from 1 to 20). The spells come from the catalog of the template of the table (catalog_entries).
+# The spells a character may choose at the Spells step, by the groups the template declares (character_fields
+# .spell_groups, decision: declared once, in the words of the game): for each group, its spells among those of its
+# levels (min_level to max_level, or up to the table max_level_from of the class), as many as the table count_from of
+# the class at the level of the character. The tables are read in the spellcasting effect of the option picked (the
+# class), one number per level from 1 to 20 (heroic fantasy: cantrips, prepared, max_spell_level). The spells come
+# from the catalog of the template of the table (catalog_entries).
 # Known limit: the spellbook of the wizard (6 spells, some of them prepared) comes later; here every class prepares
 # its spells from the list of its class
 module CharacterSheets
   class CharacterSheets::SpellChoices
-    # cantrips or prepared, how many may be chosen, and the spells offered (catalog entries, by level then by name)
-    Group = Data.define(:kind, :allowed_count, :spells) do
+    # A group of the template with what the class gives at this level: its key, its label and help (the words of the
+    # template), how many may be chosen, the spells offered (catalog entries, by level then by name), when they can be
+    # changed in the game (changes: one of PREPARED_CHANGES), and whether it spans several levels (the page then titles
+    # each level)
+    Group = Data.define(:key, :label, :help, :allowed_count, :spells, :changes, :several_levels) do
       def keys
         spells.map(&:key)
       end
+    end
+
+    # When the spells of a group can be changed during the game (changes, or changes_from: a value of the class): the
+    # whole list after a long rest (cleric, druid, wizard), one after a long rest (paladin, ranger), one per level
+    # gained (bard, sorcerer, warlock, and the cantrips of every class; rules of 2024)
+    PREPARED_CHANGES = %w[long_rest long_rest_one level_up_one].freeze
+
+    # A group declared with a range of levels (max_level_from, or min_level under max_level)
+    def self.several_levels?(declared_group)
+      declared_group["max_level_from"].present? || declared_group["min_level"].to_i != declared_group["max_level"].to_i
+    end
+
+    # Whether a level of spell belongs to a declared group (the summary titles the spells chosen by their group)
+    def self.covers_level?(declared_group, level)
+      level >= declared_group["min_level"].to_i &&
+        (declared_group["max_level_from"].present? || level <= declared_group["max_level"].to_i)
     end
 
     def initialize(character)
@@ -18,22 +39,10 @@ module CharacterSheets
       @game_table = character.game_table
     end
 
-    # When the prepared spells can be changed during the game (spellcasting: prepared_changes): the whole list after a
-    # long rest (cleric, druid, wizard), one after a long rest (paladin, ranger), one per level gained (bard, sorcerer,
-    # warlock). The cantrips: one per level gained, for every class (rules of 2024)
-    PREPARED_CHANGES = %w[long_rest long_rest_one level_up_one].freeze
-
-    def prepared_changes
-      spellcasting["prepared_changes"]
-    end
-
     # The groups to choose from, those with nothing to choose left out: [] for a class without spells
     def groups
-      @groups ||= [
-        Group.new(kind: :cantrips, allowed_count: count_at_level("cantrips"), spells: catalog_spells.of_level(0).to_a),
-        Group.new(kind: :prepared, allowed_count: count_at_level("prepared"),
-                  spells: catalog_spells.of_level(1..max_spell_level).to_a)
-      ].select { |group| group.allowed_count.positive? && !group.spells.empty? }
+      @groups ||= @game_table.spell_groups.map { |declared_group| build_group(declared_group) }
+                             .select { |group| group.allowed_count.positive? && !group.spells.empty? }
     end
 
     def group_of(spell_key)
@@ -64,12 +73,23 @@ module CharacterSheets
       sheet_template.catalog_entries.spells.for_class(class_option).by_level_and_name
     end
 
-    def count_at_level(name)
-      spellcasting.dig(name, level - 1).to_i
+    def build_group(declared_group)
+      spell_levels = declared_group["min_level"].to_i..highest_level_of(declared_group)
+      Group.new(key: declared_group["key"], label: declared_group["label"], help: declared_group["help"],
+                allowed_count: table_at_level(declared_group["count_from"]),
+                spells: catalog_spells.of_level(spell_levels.to_a).to_a,
+                changes: declared_group["changes"] || spellcasting[declared_group["changes_from"]],
+                several_levels: self.class.several_levels?(declared_group))
     end
 
-    def max_spell_level
-      spellcasting.dig("max_spell_level", level - 1).to_i
+    def highest_level_of(declared_group)
+      table_key = declared_group["max_level_from"]
+      table_key ? table_at_level(table_key) : declared_group["max_level"].to_i
+    end
+
+    # The number of a table of the class at the level of the character (0 without the table)
+    def table_at_level(table_key)
+      spellcasting.dig(table_key, level - 1).to_i
     end
 
     # The level of the character (the field filled by the table, starting_level), between 1 and 20

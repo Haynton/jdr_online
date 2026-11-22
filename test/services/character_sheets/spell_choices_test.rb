@@ -10,7 +10,7 @@ class SpellChoicesTest < ActiveSupport::TestCase
   test "at level 1, the cantrips and the spells of level 1 of the class, with how many to choose" do
     groups = choices_for("Mage", level: 1).groups
 
-    assert_equal %i[cantrips prepared], groups.map(&:kind)
+    assert_equal %w[cantrips prepared], groups.map(&:key)
     assert_equal [2, 2], groups.map(&:allowed_count)
     assert_equal %w[fire-bolt light mage-hand], groups.first.keys.sort
     assert_equal %w[magic-missile shield], groups.last.keys.sort

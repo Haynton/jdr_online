@@ -66,6 +66,12 @@ class GameTable < ApplicationRecord
     template_snapshot.to_h.dig("character_fields", "creation_steps") || []
   end
 
+  # The groups of spells a character chooses from (character_fields.spell_groups: cantrips, prepared spells),
+  # declared once by the template; the tables of each class say how many (CharacterSheets::SpellChoices)
+  def spell_groups
+    template_snapshot.to_h.dig("character_fields", "spell_groups") || []
+  end
+
   # What a new character starts with, given by the table: the level of the field marked from_table
   def character_values_from_table
     character_sheet_fields.select { |field| field["from_table"] == "starting_level" }

@@ -60,15 +60,16 @@
       <%= tag.fieldset class: "min-w-0", data: spell_group_data(group) do %>
         <%# The legend floats (as in game_tables/_choice_row): a legend in place sits in the border of the fieldset, and
             the count beside it would not line up %>
-        <legend class="float-left mr-6 text-lg leading-7 font-bold text-ink"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.title_#{group.kind}") %></legend>
+        <legend class="float-left mr-6 text-lg leading-7 font-bold text-ink"><%= group.label %></legend>
         <%= tag.p spell_group_status(character, group), role: "status",
                   class: "text-sm leading-7 font-medium text-ink data-invalid:text-error-ink",
                   data: { spell_choices_target: "status", invalid: ("" if spell_group_over?(character, group)) } %>
-        <p class="clear-left mt-1 text-sm text-muted"><%= spell_group_hint(group, spell_choices) %></p>
+        <p class="clear-left mt-1 text-sm text-muted"><%= spell_group_hint(group) %></p>
         <%# One block per level, hidden by the search when none of its spells is left %>
         <% spells_by_level(group).each do |level, spells| %>
           <div data-spell-choices-target="block">
-            <% if group.kind == :prepared %>
+            <%# A group of several levels (the prepared spells) titles each of them %>
+            <% if group.several_levels %>
               <h3 class="mt-5 text-[11px] font-semibold tracking-wider text-muted uppercase"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.level", level: level) %></h3>
             <% end %>
             <%# Each card at its own height (items-start): an open description does not stretch the cards beside it %>
