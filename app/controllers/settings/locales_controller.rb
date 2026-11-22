@@ -5,9 +5,10 @@ module Settings
     def update
       return redirect_to(settings_display_path, alert: t(".unavailable")) unless current_user.update(locale_params)
 
-      # The page that follows, and this message, are already in the new language
+      # The page that follows, and this message, are already in the new language. The page itself shows the change:
+      # the message is for screen readers only
       I18n.locale = chosen_locale
-      redirect_to settings_display_path, notice: t(".updated")
+      redirect_to settings_display_path, flash: { screen_reader_notice: t(".updated") }
     end
 
     private

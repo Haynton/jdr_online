@@ -37,7 +37,7 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_equal "new.player@example.com", @user.reload.email
     assert_redirected_to settings_account_path
     follow_redirect!
-    assert_select "[role=status]", text: "Adresse e-mail modifiée."
+    assert_select ".sr-only [role=status]", text: "Adresse e-mail modifiée."
   end
 
   test "a wrong current password keeps the email and shows the section again with the error" do
@@ -69,7 +69,7 @@ class SettingsAccountTest < ActionDispatch::IntegrationTest
     assert_equal "Barde", @user.reload.username
     assert_redirected_to settings_account_path
     follow_redirect!
-    assert_select "[role=status]", text: "Pseudo modifié."
+    assert_select ".sr-only [role=status]", text: "Pseudo modifié."
     assert_select "#side-nav div[title=?]", "Barde", text: /Barde/
   end
 

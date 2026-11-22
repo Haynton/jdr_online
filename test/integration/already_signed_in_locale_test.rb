@@ -25,9 +25,11 @@ class AlreadySignedInLocaleTest < ActionDispatch::IntegrationTest
 
   private
 
+  # The user's tables show it already: for screen readers only, never a red message pushing the page down
   def assert_already_signed_in_message_in(locale)
     assert_redirected_to game_tables_path
     follow_redirect!
-    assert_select "[role=alert]", text: I18n.t("devise.failure.already_authenticated", locale: locale)
+    assert_select ".sr-only [role=status]", text: I18n.t("devise.failure.already_authenticated", locale: locale)
+    assert_select "[role=alert]", count: 0
   end
 end

@@ -18,13 +18,6 @@ module Users
 
     protected
 
-    # "Welcome! You have signed up successfully." only repeats what the page shows (the new user's tables):
-    # for screen readers only, like "Signed in."
-    def set_flash_message!(key, kind, options = {})
-      super
-      keep_for_screen_readers_only if kind == :signed_up
-    end
-
     # Devise only accepts the email and the password at sign up
     def permit_username
       devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
