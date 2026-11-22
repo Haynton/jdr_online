@@ -87,6 +87,32 @@ en:
               game_master_taken: "already has a game master"
             user_id:
               already_at_table: "is already at this table"
+        sheet_template:
+          duplicate_equipment_option: "%{part} › %{field} › %{option}: the equipment option %{letter} is declared twice"
+          duplicate_key: "%{part}: the key “%{key}” is used by two fields"
+          duplicate_step: "The step “%{step}” is declared twice"
+          field_without_step: "“%{field}” is asked at creation, but is in no step"
+          invalid_equipment_line: "%{part} › %{field} › %{option}: a line of the option %{letter} must be an item or a choice, not both nor none"
+          invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
+          missing_hit_die: "%{part} › %{field}: every class must give its hit die (hit_die)"
+          missing_parameter: "%{part} › %{field}: the setting “%{parameter}” is required"
+          name_step_count: "One step, and only one, must ask the name of the character"
+          several_damage_fields: "%{part}: only one field can receive the damage"
+          unknown_effect: "%{part} › %{field} › %{option}: the effect “%{effect}” is unknown"
+          unknown_effect_target: "%{part} › %{field} › %{option}: the effect “%{effect}” names a field that does not exist (%{target})"
+          unknown_effect_value: "%{part} › %{field} › %{option}: “%{value}” is not a known value of “%{effect}”"
+          unknown_item_group: "%{part} › %{field} › %{option}: the item group “%{group}” does not exist on the item sheet"
+          unknown_item_property: "Ready-made item “%{item}”: the property “%{property}” does not exist on the item sheet"
+          unknown_modifier: "%{part} › %{field}: the modifier rule “%{modifier}” is unknown"
+          unknown_option: "%{part} › %{field}: “%{setting}” describes an option that does not exist (%{option})"
+          unknown_parameter: "%{part} › %{field}: the setting “%{parameter}” is unknown for this type of field"
+          unknown_rule: "%{part} › %{field}: the computing rule “%{rule}” is unknown"
+          unknown_section: "The step “%{step}” names a section that does not exist: %{section}"
+          unknown_step_effect: "The step “%{step}” depends on an unknown effect: %{effect}"
+          unknown_step_parameter: "The step “%{step}”: the setting “%{parameter}” is unknown"
+          unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
+          wrong_effect_target: "%{part} › %{field} › %{option}: the effect “%{effect}” must name “%{expected}” fields (%{target})"
+          wrong_reference: "%{part} › %{field}: “%{parameter}” must name a “%{expected}” field (%{target})"
         user:
           attributes:
             username:
@@ -249,6 +275,26 @@ en:
       back: "Back"
       coming_soon: "The template builder is coming soon: you will create your character, NPC and item sheets there, with their picture."
       title: "Create a template"
+    validator:
+      field_types:
+        ability: "ability"
+        ability_bonuses: "ability bonuses"
+        attacks: "attacks"
+        bonus: "bonus"
+        boolean: "yes or no"
+        choice: "list"
+        computed: "computed value"
+        equipment_option: "equipment option"
+        experience: "experience"
+        number: "number"
+        picks: "several picks"
+        resource: "resource"
+        text: "text"
+      parts:
+        character_fields: "Character sheet"
+        item_fields: "Item sheet"
+        npc_fields: "NPC sheet"
+        spell_fields: "Spell sheet"
   simple_form:
     error_notification:
       default_message: "Please review the problems below."

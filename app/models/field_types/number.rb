@@ -4,7 +4,8 @@ module FieldTypes
     include NumberChecks
 
     KEY = "number".freeze
-    OWN_PARAMETERS = %w[min max step from_table].freeze
+    OWN_PARAMETERS = %w[min max step from_table initial_from].freeze
+    REFERENCES = { "initial_from" => "computed" }.freeze
 
     def partial
       "character_sheets/fields/stat"

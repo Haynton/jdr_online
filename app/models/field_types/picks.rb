@@ -4,6 +4,7 @@ module FieldTypes
   class Picks < Base
     KEY = "picks".freeze
     OWN_PARAMETERS = %w[options count granted].freeze
+    REQUIRED_PARAMETERS = %w[options].freeze
 
     def partial
       "character_sheets/fields/picks"

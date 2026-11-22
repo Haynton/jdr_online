@@ -56,6 +56,8 @@ class SheetTemplate < ApplicationRecord
   has_many :catalog_entries, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
+  # The template as a whole: its fields, the effects of its options, its steps (SheetTemplateValidator)
+  validates_with SheetTemplateValidator
   # A predefined template is written in one of the languages of the app; a game master's template has no language
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }, if: :predefined?
   validates :locale, absence: true, unless: :predefined?

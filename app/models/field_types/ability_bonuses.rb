@@ -5,6 +5,8 @@ module FieldTypes
   class AbilityBonuses < Base
     KEY = "ability_bonuses".freeze
     OWN_PARAMETERS = %w[from].freeze
+    REQUIRED_PARAMETERS = %w[from].freeze
+    REFERENCES = { "from" => "choice" }.freeze
 
     def partial
       nil

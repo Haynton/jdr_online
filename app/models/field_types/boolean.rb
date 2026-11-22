@@ -3,6 +3,7 @@ module FieldTypes
   # unchecked is a value too
   class Boolean < Base
     KEY = "boolean".freeze
+    OWN_PARAMETERS = %w[on_rest].freeze
 
     def partial
       "character_sheets/fields/switch"

@@ -5,6 +5,8 @@ module FieldTypes
   class EquipmentOption < Base
     KEY = "equipment_option".freeze
     OWN_PARAMETERS = %w[from].freeze
+    REQUIRED_PARAMETERS = %w[from].freeze
+    REFERENCES = { "from" => "choice" }.freeze
 
     def partial
       nil

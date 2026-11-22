@@ -58,6 +58,32 @@ fr:
               game_master_taken: "a déjà un MJ"
             user_id:
               already_at_table: "participe déjà à cette table"
+        sheet_template:
+          duplicate_equipment_option: "%{part} › %{field} › %{option} : l'option d'équipement %{letter} est déclarée deux fois"
+          duplicate_key: "%{part} : la clé « %{key} » est utilisée par deux champs"
+          duplicate_step: "L'étape « %{step} » est déclarée deux fois"
+          field_without_step: "« %{field} » est demandé à la création, mais n'est rangé dans aucune étape"
+          invalid_equipment_line: "%{part} › %{field} › %{option} : une ligne de l'option %{letter} doit être un objet ou un choix, pas les deux ni aucun"
+          invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
+          missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
+          missing_parameter: "%{part} › %{field} : le réglage « %{parameter} » est obligatoire"
+          name_step_count: "Une étape, et une seule, doit demander le nom du personnage"
+          several_damage_fields: "%{part} : un seul champ peut recevoir les dégâts"
+          unknown_effect: "%{part} › %{field} › %{option} : l'effet « %{effect} » est inconnu"
+          unknown_effect_target: "%{part} › %{field} › %{option} : l'effet « %{effect} » vise un champ qui n'existe pas (%{target})"
+          unknown_effect_value: "%{part} › %{field} › %{option} : « %{value} » n'est pas une valeur connue de « %{effect} »"
+          unknown_item_group: "%{part} › %{field} › %{option} : le groupe d'objets « %{group} » n'existe pas dans la fiche d'objet"
+          unknown_item_property: "Objet prêt à l'emploi « %{item} » : la propriété « %{property} » n'existe pas dans la fiche d'objet"
+          unknown_modifier: "%{part} › %{field} : la règle de modificateur « %{modifier} » est inconnue"
+          unknown_option: "%{part} › %{field} : « %{setting} » décrit une option qui n'existe pas (%{option})"
+          unknown_parameter: "%{part} › %{field} : le réglage « %{parameter} » est inconnu pour ce type de champ"
+          unknown_rule: "%{part} › %{field} : la règle de calcul « %{rule} » est inconnue"
+          unknown_section: "L'étape « %{step} » cite une section qui n'existe pas : %{section}"
+          unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
+          unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
+          unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
+          wrong_effect_target: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit viser des champs « %{expected} » (%{target})"
+          wrong_reference: "%{part} › %{field} : « %{parameter} » doit désigner un champ « %{expected} » (%{target})"
         user:
           attributes:
             username:
@@ -220,6 +246,26 @@ fr:
       back: "Retour"
       coming_soon: "L'éditeur de modèles arrive bientôt : vous pourrez y créer vos fiches de personnage, de PNJ et d'objets, avec leur image."
       title: "Créer un modèle"
+    validator:
+      field_types:
+        ability: "caractéristique"
+        ability_bonuses: "bonus de caractéristiques"
+        attacks: "attaques"
+        bonus: "bonus"
+        boolean: "oui ou non"
+        choice: "liste"
+        computed: "valeur calculée"
+        equipment_option: "option d'équipement"
+        experience: "expérience"
+        number: "nombre"
+        picks: "choix multiples"
+        resource: "ressource"
+        text: "texte"
+      parts:
+        character_fields: "Fiche du personnage"
+        item_fields: "Fiche d'objet"
+        npc_fields: "Fiche de PNJ"
+        spell_fields: "Fiche de sort"
   simple_form:
     error_notification:
       default_message: "Merci de corriger les erreurs ci-dessous."

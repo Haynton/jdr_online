@@ -4,6 +4,8 @@ module FieldTypes
   class Bonus < Base
     KEY = "bonus".freeze
     OWN_PARAMETERS = %w[based_on proficiency].freeze
+    REQUIRED_PARAMETERS = %w[based_on].freeze
+    REFERENCES = { "based_on" => "ability", "proficiency" => "computed" }.freeze
 
     def partial
       "character_sheets/fields/bonus"

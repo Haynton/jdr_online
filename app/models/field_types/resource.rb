@@ -3,7 +3,8 @@ module FieldTypes
   # and the character starts full
   class Resource < Base
     KEY = "resource".freeze
-    OWN_PARAMETERS = %w[max initial_from receives_damage absorbs_damage_for].freeze
+    OWN_PARAMETERS = %w[max initial_from on_rest receives_damage absorbs_damage_for].freeze
+    REFERENCES = { "initial_from" => "computed", "absorbs_damage_for" => "resource" }.freeze
 
     def partial
       "character_sheets/fields/stat"
