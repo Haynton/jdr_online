@@ -49,6 +49,7 @@ en:
         description: "Description"
         name: "Name"
         sheet_template: "Sheet template"
+        starting_level: "Starting level"
       participation:
         game_table_id: "Table"
         role: "Role"
@@ -70,6 +71,8 @@ en:
           attributes:
             sheet_template:
               blank: "choose a sheet template to go on"
+            starting_level:
+              inclusion: "must be between 1 and 20"
         participation:
           attributes:
             game_table_id:
