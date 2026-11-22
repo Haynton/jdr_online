@@ -4,6 +4,7 @@ module FieldTypes
   class Choice < Base
     KEY = "choice".freeze
     OWN_PARAMETERS = %w[options descriptions effects].freeze
+    REQUIRED_PARAMETERS = %w[options].freeze
 
     def flow_group(_field)
       :lists

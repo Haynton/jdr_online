@@ -2,7 +2,11 @@ module FieldTypes
   # A value worked out from the others by one of SheetTemplate::COMPUTED_RULES, in a box: never stored, never typed
   class Computed < Base
     KEY = "computed".freeze
-    OWN_PARAMETERS = %w[rule based_on level_from class_from proficiency internal summary_only].freeze
+    OWN_PARAMETERS = %w[rule based_on level_from class_from proficiency].freeze
+    REQUIRED_PARAMETERS = %w[rule].freeze
+    REFERENCES = {
+      "based_on" => "ability", "level_from" => "number", "class_from" => "choice", "proficiency" => "computed"
+    }.freeze
 
     def partial
       "character_sheets/fields/stat"

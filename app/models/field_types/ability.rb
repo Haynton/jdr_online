@@ -4,7 +4,8 @@ module FieldTypes
     include NumberChecks
 
     KEY = "ability".freeze
-    OWN_PARAMETERS = %w[min max modifier abbreviation].freeze
+    OWN_PARAMETERS = %w[min max modifier].freeze
+    REQUIRED_PARAMETERS = %w[modifier].freeze
 
     def partial
       "character_sheets/fields/ability"

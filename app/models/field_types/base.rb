@@ -2,10 +2,16 @@ module FieldTypes
   # What a field type may say about itself, with the behavior of most types. A type changes only what differs.
   # The unknown type (a key the registry does not know) is this class itself: it refuses any value
   class Base
-    # The settings every field has; a type adds its own (OWN_PARAMETERS). The template editor will ask them, and the
-    # validator of the template will check them
-    COMMON_PARAMETERS = %w[key label section help required at_creation].freeze
+    # The settings every field may have; a type adds its own (OWN_PARAMETERS). The template editor will ask them, and
+    # the validator of the template refuses any other (SheetTemplateValidator: a typo like maxx never passes)
+    COMMON_PARAMETERS = %w[
+      key label type section help required at_creation visible_to_others abbreviation summary_only internal column
+    ].freeze
     OWN_PARAMETERS = [].freeze
+    # The settings without which the type does not work
+    REQUIRED_PARAMETERS = [].freeze
+    # The settings that name another field of the same sheet, and the type that field must have
+    REFERENCES = {}.freeze
     KEY = nil
 
     def key
@@ -14,6 +20,15 @@ module FieldTypes
 
     def parameters
       COMMON_PARAMETERS + self.class::OWN_PARAMETERS
+    end
+
+    def required_parameters
+      self.class::REQUIRED_PARAMETERS
+    end
+
+    # { "based_on" => "ability" }: based_on must name a field of type ability
+    def references
+      self.class::REFERENCES
     end
 
     # Its look on a step (character_sheets/fields), nil when a section or a step draws it itself
