@@ -239,6 +239,7 @@ fr:
     side_nav:
       label: "Navigation principale"
       my_tables: "Mes tables"
+      my_templates: "Mes modèles"
       pending_invitations:
         one: "1 invitation en attente"
         other: "%{count} invitations en attente"
@@ -252,10 +253,67 @@ fr:
       cancel: "Annuler"
       confirm: "Confirmer"
   sheet_templates:
-    new:
-      back: "Retour"
-      coming_soon: "L'éditeur de modèles arrive bientôt : vous pourrez y créer vos fiches de personnage, de PNJ et d'objets, avec leur image."
-      title: "Créer un modèle"
+    duplicates:
+      copy_name: "%{name} (copie)"
+      create:
+        created: "Modèle « %{name} » créé."
+    contents:
+      catalog:
+        feature:
+          one: "1 capacité"
+          other: "%{count} capacités"
+        item:
+          one: "1 objet"
+          other: "%{count} objets"
+        monster:
+          one: "1 ennemi"
+          other: "%{count} ennemis"
+        npc:
+          one: "1 PNJ"
+          other: "%{count} PNJ"
+        spell:
+          one: "1 sort"
+          other: "%{count} sorts"
+      empty_catalog: "Aucun sort ni objet."
+      fields:
+        one: "1 champ"
+        other: "%{count} champs"
+      from: "D'après « %{name} »"
+      steps:
+        one: "1 étape de création"
+        other: "%{count} étapes de création"
+      single_page: "une seule page de création"
+    destroy:
+      deleted: "Modèle « %{name} » supprimé."
+      used_by_tables: "Ce modèle est utilisé par une table : il ne peut pas être supprimé."
+    index:
+      duplicate: "Dupliquer"
+      duplicate_label: "Dupliquer %{name}"
+      none: "Aucun modèle pour l'instant. Dupliquez un modèle fourni pour commencer le vôtre."
+      own_title: "Vos modèles"
+      predefined_hint: "Dupliquez-en un pour en faire votre modèle, que vous pourrez adapter à votre jeu."
+      predefined_title: "Modèles fournis"
+      subtitle: "Les fiches de personnage de vos tables : leurs champs, leurs étapes de création et leur catalogue."
+      title: "Mes modèles"
+    show:
+      back: "Mes modèles"
+      catalog: "Catalogue"
+      character_sheet: "Fiche du personnage"
+      contents_group: "Contenu"
+      danger_zone: "Zone sensible"
+      delete: "Supprimer le modèle"
+      delete_button: "Supprimer"
+      delete_confirmation: "Supprimer le modèle « %{name} » et son catalogue ? C'est définitif."
+      delete_description: "Le modèle et tout son catalogue sont supprimés définitivement."
+      edit_contents: "Modifier le contenu"
+      edit_contents_soon: "Bientôt : ses sections, ses champs, ses étapes de création et son catalogue."
+      general_group: "Général"
+      rename: "Renommer"
+      used_by_tables:
+        one: "Utilisé par 1 table : il ne peut pas être supprimé pour l'instant."
+        other: "Utilisé par %{count} tables : il ne peut pas être supprimé pour l'instant."
+    update:
+      renamed: "Modèle renommé."
     validator:
       field_types:
         ability: "caractéristique"
