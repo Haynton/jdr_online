@@ -16,8 +16,8 @@
   <% if local_assigns[:hint] %>
     <p class="<%= choice_row_hint_classes(filterable: filters.present?) %>"><%= hint %></p>
   <% end %>
-  <%# The pills and the arrows together, like the row of "My tables": at the top right on a large screen, the pills
-      under the hint below that (the arrows only from 768 px) %>
+  <%# The pills and the arrows together, like the row of "My tables": at the top right on a large screen. Below that,
+      the pills go under the hint and the arrows (from 768 px) stay at the top right, like in a row without pills %>
   <div class="<%= choice_row_controls_classes(filterable: filters.present?) %>">
     <%# Rendered hidden: shown by the controller, without which they would do nothing %>
     <% if filters.present? %>
@@ -30,7 +30,7 @@
         <% end %>
       </div>
     <% end %>
-    <div class="hidden shrink-0 gap-2 md:flex">
+    <div class="<%= choice_row_arrows_classes(filterable: filters.present?) %>">
       <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
               aria-label="<%= t(".previous") %>" data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
         <%= render "shared/icons/chevron_left" %>
