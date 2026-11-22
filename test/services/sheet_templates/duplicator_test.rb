@@ -7,6 +7,7 @@ class SheetTemplatesDuplicatorTest < ActiveSupport::TestCase
   end
 
   test "the copy belongs to the game master, comes from the original, has no language and keeps all its content" do
+    @original.update!(description: "Des héros et des monstres.", icon: "swords")
     copy = I18n.with_locale(:fr) { duplicate }
 
     assert_equal "Fantasy (copie)", copy.name

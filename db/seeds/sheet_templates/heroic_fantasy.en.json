@@ -1,6 +1,9 @@
 {
   "name": "Heroic fantasy",
   "locale": "en",
+  "icon": "swords",
+  "banner_color": "gold",
+  "description": "Heroes, spells and monsters: classes, backgrounds and species, abilities, spells and starting equipment, based on the SRD 5.2.",
   "character_fields": {
     "ability_roll": { "dice": 4, "sides": 6, "keep_highest": 3 },
     "creation_steps": [

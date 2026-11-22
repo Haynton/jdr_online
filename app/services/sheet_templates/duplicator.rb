@@ -8,7 +8,8 @@ module SheetTemplates
   class Duplicator
     # What the copy takes from the original: its content, never who owns it nor where it comes from
     CONTENT_COLUMNS = %w[
-      character_fields npc_fields item_fields spell_fields rest_rules level_thresholds preset_characters preset_items
+      description icon banner_color character_fields npc_fields item_fields spell_fields rest_rules level_thresholds
+      preset_characters preset_items
     ].freeze
     CATALOG_COLUMNS = %w[kind key name description properties].freeze
 

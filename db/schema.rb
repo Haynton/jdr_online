@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_090002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,6 +112,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_090000) do
     t.datetime "updated_at", null: false
     t.string "locale"
     t.jsonb "spell_fields", default: {}, null: false
+    t.text "description"
+    t.string "icon", default: "scroll_text", null: false
+    t.string "banner_color", default: "gold", null: false
     t.index ["owner_id"], name: "index_sheet_templates_on_owner_id"
     t.index ["parent_id"], name: "index_sheet_templates_on_parent_id"
   end

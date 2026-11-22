@@ -12,7 +12,7 @@ class SheetTemplatesController < ApplicationController
   def show
   end
 
-  # The field already shows the new name: the message is for screen readers only
+  # The fields already show what was saved: the message is for screen readers only
   def update
     if @sheet_template.update(name_params)
       return redirect_to(@sheet_template, flash: { screen_reader_notice: t(".renamed") })
@@ -35,6 +35,6 @@ class SheetTemplatesController < ApplicationController
   end
 
   def name_params
-    params.expect(sheet_template: [:name])
+    params.expect(sheet_template: %i[name description icon banner_color])
   end
 end

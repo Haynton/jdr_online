@@ -1,6 +1,9 @@
 {
   "name": "Cosmic horror",
   "locale": "en",
+  "icon": "skull",
+  "banner_color": "arcane",
+  "description": "Investigators facing the unspeakable: percentile skills, sanity, and a sheet on a single page.",
   "character_fields": {
     "fields": [
       { "key": "occupation", "label": "Occupation", "type": "text", "section": "Identity", "visible_to_others": true },

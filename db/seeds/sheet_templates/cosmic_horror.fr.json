@@ -1,6 +1,9 @@
 {
   "name": "Horreur cosmique",
   "locale": "fr",
+  "icon": "skull",
+  "banner_color": "arcane",
+  "description": "Des enquêteurs face à l'indicible : compétences en pourcentage, santé mentale, et une fiche sur une seule page.",
   "character_fields": {
     "fields": [
       { "key": "occupation", "label": "Profession", "type": "text", "section": "Identité", "visible_to_others": true },

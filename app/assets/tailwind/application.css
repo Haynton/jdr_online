@@ -170,6 +170,19 @@
   --color-error-bg: #fbe9e4;
   --color-error-line: #eec3b8;
   --color-error-ink: #9b2c1f;
+  /* The colors a template banner may take (SheetTemplate::BANNER_COLORS; gold is primary-soft): its background and its
+     accent (eyebrow, large icon, pill of the choice). On each background: ink 12.02 to 12.58, its accent 6.04 to 7.05;
+     the accent on page (the pill of the choice, shape contrast) 7.09 to 8.51 */
+  --color-banner-crimson: #f3dcd6;
+  --color-banner-crimson-ink: #8a2b1f;
+  --color-banner-forest: #dde8d6;
+  --color-banner-forest-ink: #2f5d3a;
+  --color-banner-night: #dbe3ef;
+  --color-banner-night-ink: #2c4a78;
+  --color-banner-arcane: #e6dcef;
+  --color-banner-arcane-ink: #5b3a82;
+  --color-banner-stone: #e6e1d8;
+  --color-banner-stone-ink: #4d473f;
 }
 
 @layer theme {
@@ -218,6 +231,17 @@
     --color-error-bg: #3b1d1d;
     --color-error-line: #7f2d2d;
     --color-error-ink: #f87171;
+    /* ink 11.9 to 13.22 on each background, its accent 7.86 to 8.99; the accent on page 8.82 to 10.58 */
+    --color-banner-crimson: #3a1a17;
+    --color-banner-crimson-ink: #f0a597;
+    --color-banner-forest: #172b1d;
+    --color-banner-forest-ink: #a3d4ae;
+    --color-banner-night: #16233a;
+    --color-banner-night-ink: #a9c1e8;
+    --color-banner-arcane: #271a36;
+    --color-banner-arcane-ink: #c9b2ea;
+    --color-banner-stone: #2a2826;
+    --color-banner-stone-ink: #cfc8bc;
   }
 }
 

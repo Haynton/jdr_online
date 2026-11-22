@@ -27,6 +27,7 @@ fr:
         role: "Rôle"
         user_id: "Joueur"
       sheet_template:
+        description: "Description"
         name: "Nom"
       user:
         email: "Adresse e-mail"
@@ -256,13 +257,27 @@ fr:
       cancel: "Annuler"
       confirm: "Confirmer"
   sheet_templates:
+    banner_colors:
+      arcane: "Arcane"
+      crimson: "Carmin"
+      forest: "Forêt"
+      gold: "Or"
+      night: "Nuit"
+      stone: "Pierre"
     duplicates:
       copy_name: "%{name} (copie)"
       create:
         created: "Modèle « %{name} » créé."
+    editor:
+      band_label: "Étapes de l'éditeur de modèles"
+      steps:
+        catalog: "Catalogue"
+        character_sheet: "Fiche du personnage"
+        creation_steps: "Étapes de création"
+        informations: "Informations"
     fields:
       edit:
-        back: "Fiche du personnage"
+        about: "Aide : %{label}"
         cancel: "Annuler"
         effects_soon: "Les effets et les descriptions des options se modifieront bientôt. Les options d'une liste qui en a ne se renomment pas : leurs effets en dépendent."
         groups:
@@ -270,32 +285,14 @@ fr:
           type: "Réglages du type"
         refused: "Le modèle n'a pas été enregistré :"
         save: "Enregistrer"
-        subtitle: "Type : %{type} · clé : %{key}"
+        subtitle: "%{type}, section « %{section} »"
       index:
-        edit: "Modifier"
-        edit_label: "Modifier %{label}"
+        back: "Mes modèles"
         subtitle: "Les champs que les joueurs remplissent, section par section."
         title: "Fiche du personnage"
       update:
         updated: "Champ « %{label} » enregistré."
     contents:
-      catalog:
-        feature:
-          one: "1 capacité"
-          other: "%{count} capacités"
-        item:
-          one: "1 objet"
-          other: "%{count} objets"
-        monster:
-          one: "1 ennemi"
-          other: "%{count} ennemis"
-        npc:
-          one: "1 PNJ"
-          other: "%{count} PNJ"
-        spell:
-          one: "1 sort"
-          other: "%{count} sorts"
-      empty_catalog: "Aucun sort ni objet."
       fields:
         one: "1 champ"
         other: "%{count} champs"
@@ -307,10 +304,33 @@ fr:
     destroy:
       deleted: "Modèle « %{name} » supprimé."
       used_by_tables: "Ce modèle est utilisé par une table : il ne peut pas être supprimé."
+    figures:
+      feature: "Capacités"
+      fields: "Champs"
+      item: "Objets"
+      monster: "Ennemis"
+      npc: "PNJ"
+      single_page: "Page de création"
+      spell: "Sorts"
+      steps: "Étapes de création"
+    icons:
+      bot: "Robot"
+      castle: "Château"
+      crown: "Couronne"
+      flame: "Flamme"
+      ghost: "Fantôme"
+      moon_star: "Lune et étoile"
+      rocket: "Fusée"
+      scroll_text: "Parchemin"
+      shield: "Bouclier"
+      skull: "Crâne"
+      swords: "Épées croisées"
+      wand_sparkles: "Baguette magique"
     index:
       duplicate: "Dupliquer"
       duplicate_label: "Dupliquer %{name}"
-      none: "Aucun modèle pour l'instant. Dupliquez un modèle fourni pour commencer le vôtre."
+      none: "Dupliquez un modèle fourni, plus bas, pour commencer le vôtre."
+      none_title: "Aucun modèle pour l'instant"
       own_title: "Vos modèles"
       predefined_hint: "Dupliquez-en un pour en faire votre modèle, que vous pourrez adapter à votre jeu."
       predefined_title: "Modèles fournis"
@@ -380,6 +400,7 @@ fr:
         label: "Règle du modificateur"
         values:
           half_above_ten: "(score − 10) / 2, arrondi vers le bas"
+      none: "Aucune"
       on_rest:
         hint: "Ce que devient la valeur après un repos."
         label: "Après un repos"
@@ -429,20 +450,22 @@ fr:
         hint: "Les autres joueurs de la table peuvent le lire."
         label: "Visible des autres joueurs"
     show:
-      back: "Mes modèles"
-      catalog: "Catalogue"
-      character_sheet: "Fiche du personnage"
-      contents_group: "Contenu"
-      danger_zone: "Zone sensible"
+      back: "Retour"
+      banner_color: "Couleur du bandeau"
+      contents_title: "Ce qu'il contient"
       delete: "Supprimer le modèle"
       delete_button: "Supprimer"
       delete_confirmation: "Supprimer le modèle « %{name} » et son catalogue ? C'est définitif."
       delete_description: "Le modèle et tout son catalogue sont supprimés définitivement."
-      edit_contents: "Modifier le contenu"
-      edit_contents_soon: "Bientôt : ajouter ou retirer des champs, les étapes de création et le catalogue."
-      edit_fields: "Modifier les champs"
-      general_group: "Général"
-      rename: "Renommer"
+      eyebrow: "Votre modèle"
+      icon: "Icône"
+      next: "Suivant"
+      no_tables: "Aucune table ne l'utilise pour l'instant."
+      presentation_title: "Présentation"
+      save: "Enregistrer"
+      see_less: "Voir moins"
+      see_more: "Voir plus"
+      tables_title: "Tables qui l'utilisent"
       used_by_tables:
         one: "Utilisé par 1 table : il ne peut pas être supprimé pour l'instant."
         other: "Utilisé par %{count} tables : il ne peut pas être supprimé pour l'instant."
@@ -711,8 +734,6 @@ fr:
         finish: "Terminer la création"
         finish_and_join: "Terminer et rejoindre la partie"
         no_description: "Aucune description"
-        ready: "Invitez vos joueurs, ou revenez sur une étape pour la modifier. « Terminer la création » l'ouvre à vos joueurs."
-        ready_title: "Votre table est prête"
         see_less: "Voir moins"
         see_more: "Voir plus"
         sheet_template: "Modèle de fiche :"
