@@ -1,5 +1,6 @@
 module FieldTypes
-  # A value worked out from the others by one of the rules of ComputedRules (app/models/computed_rules), in a box: never stored, never typed
+  # A value worked out from the others by one of the rules of ComputedRules (app/models/computed_rules), in a box:
+  # never stored, never typed
   class Computed < Base
     KEY = "computed".freeze
     OWN_PARAMETERS = %w[rule based_on level_from class_from proficiency].freeze

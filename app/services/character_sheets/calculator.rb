@@ -48,7 +48,8 @@ module CharacterSheets
 
     # Each computed field by its rule (ComputedRules), which reads the sheet through a SheetReader
     def computed_field_values(modifiers)
-      reader = SheetReader.new(fields: @fields, sheet: @sheet, level_thresholds: @level_thresholds, modifiers: modifiers)
+      reader = SheetReader.new(fields: @fields, sheet: @sheet, level_thresholds: @level_thresholds,
+                               modifiers: modifiers)
       @fields.select { |field| field["type"] == "computed" }
              .to_h { |field| [field["key"], ComputedRules.of(field).value(field, reader)] }
     end
