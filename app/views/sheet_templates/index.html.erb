@@ -33,12 +33,13 @@
       <% @predefined_templates.each do |sheet_template| %>
         <li class="w-[62%] shrink-0 sm:w-56">
           <%= render layout: "sheet_templates/tile", locals: { sheet_template: sheet_template } do %>
-            <%# Named with the template: "Duplicate Fantasy héroïque" for a screen reader, among several buttons %>
-            <%= button_to sheet_template_duplicate_path(sheet_template), form_class: "mt-auto pt-3",
-                          class: button_classes(:secondary, full_width: true),
+            <%# Over the corner of the picture, like the check of a chosen card: the card keeps the height of the others
+                (decision). Named with the template: "Duplicate Fantasy héroïque", for a screen reader and as a tooltip %>
+            <%= button_to sheet_template_duplicate_path(sheet_template), form_class: "absolute top-2 right-2",
+                          class: button_classes(:secondary, size: :compact_icon),
+                          title: t("sheet_templates.index.duplicate_label", name: sheet_template.name),
                           aria: { label: t("sheet_templates.index.duplicate_label", name: sheet_template.name) } do %>
               <%= render "shared/icons/copy" %>
-              <%= t("sheet_templates.index.duplicate") %>
             <% end %>
           <% end %>
         </li>

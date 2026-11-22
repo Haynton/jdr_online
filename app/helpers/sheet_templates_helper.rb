@@ -4,7 +4,7 @@
 module SheetTemplatesHelper
   # A card of a template: the gold scroll of the cards of templates of the creation of a table (until the game
   # master uploads its picture), its name, what it holds. A link to its page for one of mine: gold outline on hover
-  TEMPLATE_TILE_CLASSES = "flex h-full flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-line".freeze
+  TEMPLATE_TILE_CLASSES = "relative flex h-full flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-line".freeze
   TEMPLATE_LINK_TILE_CLASSES = %w[
     flex h-full flex-col overflow-hidden rounded-xl bg-surface ring-1 ring-line transition-shadow hover:ring-2
     hover:ring-brass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
@@ -44,8 +44,9 @@ module SheetTemplatesHelper
     peer-checked:ring-offset-2 peer-checked:ring-offset-page peer-focus-visible:outline-2
     peer-focus-visible:outline-offset-4 peer-focus-visible:outline-focus-ring
   ].join(" ").freeze
-  # The steps of the editor, in order; those not made yet are marked as coming soon in the band
-  EDITOR_STEPS = %i[informations character_sheet creation_steps catalog].freeze
+  # The steps of the editor, in order; those not made yet are marked as coming soon in the band. The creation steps of
+  # the template come second, right after its informations and before its fields (decision)
+  EDITOR_STEPS = %i[informations creation_steps character_sheet catalog].freeze
   COMING_EDITOR_STEPS = %i[creation_steps catalog].freeze
 
   # The icon of a template (the scroll for an unknown one), decorative: its name says the template
@@ -61,20 +62,6 @@ module SheetTemplatesHelper
   # "Épées croisées", for the choice of the icon
   def sheet_template_icon_label(icon)
     t("sheet_templates.icons.#{icon}")
-  end
-
-  # "48 champs et 7 étapes de création": the character sheet of the template
-  def sheet_template_contents(sheet_template)
-    character_fields = sheet_template.character_fields.to_h
-    [t("sheet_templates.contents.fields", count: character_fields["fields"].to_a.size),
-     sheet_template_steps(character_fields["creation_steps"].to_a.size)].to_sentence
-  end
-
-  # No steps: the whole sheet on one page. Said apart, since French counts 0 as one ("0 étape")
-  def sheet_template_steps(count)
-    return t("sheet_templates.contents.single_page") if count.zero?
-
-    t("sheet_templates.contents.steps", count: count)
   end
 
   # "D'après « Fantasy héroïque »", nil for a template made from nothing (or whose original was deleted)
