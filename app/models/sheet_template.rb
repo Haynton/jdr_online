@@ -49,6 +49,12 @@ class SheetTemplate < ApplicationRecord
     owner_id.nil?
   end
 
+  # A table reads the catalog of its template (its spells, its items): a template still used is not deleted (it will
+  # be archived, with the template editor)
+  def used_by_tables?
+    game_tables.exists?
+  end
+
   def snapshot
     attributes.slice(*SNAPSHOT_ATTRIBUTES)
   end

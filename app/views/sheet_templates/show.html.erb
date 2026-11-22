@@ -1,0 +1,48 @@
+<%# The page of a template of the game master: its name (renamed here), what it holds, and its deletion, refused while
+    a table uses it (its tables read its catalog). Laid out like a section of the settings (settings_group,
+    setting_row, in a card that is their container). Editing its sections, fields and steps comes next %>
+<%= link_to sheet_templates_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
+  <%= render "shared/icons/chevron_left" %>
+  <%= t(".back") %>
+<% end %>
+<%= page_header(title: @sheet_template.name_in_database, subtitle: sheet_template_origin(@sheet_template)) %>
+
+<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
+  <%= settings_group(title: t(".general_group")) do %>
+    <%= simple_form_for @sheet_template, html: { class: "border-b border-line py-4" },
+                                         defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
+      <%= form_error_notification(form) %>
+      <%= form.input :name, required: true, input_html: { autocomplete: "off" } %>
+      <%= form.button :submit, t(".rename"), class: button_classes(:secondary) %>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".contents_group")) do %>
+    <%= setting_row(label: t(".character_sheet"), label_id: "template-character-sheet",
+                    description: sheet_template_contents(@sheet_template)) do %>
+    <% end %>
+    <%= setting_row(label: t(".catalog"), label_id: "template-catalog",
+                    description: sheet_template_catalog(@sheet_template)) do %>
+    <% end %>
+    <%= setting_row(label: t(".edit_contents"), label_id: "template-edit-contents",
+                    description: t(".edit_contents_soon")) do %>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".danger_zone")) do %>
+    <% if @sheet_template.used_by_tables? %>
+      <%= setting_row(label: t(".delete"), label_id: "delete-template-setting",
+                      description: t(".used_by_tables", count: @sheet_template.game_tables.count)) do %>
+      <% end %>
+    <% else %>
+      <%= setting_row(label: t(".delete"), label_id: "delete-template-setting",
+                      description: t(".delete_description")) do %>
+        <%# Asked first (shared/_confirm_dialog), with a red confirm button %>
+        <%= button_to t(".delete_button"), sheet_template_path(@sheet_template), method: :delete,
+                      class: button_classes(:danger),
+                      data: { turbo_confirm: t(".delete_confirmation", name: @sheet_template.name),
+                              confirm_button: t(".delete_button"), confirm_variant: "danger" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

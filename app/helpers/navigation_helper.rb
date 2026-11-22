@@ -122,6 +122,11 @@ module NavigationHelper
     user_signed_in? ? game_tables_path : root_path
   end
 
+  # The list of the templates and the page of one of them
+  def sheet_templates_page?
+    controller_path.start_with?("sheet_templates")
+  end
+
   # Tells screen readers which link leads to the page being shown
   def current_page_aria(current)
     current ? { current: "page" } : {}

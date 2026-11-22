@@ -1,0 +1,44 @@
+<%# The templates of the game master (the template editor): theirs first, each a card that leads to its page, then the
+    predefined ones in the language of the page, each with "Duplicate", which makes one of theirs from it (decision:
+    a template starts from one that works, not from an empty one) %>
+<%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+
+<section aria-labelledby="own-templates-title">
+  <h2 id="own-templates-title" class="text-lg font-bold text-ink"><%= t(".own_title") %></h2>
+  <% if @own_templates.empty? %>
+    <p class="mt-2 text-sm text-muted"><%= t(".none") %></p>
+  <% else %>
+    <ul class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <% @own_templates.each do |sheet_template| %>
+        <li>
+          <%= link_to sheet_template_path(sheet_template), class: SheetTemplatesHelper::TEMPLATE_LINK_CARD_CLASSES do %>
+            <span class="font-semibold text-ink"><%= sheet_template.name %></span>
+            <span class="text-sm text-muted"><%= sheet_template_contents(sheet_template) %></span>
+            <% if (origin = sheet_template_origin(sheet_template)) %>
+              <span class="text-sm text-muted"><%= origin %></span>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
+
+<section class="mt-12" aria-labelledby="predefined-templates-title">
+  <h2 id="predefined-templates-title" class="text-lg font-bold text-ink"><%= t(".predefined_title") %></h2>
+  <p class="mt-1 text-sm text-muted"><%= t(".predefined_hint") %></p>
+  <ul class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+    <% @predefined_templates.each do |sheet_template| %>
+      <li class="<%= SheetTemplatesHelper::TEMPLATE_CARD_CLASSES %>">
+        <span id="predefined-template-<%= sheet_template.id %>" class="font-semibold text-ink"><%= sheet_template.name %></span>
+        <span class="text-sm text-muted"><%= sheet_template_contents(sheet_template) %></span>
+        <%# Named with the template: "Duplicate Fantasy héroïque" for a screen reader, among several buttons %>
+        <%= button_to sheet_template_duplicate_path(sheet_template), class: "mt-3 self-start #{button_classes(:secondary)}",
+                      aria: { label: t(".duplicate_label", name: sheet_template.name) } do %>
+          <%= render "shared/icons/copy" %>
+          <%= t(".duplicate") %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>

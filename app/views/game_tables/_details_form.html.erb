@@ -32,7 +32,8 @@
                        hint: t(".sheet_template_hint"),
                        error: form.error(:sheet_template, id: "sheet-template-error", class: choice_error_classes) } do %>
     <li class="w-[62%] shrink-0 sm:w-56">
-      <%= link_to new_sheet_template_path, class: create_template_card_classes do %>
+      <%# To "My templates", where a template is made by duplicating another one (template editor) %>
+      <%= link_to sheet_templates_path, class: create_template_card_classes do %>
         <span class="flex size-11 items-center justify-center rounded-full bg-brass text-page" aria-hidden="true">
           <%= render "shared/icons/plus", css_class: "size-5" %>
         </span>
