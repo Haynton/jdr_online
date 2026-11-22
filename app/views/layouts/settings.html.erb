@@ -25,6 +25,12 @@
         <%= yield %>
       </main>
     </div>
+    <%# In the window, the page behind keeps its side navigation: its avatar and username are replaced each time a
+        section shows (Turbo runs a <turbo-stream> as soon as it enters the page), so that a username changed here
+        shows there at once. The settings page draws its own navigation %>
+    <% if settings_in_dialog? %>
+      <%= turbo_stream.replace "account-identity", partial: "shared/account_identity" %>
+    <% end %>
   <% end %>
 <% end %>
 <%= render template: "layouts/application" %>
