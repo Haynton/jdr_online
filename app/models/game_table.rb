@@ -25,6 +25,8 @@ class GameTable < ApplicationRecord
   # They come with their milestone (P4, P3): shown as coming soon until then, and skipped by the creation
   LATER_CREATION_STEPS = %w[npcs maps].freeze
   AVAILABLE_CREATION_STEPS = (CREATION_STEPS - LATER_CREATION_STEPS).freeze
+  # The level of the characters when the game begins, chosen by the game master. Same bounds as in the database
+  STARTING_LEVELS = (1..20)
 
   # The secret part of the invitation link, given to each new table. Regenerating it disables the old link
   has_secure_token :invite_token
@@ -37,6 +39,7 @@ class GameTable < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   validates :cover_image, inclusion: { in: COVER_IMAGES }
+  validates :starting_level, inclusion: { in: STARTING_LEVELS }
   # Asked on the first step of the creation (save(context: :details)), not for the tables made before it
   validates :sheet_template, presence: true, on: :details
 
