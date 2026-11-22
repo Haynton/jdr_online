@@ -278,6 +278,7 @@ fr:
       edit:
         about: "Aide : %{label}"
         cancel: "Annuler"
+        close: "Fermer"
         effects_soon: "Les effets et les descriptions des options se modifieront bientôt. Les options d'une liste qui en a ne se renomment pas : leurs effets en dépendent."
         groups:
           general: "Général"

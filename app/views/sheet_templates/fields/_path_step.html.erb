@@ -34,7 +34,8 @@
         <ul class="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           <% fields.each do |field| %>
             <li>
-              <%= link_to edit_sheet_template_field_path(sheet_template, field["key"]), class: SheetTemplates::FieldFormHelper::FIELD_LINE_CLASSES do %>
+              <%= link_to edit_sheet_template_field_path(sheet_template, field["key"]), class: SheetTemplates::FieldFormHelper::FIELD_LINE_CLASSES,
+                                                                                 data: field_dialog_link_data do %>
                 <span class="min-w-0">
                   <span class="block truncate font-medium text-ink"><%= field["label"] %></span>
                   <span class="block text-xs text-muted">
@@ -45,8 +46,9 @@
               <% end %>
             </li>
           <% end %>
-          <%# Adding a field comes with the tool to choose a field type: said here, where it will be %>
-          <li class="flex min-h-14 items-center justify-center rounded-lg border border-dashed border-field-line px-4 text-sm text-muted">
+          <%# Adding a field comes with the tool to choose a field type: said here, where it will be. The height of a
+              field line (h-16: its two lines and its margins) %>
+          <li class="flex h-16 items-center justify-center rounded-lg border border-dashed border-field-line px-4 text-sm text-muted">
             <%= t(".add_field_soon") %>
           </li>
         </ul>

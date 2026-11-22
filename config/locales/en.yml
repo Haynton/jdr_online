@@ -307,6 +307,7 @@ en:
       edit:
         about: "Help: %{label}"
         cancel: "Cancel"
+        close: "Close"
         effects_soon: "The effects and the descriptions of the options will be editable soon. The options of a list that has some are not renamed: their effects depend on them."
         groups:
           general: "General"

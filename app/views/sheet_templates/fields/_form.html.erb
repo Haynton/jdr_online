@@ -1,0 +1,53 @@
+<%# The form of a field, the same in its window (in_dialog: true) and on its own page: its general settings (label,
+    help, section...) and those of its type (min, max, options, rule...), each drawn by its kind of input with its help
+    on demand (sheet_templates/fields/_parameter). No technical key shown: a field named by another one is chosen by
+    its label. On a refusal, the errors of the template (SheetTemplateValidator) at the top, the values typed kept.
+    In the window, the groups side by side once it is 672 px wide (container query: the window is narrower than the
+    screen), the settings scroll, the buttons stay at its foot, "Cancel" closes it; on the page, the two groups side
+    by side from 1024 px, the buttons at the bottom right. Full keys: the partial is rendered from both %>
+<%= simple_form_for :field, url: sheet_template_field_path(sheet_template, field["key"]), method: :patch,
+                            html: { class: "flex min-h-0 flex-1 flex-col", data: { controller: "info-notes" } } do |form| %>
+  <div class="<%= in_dialog ? "@container min-h-0 flex-1 overflow-y-auto px-6 py-6" : "" %>">
+    <% if sheet_template.errors.any? %>
+      <div class="mb-6 max-w-3xl">
+        <%= render layout: "shared/message", locals: { variant: :error } do %>
+          <p class="font-semibold"><%= t("sheet_templates.fields.edit.refused") %></p>
+          <ul class="mt-1 list-disc pl-5">
+            <% sheet_template.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="<%= in_dialog ? "grid gap-x-10 gap-y-8 @2xl:grid-cols-2" : "grid gap-x-16 gap-y-10 lg:max-w-5xl lg:grid-cols-2" %>">
+      <% field_parameter_groups(field).each do |group, parameters| %>
+        <section aria-labelledby="parameters-<%= group %>">
+          <%# Under the title of the window (h2) or of the page (h1) %>
+          <%= content_tag (in_dialog ? :h3 : :h2), t("sheet_templates.fields.edit.groups.#{group}"),
+                          id: "parameters-#{group}", class: "mb-4 text-xs font-semibold tracking-widest text-brass uppercase" %>
+          <% parameters.each do |parameter| %>
+            <%= render "sheet_templates/fields/parameter", form: form, parameter: parameter, context: context %>
+          <% end %>
+        </section>
+      <% end %>
+    </div>
+    <% if field["effects"].present? || field["descriptions"].present? %>
+      <p class="mt-6 max-w-xl text-sm text-muted"><%= t("sheet_templates.fields.edit.effects_soon") %></p>
+    <% end %>
+  </div>
+
+  <% if in_dialog %>
+    <div class="flex shrink-0 justify-end gap-3 border-t border-line px-6 py-4">
+      <button type="button" class="<%= button_classes(:secondary) %>" data-action="frame-dialog#close"><%= t("sheet_templates.fields.edit.cancel") %></button>
+      <%= form.button :submit, t("sheet_templates.fields.edit.save"), class: button_classes(:primary) %>
+    </div>
+  <% else %>
+    <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation %>
+    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+      <%= link_to t("sheet_templates.fields.edit.cancel"), sheet_template_fields_path(sheet_template), class: button_classes(:secondary) %>
+      <%= form.button :submit, t("sheet_templates.fields.edit.save"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+<% end %>

@@ -1,45 +1,26 @@
-<%# The template editor, the form of a field, laid out like a step of a creation: its general settings (label, help,
-    section...) and those of its type (min, max, options, rule...) side by side from 1024 px, each drawn by its kind of
-    input with its help on demand (sheet_templates/fields/_parameter), then the buttons at the bottom right. No
-    technical key shown: a field named by another one is chosen by its label. On a refusal, the errors of the
-    template (SheetTemplateValidator) at the top, the values typed kept %>
-<%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
-  <%= page_header(title: @field["label"], subtitle: t(".subtitle", type: field_type_name(@field).upcase_first, section: @field["section"])) %>
-
-  <% if @sheet_template.errors.any? %>
-    <div class="mb-6 max-w-3xl">
-      <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
-      <%= render layout: "shared/message", locals: { variant: :error } do %>
-        <p class="font-semibold"><%= t("sheet_templates.fields.edit.refused") %></p>
-        <ul class="mt-1 list-disc pl-5">
-          <% @sheet_template.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      <% end %>
-    </div>
+<%# The template editor, the form of a field (sheet_templates/fields/_form). Asked for the window of the creation path
+    (SheetTemplates::FieldDialogHelper): its title bar (the name of the field, its type and section, the close cross)
+    and the form, in the frame of the window. Opened directly, or without JavaScript: a page of the editor %>
+<% subtitle = t(".subtitle", type: field_type_name(@field).upcase_first, section: @field["section"]) %>
+<% if field_in_dialog? %>
+  <%= turbo_frame_tag SheetTemplates::FieldDialogHelper::FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="field-dialog-title" class="truncate text-lg font-semibold text-ink"><%= @field["label"] %></h2>
+        <p class="text-sm text-muted"><%= subtitle %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= render "sheet_templates/fields/form", sheet_template: @sheet_template, field: @field, context: @form_context,
+                                              in_dialog: true %>
   <% end %>
-
-  <%= simple_form_for :field, url: sheet_template_field_path(@sheet_template, @field["key"]), method: :patch,
-                              html: { class: "flex flex-1 flex-col", data: { controller: "info-notes" } } do |form| %>
-    <div class="grid gap-x-16 gap-y-10 lg:grid-cols-2 lg:max-w-5xl">
-      <% field_parameter_groups(@field).each do |group, parameters| %>
-        <section aria-labelledby="parameters-<%= group %>">
-          <h2 id="parameters-<%= group %>" class="mb-4 text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".groups.#{group}") %></h2>
-          <% parameters.each do |parameter| %>
-            <%= render "sheet_templates/fields/parameter", form: form, parameter: parameter, context: @form_context %>
-          <% end %>
-        </section>
-      <% end %>
-    </div>
-    <% if @field["effects"].present? || @field["descriptions"].present? %>
-      <p class="mt-6 max-w-xl text-sm text-muted"><%= t(".effects_soon") %></p>
-    <% end %>
-
-    <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation %>
-    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
-      <%= link_to t(".cancel"), sheet_template_fields_path(@sheet_template), class: button_classes(:secondary) %>
-      <%= form.button :submit, t(".save"), class: button_classes(:primary) %>
-    </div>
+<% else %>
+  <%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
+    <%= page_header(title: @field["label"], subtitle: subtitle) %>
+    <%= render "sheet_templates/fields/form", sheet_template: @sheet_template, field: @field, context: @form_context,
+                                              in_dialog: false %>
   <% end %>
 <% end %>

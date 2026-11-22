@@ -5,6 +5,7 @@ module SheetTemplates
   class FieldsController < ApplicationController
     before_action :set_own_template
     before_action :set_field, only: %i[edit update]
+    before_action :vary_on_turbo_frame, only: %i[edit update]
 
     def index
     end
@@ -17,16 +18,33 @@ module SheetTemplates
     def update
       updater = SheetTemplates::FieldUpdater.new(sheet_template: @sheet_template, field_key: @field["key"],
                                                  submitted_values: field_params)
-      if updater.call
-        return redirect_to(sheet_template_fields_path(@sheet_template),
-                           flash: { screen_reader_notice: t(".updated", label: updated_label) })
-      end
+      return show_saved_field if updater.call
 
       @form_context = form_context(field_params)
       render :edit, status: :unprocessable_content
     end
 
     private
+
+    # Saved from the window, which closes itself (frame_dialog_controller.js): the page behind is refreshed and shows
+    # the field as saved (request_id: nil, Turbo ignores a refresh carrying the id of its own request). From the page
+    # of the field: back to the creation path
+    def show_saved_field
+      flash[:screen_reader_notice] = t(".updated", label: updated_label)
+      return render(turbo_stream: turbo_stream.refresh(request_id: nil)) if field_in_dialog?
+
+      redirect_to sheet_template_fields_path(@sheet_template)
+    end
+
+    def field_in_dialog?
+      turbo_frame_request_id == SheetTemplates::FieldDialogHelper::FRAME
+    end
+
+    # The same address answers laid out as a page or for the window, depending on the Turbo-Frame header: no cache may
+    # hand one for the other
+    def vary_on_turbo_frame
+      response.headers["Vary"] = [response.headers["Vary"], "Turbo-Frame"].compact.join(", ")
+    end
 
     def set_own_template
       @sheet_template = current_user.sheet_templates.find(params[:sheet_template_id])

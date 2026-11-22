@@ -2,7 +2,7 @@
     their order, which its computing rules rely on; building steps belongs to the editor from scratch, later). Its
     steps in their order, each with its number, its name (renamed live, the only change: it breaks nothing), when it
     shows (only on the summary, only with an option that has an effect), then its sections and their fields, each a
-    light line that opens its form (its label, its type, why the player does not type it). Adding a field comes with
+    light line that opens its form in a window (its label, its type, why the player does not type it). Adding a field comes with
     the tool to choose a field type. A template without steps shows its single page. No technical key shown %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
@@ -32,4 +32,6 @@
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
     <%= link_to t(".back"), sheet_template_path(@sheet_template), class: button_classes(:secondary) %>
   </div>
+  <%# Inside the page: a page across the whole width renders only its block %>
+  <%= render "sheet_templates/fields/dialog" %>
 <% end %>

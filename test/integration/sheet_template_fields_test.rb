@@ -96,6 +96,32 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "main h1", text: "Niveau"
   end
 
+  test "a field opens its form in a window over the path, without the band of the editor" do
+    get sheet_template_fields_path(@template)
+    assert_select "dialog#field-dialog turbo-frame#field_dialog"
+    assert_select "a[href=?][data-turbo-frame=field_dialog]", edit_sheet_template_field_path(@template, "level")
+
+    get edit_sheet_template_field_path(@template, "level"), headers: { "Turbo-Frame" => "field_dialog" }
+    assert_response :success
+    assert_select "turbo-frame#field_dialog h2#field-dialog-title", text: "Niveau"
+    assert_select "turbo-frame#field_dialog button[data-action='frame-dialog#close']", minimum: 2
+    assert_select "ol li[aria-current=step]", count: 0
+    assert_includes response.headers["Vary"], "Turbo-Frame"
+  end
+
+  test "saved from the window, the page behind is refreshed; refused, the errors stay in the window" do
+    patch sheet_template_field_path(@template, "level"), headers: { "Turbo-Frame" => "field_dialog" },
+                                                         params: { field: { label: "Rang", section: "Notes", at_creation: "1" } }
+    assert_response :success
+    assert_select "turbo-stream[action=refresh]:not([request-id])"
+    assert_equal "Rang", @template.reload.character_fields["fields"].find { |field| field["key"] == "level" }["label"]
+
+    patch sheet_template_field_path(@template, "level"), headers: { "Turbo-Frame" => "field_dialog" },
+                                                         params: { field: { label: "Rang", section: "Notes", min: "10", max: "5", at_creation: "1" } }
+    assert_response :unprocessable_content
+    assert_select "turbo-frame#field_dialog [role=alert] li", text: /le minimum \(10\) dépasse le maximum \(5\)/
+  end
+
   test "only the owner edits a template, and only a field it has" do
     others_template = SheetTemplates::Duplicator.new(
       original: @fantasy, owner: User.create!(email: "b@example.com", username: "Basile", password: TEST_PASSWORD)
