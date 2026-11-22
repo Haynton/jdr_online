@@ -76,7 +76,7 @@ class Character < ApplicationRecord
     calculated_values = computed_sheet_values[:values]
     initial_values = sheet_fields.select { |field| field["initial_from"] }.filter_map do |field|
       value = calculated_values[field["initial_from"]]&.to_i
-      [field["key"], field["type"] == "resource" ? { "current" => value, "max" => value } : value] if value
+      [field["key"], FieldTypes.of(field).initial_value(value)] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
     CharacterSheets::StartingEquipment.new(self).chosen_items.each { |item| inventory_items << InventoryItem.copy_of(item) }

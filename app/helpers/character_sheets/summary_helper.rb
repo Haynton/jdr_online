@@ -14,7 +14,6 @@ module CharacterSheets
       rows: "character_sheets/summary/rows",
       texts: "character_sheets/summary/texts"
     }.freeze
-    BOX_TYPES = %w[number resource experience computed].freeze
 
     # The step that names the character opens the sheet, across the width (its name, its class, its species...)
     def summary_header_step(steps)
@@ -39,22 +38,17 @@ module CharacterSheets
     def summary_groups(fields)
       # The bonus of the background is in the scores, the equipment in its own list (summary_equipment), and an internal
       # value (the starting gold, which fills the gold of the sheet) is shown nowhere
-      shown_fields = fields.reject do |field|
-        field["internal"] || %w[ability_bonuses equipment_option].include?(field["type"])
-      end
+      shown_fields = fields.reject { |field| field["internal"] || summary_group(field).nil? }
       grouped_fields = shown_fields.group_by { |field| summary_group(field) }
       SUMMARY_GROUPS.filter_map { |group| [group, grouped_fields[group]] if grouped_fields[group] }
     end
 
-    # A value given by the table (the level) reads with the facts of the header, not in a box
+    # A value given by the table (the level) reads with the facts of the header, not in a box; any other field in the
+    # group of its type (FieldTypes::Base#summary_group), nil when its type is not shown on the summary
     def summary_group(field)
       return :facts if field["from_table"]
-      return :tiles if field["type"] == "ability"
-      return :rows if field["type"] == "bonus"
-      return :boxes if BOX_TYPES.include?(field["type"])
-      return :texts if field["type"] == "text" && !field["short"]
 
-      :facts
+      FieldTypes.of(field).summary_group(field)
     end
 
     # The value of a field as written on a sheet, or a dash while it is empty
@@ -89,15 +83,10 @@ module CharacterSheets
       character.sheet[field["key"]] == true
     end
 
-    # A yes-or-no value as yes or no; a resource by its maximum; a number with the separator of the language (10,5)
+    # The value as read on the sheet, said by its type (a yes-or-no value as yes or no, a resource by its maximum, a
+    # number with the separator of the language: FieldTypes::Base#summary_text)
     def character_summary_value(field, value)
-      case field["type"]
-      when "boolean" then t(value ? "answer_yes" : "answer_no", scope: "game_tables.character_steps.summary")
-      when "picks" then (field["granted"].to_a + Array(value)).to_sentence
-      when "resource" then value.is_a?(Hash) ? number_with_delimiter(value["max"]) : nil
-      when "number", "ability", "experience" then value.nil? ? nil : number_with_delimiter(value)
-      else value
-      end
+      FieldTypes.of(field).summary_text(value, field)
     end
 
     def summary_group_partial(group)

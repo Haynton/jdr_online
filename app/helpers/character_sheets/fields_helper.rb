@@ -29,11 +29,11 @@ module CharacterSheets
       character.errors[:"sheet.#{field['key']}"].first
     end
 
-    # A resource shows its maximum: the character starts full (CharacterSheets::Builder)
+    # A help of its type when it has one (a resource is typed by its maximum: FieldTypes::Resource), otherwise the help
+    # of the template
     def sheet_field_hint(field)
-      return t("game_tables.characters.new.resource_hint") if field["type"] == "resource"
-
-      field["help"]
+      fixed_hint = FieldTypes.of(field).fixed_hint
+      fixed_hint ? t(fixed_hint) : field["help"]
     end
 
     # The abbreviation of the ability a bonus is based on (DEX), from the ability field itself
@@ -100,8 +100,7 @@ module CharacterSheets
 
     # The bounds of the field (min and max of the template; an experience or a resource starts at 0)
     def sheet_number_options(character, field)
-      bounds = { min: %w[number ability].include?(field["type"]) ? field["min"] : 0, max: field["max"],
-                 step: field["step"] }.compact
+      bounds = { min: FieldTypes.of(field).minimum(field), max: field["max"], step: field["step"] }.compact
       sheet_control_options(character, field).merge(class: SimpleFormFieldClasses::INPUT, **bounds)
     end
 
