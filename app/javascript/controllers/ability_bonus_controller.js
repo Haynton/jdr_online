@@ -1,28 +1,30 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The bonus of the background on the abilities step: each ability it raises has a choice of +0, +1 or +2 (choice
-// targets, radio buttons). The guide says what is left to place, that it is done (+2 and +1, or +1 to each: 3 in
-// all), or that there is too much (+2 twice, more than 3), then in red (data-invalid). An aid: the server checks the
-// same rule (CharacterSheetValidator). The status is rendered by the server and kept up to date here
+// The bonus of the background on the abilities step: each ability it raises has a choice of +0 up to maxPerAbility
+// (choice targets, radio buttons). The guide says what is left to place of the total, that it is done, or that there
+// is too much (more than the total, or more than maxPerAbility on one ability), then in red (data-invalid). Same rule
+// as FieldTypes::AbilityBonuses#too_much?, read from the field of the template; the server checks it
+// (CharacterSheetValidator). The status is rendered by the server and kept up to date here
 export default class extends Controller {
   static targets = ["choice", "status"]
-  static values = { leftOne: String, leftOther: String, done: String, tooMany: String }
+  static values = { total: Number, maxPerAbility: Number, leftOne: String, leftOther: String, done: String,
+    tooMany: String }
 
   update() {
     if (!this.hasStatusTarget) return
 
     const bonuses = this.choiceTargets.filter((choice) => choice.checked).map((choice) => Number(choice.value))
-    const total = bonuses.reduce((sum, bonus) => sum + bonus, 0)
-    const doubleCount = bonuses.filter((bonus) => bonus === 2).length
-    this.statusTarget.textContent = this.statusText(total, doubleCount)
-    this.statusTarget.toggleAttribute("data-invalid", total > 3 || doubleCount > 1)
+    const placed = bonuses.reduce((sum, bonus) => sum + bonus, 0)
+    const isTooMuch = placed > this.totalValue || bonuses.some((bonus) => bonus > this.maxPerAbilityValue)
+    this.statusTarget.textContent = this.statusText(placed, isTooMuch)
+    this.statusTarget.toggleAttribute("data-invalid", isTooMuch)
   }
 
-  statusText(total, doubleCount) {
-    if (total > 3 || doubleCount > 1) return this.tooManyValue
-    if (total === 3) return this.doneValue
+  statusText(placed, isTooMuch) {
+    if (isTooMuch) return this.tooManyValue
+    if (placed === this.totalValue) return this.doneValue
 
-    const left = 3 - total
+    const left = this.totalValue - placed
     return left === 1 ? this.leftOneValue : this.leftOtherValue.replace("%{count}", left)
   }
 }

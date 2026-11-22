@@ -9,7 +9,7 @@
 <% bonus_field = ability_bonus_field(fields) %>
 <% raised_keys = raised_ability_keys(character, bonus_field) %>
 <%= tag.div class: "clear-left grid gap-y-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-x-24",
-            data: abilities_section_data(game_table) do %>
+            data: abilities_section_data(game_table, bonus_field) do %>
   <div class="flex flex-col gap-10">
     <section aria-labelledby="ability_scores_title">
       <%= render "character_sheets/sections/guide_heading", number: 1, id: "ability_scores_title",
@@ -43,7 +43,8 @@
             <%= t("game_tables.characters.new.bonus_raises_html",
                   option: tag.span(bonus_source_option(character, bonus_field), class: "font-semibold text-ink"),
                   abilities: raised_ability_labels(character, bonus_field)) %>
-            <%= t("game_tables.characters.new.bonus_rule") %>
+            <%# The rule, in the words of the game: the help of the field %>
+            <%= bonus_field["help"] %>
           </p>
           <%# Headings over the columns of the lines, for the eye only: each line already names its choices and its score %>
           <div class="mt-5 <%= CharacterSheets::AbilityBonusesHelper::BONUS_COLUMNS %> text-[11px] font-semibold tracking-wider text-muted uppercase" aria-hidden="true">

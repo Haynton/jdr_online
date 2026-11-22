@@ -1,11 +1,13 @@
 module FieldTypes
-  # The bonus of an option (the background, rules of 2024) spread on the abilities it raises: +2 and +1, or +1 to each,
-  # stored apart from the scores ({ "intelligence" => 2 }) and added to them. Drawn by the abilities section, shown on
-  # the summary in the scores of the tiles. Its check reads the other values of the sheet: the option picked, the scores
+  # The bonus of an option (the background) spread on the abilities it raises, by the rule of the template: total
+  # points in all, max_per_ability at most on one ability (rules of 2024: 3 and 2, that is +2 and +1, or +1 to each),
+  # its help saying it in the words of the game. Stored apart from the scores ({ "intelligence" => 2 }) and added to
+  # them. Drawn by the abilities section, shown on the summary in the scores of the tiles. Its check reads the other
+  # values of the sheet: the option picked, the scores
   class AbilityBonuses < Base
     KEY = "ability_bonuses".freeze
-    OWN_PARAMETERS = %w[from].freeze
-    REQUIRED_PARAMETERS = %w[from].freeze
+    OWN_PARAMETERS = %w[from total max_per_ability].freeze
+    REQUIRED_PARAMETERS = %w[from total max_per_ability].freeze
     REFERENCES = { "from" => "choice" }.freeze
 
     def partial
@@ -22,10 +24,20 @@ module FieldTypes
       bonuses.reject { |_ability_key, bonus| bonus.is_a?(Integer) && bonus.zero? }
     end
 
-    # Only the abilities the option picked raises, spread as +2 and +1 or +1 to each (or a part of it, while the player
+    # The choices of one ability: +0 up to max_per_ability
+    def choices(field)
+      (0..field["max_per_ability"].to_i).to_a
+    end
+
+    # More than total points, or more than max_per_ability on one ability
+    def too_much?(bonuses, field)
+      bonuses.values.sum > field["total"].to_i || bonuses.values.any? { |bonus| bonus > field["max_per_ability"].to_i }
+    end
+
+    # Only the abilities the option picked raises, spread by the rule of the field (or a part of it, while the player
     # places them), and no score past the maximum of its ability once raised
     def error_for(bonuses, field, character:)
-      return [:invalid] unless spread_allowed?(bonuses, raised_abilities(character, field))
+      return [:invalid] unless spread_allowed?(bonuses, field, raised_abilities(character, field))
 
       raised_too_high = bonuses.keys.find do |ability_key|
         raised_score(character, ability_key, bonuses) > ability_maximum(character, ability_key)
@@ -35,11 +47,11 @@ module FieldTypes
 
     private
 
-    def spread_allowed?(bonuses, raised_abilities)
+    def spread_allowed?(bonuses, field, raised_abilities)
       return false unless bonuses.is_a?(Hash) && (bonuses.keys - raised_abilities).empty?
-      return false unless bonuses.values.all? { |bonus| [1, 2].include?(bonus) }
+      return false unless bonuses.values.all? { |bonus| bonus.is_a?(Integer) && bonus.positive? }
 
-      bonuses.values.sum <= 3 && bonuses.values.count(2) <= 1
+      !too_much?(bonuses, field)
     end
 
     # The abilities that the option picked in the list named by from raises (ability_bonus_choices of its effects)

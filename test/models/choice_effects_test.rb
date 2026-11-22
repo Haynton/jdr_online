@@ -30,6 +30,19 @@ class ChoiceEffectsTest < ActiveSupport::TestCase
       assert_equal [["Caractéristique des sorts", "Sagesse"]], facts("spellcasting", { "ability" => "wisdom" })
       assert_equal [["Vitesse", "10,5"]], facts("set", { "speed" => 10.5 })
       assert_empty facts("training", ["light_armor"])
+      assert_equal [["Caractéristiques augmentées", "Sagesse et Intelligence"]],
+                   facts("ability_bonus_choices", %w[wisdom intelligence])
+    end
+  end
+
+  test "the abilities a background raises are said with the rule of the game, the help of the bonus field" do
+    fields_by_key = FIELDS_BY_KEY.merge(
+      "ability_bonuses" => { "type" => "ability_bonuses", "help" => "Répartissez +2 et +1, ou +1 à chacune." }
+    )
+
+    I18n.with_locale(:fr) do
+      assert_equal [["Caractéristiques augmentées", "Sagesse et Intelligence (Répartissez +2 et +1, ou +1 à chacune)"]],
+                   ChoiceEffects.find("ability_bonus_choices").facts(%w[wisdom intelligence], fields_by_key)
     end
   end
 

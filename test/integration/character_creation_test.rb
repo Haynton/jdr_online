@@ -268,7 +268,8 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
       { "key" => "wisdom", "label" => "Sagesse", "type" => "ability", "max" => 20, "modifier" => "half_above_ten",
         "section" => "Caractéristiques" },
       { "key" => "ability_bonuses", "label" => "Bonus de l'historique", "type" => "ability_bonuses",
-        "from" => "background", "section" => "Caractéristiques" }
+        "from" => "background", "total" => 3, "max_per_ability" => 2, "help" => "Répartissez +2 et +1.",
+        "section" => "Caractéristiques" }
     ]
     @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
     sign_in @player
@@ -292,6 +293,37 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
                   "dont +#{CharacterSheets::AbilityBonusesHelper::BONUS_PLACEHOLDER} Sage"
     assert_select "output[data-character-sheet-target=finalScore][data-ability=intelligence]", text: "17"
     assert_select "output[data-character-sheet-target=modifier][data-ability=intelligence]", text: "+3"
+    assert_select "p", text: /Répartissez \+2 et \+1\./
+  end
+
+  test "the bonus of a background follows the rule of its template, not the one of the heroic fantasy" do
+    fields = [
+      { "key" => "background", "label" => "Passé", "type" => "choice", "section" => "Origine", "options" => %w[Marin],
+        "effects" => { "Marin" => { "ability_bonus_choices" => %w[strength agility] } } },
+      { "key" => "strength", "label" => "Force", "type" => "ability", "modifier" => "half_above_ten",
+        "section" => "Caractéristiques" },
+      { "key" => "agility", "label" => "Agilité", "type" => "ability", "modifier" => "half_above_ten",
+        "section" => "Caractéristiques" },
+      { "key" => "ability_bonuses", "label" => "Bonus du passé", "type" => "ability_bonuses", "from" => "background",
+        "total" => 2, "max_per_ability" => 1, "help" => "+1 à deux caractéristiques.", "section" => "Caractéristiques" }
+    ]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => fields } })
+    sign_in @player
+    send_bonuses = lambda do |bonuses|
+      patch sheet_step_path, params: { character: { name: "Mira", sheet: {
+        background: "Marin", strength: "12", agility: "12", ability_bonuses: bonuses
+      } } }
+    end
+
+    send_bonuses.call({ strength: "2" })
+    assert_response :unprocessable_content
+    send_bonuses.call({ strength: "1", agility: "1" })
+    assert_equal({ "strength" => 1, "agility" => 1 }, @participation.reload.character.sheet["ability_bonuses"])
+
+    get sheet_step_path
+    assert_select "[role=radiogroup][aria-labelledby=bonus_strength_label] input[type=radio]", count: 2
+    assert_select "[data-ability-bonus-total-value='2'][data-ability-bonus-max-per-ability-value='1']"
+    assert_select "p", text: /\+1 à deux caractéristiques\./
   end
 
   test "a required list keeps its step until it is picked" do

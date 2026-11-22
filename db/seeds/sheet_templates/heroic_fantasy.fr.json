@@ -105,7 +105,7 @@
       { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Caractéristiques", "visible_to_others": true },
       { "key": "wisdom", "label": "Sagesse", "abbreviation": "SAG", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Caractéristiques", "visible_to_others": true },
       { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Caractéristiques", "visible_to_others": true },
-      { "key": "ability_bonuses", "label": "Bonus de l'historique", "type": "ability_bonuses", "from": "background", "section": "Caractéristiques" },
+      { "key": "ability_bonuses", "label": "Bonus de l'historique", "type": "ability_bonuses", "from": "background", "total": 3, "max_per_ability": 2, "help": "Répartissez +2 et +1, ou +1 à chacune.", "section": "Caractéristiques" },
 
       { "key": "max_hp", "label": "Points de vie", "type": "computed", "rule": "hit_points_by_level", "class_from": "class", "level_from": "level", "based_on": "constitution", "section": "Combat",
         "help": "Au niveau 1 : le maximum du dé de vie de la classe, plus le modificateur de Constitution. Puis, à chaque niveau, la moyenne du dé plus le modificateur de Constitution." },

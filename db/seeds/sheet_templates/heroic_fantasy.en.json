@@ -105,7 +105,7 @@
       { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
       { "key": "wisdom", "label": "Wisdom", "abbreviation": "WIS", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
       { "key": "charisma", "label": "Charisma", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
-      { "key": "ability_bonuses", "label": "Background bonus", "type": "ability_bonuses", "from": "background", "section": "Abilities" },
+      { "key": "ability_bonuses", "label": "Background bonus", "type": "ability_bonuses", "from": "background", "total": 3, "max_per_ability": 2, "help": "Spread +2 and +1, or +1 to each.", "section": "Abilities" },
 
       { "key": "max_hp", "label": "Hit points", "type": "computed", "rule": "hit_points_by_level", "class_from": "class", "level_from": "level", "based_on": "constitution", "section": "Combat",
         "help": "At level 1: the highest roll of the hit die of the class, plus the Constitution modifier. Then, at each level, the average of the die plus the Constitution modifier." },
