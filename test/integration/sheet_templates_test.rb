@@ -91,6 +91,8 @@ class SheetTemplatesTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select "section[aria-labelledby=template-title].bg-banner-crimson"
     assert_select "label[title=Carmin] input[value=crimson][checked]"
+    get sheet_templates_path
+    assert_select "a[href=?] span.bg-banner-crimson.text-banner-crimson-ink", sheet_template_path(mine)
 
     patch sheet_template_path(mine), params: { sheet_template: { banner_color: "rainbow" } }
     assert_response :unprocessable_content

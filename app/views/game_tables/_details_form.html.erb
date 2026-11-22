@@ -47,8 +47,8 @@
         <%= form.radio_button :sheet_template_id, sheet_template.id, class: "peer sr-only", required: true,
                               aria: sheet_template_choice_aria(game_table) %>
         <%= form.label :sheet_template_id, value: sheet_template.id, class: choice_tile_classes do %>
-          <%# Its icon on gold, chosen in the template editor (SheetTemplate::ICONS) %>
-          <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+          <%# Its icon and the color of its banner, chosen in the template editor (SheetTemplate::ICONS, BANNER_CLASSES) %>
+          <span class="flex aspect-video w-full items-center justify-center <%= banner_classes(sheet_template.banner_color, :background) %> <%= banner_classes(sheet_template.banner_color, :accent) %>" aria-hidden="true">
             <%= sheet_template_icon(sheet_template.icon, css_class: "size-10") %>
           </span>
           <span class="block px-4 pt-3 pr-10 font-semibold text-ink"><%= sheet_template.name %></span>
