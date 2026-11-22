@@ -1,32 +1,35 @@
-<%# The template editor, step "Character sheet": the fields by section, in the order of the template. Each section
-    named by the small gold capitals of "My tables", each field a light line that opens its form as a whole (its
-    label, its type, a chevron), side by side as the width allows. No technical key shown %>
-<%= template_editor_page(sheet_template: @sheet_template, current_step: :character_sheet) do %>
+<%# The template editor, step "Creation path" (decision: a template duplicated from a working one keeps its steps and
+    their order, which its computing rules rely on; building steps belongs to the editor from scratch, later). Its
+    steps in their order, each with its number, its name (renamed live, the only change: it breaks nothing), when it
+    shows (only on the summary, only with an option that has an effect), then its sections and their fields, each a
+    light line that opens its form (its label, its type, why the player does not type it). Adding a field comes with
+    the tool to choose a field type. A template without steps shows its single page. No technical key shown %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
   <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
 
-  <div class="flex flex-col gap-8">
-    <% sheet_sections(@sheet_template.character_fields.to_h["fields"].to_a).each_with_index do |(section, fields), position| %>
-      <section aria-labelledby="fields-section-<%= position %>">
-        <h2 id="fields-section-<%= position %>" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= section %></h2>
-        <ul class="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          <% fields.each do |field| %>
-            <li>
-              <%= link_to edit_sheet_template_field_path(@sheet_template, field["key"]), class: SheetTemplates::FieldFormHelper::FIELD_LINE_CLASSES do %>
-                <span class="min-w-0">
-                  <span class="block truncate font-medium text-ink"><%= field["label"] %></span>
-                  <span class="block text-xs text-muted"><%= field_type_name(field).upcase_first %></span>
-                </span>
-                <%= render "shared/icons/chevron_right", css_class: "size-4 shrink-0 text-muted" %>
-              <% end %>
-            </li>
+  <% if @refusals.present? %>
+    <div class="mb-6 max-w-3xl">
+      <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
+      <%= render layout: "shared/message", locals: { variant: :error } do %>
+        <p class="font-semibold"><%= t("sheet_templates.fields.index.refused") %></p>
+        <ul class="mt-1 list-disc pl-5">
+          <% @refusals.each do |message| %>
+            <li><%= message %></li>
           <% end %>
         </ul>
-      </section>
+      <% end %>
+    </div>
+  <% end %>
+
+  <ol class="flex flex-col gap-10">
+    <% creation_path(@sheet_template).each_with_index do |block, position| %>
+      <%= render "sheet_templates/fields/path_step", sheet_template: @sheet_template, block: block, position: position %>
     <% end %>
-  </div>
+  </ol>
 
   <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation %>
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
-    <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
+    <%= link_to t(".back"), sheet_template_path(@sheet_template), class: button_classes(:secondary) %>
   </div>
 <% end %>

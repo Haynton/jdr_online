@@ -1,0 +1,56 @@
+<%# One step of the creation path: its header (number, name renamed live, when it shows), then its sections and their
+    fields. block[:kind]: :step (a declared step, block[:step]), :single_page (a template without steps) or :left_out
+    (the sections no step asks) %>
+<% step = block[:step] %>
+<% heading_id = "path-step-#{position}" %>
+<li aria-labelledby="<%= heading_id %>">
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+    <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset" aria-hidden="true">
+      <%= block[:kind] == :step ? position + 1 : "·" %>
+    </span>
+    <% if block[:kind] == :step %>
+      <%# Its name, saved when it is left (auto_submit_controller.js); the heading of the block for screen readers %>
+      <%= form_with url: sheet_template_creation_step_path(sheet_template, step["key"]), method: :patch,
+                    class: "w-full max-w-xs sm:w-64",
+                    data: { controller: "auto-submit", action: "change->auto-submit#submit" } do %>
+        <%= label_tag "path_step_#{step['key']}", t(".name", number: position + 1), id: heading_id, class: "sr-only" %>
+        <%= text_field_tag :label, step["label"], id: "path_step_#{step['key']}", required: true, autocomplete: "off",
+                                                  class: "#{SimpleFormFieldClasses::INPUT} font-semibold" %>
+      <% end %>
+      <% if (note = creation_step_note(step)) %>
+        <span class="text-sm text-muted"><%= note %></span>
+      <% end %>
+    <% else %>
+      <%# Full keys written in the table PATH_BLOCK_TEXTS: a key built from a name is not found by a search %>
+      <h2 id="<%= heading_id %>" class="text-base font-semibold text-ink"><%= t(SheetTemplates::CreationPathHelper::PATH_BLOCK_TEXTS.dig(block[:kind], :title)) %></h2>
+      <span class="text-sm text-muted"><%= t(SheetTemplates::CreationPathHelper::PATH_BLOCK_TEXTS.dig(block[:kind], :hint)) %></span>
+    <% end %>
+  </div>
+
+  <div class="mt-4 flex flex-col gap-5 sm:pl-11">
+    <% block[:sections].each do |section, fields| %>
+      <section>
+        <h3 class="text-xs font-semibold tracking-widest text-brass uppercase"><%= section %></h3>
+        <ul class="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <% fields.each do |field| %>
+            <li>
+              <%= link_to edit_sheet_template_field_path(sheet_template, field["key"]), class: SheetTemplates::FieldFormHelper::FIELD_LINE_CLASSES do %>
+                <span class="min-w-0">
+                  <span class="block truncate font-medium text-ink"><%= field["label"] %></span>
+                  <span class="block text-xs text-muted">
+                    <%= field_type_name(field).upcase_first %><% if (note = field_path_note(field)) %> · <%= note %><% end %>
+                  </span>
+                </span>
+                <%= render "shared/icons/chevron_right", css_class: "size-4 shrink-0 text-muted" %>
+              <% end %>
+            </li>
+          <% end %>
+          <%# Adding a field comes with the tool to choose a field type: said here, where it will be %>
+          <li class="flex min-h-14 items-center justify-center rounded-lg border border-dashed border-field-line px-4 text-sm text-muted">
+            <%= t(".add_field_soon") %>
+          </li>
+        </ul>
+      </section>
+    <% end %>
+  </div>
+</li>

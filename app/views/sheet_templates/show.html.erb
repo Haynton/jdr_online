@@ -75,8 +75,7 @@
   </div>
 
   <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation: Back
-      (to "My templates") then Next, the next step of the band that exists ("Creation steps" is coming soon: for now,
-      "Character sheet") %>
+      (to "My templates") then Next (the creation path), the order of the band %>
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-8">
     <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
     <%= link_to t(".next"), sheet_template_fields_path(@sheet_template), class: button_classes(:primary) %>

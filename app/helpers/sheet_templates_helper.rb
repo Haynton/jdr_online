@@ -44,10 +44,11 @@ module SheetTemplatesHelper
     peer-checked:ring-offset-2 peer-checked:ring-offset-page peer-focus-visible:outline-2
     peer-focus-visible:outline-offset-4 peer-focus-visible:outline-focus-ring
   ].join(" ").freeze
-  # The steps of the editor, in order; those not made yet are marked as coming soon in the band. The creation steps of
-  # the template come second, right after its informations and before its fields (decision)
-  EDITOR_STEPS = %i[informations creation_steps character_sheet catalog].freeze
-  COMING_EDITOR_STEPS = %i[creation_steps catalog].freeze
+  # The steps of the editor, in order; those not made yet are marked as coming soon in the band. The creation path (its
+  # steps, their sections and fields) comes right after the informations (decision: one step for the steps and the
+  # fields of a duplicated template, whose steps stay as they are)
+  EDITOR_STEPS = %i[informations creation_path catalog].freeze
+  COMING_EDITOR_STEPS = %i[catalog].freeze
 
   # The icon of a template (the scroll for an unknown one), decorative: its name says the template
   def sheet_template_icon(icon, css_class:)
@@ -127,6 +128,6 @@ module SheetTemplatesHelper
 
   def template_editor_step_path(sheet_template, step)
     { informations: sheet_template_path(sheet_template),
-      character_sheet: sheet_template_fields_path(sheet_template) }.fetch(step)
+      creation_path: sheet_template_fields_path(sheet_template) }.fetch(step)
   end
 end

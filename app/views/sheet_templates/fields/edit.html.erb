@@ -3,7 +3,7 @@
     input with its help on demand (sheet_templates/fields/_parameter), then the buttons at the bottom right. No
     technical key shown: a field named by another one is chosen by its label. On a refusal, the errors of the
     template (SheetTemplateValidator) at the top, the values typed kept %>
-<%= template_editor_page(sheet_template: @sheet_template, current_step: :character_sheet) do %>
+<%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
   <%= page_header(title: @field["label"], subtitle: t(".subtitle", type: field_type_name(@field).upcase_first, section: @field["section"])) %>
 
   <% if @sheet_template.errors.any? %>

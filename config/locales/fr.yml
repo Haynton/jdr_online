@@ -272,8 +272,7 @@ fr:
       band_label: "Étapes de l'éditeur de modèles"
       steps:
         catalog: "Catalogue"
-        character_sheet: "Fiche du personnage"
-        creation_steps: "Étapes de création"
+        creation_path: "Parcours de création"
         informations: "Informations"
     fields:
       edit:
@@ -287,11 +286,44 @@ fr:
         save: "Enregistrer"
         subtitle: "%{type}, section « %{section} »"
       index:
-        back: "Mes modèles"
-        subtitle: "Les champs que les joueurs remplissent, section par section."
-        title: "Fiche du personnage"
+        back: "Retour"
+        only_with_effect: "Seulement si l'option choisie donne %{effect}"
+        refused: "Le modèle n'a pas été enregistré :"
+        subtitle: "Les étapes que suit un joueur pour créer son personnage, avec les champs de chacune. Cliquez un champ pour le modifier."
+        summary_only: "Affichée seulement au récapitulatif"
+        title: "Parcours de création"
+      path_step:
+        add_field_soon: "Ajouter un champ · Bientôt"
+        left_out: "Remplis en partie"
+        left_out_hint: "Ces sections ne sont demandées à aucune étape de la création."
+        name: "Nom de l'étape %{number}"
+        single_page: "Une seule page"
+        single_page_hint: "Ce modèle demande toute la fiche sur une seule page."
       update:
         updated: "Champ « %{label} » enregistré."
+    creation_path:
+      effects:
+        ability_bonus_choices: "des bonus de caractéristiques"
+        features_by_level: "des capacités par niveau"
+        hit_die: "un dé de vie"
+        origin_feat: "un don d'origine"
+        proficient: "des maîtrises"
+        set: "des valeurs écrites"
+        skill_choices: "des compétences à choisir"
+        spellcasting: "des sorts"
+        starting_equipment: "un équipement de départ"
+        tools: "des outils"
+        training: "des formations"
+        traits: "des traits"
+        unarmored_defense: "une défense sans armure"
+      notes:
+        computed: "Calculé"
+        from_table: "Donné par la table"
+        in_game: "En partie"
+        internal: "Interne"
+    creation_steps:
+      update:
+        renamed: "Étape renommée."
     contents:
       from: "D'après « %{name} »"
     destroy:

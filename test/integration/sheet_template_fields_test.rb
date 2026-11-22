@@ -11,22 +11,44 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     sign_in @game_master
   end
 
-  test "the band of the editor leads to the fields, listed by section with their type, no key shown" do
+  test "the creation path shows the steps in their order, their sections and fields, no key shown" do
     get sheet_template_path(@template)
-    assert_select "ol a[href=?]", sheet_template_fields_path(@template), text: /Fiche du personnage/
-    assert_equal ["Informations", "Étapes de création", "Fiche du personnage", "Catalogue"],
-                 css_select("ol li > [title]").pluck("title")
+    assert_equal ["Informations", "Parcours de création", "Catalogue"], css_select("ol li > [title]").pluck("title")
+    assert_select "a[href=?]", sheet_template_fields_path(@template), text: "Suivant"
 
     get sheet_template_fields_path(@template)
     assert_response :success
-    assert_select "main h1", text: "Fiche du personnage"
-    assert_select "ol li[aria-current=step]", text: /Fiche du personnage/
-    assert_select "section h2", text: "Notes"
+    assert_select "main h1", text: "Parcours de création"
+    assert_select "ol li[aria-current=step]", text: /Parcours de création/
+    assert_equal %w[Classe Équipement Sorts Description], css_select("main ol input[name=label]").pluck("value")
+    assert_select "main", text: /Seulement si l'option choisie donne des sorts/
+    assert_select "section h3", text: "Équipement"
     assert_select "a[href=?]", edit_sheet_template_field_path(@template, "level") do
       assert_select "span", text: "Niveau"
-      assert_select "span", text: "Nombre"
+      assert_select "span", text: /Nombre · Donné par la table/
     end
-    assert_select "main", text: /starting_gold/, count: 0
+    assert_select "a[href=?] span", edit_sheet_template_field_path(@template, "starting_gold"), text: /Calculé · Interne|Interne/
+    assert_select "main", text: /Ajouter un champ · Bientôt/
+    assert_select "main", text: /starting_gold|spellcasting/, count: 0
+  end
+
+  test "a step is renamed, the only change of a step; an empty name is refused" do
+    patch sheet_template_creation_step_path(@template, "class"), params: { label: "Vocation" }
+    assert_redirected_to sheet_template_fields_path(@template)
+    assert_equal "Vocation", @template.reload.character_fields["creation_steps"].first["label"]
+
+    patch sheet_template_creation_step_path(@template, "class"), params: { label: "" }
+    assert_response :unprocessable_content
+    assert_select "[role=alert] li", text: /le libellé doit être rempli/
+    assert_select "main ol input[name=label][value=?]", "Vocation"
+  end
+
+  test "a template without steps shows its single page" do
+    @template.update!(character_fields: @template.character_fields.except("creation_steps"))
+
+    get sheet_template_fields_path(@template)
+    assert_select "main h2", text: "Une seule page"
+    assert_select "main ol input[name=label]", count: 0
   end
 
   test "the form asks the settings of the type, each by its kind, the key and the type never" do
@@ -83,8 +105,10 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
       assert_not_found { get sheet_template_fields_path(sheet_template) }
       assert_not_found { get edit_sheet_template_field_path(sheet_template, "level") }
       assert_not_found { patch sheet_template_field_path(sheet_template, "level"), params: { field: { label: "X" } } }
+      assert_not_found { patch sheet_template_creation_step_path(sheet_template, "class"), params: { label: "X" } }
     end
     assert_not_found { get edit_sheet_template_field_path(@template, "unknown") }
+    assert_not_found { patch sheet_template_creation_step_path(@template, "unknown"), params: { label: "X" } }
     assert_equal "Niveau", others_template.reload.character_fields["fields"].find { |f| f["key"] == "level" }["label"]
   end
 
