@@ -99,6 +99,12 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_effect_target
   end
 
+  test "the unarmored defense names an ability" do
+    template = build_template { |fields| class_effects(fields)["unarmored_defense"] = "athletics" }
+
+    assert_error template, :wrong_effect_target
+  end
+
   test "a spellcasting gives a number per level and a known change of spells" do
     template = build_template do |fields|
       spellcasting = class_effects(fields)["spellcasting"]
