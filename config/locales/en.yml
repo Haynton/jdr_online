@@ -322,14 +322,7 @@ en:
       update:
         updated: "Field “%{label}” saved."
     contents:
-      fields:
-        one: "1 field"
-        other: "%{count} fields"
       from: "Based on “%{name}”"
-      steps:
-        one: "1 creation step"
-        other: "%{count} creation steps"
-      single_page: "a single creation page"
     destroy:
       deleted: "Template “%{name}” deleted."
       used_by_tables: "A table uses this template: it cannot be deleted."
@@ -356,7 +349,6 @@ en:
       swords: "Crossed swords"
       wand_sparkles: "Magic wand"
     index:
-      duplicate: "Duplicate"
       duplicate_label: "Duplicate %{name}"
       none: "Duplicate a provided template, below, to start your own."
       none_title: "No template yet"

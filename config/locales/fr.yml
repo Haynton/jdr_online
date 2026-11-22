@@ -293,14 +293,7 @@ fr:
       update:
         updated: "Champ « %{label} » enregistré."
     contents:
-      fields:
-        one: "1 champ"
-        other: "%{count} champs"
       from: "D'après « %{name} »"
-      steps:
-        one: "1 étape de création"
-        other: "%{count} étapes de création"
-      single_page: "une seule page de création"
     destroy:
       deleted: "Modèle « %{name} » supprimé."
       used_by_tables: "Ce modèle est utilisé par une table : il ne peut pas être supprimé."
@@ -327,7 +320,6 @@ fr:
       swords: "Épées croisées"
       wand_sparkles: "Baguette magique"
     index:
-      duplicate: "Dupliquer"
       duplicate_label: "Dupliquer %{name}"
       none: "Dupliquez un modèle fourni, plus bas, pour commencer le vôtre."
       none_title: "Aucun modèle pour l'instant"

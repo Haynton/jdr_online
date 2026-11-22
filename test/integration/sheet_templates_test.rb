@@ -20,7 +20,9 @@ class SheetTemplatesTest < ActionDispatch::IntegrationTest
     assert_select "section[aria-labelledby=own-templates-title] h2", text: "Vos modèles"
     assert_select "section[aria-labelledby=own-templates-title] li", text: /Aucun modèle pour l'instant/
     assert_select "li", text: /Fantasy/, count: 1
-    assert_select "form[action=?] button[aria-label=?]", sheet_template_duplicate_path(@fantasy), "Dupliquer Fantasy"
+    assert_select "form.absolute[action=?] button[aria-label=?][title=?]", sheet_template_duplicate_path(@fantasy),
+                  "Dupliquer Fantasy", "Dupliquer Fantasy"
+    assert_select "main li", text: /champs/, count: 0
     assert_select "li", text: /Heroic fantasy/, count: 0
     assert_select "#side-nav a[href=?][aria-current=page]", sheet_templates_path, text: /Mes modèles/
   end
