@@ -19,7 +19,7 @@ class CharacterSheetValidator < ActiveModel::Validator
   # nil when the value fits its field, otherwise the type of the error and its options
   def value_error(field, value)
     case field&.dig("type")
-    when "number" then number_error(value, minimum: field["min"], maximum: field["max"])
+    when "number", "ability" then number_error(value, minimum: field["min"], maximum: field["max"])
     when "experience" then number_error(value, minimum: 0)
     when "resource" then resource_error(value)
     # A bonus stores only its proficiency, ticked or not; a computed field is never stored (else branch)

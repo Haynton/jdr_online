@@ -26,7 +26,7 @@ class CharacterSheetBuilder
 
   def convert(type, typed_value)
     case type
-    when "number", "experience" then integer_or_typed_value(typed_value)
+    when "number", "ability", "experience" then integer_or_typed_value(typed_value)
     when "resource" then full_resource(typed_value)
     # The check box sends "1" when checked, the hidden field before it "0". For a bonus, it is its proficiency
     when *CHECK_BOX_TYPES then typed_value == "1"

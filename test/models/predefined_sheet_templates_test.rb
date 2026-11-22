@@ -41,6 +41,8 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
 
         assert_equal keys.uniq, keys, "#{template_file.basename}: #{definition} has a key twice"
         assert_empty fields.pluck("type") - SheetTemplate::FIELD_TYPES, "#{template_file.basename}: unknown type"
+        modifier_rules = fields.select { |field| field["type"] == "ability" }.pluck("modifier")
+        assert_empty modifier_rules - SheetTemplate::MODIFIER_RULES, "#{template_file.basename}: unknown modifier"
       end
     end
   end
@@ -57,14 +59,16 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
-  test "a bonus is based on an ability with a modifier, and its proficiency is a computed field" do
+  test "a bonus or an ability modifier is based on an ability, a proficiency is a computed field" do
     each_template do |template_file, template|
       fields = template.dig("character_fields", "fields")
-      ability_keys = fields.select { |field| field["has_modifier"] }.pluck("key")
+      ability_keys = fields.select { |field| field["type"] == "ability" }.pluck("key")
       computed_keys = fields.select { |field| field["type"] == "computed" }.pluck("key")
 
+      fields.select { |field| field["type"] == "bonus" || field["rule"] == "ability_modifier" }.each do |field|
+        assert_includes ability_keys, field["based_on"], "#{template_file.basename}: #{field['key']}"
+      end
       fields.select { |field| field["type"] == "bonus" }.each do |bonus|
-        assert_includes ability_keys, bonus["based_on"], "#{template_file.basename}: #{bonus['key']}"
         assert_includes computed_keys, bonus["proficiency"], "#{template_file.basename}: #{bonus['key']}"
       end
     end
@@ -77,10 +81,15 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
       computed_fields.each do |field|
         assert_includes SheetTemplate::COMPUTED_RULES, field["rule"], template_file.basename.to_s
       end
-      next if computed_fields.none? { |field| field["rule"] == "proficiency_by_level" }
+      proficiency_fields = computed_fields.select { |field| field["rule"] == "proficiency_by_level" }
+      next if proficiency_fields.none?
 
       assert template["level_thresholds"].all? { |threshold| threshold["proficiency_bonus"].is_a?(Integer) },
              "#{template_file.basename}: every level needs its proficiency_bonus"
+      number_keys = template.dig("character_fields", "fields").select { |field| field["type"] == "number" }.pluck("key")
+      proficiency_fields.each do |field|
+        assert_includes number_keys, field["level_from"], "#{template_file.basename}: level_from of #{field['key']}"
+      end
     end
   end
 
@@ -128,7 +137,7 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   # One shape per type (design notes, "Valeurs d'une fiche")
   def value_matches_type?(value, type)
     case type
-    when "number" then value.is_a?(Hash) && value["value"].is_a?(Numeric)
+    when "number", "ability" then value.is_a?(Hash) && value["value"].is_a?(Numeric)
     when "resource" then value.is_a?(Hash) && value.keys.sort == %w[current max]
     when "attacks" then value.is_a?(Array)
     when "boolean" then [true, false].include?(value)
