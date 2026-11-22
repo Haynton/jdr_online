@@ -3,12 +3,14 @@ import { Controller } from "@hotwired/stimulus"
 // Keeps the computed values of a character sheet up to date while the player types: the modifier of each ability,
 // the proficiency bonus of the level typed, the initiative, and the bonus of each saving throw and skill (modifier,
 // plus the proficiency when ticked). Same rules as CharacterSheetCalculator (app/services), which works them out
-// on the server: changing one means changing the other. Nothing here is sent: the server stores only what was typed
+// on the server: changing one means changing the other. Nothing here is sent: the server stores only what was typed.
+// It also applies the effects of an option picked in a list (the class ticks its saving throws, offers its skills)
 export default class extends Controller {
-  static targets = ["score", "modifier", "computed", "bonus"]
+  static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices"]
   static values = { levelThresholds: Array }
 
   connect() {
+    this.appliedOptions = Object.fromEntries(this.effectChoiceTargets.map((select) => [select.id, select.value]))
     this.recompute()
   }
 
@@ -20,6 +22,54 @@ export default class extends Controller {
     this.computedTargets.forEach((output) => { output.textContent = formatComputed(computedValues[output.dataset.key]) })
     this.bonusTargets.forEach((output) => {
       output.textContent = formatBonus(this.bonusOf(output, modifiers, computedValues))
+    })
+    this.showSkillChoices()
+  }
+
+  // The effects of the option picked in a list (SheetTemplate::CHOICE_EFFECTS): its saving throws are ticked, those
+  // of the option picked before are unticked (decision: replaced). Only an aid: the player can still change any box.
+  // Runs before recompute, which the change then reaches on the form
+  applyEffects({ target: select }) {
+    const effectsByOption = JSON.parse(select.dataset.effects)
+    this.tickBonusFields(effectsByOption[this.appliedOptions[select.id]]?.proficient, false)
+    this.tickBonusFields(effectsByOption[select.value]?.proficient, true)
+    this.appliedOptions[select.id] = select.value
+  }
+
+  tickBonusFields(fieldKeys = [], isTicked) {
+    fieldKeys.forEach((fieldKey) => {
+      const checkBox = this.element.querySelector(`#character_sheet_${fieldKey}`)
+      if (checkBox) checkBox.checked = isTicked
+    })
+  }
+
+  // The skills offered by the options picked (skill_choices) are marked, and the count of those ticked is written
+  // under the title of their section. Nothing to show while no option offers any
+  showSkillChoices() {
+    const offers = this.pickedEffects().filter(({ effects }) => effects.skill_choices)
+    const offeredKeys = new Set(offers.flatMap(({ effects }) => effects.skill_choices.from))
+    this.bonusRowTargets.forEach((row) => row.toggleAttribute("data-offered", offeredKeys.has(row.dataset.key)))
+    this.skillChoicesTargets.forEach((paragraph) => this.writeSkillChoices(paragraph, offers, offeredKeys))
+  }
+
+  writeSkillChoices(paragraph, offers, offeredKeys) {
+    paragraph.hidden = offers.length === 0
+    if (paragraph.hidden) return
+
+    const tickedCount = [...offeredKeys].filter((fieldKey) => {
+      return this.element.querySelector(`#character_sheet_${fieldKey}`)?.checked
+    }).length
+    paragraph.textContent = paragraph.dataset.template
+      .replace("%{option}", offers.map(({ option }) => option).join(", "))
+      .replaceAll("%{count}", offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0))
+      .replace("%{chosen}", tickedCount)
+  }
+
+  // [{ option: "Magicien", effects: { ... } }] for each list with effects, once an option is picked
+  pickedEffects() {
+    return this.effectChoiceTargets.flatMap((select) => {
+      const effects = JSON.parse(select.dataset.effects)[select.value]
+      return effects ? [{ option: select.value, effects }] : []
     })
   }
 
@@ -42,10 +92,12 @@ export default class extends Controller {
     }))
   }
 
-  // "3d8": one die per level, its sides by the class chosen. Nothing until a class of the list is chosen
+  // "3d8": one die per level, its sides the hit_die of the class chosen (effects of its list). Nothing until a class
+  // of the list is chosen
   hitDice(output) {
-    const diceByClass = JSON.parse(output.dataset.diceByClass || "{}")
-    const sides = diceByClass[this.fieldValue(output.dataset.classFrom)]
+    const classSelect = this.element.querySelector(`#character_sheet_${output.dataset.classFrom}`)
+    const effectsByOption = JSON.parse(classSelect?.dataset.effects || "{}")
+    const sides = effectsByOption[classSelect?.value]?.hit_die
     return sides ? `${this.typedLevel(output.dataset.levelFrom)}d${sides}` : null
   }
 

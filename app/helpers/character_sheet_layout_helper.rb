@@ -62,6 +62,14 @@ module CharacterSheetLayoutHelper
     fields.filter_map { |field| field["help"] }.uniq
   end
 
+  # Whether an option of a list of the sheet offers some of these fields to pick (skill_choices of its effects)
+  def sheet_offered_by_a_choice?(fields, all_fields)
+    offered_keys = all_fields.flat_map do |field|
+      field["effects"].to_h.values.flat_map { |effects| effects.dig("skill_choices", "from").to_a }
+    end
+    fields.any? { |field| offered_keys.include?(field["key"]) }
+  end
+
   # The fields of a flow section by group (FLOW_GROUPS), each group in the order of the template, empty groups left
   # out: [[:lists, [class, species, alignment]], [:boxes, [level]]]
   def sheet_flow_groups(fields)

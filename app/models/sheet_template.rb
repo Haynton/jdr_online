@@ -20,8 +20,13 @@ class SheetTemplate < ApplicationRecord
   # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
   # proficiency_by_level: the proficiency_bonus, in level_thresholds, of the level typed in the field level_from.
   # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
-  # hit_dice_by_class: one die per level (level_from), its sides by the class chosen (class_from, dice_by_class): "3d8"
+  # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8"
   COMPUTED_RULES = %w[proficiency_by_level ability_modifier hit_dice_by_class].freeze
+  # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
+  # list. Only an aid: the player can still tick or untick anything (decision).
+  # hit_die: the sides of the hit dice (hit_dice_by_class). proficient: the bonus fields ticked (saving throws),
+  # unticked when another option is chosen. skill_choices: how many bonus fields to pick (count) among a list (from)
+  CHOICE_EFFECTS = %w[hit_die proficient skill_choices].freeze
 
   belongs_to :owner, class_name: "User", optional: true
   belongs_to :parent, class_name: "SheetTemplate", optional: true

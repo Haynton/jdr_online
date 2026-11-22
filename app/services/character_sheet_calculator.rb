@@ -46,9 +46,11 @@ class CharacterSheetCalculator
     end
   end
 
-  # "3d8": one die per level, its sides by the class. nil until a class of the list is chosen
+  # "3d8": one die per level, its sides the hit_die of the class chosen (effects of the class field).
+  # nil until a class of the list is chosen
   def hit_dice(field)
-    sides = field["dice_by_class"].to_h[@sheet[field["class_from"]]]
+    class_field = @fields.find { |candidate| candidate["key"] == field["class_from"] }
+    sides = class_field&.dig("effects", @sheet[field["class_from"]].to_s, "hit_die")
     "#{typed_level(field['level_from'])}d#{sides}" if sides
   end
 

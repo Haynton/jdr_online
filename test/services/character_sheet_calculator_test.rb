@@ -36,11 +36,11 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil calculate({})[:values]["initiative"]
   end
 
-  test "the hit dice are one die per level, its sides by the class chosen" do
-    fields = FIELDS + [{ "key" => "class", "type" => "choice" },
+  test "the hit dice are one die per level, its sides the hit die of the class chosen" do
+    class_effects = { "Clerc" => { "hit_die" => 8 }, "Magicien" => { "hit_die" => 6 } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },
                        { "key" => "hit_dice", "type" => "computed", "rule" => "hit_dice_by_class",
-                         "class_from" => "class", "level_from" => "level",
-                         "dice_by_class" => { "Clerc" => 8, "Magicien" => 6 } }]
+                         "class_from" => "class", "level_from" => "level" }]
     hit_dice = lambda do |sheet|
       CharacterSheetCalculator.new(fields: fields, sheet: sheet, level_thresholds: []).call[:values]["hit_dice"]
     end

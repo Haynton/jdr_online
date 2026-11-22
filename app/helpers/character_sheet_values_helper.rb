@@ -16,7 +16,6 @@ module CharacterSheetValuesHelper
   # What the live calculation needs to work out a computed value, beside its rule
   def computed_value_data(field)
     { character_sheet_target: "computed", key: field["key"], rule: field["rule"], based_on: field["based_on"],
-      level_from: field["level_from"], class_from: field["class_from"],
-      dice_by_class: field["dice_by_class"]&.to_json }.compact
+      level_from: field["level_from"], class_from: field["class_from"] }.compact
   end
 end

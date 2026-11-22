@@ -93,6 +93,33 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
+  test "the effects of a list are known, for its own options, and name fields that exist" do
+    each_template do |template_file, template|
+      fields = template.dig("character_fields", "fields")
+      bonus_keys = fields.select { |field| field["type"] == "bonus" }.pluck("key")
+
+      fields.select { |field| field["effects"] }.each do |field|
+        assert_empty field["effects"].keys - field["options"], "#{template_file.basename}: options of #{field['key']}"
+        field["effects"].each do |option, effects|
+          assert_known_effects(effects, bonus_keys, "#{template_file.basename}: #{option}")
+        end
+      end
+    end
+  end
+
+  test "the hit dice read a list whose every option gives its hit die" do
+    each_template do |template_file, template|
+      fields = template.dig("character_fields", "fields")
+      fields.select { |field| field["rule"] == "hit_dice_by_class" }.each do |hit_dice|
+        class_field = fields.find { |field| field["key"] == hit_dice["class_from"] }
+
+        assert_equal "choice", class_field&.dig("type"), "#{template_file.basename}: class_from of #{hit_dice['key']}"
+        assert class_field["options"].all? { |option| class_field.dig("effects", option, "hit_die").is_a?(Integer) },
+               "#{template_file.basename}: every class needs its hit_die"
+      end
+    end
+  end
+
   test "the ready-made characters only fill fields of the NPC sheet, in the shape of their type" do
     each_template do |template_file, template|
       field_types = template.dig("npc_fields", "fields").to_h { |field| [field["key"], field["type"]] }
@@ -132,6 +159,17 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   # Sorted: each language lists the skills in the alphabetical order of their own labels
   def field_keys_of(template)
     FIELD_DEFINITIONS.to_h { |definition| [definition, template.dig(definition, "fields").pluck("key").sort] }
+  end
+
+  # Effects of SheetTemplate::CHOICE_EFFECTS only; the ticks and the skills offered are bonus fields of the sheet
+  def assert_known_effects(effects, bonus_keys, context)
+    assert_empty effects.keys - SheetTemplate::CHOICE_EFFECTS, context
+    assert_empty effects["proficient"].to_a - bonus_keys, "#{context}: proficient"
+    skill_choices = effects["skill_choices"]
+    return unless skill_choices
+
+    assert_empty skill_choices["from"] - bonus_keys, "#{context}: skill_choices"
+    assert_includes 1..skill_choices["from"].size, skill_choices["count"], "#{context}: count of skill_choices"
   end
 
   # One shape per type (design notes, "Valeurs d'une fiche")
