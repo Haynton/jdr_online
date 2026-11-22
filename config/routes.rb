@@ -39,7 +39,6 @@ Rails.application.routes.draw do
     resources :fields, only: %i[index edit update], module: :sheet_templates, param: :key
     # The name of a creation step, the only change of a step in a template duplicated from a working one (its steps
     # and their order stay: its computing rules rely on them)
-    resources :creation_steps, only: :update, module: :sheet_templates, param: :key
   end
 
   # Settings: one address per section, so the section menu is made of plain links

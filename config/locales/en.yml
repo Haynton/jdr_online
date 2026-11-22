@@ -335,7 +335,6 @@ en:
       index:
         back: "Back"
         only_with_effect: "Only if the option chosen gives %{effect}"
-        refused: "The template was not saved:"
         subtitle: "The steps a player follows to make their character, with the fields of each. Click a field to edit it."
         summary_only: "Shown only on the summary"
         title: "Creation path"
@@ -343,7 +342,6 @@ en:
         add_field_soon: "Add a field · Soon"
         left_out: "Filled in the game"
         left_out_hint: "No step of the creation asks these sections."
-        name: "Name of step %{number}"
         single_page: "A single page"
         single_page_hint: "This template asks the whole sheet on a single page."
       update:
@@ -368,9 +366,6 @@ en:
         from_table: "Given by the table"
         in_game: "In the game"
         internal: "Internal"
-    creation_steps:
-      update:
-        renamed: "Step renamed."
     contents:
       from: "Based on “%{name}”"
     destroy:

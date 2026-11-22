@@ -20,7 +20,8 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main h1", text: "Parcours de création"
     assert_select "ol li[aria-current=step]", text: /Parcours de création/
-    assert_equal %w[Classe Équipement Sorts Description], css_select("main ol input[name=label]").pluck("value")
+    assert_equal %w[Classe Équipement Sorts Description], css_select("main ol > li > div > h2").map(&:text)
+    assert_select "main ol input", count: 0
     assert_select "main", text: /Seulement si l'option choisie donne des sorts/
     assert_select "section h3", text: "Équipement"
     assert_select "a[href=?]", edit_sheet_template_field_path(@template, "level") do
@@ -32,23 +33,11 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "main", text: /starting_gold|spellcasting/, count: 0
   end
 
-  test "a step is renamed, the only change of a step; an empty name is refused" do
-    patch sheet_template_creation_step_path(@template, "class"), params: { label: "Vocation" }
-    assert_redirected_to sheet_template_fields_path(@template)
-    assert_equal "Vocation", @template.reload.character_fields["creation_steps"].first["label"]
-
-    patch sheet_template_creation_step_path(@template, "class"), params: { label: "" }
-    assert_response :unprocessable_content
-    assert_select "[role=alert] li", text: /le libellé doit être rempli/
-    assert_select "main ol input[name=label][value=?]", "Vocation"
-  end
-
   test "a template without steps shows its single page" do
     @template.update!(character_fields: @template.character_fields.except("creation_steps"))
 
     get sheet_template_fields_path(@template)
     assert_select "main h2", text: "Une seule page"
-    assert_select "main ol input[name=label]", count: 0
   end
 
   test "the form asks only what a game master tunes, its texts and its values, never what builds the sheet" do
@@ -56,7 +45,6 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "main h1", text: "Niveau"
-    assert_select "input[name='field[label]'][value=?]", "Niveau"
     assert_select "textarea[name='field[help]']"
     assert_select "input[type=number][name='field[max]']"
     assert_select "h2", text: "Textes"
@@ -64,7 +52,7 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "button[aria-controls='parameter-max-help'][aria-label=?][hidden]", "Aide\u00A0: Maximum"
     assert_select "input[name='field[max]'][aria-describedby='parameter-max-help']"
     assert_select "main", text: /level\b/, count: 0
-    %w[key type section column required at_creation visible_to_others summary_only internal from_table initial_from
+    %w[label key type section column required at_creation visible_to_others summary_only internal from_table initial_from
        step abbreviation].each do |parameter|
       assert_select "[name='field[#{parameter}]']", count: 0
     end
@@ -88,13 +76,13 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Les effets et les descriptions des options se modifieront bientôt/
   end
 
-  test "saving changes the field and goes back to the list; what builds the sheet stays, whatever is sent" do
+  test "saving changes the field and goes back to the list; its label and what builds the sheet stay" do
     patch sheet_template_field_path(@template, "level"),
           params: { field: { label: "Rang", section: "Combat", from_table: "", max: "12", at_creation: "0" } }
 
     assert_redirected_to sheet_template_fields_path(@template)
     level = @template.reload.character_fields["fields"].find { |field| field["key"] == "level" }
-    assert_equal ["Rang", 12, "Notes", "starting_level"], level.values_at("label", "max", "section", "from_table")
+    assert_equal ["Niveau", 12, "Notes", "starting_level"], level.values_at("label", "max", "section", "from_table")
     assert_not level.key?("at_creation")
   end
 
@@ -123,13 +111,13 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
 
   test "saved from the window, the page behind is refreshed; refused, the errors stay in the window" do
     patch sheet_template_field_path(@template, "level"), headers: { "Turbo-Frame" => "field_dialog" },
-                                                         params: { field: { label: "Rang", section: "Notes", at_creation: "1" } }
+                                                         params: { field: { max: "12" } }
     assert_response :success
     assert_select "turbo-stream[action=refresh]:not([request-id])"
-    assert_equal "Rang", @template.reload.character_fields["fields"].find { |field| field["key"] == "level" }["label"]
+    assert_equal 12, @template.reload.character_fields["fields"].find { |field| field["key"] == "level" }["max"]
 
     patch sheet_template_field_path(@template, "level"), headers: { "Turbo-Frame" => "field_dialog" },
-                                                         params: { field: { label: "Rang", section: "Notes", min: "10", max: "5", at_creation: "1" } }
+                                                         params: { field: { min: "10", max: "5" } }
     assert_response :unprocessable_content
     assert_select "turbo-frame#field_dialog [role=alert] li", text: /le minimum \(10\) dépasse le maximum \(5\)/
   end
@@ -143,10 +131,8 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
       assert_not_found { get sheet_template_fields_path(sheet_template) }
       assert_not_found { get edit_sheet_template_field_path(sheet_template, "level") }
       assert_not_found { patch sheet_template_field_path(sheet_template, "level"), params: { field: { label: "X" } } }
-      assert_not_found { patch sheet_template_creation_step_path(sheet_template, "class"), params: { label: "X" } }
     end
     assert_not_found { get edit_sheet_template_field_path(@template, "unknown") }
-    assert_not_found { patch sheet_template_creation_step_path(@template, "unknown"), params: { label: "X" } }
     assert_equal "Niveau", others_template.reload.character_fields["fields"].find { |f| f["key"] == "level" }["label"]
   end
 

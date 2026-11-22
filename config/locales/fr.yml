@@ -306,7 +306,6 @@ fr:
       index:
         back: "Retour"
         only_with_effect: "Seulement si l'option choisie donne %{effect}"
-        refused: "Le modèle n'a pas été enregistré :"
         subtitle: "Les étapes que suit un joueur pour créer son personnage, avec les champs de chacune. Cliquez un champ pour le modifier."
         summary_only: "Affichée seulement au récapitulatif"
         title: "Parcours de création"
@@ -314,7 +313,6 @@ fr:
         add_field_soon: "Ajouter un champ · Bientôt"
         left_out: "Remplis en partie"
         left_out_hint: "Ces sections ne sont demandées à aucune étape de la création."
-        name: "Nom de l'étape %{number}"
         single_page: "Une seule page"
         single_page_hint: "Ce modèle demande toute la fiche sur une seule page."
       update:
@@ -339,9 +337,6 @@ fr:
         from_table: "Donné par la table"
         in_game: "En partie"
         internal: "Interne"
-    creation_steps:
-      update:
-        renamed: "Étape renommée."
     contents:
       from: "D'après « %{name} »"
     destroy:

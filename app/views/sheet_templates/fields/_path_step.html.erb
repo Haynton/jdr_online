@@ -1,29 +1,21 @@
-<%# One step of the creation path: its header (number, name renamed live, when it shows), then its sections and their
-    fields. block[:kind]: :step (a declared step, block[:step]), :single_page (a template without steps) or :left_out
-    (the sections no step asks) %>
+<%# One step of the creation path: its header (number, name, when it shows), then its sections and their fields.
+    block[:kind]: :step (a declared step, block[:step]), :single_page (a template without steps) or :left_out (the
+    sections no step asks). The name of a step never changes here (decision: on a duplicated template, the steps and
+    their names stay; the editor from scratch will name them) %>
 <% step = block[:step] %>
 <% heading_id = "path-step-#{position}" %>
+<%# Full keys written in the table PATH_BLOCK_TEXTS: a key built from a name is not found by a search %>
+<% texts = SheetTemplates::CreationPathHelper::PATH_BLOCK_TEXTS[block[:kind]] %>
+<% title = step ? step["label"] : t(texts[:title]) %>
+<% note = step ? creation_step_note(step) : t(texts[:hint]) %>
 <li aria-labelledby="<%= heading_id %>">
   <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
     <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset" aria-hidden="true">
       <%= block[:kind] == :step ? position + 1 : "·" %>
     </span>
-    <% if block[:kind] == :step %>
-      <%# Its name, saved when it is left (auto_submit_controller.js); the heading of the block for screen readers %>
-      <%= form_with url: sheet_template_creation_step_path(sheet_template, step["key"]), method: :patch,
-                    class: "w-full max-w-xs sm:w-64",
-                    data: { controller: "auto-submit", action: "change->auto-submit#submit" } do %>
-        <%= label_tag "path_step_#{step['key']}", t(".name", number: position + 1), id: heading_id, class: "sr-only" %>
-        <%= text_field_tag :label, step["label"], id: "path_step_#{step['key']}", required: true, autocomplete: "off",
-                                                  class: "#{SimpleFormFieldClasses::INPUT} font-semibold" %>
-      <% end %>
-      <% if (note = creation_step_note(step)) %>
-        <span class="text-sm text-muted"><%= note %></span>
-      <% end %>
-    <% else %>
-      <%# Full keys written in the table PATH_BLOCK_TEXTS: a key built from a name is not found by a search %>
-      <h2 id="<%= heading_id %>" class="text-base font-semibold text-ink"><%= t(SheetTemplates::CreationPathHelper::PATH_BLOCK_TEXTS.dig(block[:kind], :title)) %></h2>
-      <span class="text-sm text-muted"><%= t(SheetTemplates::CreationPathHelper::PATH_BLOCK_TEXTS.dig(block[:kind], :hint)) %></span>
+    <h2 id="<%= heading_id %>" class="text-lg font-semibold text-ink"><%= title %></h2>
+    <% if note %>
+      <span class="text-sm text-muted"><%= note %></span>
     <% end %>
   </div>
 

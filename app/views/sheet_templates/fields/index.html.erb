@@ -1,26 +1,12 @@
 <%# The template editor, step "Creation path" (decision: a template duplicated from a working one keeps its steps and
     their order, which its computing rules rely on; building steps belongs to the editor from scratch, later). Its
-    steps in their order, each with its number, its name (renamed live, the only change: it breaks nothing), when it
-    shows (only on the summary, only with an option that has an effect), then its sections and their fields, each a
+    steps in their order, each with its number, its name (never changed here: the editor from scratch will name the
+    steps), when it shows (only on the summary, only with an option that has an effect), then its sections and their fields, each a
     light line that opens its form in a window (its label, its type, why the player does not type it). Adding a field comes with
     the tool to choose a field type. A template without steps shows its single page. No technical key shown %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= template_editor_page(sheet_template: @sheet_template, current_step: :creation_path) do %>
   <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
-
-  <% if @refusals.present? %>
-    <div class="mb-6 max-w-3xl">
-      <%# The full key: in a render layout: block, a short key is looked up under the partial (shared.message) %>
-      <%= render layout: "shared/message", locals: { variant: :error } do %>
-        <p class="font-semibold"><%= t("sheet_templates.fields.index.refused") %></p>
-        <ul class="mt-1 list-disc pl-5">
-          <% @refusals.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      <% end %>
-    </div>
-  <% end %>
 
   <ol class="flex flex-col gap-10">
     <% creation_path(@sheet_template).each_with_index do |block, position| %>
