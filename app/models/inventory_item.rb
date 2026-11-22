@@ -1,5 +1,5 @@
 # An item a character carries: a copy of its catalog entry, made when the character is created (its starting
-# equipment, StartingEquipment), with how many of it (20 arrows)
+# equipment, CharacterSheets::StartingEquipment), with how many of it (20 arrows)
 class InventoryItem < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60

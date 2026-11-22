@@ -50,7 +50,7 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
       class_list["effects"].each do |class_option, effects|
         next unless (spellcasting = effects["spellcasting"])
 
-        assert_includes SpellChoices::PREPARED_CHANGES, spellcasting["prepared_changes"], class_option
+        assert_includes CharacterSheets::SpellChoices::PREPARED_CHANGES, spellcasting["prepared_changes"], class_option
 
         (1..4).each do |level|
           assert_enough_spells(catalog, class_option, spellcasting, level, "#{catalog_file.basename} #{class_option}")
@@ -75,8 +75,8 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     catalog_file = Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.fr.json")
     sheet_template = create_template_of(catalog_file)
 
-    CatalogLoader.new(catalog_file).call
-    CatalogLoader.new(catalog_file).call
+    Catalogs::Loader.new(catalog_file).call
+    Catalogs::Loader.new(catalog_file).call
 
     assert_equal 141, sheet_template.catalog_entries.spells.count
     assert_equal "Projectile magique", sheet_template.catalog_entries.find_by(key: "magic-missile").name

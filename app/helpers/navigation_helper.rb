@@ -1,11 +1,4 @@
 module NavigationHelper
-  # On surface-raised, only ink stays readable (muted falls under 4.5)
-  NAV_ITEM_CLASSES = %w[
-    flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] text-ink whitespace-nowrap transition-colors
-    hover:bg-surface-raised
-    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
-  ].join(" ").freeze
-
   NAV_ICON_CLASSES = "size-5 shrink-0".freeze
 
   # A link of the side navigation. On a phone, a round icon of the floating bar.
@@ -47,15 +40,6 @@ module NavigationHelper
     motion-safe:md:transition-[padding] motion-safe:md:duration-200 motion-safe:md:ease-out
   ].join(" ").freeze
 
-  # A link of a navigation menu, with its icon. The page being shown has no color of its own (decision:
-  # the green background looked like a selected option), screen readers still hear it through aria-current.
-  # current: replaces the URL check when one page has several URLs. data: optional (settings_link_data)
-  def nav_link_to(label, path, icon:, current: current_page?(path), data: {})
-    link_to path, class: NAV_ITEM_CLASSES, aria: current_page_aria(current), data: data do
-      nav_icon(icon) + label
-    end
-  end
-
   # The settings window (shared/_settings_dialog), for a signed in user. Not on the settings pages:
   # they hold the frame of the same name themselves, and "Settings" there simply leads to the page
   def settings_dialog_available?
@@ -66,11 +50,6 @@ module NavigationHelper
   # No prefetch: its answer, laid out for the window, would be reused for the same address opened as a page
   def settings_link_data
     settings_dialog_available? ? { turbo_frame: "settings_dialog", turbo_prefetch: false } : {}
-  end
-
-  # Also used by the log out button of the menu, so that it looks like the links around it
-  def nav_item_classes
-    NAV_ITEM_CLASSES
   end
 
   def nav_icon(icon)

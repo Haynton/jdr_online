@@ -1,0 +1,87 @@
+<%# The abilities step, as a guide in two moves (decision): on the left, in the order the player acts, "1 Your scores"
+    ("Roll the dice", the method of the template, the results: ability_roll_controller.js, the server rolls; an aid,
+    the player can roll again or type their own scores) then "2 Background bonus" (what it raises, the rule, one line
+    per ability raised with +0 | +1 | +2 and its final score, what is left to place: ability_bonus_controller.js); on
+    the right, the six tiles (three per line, 192 px at most, two on a phone). Under 1024 px, the guide comes
+    first, the tiles under it. A tile only shows a placed bonus as a round astride its corner %>
+<% game_table = character.game_table %>
+<% ability_fields = fields.select { |field| field["type"] == "ability" } %>
+<% bonus_field = ability_bonus_field(fields) %>
+<% raised_keys = raised_ability_keys(character, bonus_field) %>
+<%= tag.div class: "clear-left grid gap-y-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-x-24",
+            data: abilities_section_data(game_table) do %>
+  <div class="flex flex-col gap-10">
+    <section aria-labelledby="ability_scores_title">
+      <%= render "character_sheets/sections/guide_heading", number: 1, id: "ability_scores_title",
+                                                         title: t("game_tables.characters.new.scores_title") %>
+      <% if ability_roll_available?(game_table) %>
+        <p class="mt-3 text-sm text-muted"><%= ability_roll_method_text(game_table) %></p>
+        <div hidden class="mt-4" data-ability-roll-target="controls">
+          <button type="button" class="<%= button_classes(:secondary) %>" data-ability-roll-target="button" data-action="ability-roll#roll">
+            <%= render "shared/icons/dices" %>
+            <span data-ability-roll-target="buttonLabel"><%= t("game_tables.characters.new.roll") %></span>
+          </button>
+        </div>
+        <div hidden class="mt-4 flex flex-wrap gap-2" role="status" data-ability-roll-target="results"></div>
+        <template data-ability-roll-target="chipTemplate">
+          <span class="inline-flex items-baseline gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
+            <span class="text-sm font-bold text-ink tabular-nums" data-total></span>
+            <span class="text-xs text-muted tabular-nums" data-dice></span>
+          </span>
+        </template>
+      <% else %>
+        <p class="mt-3 text-sm text-muted"><%= t("game_tables.characters.new.type_scores") %></p>
+      <% end %>
+    </section>
+
+    <% if bonus_field %>
+      <section aria-labelledby="ability_bonus_title">
+        <%= render "character_sheets/sections/guide_heading", number: 2, id: "ability_bonus_title",
+                                                           title: bonus_field["label"] %>
+        <% if raised_keys.any? %>
+          <p class="mt-3 text-sm text-muted">
+            <%= t("game_tables.characters.new.bonus_raises_html",
+                  option: tag.span(bonus_source_option(character, bonus_field), class: "font-semibold text-ink"),
+                  abilities: raised_ability_labels(character, bonus_field)) %>
+            <%= t("game_tables.characters.new.bonus_rule") %>
+          </p>
+          <%# Headings over the columns of the lines, for the eye only: each line already names its choices and its score %>
+          <div class="mt-5 <%= CharacterSheets::AbilityBonusesHelper::BONUS_COLUMNS %> text-[11px] font-semibold tracking-wider text-muted uppercase" aria-hidden="true">
+            <span></span>
+            <span class="text-center"><%= t("game_tables.characters.new.bonus_column") %></span>
+            <span class="text-center"><%= t("game_tables.characters.new.score_column") %></span>
+          </div>
+          <ul class="mt-2 flex flex-col gap-2">
+            <% ability_fields.select { |field| raised_keys.include?(field["key"]) }.each do |field| %>
+              <%= render "character_sheets/sections/ability_bonus_choice", character: character, field: field,
+                                                                        bonus_field: bonus_field,
+                                                                        final_score: computed[:scores]&.dig(field["key"]) %>
+            <% end %>
+          </ul>
+          <%# In red while the spread is wrong (data-invalid, set here and by ability_bonus_controller.js) %>
+          <%= tag.p ability_bonus_status(character, bonus_field), role: "status",
+                    class: "mt-4 text-sm font-medium text-ink data-invalid:text-error-ink",
+                    data: { ability_bonus_target: "status", invalid: ("" if ability_bonus_too_many?(character, bonus_field)) } %>
+          <% if (error = sheet_field_error(character, bonus_field)) %>
+            <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+          <% end %>
+        <% else %>
+          <p class="mt-3 text-sm text-muted"><%= t("game_tables.characters.new.bonus_pick_background") %></p>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+
+  <%# 12 px between the tiles on a phone, 16 px above: two tiles and a wider gap ran 5 px past the content.
+      From 640 px, 192 px each, side by side and wrapping (decisions: stretched across the column, they were mostly
+      empty space; in a grid of three narrower columns, they ran over their gaps), as many per line as the width holds.
+      Against the right edge beside the guide (from 1024 px), like the buttons at the bottom %>
+  <div class="grid grid-cols-2 content-start gap-3 sm:flex sm:flex-wrap sm:gap-4 lg:justify-end">
+    <% ability_fields.each do |field| %>
+      <%= render "character_sheets/fields/ability", character: character, field: field,
+                                                        modifier: computed[:modifiers][field["key"]],
+                                                        bonus_field: (bonus_field if raised_keys.include?(field["key"])),
+                                                        rollable: ability_roll_available?(game_table) %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,5 +1,5 @@
-# The page of a creation in steps (a table: GameTableCreationHelper, a character: CharacterCreationHelper): the band
-# of the steps across the whole width (shared/_steps_band), then the content (game_tables/_creation_page)
+# The page of a creation in steps (a table: GameTableCreationHelper, a character: CharacterSheets::CreationHelper): the
+# band of the steps across the whole width (shared/_steps_band), then the content (game_tables/_creation_page)
 module StepsBandHelper
   # Tonal colors only: a filled plaque is kept for buttons
   STEP_MARKER_CLASSES = {

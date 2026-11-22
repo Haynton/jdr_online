@@ -10,10 +10,6 @@ module GameTableLastStepsHelper
     "#{SimpleFormFieldClasses::INPUT} truncate"
   end
 
-  def field_hint_classes
-    SimpleFormFieldClasses::HINT
-  end
-
   def summary_description(game_table)
     game_table.description.presence || t("game_tables.summaries.show.no_description")
   end

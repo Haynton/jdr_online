@@ -1,0 +1,14 @@
+<%# A choice or a text to fill in, at its own width: its label, its control, its help, its error. A number is not
+    drawn here: it has its box (character_sheets/fields/_stat), wherever it is (decision: one look per type) %>
+<% error = sheet_field_error(character, field) %>
+<% hint = sheet_field_hint(field) %>
+<div class="<%= SimpleFormFieldClasses::FIELD_BLOCK %> <%= sheet_field_width_classes(field) %>">
+  <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::LABEL %>
+  <%= sheet_field_control(character, field) %>
+  <% if hint %>
+    <p class="<%= SimpleFormFieldClasses::HINT %>"><%= hint %></p>
+  <% end %>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+</div>

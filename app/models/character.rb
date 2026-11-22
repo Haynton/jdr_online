@@ -46,26 +46,27 @@ class Character < ApplicationRecord
     CharacterCreationSteps.new(game_table: game_table, sheet: sheet)
   end
 
-  # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option
-  # changed in a list applies its effects to the other steps too (ChoiceEffectsApplier), and the starting equipment
-  # and the spells its new class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
+  # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option changed
+  # in a list applies its effects to the other steps too (CharacterSheets::ChoiceEffectsApplier), and the starting
+  # equipment and the spells its new class does not offer go. The step that chooses the spells copies those chosen
+  # (spell_keys)
   def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
-    filled_values = CharacterSheetBuilder.new(fields: step.fields, submitted_values: sheet_values).call
-    self.sheet = ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
-                                     .call(sheet.except(*step.field_keys).merge(filled_values))
+    filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
+    self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
+                                                      .call(sheet.except(*step.field_keys).merge(filled_values))
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
     # On another step, a class changed drops an equipment choice it does not offer; on the equipment step, what was
     # sent is checked instead (CharacterSheetValidator), never dropped without a word
-    self.sheet = StartingEquipment.new(self).keep_offered(sheet) unless step.chooses_equipment
+    self.sheet = CharacterSheets::StartingEquipment.new(self).keep_offered(sheet) unless step.chooses_equipment
     return choose_spells(spell_keys) if step.chooses_spells
 
     self.spells = spell_choices.keep_offered(spells)
   end
 
-  # The spells this character may choose: its class, its level (SpellChoices)
+  # The spells this character may choose: its class, its level (CharacterSheets::SpellChoices)
   def spell_choices
-    SpellChoices.new(self)
+    CharacterSheets::SpellChoices.new(self)
   end
 
   # Once complete, the values the game will change start from what was worked out at creation (initial_from: the hit
@@ -78,7 +79,7 @@ class Character < ApplicationRecord
       [field["key"], field["type"] == "resource" ? { "current" => value, "max" => value } : value] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
-    StartingEquipment.new(self).chosen_items.each { |item| inventory_items << InventoryItem.copy_of(item) }
+    CharacterSheets::StartingEquipment.new(self).chosen_items.each { |item| inventory_items << InventoryItem.copy_of(item) }
     self.status = :complete
   end
 
@@ -94,7 +95,8 @@ class Character < ApplicationRecord
 
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)
   def computed_sheet_values
-    CharacterSheetCalculator.new(fields: sheet_fields, sheet: sheet, level_thresholds: game_table.level_thresholds).call
+    CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet,
+                                    level_thresholds: game_table.level_thresholds).call
   end
 
   # A copy of each spell chosen (decision: the catalog changing never changes a character). A key not offered stays as

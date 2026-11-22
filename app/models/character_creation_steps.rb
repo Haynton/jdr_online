@@ -1,13 +1,13 @@
 # The steps a player goes through to make their character, read from the template copied into the table
 # (character_fields.creation_steps: key, label, the sections it asks, asks_name, only_with_effect, summary_only,
 # chooses_spells, chooses_equipment), then the summary. A step with chooses_spells also offers the spells of the class
-# (SpellChoices), one with chooses_equipment the starting equipment (StartingEquipment).
-# A step with only_with_effect shows only when an option picked has that effect (spells: a class with spellcasting).
-# A step summary_only has nothing to fill in (combat: worked out values, the speed given by the species; decision):
-# it is not a page of the creation, only a block of the summary sheet.
-# A template without steps (cosmic horror) asks all its fields and the name in one step.
-# Steps are compared in the order of the template, conditional ones included: the step reached is kept by its key
-# and stays in place when a conditional step comes or goes
+# (CharacterSheets::SpellChoices), one with chooses_equipment the starting equipment
+# (CharacterSheets::StartingEquipment). A step with only_with_effect shows only when an option picked has that effect
+# (spells: a class with spellcasting). A step summary_only has nothing to fill in (combat: worked out values, the speed
+# given by the species; decision): it is not a page of the creation, only a block of the summary sheet. A template
+# without steps (cosmic horror) asks all its fields and the name in one step. Steps are compared in the order of the
+# template, conditional ones included: the step reached is kept by its key and stays in place when a conditional step
+# comes or goes
 class CharacterCreationSteps
   SUMMARY = "summary".freeze
   SINGLE_STEP = "sheet".freeze

@@ -1,0 +1,15 @@
+<%# The look of a yes-or-no value (boolean), wherever it is on the sheet: its name, then a classic switch, the look
+    of shared/_switch (decision: track field-line when off, primary when on, knob in primary-ink). Unlike that
+    component, it is a real check box (role="switch", hidden under the track and the knob, which follow it by
+    peer-checked:): sent with the form, usable with the keyboard, no JavaScript needed. The hidden "0" first: an
+    unchecked box sends nothing on its own. "1" or "0" (CharacterSheets::Builder) %>
+<div class="mt-1 flex w-full items-center gap-3">
+  <label for="<%= sheet_field_id(field) %>" class="text-sm font-semibold text-ink"><%= field["label"] %></label>
+  <span class="relative inline-flex">
+    <%= hidden_field_tag sheet_field_name(field), "0", id: nil %>
+    <%= check_box_tag sheet_field_name(field), "1", character.sheet[field["key"]] == true,
+                      id: sheet_field_id(field), role: "switch", class: "peer absolute inset-0 z-10 cursor-pointer opacity-0" %>
+    <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+    <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+  </span>
+</div>

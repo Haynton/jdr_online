@@ -1,4 +1,4 @@
-<%# The form of one step: its sections (game_tables/characters/_section), the name first when the step asks it,
+<%# The form of one step: its sections (character_sheets/sections/_section), the name first when the step asks it,
     then Back, Later and Continue at the end, on the right. Continue saves the draft and opens the next step; Back,
     Later and the steps of the band save it too, then go where they point (go_to: the hidden field below, filled by
     save_before_leaving_controller.js for the band, or the value of the button).
@@ -18,7 +18,7 @@
   <% end %>
 
   <% sections.each_with_index do |(section, fields), position| %>
-    <%= render "game_tables/characters/section", section: section, fields: fields, character: character,
+    <%= render "character_sheets/sections/section", section: section, fields: fields, character: character,
                                                 all_fields: character.sheet_fields, computed: computed,
                                                 lead: (name_input if position.zero?),
                                                 page_title: character_step_label(step) %>
