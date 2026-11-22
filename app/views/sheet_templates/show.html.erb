@@ -20,6 +20,7 @@
   <%= settings_group(title: t(".contents_group")) do %>
     <%= setting_row(label: t(".character_sheet"), label_id: "template-character-sheet",
                     description: sheet_template_contents(@sheet_template)) do %>
+      <%= link_to t(".edit_fields"), sheet_template_fields_path(@sheet_template), class: button_classes(:secondary) %>
     <% end %>
     <%= setting_row(label: t(".catalog"), label_id: "template-catalog",
                     description: sheet_template_catalog(@sheet_template)) do %>
