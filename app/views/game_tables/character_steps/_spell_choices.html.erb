@@ -8,7 +8,7 @@
 <% spell_choices = character.spell_choices %>
 <% groups = spell_choices.groups %>
 <%# Spacing (decision, balanced): 32 px under the header of the page (40 after the sections of the step, when there
-    are), the search and the filters 12 px apart as one block of tools, then 40 px before each group of spells %>
+    are), the search and the filters 20 px apart (12 px was too tight), one block of tools, then 40 px before each group of spells %>
 <%= tag.div class: ["flex flex-col gap-10", ("mt-10" if local_assigns[:after_sections])], data: { controller: "spell-choices" } do %>
   <% if character.errors[:spells].any? %>
     <div role="alert">
@@ -25,7 +25,7 @@
     <%# The search and the filters (decision: level, school, concentration and ritual, chosen only), shown by the
         controller. Pills of "My tables" (filter_pill_classes): within a group the values add up, between the groups
         they combine, a group with no pill pressed lets every spell through %>
-    <div hidden class="flex flex-col gap-3" data-spell-choices-target="tools">
+    <div hidden class="flex flex-col gap-5" data-spell-choices-target="tools">
       <div class="w-full max-w-sm">
         <%= label_tag "spell_search", t("#{SpellChoicesHelper::SCOPE}.search"), class: SimpleFormFieldClasses::LABEL %>
         <div class="relative">
