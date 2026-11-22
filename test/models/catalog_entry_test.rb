@@ -3,10 +3,12 @@ require "test_helper"
 class CatalogEntryTest < ActiveSupport::TestCase
   SPELL_FIELDS = {
     "fields" => [
-      { "key" => "level", "type" => "number", "min" => 0, "max" => 9, "required" => true },
-      { "key" => "school", "type" => "choice", "options" => %w[Evocation Illusion], "required" => true },
-      { "key" => "concentration", "type" => "boolean" },
-      { "key" => "classes", "type" => "picks", "options" => %w[Wizard Cleric], "required" => true }
+      { "key" => "level", "label" => "Level", "type" => "number", "min" => 0, "max" => 9, "required" => true },
+      { "key" => "school", "label" => "School", "type" => "choice", "options" => %w[Evocation Illusion],
+        "required" => true },
+      { "key" => "concentration", "label" => "Concentration", "type" => "boolean" },
+      { "key" => "classes", "label" => "Classes", "type" => "picks", "options" => %w[Wizard Cleric],
+        "required" => true }
     ]
   }.freeze
 

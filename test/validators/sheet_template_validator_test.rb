@@ -21,6 +21,34 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :duplicate_key, "Fiche du personnage\u00A0: la clé « strength » est utilisée par deux champs"
   end
 
+  test "a key is in snake_case: lower case letters, digits and _, a letter first" do
+    ["Points de vie", "1st_level", "vitalité", "hp<script>", ""].each do |key|
+      template = build_template { |fields| field(fields, "level")["key"] = key }
+
+      assert_error template, :invalid_key
+    end
+  end
+
+  test "a label is filled in, on one line, and not too long; any other text is fine" do
+    ["", "   ", "Points\nde vie", "Points\tde vie", "x" * 61].each do |label|
+      template = build_template { |fields| field(fields, "level")["label"] = label }
+
+      assert_error template, :invalid_label
+    end
+    template = build_template { |fields| field(fields, "level")["label"] = "Niveau <b>d'âme</b> & « esprit »" }
+    assert_predicate template, :valid?
+  end
+
+  test "a step has a key in snake_case and a label" do
+    steps = DEFAULT_STEPS.map(&:dup)
+    steps.first["key"] = "Personnage"
+    steps.last.delete("label")
+    template = build_template(steps: steps)
+
+    assert_error template, :invalid_step_key
+    assert_error template, :invalid_step_label
+  end
+
   test "a type the registry does not know is refused" do
     template = build_template { |fields| fields << { "key" => "luck", "label" => "Chance", "type" => "luck" } }
 
