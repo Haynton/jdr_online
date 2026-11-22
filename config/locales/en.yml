@@ -56,6 +56,7 @@ en:
         role: "Role"
         user_id: "Player"
       sheet_template:
+        description: "Description"
         name: "Name"
       user:
         email: "Email"
@@ -285,13 +286,27 @@ en:
       cancel: "Cancel"
       confirm: "Confirm"
   sheet_templates:
+    banner_colors:
+      arcane: "Arcane"
+      crimson: "Crimson"
+      forest: "Forest"
+      gold: "Gold"
+      night: "Night"
+      stone: "Stone"
     duplicates:
       copy_name: "%{name} (copy)"
       create:
         created: "Template “%{name}” created."
+    editor:
+      band_label: "Steps of the template editor"
+      steps:
+        catalog: "Catalog"
+        character_sheet: "Character sheet"
+        creation_steps: "Creation steps"
+        informations: "Information"
     fields:
       edit:
-        back: "Character sheet"
+        about: "Help: %{label}"
         cancel: "Cancel"
         effects_soon: "The effects and the descriptions of the options will be editable soon. The options of a list that has some are not renamed: their effects depend on them."
         groups:
@@ -299,32 +314,14 @@ en:
           type: "Settings of the type"
         refused: "The template was not saved:"
         save: "Save"
-        subtitle: "Type: %{type} · key: %{key}"
+        subtitle: "%{type}, section “%{section}”"
       index:
-        edit: "Edit"
-        edit_label: "Edit %{label}"
+        back: "My templates"
         subtitle: "The fields the players fill in, section by section."
         title: "Character sheet"
       update:
         updated: "Field “%{label}” saved."
     contents:
-      catalog:
-        feature:
-          one: "1 feature"
-          other: "%{count} features"
-        item:
-          one: "1 item"
-          other: "%{count} items"
-        monster:
-          one: "1 enemy"
-          other: "%{count} enemies"
-        npc:
-          one: "1 NPC"
-          other: "%{count} NPCs"
-        spell:
-          one: "1 spell"
-          other: "%{count} spells"
-      empty_catalog: "No spells nor items."
       fields:
         one: "1 field"
         other: "%{count} fields"
@@ -336,10 +333,33 @@ en:
     destroy:
       deleted: "Template “%{name}” deleted."
       used_by_tables: "A table uses this template: it cannot be deleted."
+    figures:
+      feature: "Features"
+      fields: "Fields"
+      item: "Items"
+      monster: "Enemies"
+      npc: "NPCs"
+      single_page: "Creation page"
+      spell: "Spells"
+      steps: "Creation steps"
+    icons:
+      bot: "Robot"
+      castle: "Castle"
+      crown: "Crown"
+      flame: "Flame"
+      ghost: "Ghost"
+      moon_star: "Moon and star"
+      rocket: "Rocket"
+      scroll_text: "Scroll"
+      shield: "Shield"
+      skull: "Skull"
+      swords: "Crossed swords"
+      wand_sparkles: "Magic wand"
     index:
       duplicate: "Duplicate"
       duplicate_label: "Duplicate %{name}"
-      none: "No template yet. Duplicate a provided template to start your own."
+      none: "Duplicate a provided template, below, to start your own."
+      none_title: "No template yet"
       own_title: "Your templates"
       predefined_hint: "Duplicate one to make it your template, which you can then adapt to your game."
       predefined_title: "Provided templates"
@@ -409,6 +429,7 @@ en:
         label: "Modifier rule"
         values:
           half_above_ten: "(score − 10) / 2, rounded down"
+      none: "None"
       on_rest:
         hint: "What the value becomes after a rest."
         label: "After a rest"
@@ -458,20 +479,22 @@ en:
         hint: "The other players of the table can read it."
         label: "Seen by the other players"
     show:
-      back: "My templates"
-      catalog: "Catalog"
-      character_sheet: "Character sheet"
-      contents_group: "Contents"
-      danger_zone: "Danger zone"
+      back: "Back"
+      banner_color: "Banner color"
+      contents_title: "What it holds"
       delete: "Delete the template"
       delete_button: "Delete"
       delete_confirmation: "Delete the template “%{name}” and its catalog? This cannot be undone."
       delete_description: "The template and all its catalog are deleted for good."
-      edit_contents: "Edit the contents"
-      edit_contents_soon: "Soon: adding or removing fields, the creation steps and the catalog."
-      edit_fields: "Edit the fields"
-      general_group: "General"
-      rename: "Rename"
+      eyebrow: "Your template"
+      icon: "Icon"
+      next: "Next"
+      no_tables: "No table uses it yet."
+      presentation_title: "Presentation"
+      save: "Save"
+      see_less: "See less"
+      see_more: "See more"
+      tables_title: "Tables that use it"
       used_by_tables:
         one: "Used by 1 table: it cannot be deleted for now."
         other: "Used by %{count} tables: it cannot be deleted for now."
@@ -740,8 +763,6 @@ en:
         finish: "Finish the creation"
         finish_and_join: "Finish and join the game"
         no_description: "No description"
-        ready: "Invite your players, or go back to a step to change it. “Finish the creation” opens it to your players."
-        ready_title: "Your table is ready"
         see_less: "See less"
         see_more: "See more"
         sheet_template: "Sheet template:"

@@ -4,6 +4,12 @@
 module SheetTemplates
   module FieldFormHelper
     SCOPE = "sheet_templates.parameters".freeze
+    # A field of the list of the editor: a light line that opens its form as a whole, gold outline on hover
+    FIELD_LINE_CLASSES = %w[
+      flex items-center justify-between gap-3 rounded-lg bg-surface px-4 py-3 ring-1 ring-line transition-shadow
+      hover:ring-2 hover:ring-brass
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+    ].join(" ").freeze
     # The options of the input of each kind (a method per kind: one place to change how a kind is asked)
     INPUT_OPTIONS = {
       text: :text_input_options, long_text: :long_text_input_options, integer: :integer_input_options,
@@ -19,12 +25,15 @@ module SheetTemplates
       { general: common, type: own }.reject { |_group, parameters| parameters.empty? }
     end
 
-    # The input of one setting, labelled and explained in the words of the app
-    def field_parameter_input(form, parameter, context)
+    # The input of one setting, labelled and explained in the words of the app. Its help is the note of the button (i)
+    # beside its label (help_id, info_notes_controller.js), and describes the input
+    def field_parameter_input(form, parameter, context, help_id:)
       kind = FieldParameters.kind(parameter, FieldTypes.of(context[:field]))
       value = context[:submitted].key?(parameter) ? context[:submitted][parameter] : context[:field][parameter]
       options = public_send(INPUT_OPTIONS.fetch(kind), parameter, value, context)
+      options[:input_html] = options.fetch(:input_html, {}).merge(aria: { describedby: help_id })
       form.input parameter, **options, label: t("#{SCOPE}.#{parameter}.label"), hint: t("#{SCOPE}.#{parameter}.hint"),
+                                       hint_html: { id: help_id, data: { info_notes_target: "note" } },
                                        required: parameter_required?(parameter, context[:field])
     end
 
@@ -64,15 +73,15 @@ module SheetTemplates
       choices = FieldParameters.choices(parameter).map do |choice|
         [t("#{SCOPE}.#{parameter}.values.#{choice}"), choice]
       end
-      { collection: choices, selected: value, include_blank: true }
+      { collection: choices, selected: value, include_blank: t("#{SCOPE}.none") }
     end
 
-    # The fields of the type the setting expects: "Force (strength)"
+    # The fields of the type the setting expects, by their label (the key stays inside the app)
     def reference_input_options(parameter, value, context)
       expected_type = FieldTypes.of(context[:field]).references.fetch(parameter)
       candidates = context[:fields].select { |field| field["type"] == expected_type && field != context[:field] }
-      { collection: candidates.map { |field| ["#{field['label']} (#{field['key']})", field["key"]] },
-        selected: value, include_blank: true }
+      { collection: candidates.map { |field| [field["label"], field["key"]] },
+        selected: value, include_blank: t("#{SCOPE}.none") }
     end
 
     # The sections of the sheet, in their order

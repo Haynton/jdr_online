@@ -1,0 +1,15 @@
+<%# One setting of the form of a field: its input (SheetTemplates::FieldFormHelper), and its help on demand, opened by
+    the button (i) at the top right, beside its label (decision: a help under every setting made a wall of text, as on
+    the steps of a character; info_notes_controller.js hides the helps and shows the buttons, without JavaScript the
+    helps stay shown). The help stays tied to its input (aria-describedby) %>
+<% help_id = "parameter-#{parameter}-help" %>
+<div class="relative max-w-sm">
+  <%= field_parameter_input(form, parameter, context, help_id: help_id) %>
+  <button type="button" hidden
+          class="absolute top-0 right-0 flex size-6 cursor-pointer items-center justify-center rounded-full text-muted hover:bg-surface-raised hover:text-ink"
+          aria-expanded="false" aria-controls="<%= help_id %>"
+          aria-label="<%= t("sheet_templates.fields.edit.about", label: t("sheet_templates.parameters.#{parameter}.label")) %>"
+          data-info-notes-target="button" data-action="info-notes#toggle">
+    <%= render "shared/icons/info" %>
+  </button>
+</div>

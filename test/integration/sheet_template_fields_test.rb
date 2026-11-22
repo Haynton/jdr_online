@@ -11,16 +11,20 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     sign_in @game_master
   end
 
-  test "the template page leads to the fields, listed by section with their type" do
+  test "the band of the editor leads to the fields, listed by section with their type, no key shown" do
     get sheet_template_path(@template)
-    assert_select "a[href=?]", sheet_template_fields_path(@template), text: "Modifier les champs"
+    assert_select "ol a[href=?]", sheet_template_fields_path(@template), text: /Fiche du personnage/
 
     get sheet_template_fields_path(@template)
     assert_response :success
     assert_select "main h1", text: "Fiche du personnage"
-    assert_select "section h3", text: "Notes"
-    assert_select "p", text: "Nombre"
-    assert_select "a[href=?][aria-label=?]", edit_sheet_template_field_path(@template, "level"), "Modifier Niveau"
+    assert_select "ol li[aria-current=step]", text: /Fiche du personnage/
+    assert_select "section h2", text: "Notes"
+    assert_select "a[href=?]", edit_sheet_template_field_path(@template, "level") do
+      assert_select "span", text: "Niveau"
+      assert_select "span", text: "Nombre"
+    end
+    assert_select "main", text: /starting_gold/, count: 0
   end
 
   test "the form asks the settings of the type, each by its kind, the key and the type never" do
@@ -32,7 +36,11 @@ class SheetTemplateFieldsTest < ActionDispatch::IntegrationTest
     assert_select "input[type=number][name='field[max]']"
     assert_select "select[name='field[section]'] option[selected][value=?]", "Notes"
     assert_select "select[name='field[from_table]'] option[selected]", text: "Niveau de départ de la table"
-    assert_select "select[name='field[initial_from]'] option[value=?]", "starting_gold"
+    assert_select "select[name='field[initial_from]'] option[value=?]", "starting_gold", text: "Or de départ"
+    assert_select "select[name='field[initial_from]'] option[value='']", text: "Aucune"
+    assert_select "button[aria-controls='parameter-max-help'][aria-label=?][hidden]", "Aide\u00A0: Maximum"
+    assert_select "input[name='field[max]'][aria-describedby='parameter-max-help']"
+    assert_select "main", text: /level\b/, count: 0
     assert_select "input[type=checkbox][name='field[at_creation]'][checked]"
     assert_select "[name='field[key]'], [name='field[type]']", count: 0
   end

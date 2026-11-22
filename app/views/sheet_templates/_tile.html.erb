@@ -1,0 +1,23 @@
+<%# A card of a template, in the rows of "My templates": its icon in the color of its banner, like the cards of
+    templates of the creation of a table, its name, its description (2 lines), what it holds and where it comes from. Rendered as a
+    layout: the block holds what follows (the button of a provided template), nothing for one of mine, which is a link
+    to its page as a whole (path:) %>
+<% path = local_assigns[:path] %>
+<%= content_tag (path ? :a : :div), href: path,
+                class: (path ? SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES : SheetTemplatesHelper::TEMPLATE_TILE_CLASSES) do %>
+  <%# In the color of its banner, chosen in the editor (BANNER_CLASSES) %>
+  <span class="flex aspect-video w-full items-center justify-center <%= banner_classes(sheet_template.banner_color, :background) %> <%= banner_classes(sheet_template.banner_color, :accent) %>" aria-hidden="true">
+    <%= sheet_template_icon(sheet_template.icon, css_class: "size-10") %>
+  </span>
+  <span class="flex flex-1 flex-col gap-1 px-4 pt-3 pb-4">
+    <span class="font-semibold text-ink"><%= sheet_template.name %></span>
+    <% if sheet_template.description.present? %>
+      <span class="line-clamp-2 text-sm text-ink"><%= sheet_template.description %></span>
+    <% end %>
+    <span class="text-xs text-muted"><%= sheet_template_contents(sheet_template) %></span>
+    <% if (origin = sheet_template_origin(sheet_template)) %>
+      <span class="text-xs text-muted"><%= origin %></span>
+    <% end %>
+    <%= yield %>
+  </span>
+<% end %>

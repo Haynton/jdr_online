@@ -1,6 +1,9 @@
 {
   "name": "Fantasy héroïque",
   "locale": "fr",
+  "icon": "swords",
+  "banner_color": "gold",
+  "description": "Des héros, des sorts et des monstres : classes, historiques et espèces, caractéristiques, sorts et équipement de départ, d'après le SRD 5.2.",
   "character_fields": {
     "ability_roll": { "dice": 4, "sides": 6, "keep_highest": 3 },
     "creation_steps": [

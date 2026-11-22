@@ -5,6 +5,19 @@
 class SheetTemplate < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
+  # What the template is for, a few lines shown on its cards and its page (decision: short)
+  DESCRIPTION_MAX_LENGTH = 500
+  # The icons a template may show, by theme of the covers (GameTable::COVER_THEMES), the scroll by default: a closed
+  # list, each a partial of shared/icons (SheetTemplatesHelper::ICON_PARTIALS)
+  ICONS = {
+    "fantasy" => %w[scroll_text swords castle crown shield wand_sparkles],
+    "horror" => %w[flame skull ghost moon_star],
+    "science_fiction" => %w[rocket bot]
+  }.freeze
+  ICON_NAMES = ICONS.values.flatten.freeze
+  # The colors of its banner, gold by default: named colors of application.css (banner-*), drawn by
+  # SheetTemplatesHelper::BANNER_CLASSES
+  BANNER_COLORS = %w[gold crimson forest night arcane stone].freeze
   # What a game table copies when it picks this template. The ready-made NPCs and monsters are not in it:
   # they become rows of their own, which the game master can change (characters, later)
   SNAPSHOT_ATTRIBUTES = %w[
@@ -32,6 +45,9 @@ class SheetTemplate < ApplicationRecord
   has_many :catalog_entries, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
+  validates :description, length: { maximum: DESCRIPTION_MAX_LENGTH }
+  validates :icon, inclusion: { in: ICON_NAMES }
+  validates :banner_color, inclusion: { in: BANNER_COLORS }
   # The template as a whole: its fields, the effects of its options, its steps (SheetTemplateValidator)
   validates_with SheetTemplateValidator
   # A predefined template is written in one of the languages of the app; a game master's template has no language

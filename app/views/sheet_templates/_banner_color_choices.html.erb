@@ -1,0 +1,18 @@
+<%# The color of the banner of the template, chosen among SheetTemplate::BANNER_COLORS: round pills of 36 px filled with
+    the accent of each color (its pale background would not stand out from the page), the one chosen ringed in ink.
+    Real radio buttons hidden under them (sr-only, peer), each named by its color ("Carmin"), also a tooltip %>
+<% chosen_color = sheet_template.banner_color %>
+<fieldset class="mb-4 min-w-0">
+  <legend class="<%= SimpleFormFieldClasses::LABEL %>"><%= t("sheet_templates.show.banner_color") %></legend>
+  <%# 12 px apart (decision: closer, the ring of the one chosen touched its neighbours) %>
+  <div class="flex flex-wrap gap-3">
+    <% SheetTemplate::BANNER_COLORS.each do |banner_color| %>
+      <label class="relative" title="<%= t("sheet_templates.banner_colors.#{banner_color}") %>">
+        <%= form.radio_button :banner_color, banner_color, checked: chosen_color == banner_color, class: "peer sr-only" %>
+        <span class="sr-only"><%= t("sheet_templates.banner_colors.#{banner_color}") %></span>
+        <span class="<%= SheetTemplatesHelper::COLOR_CHOICE_CLASSES %> <%= banner_classes(banner_color, :swatch) %>" aria-hidden="true"></span>
+      </label>
+    <% end %>
+  </div>
+  <%= form.error :banner_color, class: SimpleFormFieldClasses::ERROR %>
+</fieldset>

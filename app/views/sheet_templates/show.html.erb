@@ -1,49 +1,90 @@
-<%# The page of a template of the game master: its name (renamed here), what it holds, and its deletion, refused while
-    a table uses it (its tables read its catalog). Laid out like a section of the settings (settings_group,
-    setting_row, in a card that is their container). Editing its sections, fields and steps comes next %>
-<%= link_to sheet_templates_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
-  <%= render "shared/icons/chevron_left" %>
-  <%= t(".back") %>
-<% end %>
-<%= page_header(title: @sheet_template.name_in_database, subtitle: sheet_template_origin(@sheet_template)) %>
-
-<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
-  <%= settings_group(title: t(".general_group")) do %>
-    <%= simple_form_for @sheet_template, html: { class: "border-b border-line py-4" },
-                                         defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
-      <%= form_error_notification(form) %>
-      <%= form.input :name, required: true, input_html: { autocomplete: "off" } %>
-      <%= form.button :submit, t(".rename"), class: button_classes(:secondary) %>
-    <% end %>
-  <% end %>
-
-  <%= settings_group(title: t(".contents_group")) do %>
-    <%= setting_row(label: t(".character_sheet"), label_id: "template-character-sheet",
-                    description: sheet_template_contents(@sheet_template)) do %>
-      <%= link_to t(".edit_fields"), sheet_template_fields_path(@sheet_template), class: button_classes(:secondary) %>
-    <% end %>
-    <%= setting_row(label: t(".catalog"), label_id: "template-catalog",
-                    description: sheet_template_catalog(@sheet_template)) do %>
-    <% end %>
-    <%= setting_row(label: t(".edit_contents"), label_id: "template-edit-contents",
-                    description: t(".edit_contents_soon")) do %>
-    <% end %>
-  <% end %>
-
-  <%= settings_group(title: t(".danger_zone")) do %>
-    <% if @sheet_template.used_by_tables? %>
-      <%= setting_row(label: t(".delete"), label_id: "delete-template-setting",
-                      description: t(".used_by_tables", count: @sheet_template.game_tables.count)) do %>
+<%# The template editor, step "Informations", composed like the summary of the creation of a table (decision), compact
+    enough to hold in one screen (decision): a banner across the whole width, right under the band of the editor, in the
+    color chosen (BANNER_CLASSES), with its icon large and decorative, its name, its description and its figures in
+    small boxes; then three columns from 1024 px: its presentation (name, description, icon, color of the banner), the
+    tables that use it, its deletion (refused while a table uses it: its tables read its catalog).
+    Saved live (decision): a choice saves as soon as it changes, a text when it is left (auto_submit_controller.js),
+    and the page refreshes by morphing, keeping its scroll (turbo_refreshes_with): the banner changes under the eye.
+    No sentence to say it (decision: the change shows at once on the banner). Without JavaScript, a Save button. On the banner, only ink and its accent (contrast) %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% banner_color = @sheet_template.banner_color_in_database %>
+<%= template_editor_page(sheet_template: @sheet_template, current_step: :informations, flush_top: true) do %>
+  <section class="relative isolate -mx-4 overflow-hidden px-4 pt-7 pb-6 sm:-mx-8 sm:px-8 <%= banner_classes(banner_color, :background) %>"
+           aria-labelledby="template-title">
+    <%# Its icon, large and decorative, as the picture of a cover %>
+    <%= sheet_template_icon(@sheet_template.icon_in_database, css_class: "pointer-events-none absolute -right-4 -bottom-8 -z-10 size-48 opacity-20 md:right-10 #{banner_classes(banner_color, :accent)}") %>
+    <p class="text-xs font-semibold tracking-widest uppercase <%= banner_classes(banner_color, :accent) %>">
+      <%= t(".eyebrow") %>
+      <% if (origin = sheet_template_origin(@sheet_template)) %>
+        · <%= origin %>
       <% end %>
-    <% else %>
-      <%= setting_row(label: t(".delete"), label_id: "delete-template-setting",
-                      description: t(".delete_description")) do %>
+    </p>
+    <h1 id="template-title" class="mt-1.5 text-3xl leading-tight font-bold tracking-tight text-balance text-ink">
+      <%= @sheet_template.name_in_database %>
+    </h1>
+    <% if @sheet_template.description_in_database.present? %>
+      <%# A long description is cut after 2 lines, "See more" shows it all (read_more_controller.js), as on a table %>
+      <div class="mt-1.5 flex max-w-2xl flex-col items-start gap-1" data-controller="read-more"
+           data-read-more-more-label-value="<%= t(".see_more") %>" data-read-more-less-label-value="<%= t(".see_less") %>">
+        <p id="template-description" class="text-[15px] text-ink data-clamped:line-clamp-2" data-read-more-target="text"><%= @sheet_template.description_in_database %></p>
+        <button type="button" hidden class="text-sm font-medium hover:underline <%= banner_classes(banner_color, :accent) %>" aria-expanded="false"
+                aria-controls="template-description" data-read-more-target="button" data-action="read-more#toggle">
+          <%= t(".see_more") %>
+        </button>
+      </div>
+    <% end %>
+    <ul class="mt-4 flex flex-wrap gap-2" aria-label="<%= t(".contents_title") %>">
+      <% sheet_template_figures(@sheet_template).each do |label, value| %>
+        <li class="flex min-w-20 items-baseline gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5">
+          <span class="text-base font-bold text-ink tabular-nums"><%= number_with_delimiter(value) %></span>
+          <span class="text-[10px] leading-tight font-semibold tracking-wider text-muted uppercase"><%= label %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <%# Three columns without cards nor lines (decisions), one under the other before 1024 px: the template (name,
+      description, icon, color of the banner), the tables that use it, its deletion (out of the form: a form inside a
+      form is not allowed) %>
+  <div class="mt-6 grid gap-x-10 gap-y-8 lg:grid-cols-3">
+    <%= simple_form_for @sheet_template, html: { id: "sheet-template-form",
+                                                 data: { controller: "auto-submit", action: "change->auto-submit#submit" } },
+                                         defaults: { wrapper_html: { class: "max-w-md" } } do |form| %>
+      <%= form_error_notification(form) %>
+      <section aria-labelledby="template-presentation-title">
+        <h2 id="template-presentation-title" class="mb-3 text-base font-semibold text-ink"><%= t(".presentation_title") %></h2>
+        <%= form.input :name, required: true, input_html: { autocomplete: "off" } %>
+        <%= form.input :description, input_html: { maxlength: SheetTemplate::DESCRIPTION_MAX_LENGTH, rows: 3, class: "min-h-0" } %>
+        <%= render "sheet_templates/icon_choices", form: form, sheet_template: @sheet_template %>
+        <%= render "sheet_templates/banner_color_choices", form: form, sheet_template: @sheet_template %>
+      </section>
+      <%# Without JavaScript, nothing saves by itself %>
+      <noscript>
+        <%= form.button :submit, t(".save"), class: button_classes(:primary) %>
+      </noscript>
+    <% end %>
+
+    <%= render "sheet_templates/tables", sheet_template: @sheet_template %>
+
+    <section class="min-w-0" aria-labelledby="template-delete-title">
+      <h2 id="template-delete-title" class="text-base font-semibold text-ink"><%= t(".delete") %></h2>
+      <% if @sheet_template.used_by_tables? %>
+        <p class="mt-1 text-sm text-muted"><%= t(".used_by_tables", count: @sheet_template.game_tables.count) %></p>
+      <% else %>
+        <p class="mt-1 text-sm text-muted"><%= t(".delete_description") %></p>
         <%# Asked first (shared/_confirm_dialog), with a red confirm button %>
         <%= button_to t(".delete_button"), sheet_template_path(@sheet_template), method: :delete,
-                      class: button_classes(:danger),
-                      data: { turbo_confirm: t(".delete_confirmation", name: @sheet_template.name),
+                      form_class: "mt-3", class: button_classes(:danger),
+                      data: { turbo_confirm: t(".delete_confirmation", name: @sheet_template.name_in_database),
                               confirm_button: t(".delete_button"), confirm_variant: "danger" } %>
       <% end %>
-    <% end %>
-  <% end %>
-</div>
+    </section>
+  </div>
+
+  <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation: Back
+      (to "My templates") then Next (the step "Character sheet"), the order of the band %>
+  <div class="mt-auto flex flex-wrap justify-end gap-3 pt-8">
+    <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
+    <%= link_to t(".next"), sheet_template_fields_path(@sheet_template), class: button_classes(:primary) %>
+  </div>
+<% end %>

@@ -1,21 +1,32 @@
-<%# The template editor, the fields of the character sheet: one group per section, in the order of the template, one
-    row per field (its label, its type) with "Edit", which opens its form. Laid out like a section of the settings %>
-<%= link_to sheet_template_path(@sheet_template), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-link hover:underline" do %>
-  <%= render "shared/icons/chevron_left" %>
-  <%= @sheet_template.name %>
-<% end %>
-<%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+<%# The template editor, step "Character sheet": the fields by section, in the order of the template. Each section
+    named by the small gold capitals of "My tables", each field a light line that opens its form as a whole (its
+    label, its type, a chevron), side by side as the width allows. No technical key shown %>
+<%= template_editor_page(sheet_template: @sheet_template, current_step: :character_sheet) do %>
+  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
 
-<div class="max-w-3xl rounded-xl border border-line bg-surface px-6 py-5 @container">
-  <% sheet_sections(@sheet_template.character_fields.to_h["fields"].to_a).each do |section, fields| %>
-    <%= settings_group(title: section) do %>
-      <% fields.each do |field| %>
-        <%= setting_row(label: field["label"], label_id: "field-#{field['key']}", description: field_type_name(field).upcase_first) do %>
-          <%# Named with the field: "Modifier Points de vie" for a screen reader, among many links %>
-          <%= link_to t(".edit"), edit_sheet_template_field_path(@sheet_template, field["key"]),
-                      class: button_classes(:secondary), aria: { label: t(".edit_label", label: field["label"]) } %>
-        <% end %>
-      <% end %>
+  <div class="flex flex-col gap-8">
+    <% sheet_sections(@sheet_template.character_fields.to_h["fields"].to_a).each_with_index do |(section, fields), position| %>
+      <section aria-labelledby="fields-section-<%= position %>">
+        <h2 id="fields-section-<%= position %>" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= section %></h2>
+        <ul class="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <% fields.each do |field| %>
+            <li>
+              <%= link_to edit_sheet_template_field_path(@sheet_template, field["key"]), class: SheetTemplates::FieldFormHelper::FIELD_LINE_CLASSES do %>
+                <span class="min-w-0">
+                  <span class="block truncate font-medium text-ink"><%= field["label"] %></span>
+                  <span class="block text-xs text-muted"><%= field_type_name(field).upcase_first %></span>
+                </span>
+                <%= render "shared/icons/chevron_right", css_class: "size-4 shrink-0 text-muted" %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
     <% end %>
-  <% end %>
-</div>
+  </div>
+
+  <%# At the bottom of the screen when the page is short (mt-auto), on the right, as on the pages of a creation %>
+  <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+    <%= link_to t(".back"), sheet_templates_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>
