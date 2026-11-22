@@ -1,12 +1,15 @@
-# A character sheet template: the fields of the character sheet, of the NPC and monster sheet and of the items,
-# plus ready-made NPCs, monsters and items. Its content is JSONB (see "Base de données", the design notes):
-# the game master invents the fields. A game table never plays with it directly, but with a frozen copy (snapshot)
+# A character sheet template: the fields of the character sheet, of the NPC and monster sheet, of the items and of
+# the spells, plus ready-made NPCs, monsters and items, and its catalog (catalog_entries: spells for now). Its
+# content is JSONB (see "Base de données", the design notes): the game master invents the fields. A game table never
+# plays with it directly, but with a frozen copy (snapshot)
 class SheetTemplate < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
   # What a game table copies when it picks this template. The ready-made NPCs and monsters are not in it:
   # they become rows of their own, which the game master can change (characters, later)
-  SNAPSHOT_ATTRIBUTES = %w[character_fields npc_fields item_fields rest_rules level_thresholds preset_items].freeze
+  SNAPSHOT_ATTRIBUTES = %w[
+    character_fields npc_fields item_fields spell_fields rest_rules level_thresholds preset_items
+  ].freeze
   # The closed list of field types: a type is a behavior the app knows how to show and check, not a game, and it has
   # one look wherever it is on the sheet (decision, for the template builder: the game master picks a type, names it).
   # ability: a score with a modifier worked out by its rule (modifier, one of MODIFIER_RULES).
@@ -56,6 +59,9 @@ class SheetTemplate < ApplicationRecord
   has_many :derived_templates, class_name: "SheetTemplate", foreign_key: :parent_id,
                                inverse_of: :parent, dependent: :nullify
   has_many :game_tables, dependent: :nullify
+  # Its spells, items... (one shared table, decision). Deleted with it for now: a template still used by a table will be
+  # archived rather than deleted, with the template builder (its tables read its catalog)
+  has_many :catalog_entries, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   # A predefined template is written in one of the languages of the app; a game master's template has no language

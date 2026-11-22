@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_180100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "catalog_entries", force: :cascade do |t|
+    t.bigint "sheet_template_id", null: false
+    t.string "kind", null: false
+    t.string "key", null: false
+    t.string "name", limit: 60, null: false
+    t.text "description"
+    t.jsonb "properties", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["properties"], name: "index_catalog_entries_on_properties", using: :gin
+    t.index ["sheet_template_id", "kind", "key"], name: "index_catalog_entries_on_sheet_template_id_and_kind_and_key", unique: true
+    t.index ["sheet_template_id", "kind", "name"], name: "index_catalog_entries_on_sheet_template_id_and_kind_and_name"
+    t.check_constraint "kind::text = ANY (ARRAY['spell'::character varying, 'item'::character varying, 'npc'::character varying, 'monster'::character varying, 'feature'::character varying]::text[])", name: "catalog_entries_kind_check"
+  end
 
   create_table "characters", force: :cascade do |t|
     t.bigint "game_table_id", null: false
@@ -82,6 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_160000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "locale"
+    t.jsonb "spell_fields", default: {}, null: false
     t.index ["owner_id"], name: "index_sheet_templates_on_owner_id"
     t.index ["parent_id"], name: "index_sheet_templates_on_parent_id"
   end
@@ -101,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_160000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "catalog_entries", "sheet_templates"
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
