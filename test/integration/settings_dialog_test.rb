@@ -93,6 +93,22 @@ class SettingsDialogTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a username changed in the window shows at once in the navigation behind it" do
+    patch settings_username_path, params: { user: { username: "Gandalf" } }, headers: { "Turbo-Frame" => "settings_dialog" }
+    follow_redirect!(headers: { "Turbo-Frame" => "settings_dialog" })
+
+    assert_select "turbo-frame#settings_dialog turbo-stream[action=replace][target=account-identity] template" do
+      assert_select "#account-identity[title=Gandalf] span", text: "Gandalf"
+    end
+  end
+
+  test "the settings page draws its own navigation: no stream to refresh it" do
+    get settings_account_path
+
+    assert_select "turbo-stream", count: 0
+    assert_select "#side-nav #account-identity[title=player]"
+  end
+
   test "a visitor gets no settings window" do
     sign_out :user
     get root_path

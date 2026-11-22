@@ -1,0 +1,8 @@
+<%# Who is signed in, at the foot of the side navigation: the avatar and the username (shared/_account_nav). Its id
+    lets the settings window refresh it (layouts/settings): a username changed in the window shows here at once.
+    The username fades in once the navigation is unfolded, like the labels. The avatar keeps its place: 4 px from
+    the edge, the centre of the 40 px row while folded %>
+<div id="account-identity" class="mx-3 flex h-10 items-center gap-3 overflow-hidden px-1" title="<%= current_user.username %>">
+  <%= render "shared/avatar", user: current_user %>
+  <span class="truncate text-[15px] text-ink <%= side_nav_fading_text_classes %>"><%= current_user.username %></span>
+</div>

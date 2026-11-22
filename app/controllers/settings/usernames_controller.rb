@@ -3,7 +3,7 @@ module Settings
   # On an error, the account section shows again with the username field in red
   class UsernamesController < BaseController
     def update
-      # A copy from the database, not current_user: the navbar keeps showing the saved username
+      # A copy from the database, not current_user: on a refusal, the navigation keeps showing the saved username
       @user_for_username = User.find(current_user.id)
       # The field already shows the new username: the message is for screen readers only
       if @user_for_username.update(username_params)
