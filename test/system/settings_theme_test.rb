@@ -25,7 +25,10 @@ class SettingsThemeTest < ApplicationSystemTestCase
   test "changing the language list saves it at once" do
     find("select#user_locale").select("Français")
 
-    assert_selector "[role=status]", text: "Langue enregistrée."
     assert_selector "html[lang=fr]"
+    # The page already shows the new language: the message is for screen readers only, no floating message.
+    # visible: :all, because Selenium counts an sr-only element (1 px, clipped) as visible
+    assert_equal "Langue enregistrée.", find(".sr-only [role=status]", visible: :all).text(:all).strip
+    assert_no_selector "[data-controller=toast]"
   end
 end
