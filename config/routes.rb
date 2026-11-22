@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       resource :invitation_answer, only: %i[update destroy]
       # The character of the player, made before joining the game
       resource :character, only: %i[new create]
+      # "Roll the dice" of the abilities on that sheet: the server rolls, nothing is stored (JSON)
+      resource :ability_roll, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player
