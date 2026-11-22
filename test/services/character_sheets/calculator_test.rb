@@ -17,11 +17,11 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
   ].freeze
 
   test "the modifier of an ability is half of the score above 10, rounded down" do
-    assert_equal 2, CharacterSheets::Calculator.modifier(14, "half_above_ten")
-    assert_equal 0, CharacterSheets::Calculator.modifier(11, "half_above_ten")
-    assert_equal(-1, CharacterSheets::Calculator.modifier(9, "half_above_ten"))
-    assert_nil CharacterSheets::Calculator.modifier(nil, "half_above_ten")
-    assert_nil CharacterSheets::Calculator.modifier(14, "unknown_rule")
+    assert_equal 2, ModifierRules.modifier(14, "half_above_ten")
+    assert_equal 0, ModifierRules.modifier(11, "half_above_ten")
+    assert_equal(-1, ModifierRules.modifier(9, "half_above_ten"))
+    assert_nil ModifierRules.modifier(nil, "half_above_ten")
+    assert_nil ModifierRules.modifier(14, "unknown_rule")
   end
 
   test "the proficiency bonus follows the level typed, whatever the order of the thresholds" do

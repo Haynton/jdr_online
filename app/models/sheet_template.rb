@@ -14,22 +14,10 @@ class SheetTemplate < ApplicationRecord
   # has one look wherever it is on the sheet (decision, for the template builder: the game master picks a type, names
   # it). Each one is a class of the registry, which says all about it (FieldTypes, app/models/field_types)
   FIELD_TYPES = FieldTypes.keys.freeze
-  # How the modifier of an ability is worked out. half_above_ten: (score - 10) / 2, rounded down (14 gives +2)
-  MODIFIER_RULES = %w[half_above_ten].freeze
-  # The game master picks a rule, never writes a formula (design notes, "Règles de jeu : choisies dans une liste").
-  # proficiency_by_level: the proficiency_bonus, in level_thresholds, of the level typed in the field level_from.
-  # ability_modifier: the modifier of the ability in based_on (initiative). Both read as a bonus (+2, -1).
-  # hit_dice_by_class: one die per level (level_from), its sides the hit_die of the class chosen (class_from): "3d8".
-  # spell_save_dc: 8 + the proficiency (proficiency) + the modifier of the spellcasting ability of the class chosen
-  # (class_from), read as a plain number (13); spell_attack_bonus: the same without the 8, read as a bonus (+5).
-  # hit_points_by_level: at level 1 the hit die of the class plus the modifier of based_on (Constitution), then at each
-  # level the average of the die (half plus one) plus that modifier. unarmored_armor_class: 10 + the modifier of
-  # based_on (Dexterity), + the modifier of the unarmored_defense of the class (barbarian, monk). Both plain numbers.
-  # starting_gold: the gold of the starting equipment options picked (equipment_option fields), a plain number
-  COMPUTED_RULES = %w[
-    proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
-    hit_points_by_level unarmored_armor_class starting_gold
-  ].freeze
+  # How the modifier of an ability is worked out, and the rules of a computed field: closed lists, one class per rule
+  # (ModifierRules, app/models/modifier_rules; ComputedRules, app/models/computed_rules)
+  MODIFIER_RULES = ModifierRules.keys.freeze
+  COMPUTED_RULES = ComputedRules.keys.freeze
   # What choosing an option of a list does to the sheet (effects of a choice field, by option), from this closed
   # list. Only an aid: the player can still change anything (decision); another option replaces the effects.
   # Applied on the sheet: hit_die (the sides of the hit dice, hit_dice_by_class); proficient (the bonus fields
