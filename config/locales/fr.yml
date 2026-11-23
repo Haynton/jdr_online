@@ -426,6 +426,9 @@ fr:
       initial_from:
         hint: "Le champ calculé qui remplit cette valeur quand le personnage est terminé."
         label: "Valeur de départ"
+      labels:
+        hint: "Un nom par ligne, pour chaque valeur à partir du minimum (Sort mineur, Niveau 1…) : le nombre se choisit alors dans une liste."
+        label: "Noms des valeurs"
       internal:
         hint: "Calculé pour remplir un autre champ, affiché nulle part."
         label: "Interne"

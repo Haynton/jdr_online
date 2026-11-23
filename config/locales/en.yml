@@ -455,6 +455,9 @@ en:
       initial_from:
         hint: "The computed field that fills this value once the character is complete."
         label: "Starting value"
+      labels:
+        hint: "One name per line, for each value from the minimum (Cantrip, Level 1…): the number is then picked in a list."
+        label: "Value names"
       internal:
         hint: "Worked out to fill another field, shown nowhere."
         label: "Internal"

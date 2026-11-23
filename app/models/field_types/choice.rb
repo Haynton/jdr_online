@@ -10,6 +10,10 @@ module FieldTypes
       :lists
     end
 
+    def list_choices(field)
+      field["options"].to_a.map { |option| [option, option] }
+    end
+
     def error_for(value, field, **)
       [:inclusion] unless field["options"].include?(value)
     end
