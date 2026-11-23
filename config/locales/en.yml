@@ -133,6 +133,10 @@ en:
               invalid: "can only contain letters, digits, dashes (-) and underscores (_)"
               taken: "is already taken by another player"
   app_name: "Fumble Quest"
+  users:
+    passwords:
+      create:
+        email_not_sent: "The email could not be sent. Please try again in a few minutes."
   devise:
     passwords:
       edit:

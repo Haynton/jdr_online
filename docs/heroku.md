@@ -74,7 +74,7 @@ La tâche crée ou met à jour les modèles fournis et leurs catalogues, sans ri
 - Le domaine est authentifié chez Brevo par 4 enregistrements DNS chez OVH : `brevo-code` (TXT sur `fumblequest.com`), `brevo1._domainkey` et `brevo2._domainkey` (CNAME, signature DKIM), `_dmarc` (TXT). Le SPF d'OVH (`v=spf1 include:mx.ovh.com -all`) reste tel quel : il ne doit jamais y en avoir deux.
 - Expéditeur : `noreply@fumblequest.com`.
 - **Blocage des IP inconnues désactivé** dans Brevo (Sécurité › IP autorisées) : les adresses de Heroku changent à chaque redémarrage. Sinon, erreur `525 Unauthorized IP address`.
-- En cas d'erreur 500 sur « Mot de passe oublié » : `heroku logs -n 300 -a fumble-quest`, chercher `SMTP`. `535 Authentication failed` : identifiant ou clé faux. `525 Unauthorized IP address` : le blocage des IP.
+- Si « Mot de passe oublié » répond « L'e-mail n'a pas pu être envoyé » : `heroku logs -n 300 -a fumble-quest`, chercher `SMTP`. `535 Authentication failed` : identifiant ou clé faux. `525 Unauthorized IP address` : le blocage des IP.
 
 ## Changer la clé de Rails
 
@@ -111,6 +111,5 @@ heroku domains -a fumble-quest
 
 ## Reste à faire
 
-- Un message clair, dans la langue du joueur, quand un e-mail ne part pas (aujourd'hui : une page 500 en anglais), avec les pages d'erreur (carte #87).
 - Quand une tâche de fond arrivera (IA) : `SOLID_QUEUE_IN_PUMA=true`, pour faire tourner Solid Queue dans Puma sans second dyno.
 - Plus tard, en même temps que la CI : la pile Heroku-26 et la dernière version corrective de Ruby 3.3.

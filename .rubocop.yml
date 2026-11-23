@@ -41,3 +41,6 @@ Style/EmptyMethod:
   Enabled: false
 Bundler/OrderedGems:
   Enabled: false
+# Rule of CLAUDE.md: full names, also for a rescued error (`=> error`, never `=> e`)
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
