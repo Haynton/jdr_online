@@ -714,6 +714,7 @@ en:
     creation_actions:
       cancel: "Cancel"
       continue: "Continue"
+      save: "Save"
     creation_steps:
       label: "Steps of the creation"
       steps:
@@ -787,6 +788,8 @@ en:
         saved: "Settings saved."
     details:
       edit:
+        settings_subtitle: "Your table is ready: change its details, its settings and its invitations whenever you like."
+        settings_title: "Game settings"
         subtitle: "Your table is a draft: change its details whenever you like."
         title: "Create a table"
       update:
@@ -798,6 +801,8 @@ en:
       description_hint: "Optional. A few lines to introduce the setting to your players."
       no_matching_cover: "No cover for this theme."
       sheet_template: "Sheet template"
+      sheet_template_deleted: "This template has been deleted since: the table keeps its copy."
+      sheet_template_frozen_hint: "It no longer changes once the table is ready: the characters are made with it."
       sheet_template_hint: "The fields of the character, NPC and item sheets. You can change it while the table is a draft."
     empty_stage:
       text: "The tables you create or join will show up here. Start with the first card below."
@@ -847,6 +852,7 @@ en:
         email_body: "Hi,\n\nJoin my table “%{name}” on Fumble Quest: %{link}\n\nSee you soon!"
         email_subject: "Invitation to my table “%{name}”"
         hint: "Send this link to your players: they can follow it as soon as the creation of the table is over."
+        hint_ready: "Send this link to a player: they join the table and make their character."
         invite: "Invite"
         link: "Invitation link"
         regenerate: "Generate a link"
@@ -866,6 +872,7 @@ en:
       show:
         back: "Back"
         change: "Change"
+        confirm_changes: "Confirm the changes"
         finish: "Finish the creation"
         finish_and_join: "Finish and join the game"
         no_description: "No description"
@@ -873,10 +880,8 @@ en:
         see_more: "See more"
         sheet_template: "Sheet template:"
       update:
+        confirmed: "Changes saved."
         finished: "Table ready: your players can join it."
-    edit:
-      coming_soon: "The settings of the game are coming soon: name, cover, players and invitations."
-      title: "Game settings"
     new:
       subtitle: "Give it a name, a cover and a sheet template. You will invite your players next."
       title: "Create a table"

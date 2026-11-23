@@ -166,7 +166,7 @@ class TablesTest < ActionDispatch::IntegrationTest
 
     assert_select "section[aria-labelledby=chosen-table-title]" do
       assert_select "a.bg-primary[href=?]", game_table_path(game_table), text: "Rejoindre la partie"
-      assert_select "a[href=?]", edit_game_table_path(game_table), text: "Paramètres de la partie"
+      assert_select "a[href=?]", edit_game_table_details_path(game_table), text: "Paramètres de la partie"
       assert_select "a[href=?]", new_game_table_path, text: "Créer une table"
       assert_select "span[aria-hidden=true]", text: "OT"
       assert_select "p", text: /1 joueur/
@@ -206,15 +206,22 @@ class TablesTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", game_table_path(game_table), count: 0
   end
 
-  test "the game master opens the temporary settings page of the game" do
+  test "the old address of the settings of the game leads to the pages of its creation" do
     user = create_user(locale: "fr")
     game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
     sign_in user
     get edit_game_table_path(game_table)
 
-    assert_response :success
-    assert_select "main h1", text: "Paramètres de la partie"
-    assert_select "main p", text: "Les Marches du Nord"
+    assert_redirected_to edit_game_table_details_path(game_table)
+  end
+
+  test "a draft has no settings button: its game master resumes its creation" do
+    user = create_user(locale: "fr")
+    create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
+    sign_in user
+    get game_tables_path
+
+    assert_select "section[aria-labelledby=chosen-table-title] a", text: "Paramètres de la partie", count: 0
   end
 
   test "a player cannot open the settings of the game, even by its address" do

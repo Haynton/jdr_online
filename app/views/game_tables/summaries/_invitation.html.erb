@@ -6,7 +6,8 @@
          data-clipboard-copied-text-value="<%= t(".copied") %>" data-clipboard-failed-text-value="<%= t(".copy_failed") %>"
          aria-labelledby="invitation-title">
   <h2 id="invitation-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
-  <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
+  <%# A table ready takes players at once: the link works already (a late player) %>
+  <p class="mt-1 text-sm text-muted"><%= game_table.draft? ? t(".hint") : t(".hint_ready") %></p>
 
   <label for="invitation-link" class="<%= field_label_classes %> mt-4"><%= t(".link") %></label>
   <div class="flex gap-2">

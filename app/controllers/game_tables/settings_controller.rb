@@ -1,16 +1,19 @@
-# The second step of the creation of a draft table: the settings that depend on the template chosen at the first step.
-# For now the starting level of the characters, asked only when the template has levels (GameTable#asks_starting_level?)
+# The second step of a table: the settings that depend on the template chosen at the first step. For now the starting
+# level of the characters, asked only when the template has levels (GameTable#asks_starting_level?). On a draft,
+# Continue opens the next step; on a table ready (its "Game settings"), Save shows the same page again
 module GameTables
   class SettingsController < ApplicationController
-    include DraftTableOfGameMaster
+    include TableOfGameMaster
 
     def edit
     end
 
-    # Continue saves the settings and opens the next step. Its message is for screen readers only: the next step shows
+    # On a draft, its message is for screen readers only: the next step shows. On a table ready, it floats: nothing
+    # else says the settings were saved
     def update
       @game_table.assign_attributes(settings_params)
       return render :edit, status: :unprocessable_content unless @game_table.save
+      return redirect_to edit_game_table_settings_path(@game_table), notice: t(".saved") unless @game_table.draft?
 
       @game_table.reach_creation_step(GameTable.next_creation_step("settings"))
       redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".saved") }

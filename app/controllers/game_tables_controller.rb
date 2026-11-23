@@ -40,8 +40,10 @@ class GameTablesController < ApplicationController
   end
 
   # Temporary settings page of a table. Only its game master reaches it: a player gets a 404 too
+  # The settings of a table are the pages of its creation (decision): an old link to this address leads there
   def edit
-    @game_table = current_user.participations.game_master.find_by!(game_table_id: params[:id]).game_table
+    game_table = current_user.participations.game_master.find_by!(game_table_id: params[:id]).game_table
+    redirect_to edit_game_table_details_path(game_table)
   end
 
   private

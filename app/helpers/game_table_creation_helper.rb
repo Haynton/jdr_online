@@ -16,12 +16,13 @@ module GameTableCreationHelper
     CREATION_FORM_ID
   end
 
-  # Cancel then Continue, at the end of the form of the first step on the right: Continue sends the form by its id
-  def creation_actions(cancel_path:)
+  # Cancel then Continue, at the end of the form of the first step on the right: Continue sends the form by its id.
+  # saving: Save instead of Continue, on a table ready (its "Game settings"): the step is saved and shown again
+  def creation_actions(cancel_path:, saving: false)
     cancel_link = link_to(t("game_tables.creation_actions.cancel"), cancel_path, class: button_classes(:secondary))
-    continue_button = button_tag(t("game_tables.creation_actions.continue"),
-                                 type: :submit, form: CREATION_FORM_ID, class: button_classes(:primary))
-    cancel_link + continue_button
+    submit_label = saving ? t("game_tables.creation_actions.save") : t("game_tables.creation_actions.continue")
+    submit_button = button_tag(submit_label, type: :submit, form: CREATION_FORM_ID, class: button_classes(:primary))
+    cancel_link + submit_button
   end
 
   # A line of the list of settings (step Settings): its name and help on the left, its control on the right, under

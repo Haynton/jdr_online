@@ -685,6 +685,7 @@ fr:
     creation_actions:
       cancel: "Annuler"
       continue: "Continuer"
+      save: "Enregistrer"
     creation_steps:
       label: "Étapes de la création"
       steps:
@@ -758,6 +759,8 @@ fr:
         saved: "Réglages enregistrés."
     details:
       edit:
+        settings_subtitle: "Votre table est prête : modifiez ses informations, ses réglages et ses invitations quand vous voulez."
+        settings_title: "Paramètres de la partie"
         subtitle: "Votre table est en brouillon : modifiez ses informations quand vous voulez."
         title: "Créer une table"
       update:
@@ -769,6 +772,8 @@ fr:
       description_hint: "Facultative. Quelques lignes pour présenter l'univers à vos joueurs."
       no_matching_cover: "Aucune couverture pour ce thème."
       sheet_template: "Modèle de fiche"
+      sheet_template_deleted: "Ce modèle a été supprimé depuis : la table garde sa copie."
+      sheet_template_frozen_hint: "Il ne change plus une fois la table prête : les personnages sont faits avec lui."
       sheet_template_hint: "Les champs des fiches de personnage, des PNJ et des objets. Vous pourrez en changer tant que la table est en brouillon."
     empty_stage:
       text: "Les tables que vous créez ou rejoignez apparaîtront ici. Commencez par la première carte ci-dessous."
@@ -818,6 +823,7 @@ fr:
         email_body: "Bonjour,\n\nRejoins ma table « %{name} » sur Fumble Quest : %{link}\n\nÀ bientôt !"
         email_subject: "Invitation à ma table « %{name} »"
         hint: "Envoyez ce lien à vos joueurs : ils pourront le suivre dès que la création de la table sera terminée."
+        hint_ready: "Envoyez ce lien à un joueur : il rejoint la table et crée son personnage."
         invite: "Inviter"
         link: "Lien d'invitation"
         regenerate: "Générer un lien"
@@ -837,6 +843,7 @@ fr:
       show:
         back: "Retour"
         change: "Modifier"
+        confirm_changes: "Valider les modifications"
         finish: "Terminer la création"
         finish_and_join: "Terminer et rejoindre la partie"
         no_description: "Aucune description"
@@ -844,10 +851,8 @@ fr:
         see_more: "Voir plus"
         sheet_template: "Modèle de fiche :"
       update:
+        confirmed: "Modifications enregistrées."
         finished: "Table prête : vos joueurs peuvent la rejoindre."
-    edit:
-      coming_soon: "Les paramètres de la partie arrivent bientôt : nom, couverture, joueurs et invitations."
-      title: "Paramètres de la partie"
     new:
       subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"

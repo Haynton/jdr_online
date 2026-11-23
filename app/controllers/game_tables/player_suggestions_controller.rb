@@ -2,7 +2,7 @@
 # read by username_suggestions_controller.js. A few, beginning with what was typed, never someone already at the table
 module GameTables
   class PlayerSuggestionsController < ApplicationController
-    include DraftTableOfGameMaster
+    include TableOfGameMaster
 
     # Below two letters, almost every player would match
     MINIMUM_TYPED_LENGTH = 2

@@ -2,10 +2,11 @@
 <% game_table = participation.game_table %>
 <div class="flex flex-wrap gap-3">
   <%= link_to stage_main_action_label(participation), stage_main_action_path(participation), class: button_classes(:primary) %>
-  <%# Only the game master sets up the game: the server refuses everyone else as well (GameTablesController#edit).
+  <%# Only the game master of a table ready sets it up, through the pages of its creation (decision; a draft has
+      "Resume the creation"): the server refuses everyone else as well (TableOfGameMaster).
       On a phone, the gear alone (its name for screen readers and as a tooltip): both buttons stay on one line %>
-  <% if participation.game_master? %>
-    <%= link_to edit_game_table_path(game_table), class: button_classes(:secondary), title: t("game_tables.stage.game_settings") do %>
+  <% if participation.game_master? && !game_table.draft? %>
+    <%= link_to edit_game_table_details_path(game_table), class: button_classes(:secondary), title: t("game_tables.stage.game_settings") do %>
       <%= render "shared/icons/settings" %>
       <span class="max-md:sr-only"><%= t("game_tables.stage.game_settings") %></span>
     <% end %>
