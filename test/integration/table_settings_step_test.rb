@@ -27,10 +27,11 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
       assert_select "button[hidden][aria-label=?]", "Diminuer Niveau de départ"
       assert_select "button[hidden][aria-label=?]", "Augmenter Niveau de départ"
     end
-    # The whole line is the label of the switch: a click anywhere on it turns it on or off
-    assert_select "label[for=game_table_players_choose_level]", text: /Les joueurs choisissent leur niveau/ do
-      assert_select "input[type=checkbox][role=switch]#game_table_players_choose_level:not([checked])"
-    end
+    # Only the name is the label of the switch: the help stays text
+    assert_select "label[for=game_table_players_choose_level]", text: "Les joueurs choisissent leur niveau"
+    assert_select "input[type=checkbox][role=switch]#game_table_players_choose_level:not([checked])" \
+                  "[aria-describedby=players-choose-level-hint]"
+    assert_select "p#players-choose-level-hint"
     assert_select "a[href=?]", edit_game_table_details_path(@game_table), text: "Retour"
   end
 

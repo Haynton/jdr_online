@@ -4,8 +4,9 @@
     title of their group. Two columns from 1280 px (decision): the characters on the left, the game and the AI on the
     right; narrower, a column would squeeze the help beside a list, so the groups follow each other, 672 px wide at
     most. The starting level only when the template has levels: a number between "−" and "+", like the abilities of
-    a character sheet. Then "the players choose their level": the whole line is the label of its switch (decision:
-    the track alone was too small to hit). When it is on, the starting level is the one offered to the players, who
+    a character sheet. Then "the players choose their level": its name is the label of its switch, the help stays text
+    (decision: a whole line that toggled was surprising), and the invisible check box over the switch is sized like its track
+    (size-full: Safari keeps a check box at its own 13 px, in the top left corner, whatever its inset). When it is on, the starting level is the one offered to the players, who
     may change it on the first page of their character.
     The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
 <%= creation_page(current_step: "settings", game_table: @game_table) do %>
@@ -29,18 +30,18 @@
                                                              input: starting_level_input(form) %>
             </div>
 
-            <label for="game_table_players_choose_level" class="<%= setting_line_classes %> cursor-pointer">
-              <span class="min-w-0">
-                <span class="block text-sm font-semibold text-ink"><%= GameTable.human_attribute_name(:players_choose_level) %></span>
-                <span id="players-choose-level-hint" class="mt-1 block text-sm text-muted"><%= t(".players_choose_level_hint") %></span>
-              </span>
+            <div class="<%= setting_line_classes %>">
+              <div class="min-w-0">
+                <%= form.label :players_choose_level, class: "cursor-pointer text-sm font-semibold text-ink" %>
+                <p id="players-choose-level-hint" class="mt-1 text-sm text-muted"><%= t(".players_choose_level_hint") %></p>
+              </div>
               <span class="relative inline-flex shrink-0">
                 <%= form.check_box :players_choose_level, role: "switch", aria: { describedby: "players-choose-level-hint" },
-                                                          class: "peer absolute inset-0 z-10 cursor-pointer opacity-0" %>
+                                                          class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
                 <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
                 <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
               </span>
-            </label>
+            </div>
 
             <% character_rules_coming_soon.each do |setting| %>
               <%= render "game_tables/settings/coming_soon_choice", scope: "rules", setting: setting %>
