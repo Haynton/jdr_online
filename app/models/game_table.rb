@@ -21,7 +21,8 @@ class GameTable < ApplicationRecord
   READY_STATUS = "ready".freeze
   # The steps of the creation, in order: creation_step holds the number of the step reached (1 for "details").
   # The invitation link sits in the summary (decision): it only works once the table is ready, which the summary does
-  CREATION_STEPS = %w[details npcs maps summary].freeze
+  # Settings comes right after the choice of the template, since its settings depend on it (the starting level)
+  CREATION_STEPS = %w[details settings npcs maps summary].freeze
   # They come with their milestone (P4, P3): shown as coming soon until then, and skipped by the creation
   LATER_CREATION_STEPS = %w[npcs maps].freeze
   AVAILABLE_CREATION_STEPS = (CREATION_STEPS - LATER_CREATION_STEPS).freeze
@@ -47,6 +48,12 @@ class GameTable < ApplicationRecord
   def use_sheet_template(sheet_template)
     self.sheet_template = sheet_template
     self.template_snapshot = sheet_template ? sheet_template.snapshot : {}
+  end
+
+  # The template makes its characters start at a level the table sets (a field from_table: "starting_level"): the
+  # step Settings then asks it. A template without levels ("Cosmic horror") asks nothing there
+  def asks_starting_level?
+    character_sheet_fields.any? { |field| field["from_table"] == "starting_level" }
   end
 
   # The fields of a player character sheet, from the template copied into the table (none without a template)

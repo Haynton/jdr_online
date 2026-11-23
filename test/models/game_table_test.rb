@@ -124,7 +124,8 @@ class GameTableTest < ActiveSupport::TestCase
   end
 
   test "the step after another skips the steps of a later milestone" do
-    assert_equal "summary", GameTable.next_creation_step("details")
+    assert_equal "settings", GameTable.next_creation_step("details")
+    assert_equal "summary", GameTable.next_creation_step("settings")
     assert_nil GameTable.next_creation_step("summary")
   end
 
@@ -135,8 +136,8 @@ class GameTableTest < ActiveSupport::TestCase
     game_table.reach_creation_step("summary")
     assert_equal "summary", game_table.resume_creation_step
 
-    game_table.update!(creation_step: 3)
-    assert_equal "details", game_table.resume_creation_step
+    game_table.update!(creation_step: 4)
+    assert_equal "settings", game_table.resume_creation_step
   end
 
   test "a draft saved when there were five steps is taken up at the summary" do
