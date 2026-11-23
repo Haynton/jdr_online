@@ -1,0 +1,24 @@
+<%# One entry of the catalog of the table: its name (the label of its switch: the help under it stays text), what it
+    is (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like its track
+    (size-full appearance-none: Safari keeps a check box at its own size otherwise). An item of the starting equipment
+    stays offered: its switch is on and disabled, and says why (decision; the server keeps it whatever is sent) %>
+<% box_id = "offered-#{entry.kind}-#{entry.key}" %>
+<% detail = catalog_entry_detail(entry, locked: locked) %>
+<li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
+    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(entry) %>">
+  <div class="min-w-0">
+    <label for="<%= box_id %>" class="block truncate text-sm font-semibold text-ink <%= locked ? "cursor-default" : "cursor-pointer" %>"
+           title="<%= entry.name %>"><%= entry.name %></label>
+    <% if detail.present? %>
+      <p id="<%= box_id %>-detail" class="truncate text-xs text-muted"><%= detail %></p>
+    <% end %>
+  </div>
+  <span class="relative inline-flex shrink-0 <%= "opacity-50" if locked %>">
+    <%= check_box_tag "offered_keys[]", entry.key, locked || catalog_entry_offered?(@game_table, entry),
+                      id: box_id, disabled: locked, role: "switch",
+                      aria: { describedby: ("#{box_id}-detail" if detail.present?) },
+                      class: "peer absolute inset-0 z-10 m-0 size-full appearance-none opacity-0 #{locked ? "cursor-not-allowed" : "cursor-pointer"}" %>
+    <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+    <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+  </span>
+</li>

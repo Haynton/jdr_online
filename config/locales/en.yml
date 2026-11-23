@@ -713,6 +713,30 @@ en:
       created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
       title: "Create a table"
+    catalogs:
+      edit:
+        back: "Back"
+        cantrips: "Cantrips"
+        characters_keep_their_copy: "Take out what your game does not use. Characters already made keep their version of what they chose."
+        empty:
+          item: "This sheet template has no items."
+          spell: "This sheet template has no spells."
+        level: "Level %{level}"
+        no_match: "No entry matches this search."
+        offered_count:
+          one: "%{count} offered out of %{total}"
+          other: "%{count} offered out of %{total}"
+        other_items: "Other items"
+        search: "Search"
+        starting_equipment: "Part of the starting equipment"
+        subtitle: "The spells and items your players may choose, from the sheet template."
+        tab:
+          item: "Items"
+          spell: "Spells"
+        tabs: "Spells or items"
+        title: "Spells and items"
+      update:
+        saved: "Spells and items saved."
     creation_actions:
       cancel: "Cancel"
       continue: "Continue"
@@ -720,6 +744,7 @@ en:
     creation_steps:
       label: "Steps of the creation"
       steps:
+        catalog: "Spells and items"
         details: "Details"
         maps: "Maps"
         npcs: "NPCs and enemies"
