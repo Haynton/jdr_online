@@ -1,22 +1,39 @@
-<%# One entry of the catalog of the table: its name (the label of its switch: the help under it stays text), what it
-    is (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like its track
-    (size-full appearance-none: Safari keeps a check box at its own size otherwise). An item of the starting equipment
-    stays offered: its switch is on and disabled, and says why (decision; the server keeps it whatever is sent) %>
+<%# One entry of the catalog of the table: its name, "Changed" or "Added" beside it when the table has its own version,
+    a button "Change" that opens its window (every value, to see and to change: GameTables::CatalogEntriesController;
+    decision: clearer than a click on the name; the pencil alone on a phone, its word for screen readers), what it is
+    (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like its track
+    (size-full appearance-none: Safari keeps a check box at its own size otherwise), named "Offer Fireball" for screen
+    readers. The switch is saved as soon as it changes (submit_on_change_controller.js on the form). An item of the
+    starting equipment stays offered: its switch is on and disabled, and says why (decision; the server keeps it) %>
 <% box_id = "offered-#{entry.kind}-#{entry.key}" %>
 <% detail = catalog_entry_detail(entry, locked: locked) %>
+<% origin = catalog_entry_origin(@game_table, entry) %>
 <li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
     data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(entry) %>">
   <div class="min-w-0">
-    <label for="<%= box_id %>" class="block truncate text-sm font-semibold text-ink <%= locked ? "cursor-default" : "cursor-pointer" %>"
-           title="<%= entry.name %>"><%= entry.name %></label>
+    <div class="flex min-w-0 items-center gap-2">
+      <span class="truncate text-sm font-semibold text-ink" title="<%= entry.name %>"><%= entry.name %></span>
+      <% if origin %>
+        <span class="<%= badge_classes(:pending) %> shrink-0"><%= t("game_tables.catalogs.edit.origin.#{origin}") %></span>
+      <% end %>
+    </div>
     <% if detail.present? %>
       <p id="<%= box_id %>-detail" class="truncate text-xs text-muted"><%= detail %></p>
     <% end %>
   </div>
+  <%= link_to edit_game_table_catalog_entry_path(@game_table, entry.key, kind: entry.kind),
+              class: "#{button_classes(:secondary, size: :compact)} ml-auto shrink-0",
+              title: t("game_tables.catalogs.edit.change", name: entry.name), data: catalog_entry_dialog_link_data do %>
+    <%= render "shared/icons/pencil" %>
+    <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
+    <span class="sr-only"><%= entry.name %></span>
+  <% end %>
   <span class="relative inline-flex shrink-0 <%= "opacity-50" if locked %>">
     <%= check_box_tag "offered_keys[]", entry.key, locked || catalog_entry_offered?(@game_table, entry),
                       id: box_id, disabled: locked, role: "switch",
-                      aria: { describedby: ("#{box_id}-detail" if detail.present?) },
+                      aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),
+                              describedby: ("#{box_id}-detail" if detail.present?) },
+                      data: { action: "change->submit-on-change#submit" },
                       class: "peer absolute inset-0 z-10 m-0 size-full appearance-none opacity-0 #{locked ? "cursor-not-allowed" : "cursor-pointer"}" %>
     <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
     <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>

@@ -15,8 +15,10 @@ module Catalogs
 
     private
 
+    # The entries the step lists: those of the template, and those the table added
     def template_keys
-      CatalogEntry.where(sheet_template_id: @game_table.sheet_template_id, kind: @kind).pluck(:key)
+      CatalogEntry.where(sheet_template_id: @game_table.sheet_template_id, kind: @kind)
+                  .or(CatalogEntry.where(game_table_id: @game_table.id, kind: @kind)).distinct.pluck(:key)
     end
 
     def locked_keys

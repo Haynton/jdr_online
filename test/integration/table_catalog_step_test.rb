@@ -20,7 +20,12 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Sorts mineurs"
     assert_select "h2", text: "Niveau 1"
     assert_select "input[type=checkbox][role=switch][name='offered_keys[]'][checked]", count: 7
-    assert_select "label[for=offered-spell-shield]", text: "Bouclier"
+    assert_select "span", text: "Bouclier"
+    assert_select "a[href=?][data-turbo-frame=catalog_entry_dialog][title=?]",
+                  edit_game_table_catalog_entry_path(@game_table, "shield", kind: "spell"), "Modifier Bouclier",
+                  text: /Modifier\s*Bouclier/
+    assert_select "input#offered-spell-shield[aria-label=?]", "Proposer Bouclier"
+    assert_select "a[href=?]", new_game_table_catalog_entry_path(@game_table, kind: "spell"), text: /Ajouter un sort/
     assert_select "p", text: "7 proposés sur 7"
     assert_select "p", text: /Les personnages déjà créés gardent leur version/
   end
