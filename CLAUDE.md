@@ -776,6 +776,8 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 Prévu la semaine du 23 novembre 2026.
 
 - Fait : Solid Cable, Solid Queue et Solid Cache dans une seule base (voir Base de données)
+- Fait : `Procfile` (`web` : Puma avec `config/puma.rb`, qui lit le port de Heroku ; `release` : `bin/rails db:migrate`, à chaque déploiement, avant que la nouvelle version reçoive du trafic), version de Ruby lue par Heroku (`ruby file: ".ruby-version"` dans le `Gemfile`, écrite dans `Gemfile.lock`), HTTPS forcé (`assume_ssl` et `force_ssl` : le routeur de Heroku termine le HTTPS), adresse du site dans les liens des e-mails par la variable `APP_HOST` (`.env.example`, `localhost` si absente)
+- À faire sur Heroku (commandes à valider une par une) : créer l'application (`fumble-quest` si le nom est libre) et sa base `heroku-postgresql:essential-0`, `RAILS_MASTER_KEY` (la valeur de `config/master.key`, à poser par Anthony, jamais affichée), `APP_HOST`, puis `git push heroku main` depuis `main` à jour
 - `mailer_sender` réel et service d'envoi d'e-mails
 - Voir la checklist de déploiement du projet
 
