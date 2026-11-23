@@ -22,7 +22,18 @@ module CharacterSheets
     ].join(" ").freeze
 
     def sheet_field_id(field)
-      "character_sheet_#{field['key']}"
+      "#{sheet_field_scope.gsub(/[\[\]]+/, '_').delete_suffix('_')}_#{field['key']}"
+    end
+
+    # The fields of a sheet drawn for something else than a character (the properties of a catalog entry, in the
+    # window of the step "Spells and items"): their names start with this scope (catalog_entry[properties]) instead of
+    # character[sheet], their ids with it too. The partials stay the same
+    def with_sheet_field_scope(scope)
+      previous_scope = @sheet_field_scope
+      @sheet_field_scope = scope
+      yield
+    ensure
+      @sheet_field_scope = previous_scope
     end
 
     def sheet_field_error(character, field)
@@ -76,7 +87,11 @@ module CharacterSheets
     private
 
     def sheet_field_name(field)
-      "character[sheet][#{field['key']}]"
+      "#{sheet_field_scope}[#{field['key']}]"
+    end
+
+    def sheet_field_scope
+      @sheet_field_scope || "character[sheet]"
     end
 
     def sheet_field_value(character, field)

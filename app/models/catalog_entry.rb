@@ -42,6 +42,14 @@ class CatalogEntry < ApplicationRecord
     declared.to_h["fields"].to_a
   end
 
+  # CatalogPropertiesValidator adds its errors per property ("properties.level"), so that each one shows under its
+  # field. Rails reads the refused value to build the message: it is in the properties, not in a method of that name
+  def read_attribute_for_validation(attribute)
+    return super unless attribute.to_s.start_with?("properties.")
+
+    properties[attribute.to_s.delete_prefix("properties.")]
+  end
+
   private
 
   def belongs_to_one_catalog
