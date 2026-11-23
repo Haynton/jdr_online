@@ -17,7 +17,7 @@ class MessagesTest < ActionDispatch::IntegrationTest
     post user_session_path, params: { user: { email: "player@example.com", password: "wrong password" } },
                             headers: FRENCH_BROWSER.dup
 
-    assert_select "main > div.fixed [data-controller=toast][data-toast-auto-hide-value=false] [role=alert]",
+    assert_select "main > div.fixed [data-controller=toast][role=alert][data-toast-duration-value='10000']",
                   text: /Adresse e-mail ou mot de passe incorrect/i
     assert_select "[data-controller=toast] button[hidden][aria-label=?]", "Fermer le message"
   end

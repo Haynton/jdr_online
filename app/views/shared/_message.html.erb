@@ -1,5 +1,5 @@
 <%# Rendered as a layout around its content: render layout: "shared/message", locals: { variant: :error } do ... end %>
 <div class="<%= message_classes(variant) %>" role="<%= message_role(variant) %>">
-  <%= render "shared/icons/#{message_icon(variant)}", css_class: "mt-0.5 size-4 shrink-0" %>
+  <%= render message_icon(variant), css_class: "mt-0.5 size-4 shrink-0" %>
   <div class="min-w-0 flex-1"><%= yield %></div>
 </div>

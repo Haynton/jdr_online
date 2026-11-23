@@ -20,7 +20,7 @@ class AuthLayoutTest < ActionDispatch::IntegrationTest
     get game_tables_path
     follow_redirect!
 
-    assert_select "main > div.fixed [data-controller=toast] [role=alert]",
+    assert_select "main > div.fixed [data-controller=toast][role=alert]",
                   text: /Vous devez vous connecter|You need to sign in/
 
     get new_user_session_path
