@@ -32,5 +32,8 @@ module JdrOnline
     config.i18n.available_locales = %i[fr en]
     # English is the fallback because it is the most widely understood language
     config.i18n.default_locale = :en
+
+    # The sender of every email (Devise and the mailers of the app): written once, read by both
+    config.x.mail_sender = "Fumble Quest <noreply@fumblequest.com>"
   end
 end
