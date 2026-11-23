@@ -206,12 +206,16 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_not @game_table.reload.draft?
   end
 
-  test "once the creation is over, its summary cannot be opened any more" do
+  test "once the table is ready, its summary confirms the changes and leads back to my tables" do
     @game_table.finish_creation!
-
     get game_table_summary_path(@game_table)
 
-    assert_response :not_found
+    assert_select "button[name=join_game]", count: 0
+    assert_select "p", text: "Envoyez ce lien à un joueur : il rejoint la table et crée son personnage."
+    assert_select "form[action=?] button", game_table_summary_path(@game_table), text: "Valider les modifications"
+    patch game_table_summary_path(@game_table)
+    assert_redirected_to game_tables_path(table: @game_table.id)
+    assert_equal "Modifications enregistrées.", flash[:screen_reader_notice]
   end
 
   test "a player of the table cannot open its summary nor change its link" do

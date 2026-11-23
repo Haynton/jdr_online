@@ -80,8 +80,14 @@
     </div>
 
     <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
-      <%= link_to t(".back"), edit_game_table_details_path(@game_table), class: button_classes(:secondary) %>
-      <%= form.button :submit, t("game_tables.creation_actions.continue"), class: button_classes(:primary) %>
+      <%# On a table ready (its "Game settings"): Cancel and Save, the page shown again %>
+      <% if @game_table.draft? %>
+        <%= link_to t(".back"), edit_game_table_details_path(@game_table), class: button_classes(:secondary) %>
+        <%= form.button :submit, t("game_tables.creation_actions.continue"), class: button_classes(:primary) %>
+      <% else %>
+        <%= link_to t("game_tables.creation_actions.cancel"), game_tables_path(table: @game_table.id), class: button_classes(:secondary) %>
+        <%= form.button :submit, t("game_tables.creation_actions.save"), class: button_classes(:primary) %>
+      <% end %>
     </div>
   <% end %>
 <% end %>

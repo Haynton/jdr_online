@@ -95,15 +95,24 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_table_summary_path(@game_table)
   end
 
-  test "only the game master of a draft reaches the settings" do
+  test "only the game master of the table reaches the settings" do
     other_user = User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
     sign_in other_user
     get edit_game_table_settings_path(@game_table)
-    assert_response :not_found
 
-    @game_table.finish_creation!
-    sign_in @user
-    get edit_game_table_settings_path(@game_table)
     assert_response :not_found
+  end
+
+  test "on a table ready, the settings are saved and shown again, with cancel and save" do
+    @game_table.finish_creation!
+    get edit_game_table_settings_path(@game_table)
+
+    assert_select "a[href=?]", game_tables_path(table: @game_table.id), text: "Annuler"
+    assert_select "input[type=submit][value=Enregistrer]"
+    patch game_table_settings_path(@game_table), params: { game_table: { starting_level: "4" } }
+    assert_redirected_to edit_game_table_settings_path(@game_table)
+    assert_equal "Réglages enregistrés.", flash[:notice]
+    assert_equal 4, @game_table.reload.starting_level
+    assert_not @game_table.draft?
   end
 end

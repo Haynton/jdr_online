@@ -1,6 +1,11 @@
-<%# The first step of a draft table, taken up again from "My tables" (Resume the creation) %>
+<%# The first step of a table, taken up again from "My tables": a draft (Resume the creation), or a table ready (its
+    "Game settings", decision: the same pages, titled as its settings) %>
 <%= creation_page(current_step: "details", game_table: @game_table) do %>
-  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <% if @game_table.draft? %>
+    <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <% else %>
+    <%= page_header(title: t(".settings_title"), subtitle: t(".settings_subtitle")) %>
+  <% end %>
   <%= render "game_tables/details_form", game_table: @game_table, url: game_table_details_path(@game_table),
                                          method: :patch, cancel_path: game_tables_path(table: @game_table.id) %>
 <% end %>

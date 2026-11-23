@@ -134,13 +134,20 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "once the creation is over, its first step cannot be opened any more" do
+  test "once the table is ready, its first step shows its template without choosing, and saves on the same page" do
     game_table = create_draft_table
     game_table.update!(status: "ready")
-
     get edit_game_table_details_path(game_table)
 
-    assert_response :not_found
+    assert_select "main h1", text: "Paramètres de la partie"
+    assert_select "input[name='game_table[sheet_template_id]']", count: 0
+    assert_select "section[aria-labelledby=frozen-sheet-template-title]", text: /Fantasy héroïque/
+    assert_select "button[type=submit][form=game-table-creation-form]", text: "Enregistrer"
+    patch game_table_details_path(game_table),
+          params: { game_table: { name: "Les Marches du Sud", cover_image: "wolf", sheet_template_id: @horror.id } }
+    assert_redirected_to edit_game_table_details_path(game_table)
+    assert_equal "Les Marches du Sud", game_table.reload.name
+    assert_equal @fantasy, game_table.sheet_template
   end
 
   private

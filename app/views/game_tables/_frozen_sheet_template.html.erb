@@ -1,0 +1,19 @@
+<%# The sheet template of a table ready, on its first step (its "Game settings"): shown as the card of the choice row,
+    without choosing (decision: once the table is ready, its template no longer changes, the characters are made with
+    it). A template deleted since: the table keeps its copy, only its name is gone. Full keys: the partial is shared %>
+<% sheet_template = game_table.sheet_template %>
+<section class="mt-8" aria-labelledby="frozen-sheet-template-title">
+  <h2 id="frozen-sheet-template-title" class="text-sm font-semibold text-ink"><%= t("game_tables.details_form.sheet_template") %></h2>
+  <p class="mt-1 text-sm text-muted"><%= t("game_tables.details_form.sheet_template_frozen_hint") %></p>
+  <% if sheet_template %>
+    <div class="mt-4 w-[62%] overflow-hidden rounded-xl border border-line bg-surface sm:w-56">
+      <span class="flex aspect-video w-full items-center justify-center <%= banner_classes(sheet_template.banner_color, :background) %> <%= banner_classes(sheet_template.banner_color, :accent) %>" aria-hidden="true">
+        <%= sheet_template_icon(sheet_template.icon, css_class: "size-10") %>
+      </span>
+      <span class="block truncate px-4 pt-3 font-semibold text-ink"><%= sheet_template.name %></span>
+      <span class="mb-3 line-clamp-2 min-h-[2lh] px-4 text-sm break-words text-ink"><%= sheet_template.description %></span>
+    </div>
+  <% else %>
+    <p class="mt-4 text-sm text-ink"><%= t("game_tables.details_form.sheet_template_deleted") %></p>
+  <% end %>
+</section>
