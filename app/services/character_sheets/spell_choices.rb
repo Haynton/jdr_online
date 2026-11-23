@@ -3,7 +3,7 @@
 # levels (min_level to max_level, or up to the table max_level_from of the class), as many as the table count_from of
 # the class at the level of the character. The tables are read in the spellcasting effect of the option picked (the
 # class), one number per level from 1 to 20 (heroic fantasy: cantrips, prepared, max_spell_level). The spells come
-# from the catalog of the template of the table (catalog_entries).
+# from the catalog of the table (Catalogs::TableCatalog: its template's, changed by its game master).
 # Known limit: the spellbook of the wizard (6 spells, some of them prepared) comes later; here every class prepares
 # its spells from the list of its class
 module CharacterSheets
@@ -66,11 +66,11 @@ module CharacterSheets
 
     private
 
+    # The spells of the catalog of the table (its template's, changed by its game master: Catalogs::TableCatalog)
     def catalog_spells
-      sheet_template = @game_table.sheet_template
-      return CatalogEntry.none unless sheet_template && class_option
+      return CatalogEntry.none unless class_option
 
-      sheet_template.catalog_entries.spells.for_class(class_option).by_level_and_name
+      Catalogs::TableCatalog.new(@game_table).entries("spell").for_class(class_option).by_level_and_name
     end
 
     def build_group(declared_group)
