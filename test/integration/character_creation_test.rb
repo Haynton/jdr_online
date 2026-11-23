@@ -413,6 +413,29 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "the level is never asked when the table sets it" do
+    use_template_with_steps
+    @game_table.update!(starting_level: 3)
+    sign_in @player
+    get game_table_character_step_path(@game_table, "class")
+
+    assert_select "input[name=?]", "character[sheet][level]", count: 0
+  end
+
+  test "when the players choose their level, it is asked on the first page, starting from the level of the table" do
+    use_template_with_steps
+    @game_table.update!(starting_level: 3, players_choose_level: true)
+    sign_in @player
+    get game_table_character_step_path(@game_table, "class")
+
+    assert_select "input[name=?][value='3']", "character[sheet][level]"
+    patch game_table_character_step_path(@game_table, "class"),
+          params: { character: { sheet: { class: "Guerrier", level: "5" } } }
+    assert_equal 5, @participation.reload.character.sheet["level"]
+    get game_table_character_step_path(@game_table, "description")
+    assert_select "input[name=?]", "character[sheet][level]", count: 0
+  end
+
   test "the form of a step saves itself in the background" do
     sign_in @player
     get sheet_step_path

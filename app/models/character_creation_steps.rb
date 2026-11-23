@@ -74,7 +74,31 @@ class CharacterCreationSteps
   private
 
   def shown_steps
-    @shown_steps ||= declared_steps.select { |declared| shown?(declared) }.map { |declared| build_step(declared) }
+    @shown_steps ||= with_fields_chosen_by_players(
+      declared_steps.select { |declared| shown?(declared) }.map { |declared| build_step(declared) }
+    )
+  end
+
+  # The level the table lets its players choose goes on the first page (decision), with the fields of that page
+  def with_fields_chosen_by_players(steps)
+    first_page = steps.find { |step| !step.summary_only }
+    return steps if first_page.nil? || fields_chosen_by_players.empty?
+
+    steps.map { |step| step == first_page ? step.with(fields: step.fields + moved_to(first_page)) : step }
+  end
+
+  # The values the table gives (from_table: the level) that its players may change, when the game master lets them
+  # (players_choose_level, step Settings of the table); none otherwise
+  def fields_chosen_by_players
+    return [] unless @game_table.players_choose_level
+
+    @game_table.character_sheet_fields.select { |field| field["from_table"] == "starting_level" }
+  end
+
+  # In the section of the page they join: in their own one ("Details"), they would show a title of their own there
+  def moved_to(page)
+    section = page.fields.first&.dig("section")
+    fields_chosen_by_players.map { |field| section ? field.merge("section" => section) : field }
   end
 
   def declared_steps
