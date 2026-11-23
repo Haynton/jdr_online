@@ -2,7 +2,7 @@
 # (shared by mistake, sent to the wrong person)
 module GameTables
   class InviteTokensController < ApplicationController
-    include DraftTableOfGameMaster
+    include TableOfGameMaster
 
     def update
       @game_table.regenerate_invite_token

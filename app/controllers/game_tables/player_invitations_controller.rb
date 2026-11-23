@@ -2,7 +2,7 @@
 # An invited player stays pending until they accept (their side comes with joining a table)
 module GameTables
   class PlayerInvitationsController < ApplicationController
-    include DraftTableOfGameMaster
+    include TableOfGameMaster
 
     def create
       @player_invitation = PlayerInvitation.new(game_table: @game_table, username: invitation_params[:username])
