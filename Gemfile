@@ -1,5 +1,8 @@
 source "https://rubygems.org"
 
+# Heroku reads the Ruby version here (written in Gemfile.lock): without it, it picks its own
+ruby file: ".ruby-version"
+
 # config base gem
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 gem "pg", "~> 1.1"
