@@ -23,7 +23,7 @@ class SideNavTest < ActionDispatch::IntegrationTest
     get game_tables_path
 
     assert_select "#side-nav" do
-      assert_select "a[href=?] span#{fading_text_selector}", game_tables_path, text: "JDR en ligne"
+      assert_select "a[href=?] span#{fading_text_selector}", game_tables_path, text: "Fumble Quest"
       assert_select "a[href=?][title=?]", game_tables_path, "Mes tables" do
         assert_select "svg[aria-hidden=true] + span#{fading_text_selector}", text: "Mes tables"
       end

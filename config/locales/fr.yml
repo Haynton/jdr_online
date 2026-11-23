@@ -103,7 +103,7 @@ fr:
             username:
               invalid: "ne peut contenir que des lettres, des chiffres, des tirets (-) et des tirets bas (_)"
               taken: "est déjà pris par un autre joueur"
-  app_name: "JDR en ligne"
+  app_name: "Fumble Quest"
   devise:
     passwords:
       edit:
@@ -746,7 +746,7 @@ fr:
         copied: "Lien copié."
         copy: "Copier le lien"
         copy_failed: "Copie impossible : le lien est sélectionné, copiez-le avec Ctrl+C (⌘+C sur Mac)."
-        email_body: "Bonjour,\n\nRejoins ma table « %{name} » sur JDR en ligne : %{link}\n\nÀ bientôt !"
+        email_body: "Bonjour,\n\nRejoins ma table « %{name} » sur Fumble Quest : %{link}\n\nÀ bientôt !"
         email_subject: "Invitation à ma table « %{name} »"
         hint: "Envoyez ce lien à vos joueurs : ils pourront le suivre dès que la création de la table sera terminée."
         invite: "Inviter"
