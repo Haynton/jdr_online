@@ -1,5 +1,6 @@
 <%# The tables that use the template, beside its name, laid out like the participants of the summary of a table: one
-    line each (its cover, its name, its status), a link to it in "My tables" %>
+    line each (its cover, its name, its status), a link to it in "My tables". Its hover background leaves the same
+    space on both sides (px-2), and -mx-2 keeps the cover in line with the title at rest %>
 <% tables = sheet_template_tables(sheet_template) %>
 <section class="min-w-0" aria-labelledby="template-tables-title">
   <h2 id="template-tables-title" class="text-base font-semibold text-ink"><%= t("sheet_templates.show.tables_title") %></h2>
@@ -7,10 +8,10 @@
     <ul class="mt-2 divide-y divide-line">
       <% tables.each do |game_table| %>
         <li>
-          <%= link_to game_tables_path(table: game_table.id), class: "flex min-h-14 items-center gap-3 rounded-lg py-2.5 hover:bg-surface-raised" do %>
+          <%= link_to game_tables_path(table: game_table.id), class: "-mx-2 flex min-h-14 items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-surface-raised" do %>
             <%= image_tag game_table.cover_image_path, alt: "", class: "size-10 shrink-0 rounded-md object-cover" %>
             <span class="min-w-0 truncate text-sm font-medium text-ink"><%= game_table.name %></span>
-            <span class="ml-auto shrink-0 pr-2 text-xs text-muted"><%= table_status_label(game_table) %></span>
+            <span class="ml-auto shrink-0 text-xs text-muted"><%= table_status_label(game_table) %></span>
           <% end %>
         </li>
       <% end %>
