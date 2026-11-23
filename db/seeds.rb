@@ -21,19 +21,13 @@ User.destroy_all
 # Sheet templates
 # ==========================================
 
-# One JSON file per template and per language, read as UTF-8 for their accents.
+# One JSON file per template and per language, then their catalogs (spells, items): the same loading as
+# bin/rails sheet_templates:load, which fills the production database without emptying it.
 # Sources and licenses: db/seeds/sheet_templates/LICENSES.md
-Rails.root.glob("db/seeds/sheet_templates/*.json").sort.each do |template_file|
-  SheetTemplate.create!(JSON.parse(template_file.read(encoding: "UTF-8")))
-end
+SheetTemplates::PredefinedLoader.new.call
 
 heroic_fantasy = SheetTemplate.find_by!(locale: "fr", name: "Fantasy héroïque")
 cosmic_horror = SheetTemplate.find_by!(locale: "fr", name: "Horreur cosmique")
-
-# Their catalogs (the spells for now), one file per template and per language, emptied with their template
-Rails.root.glob("db/seeds/catalogs/*.json").sort.each do |catalog_file|
-  Catalogs::Loader.new(catalog_file).call
-end
 
 # ==========================================
 # Users
