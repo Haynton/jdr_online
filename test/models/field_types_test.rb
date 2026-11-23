@@ -18,6 +18,20 @@ class FieldTypesTest < ActiveSupport::TestCase
     assert_equal [:invalid], FieldTypes.of(nil).error_for("x", nil)
   end
 
+  test "a number with labels is a list of those names, its value still the number" do
+    level = { "key" => "level", "type" => "number", "min" => 0, "max" => 2,
+              "labels" => ["Sort mineur", "Niveau 1", "Niveau 2"] }
+    type = FieldTypes.of(level)
+
+    assert_equal [["Sort mineur", 0], ["Niveau 1", 1], ["Niveau 2", 2]], type.list_choices(level)
+    assert_equal FieldTypes::Base::INPUT_PARTIAL, type.partial_for(level)
+    assert_equal :lists, type.flow_group(level)
+    assert_equal "Niveau 1", type.summary_text(1, level)
+    assert_equal 1, type.convert("1", level)
+    assert_nil type.list_choices(level.except("labels"))
+    assert_equal "character_sheets/fields/stat", type.partial_for(level.except("labels"))
+  end
+
   test "every partial a type declares exists" do
     FieldTypes.all.filter_map(&:partial).uniq.each do |partial|
       directory, name = File.split(partial)

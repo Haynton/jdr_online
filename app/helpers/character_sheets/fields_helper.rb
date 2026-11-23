@@ -55,7 +55,7 @@ module CharacterSheets
 
     # A choice or a text (character_sheets/fields/_input): a short text (short: true) is one line, any other a text area
     def sheet_field_control(character, field)
-      return sheet_select(character, field) if field["type"] == "choice"
+      return sheet_select(character, field) if FieldTypes.of(field).list_choices(field)
 
       field["short"] ? sheet_text_field(character, field) : sheet_text_area(character, field)
     end
@@ -142,7 +142,7 @@ module CharacterSheets
     def sheet_select(character, field)
       tag.div(class: "relative") do
         select_tag(sheet_field_name(field),
-                   options_for_select(field["options"], sheet_field_value(character, field)),
+                   options_for_select(FieldTypes.of(field).list_choices(field), sheet_field_value(character, field)),
                    sheet_control_options(character, field).merge(class: SELECT_CLASSES, include_blank: true,
                                                                  data: sheet_choice_effects_data(field))) +
           render("shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES)

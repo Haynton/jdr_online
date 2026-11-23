@@ -13,7 +13,7 @@ module FieldParameters
     "at_creation" => :asked_at_creation,
     "min" => :integer, "max" => :integer, "count" => :integer, "total" => :integer, "max_per_ability" => :integer,
     "step" => :decimal,
-    "options" => :lines, "granted" => :lines,
+    "options" => :lines, "granted" => :lines, "labels" => :lines,
     "column" => :choice, "from_table" => :choice, "on_rest" => :choice, "modifier" => :choice, "rule" => :choice,
     # Set once and for all: the key names the field everywhere (forms, sheets saved), the type its whole behavior;
     # the effects and the descriptions of the options will have their own editor

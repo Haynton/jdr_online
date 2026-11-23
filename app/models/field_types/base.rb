@@ -32,8 +32,22 @@ module FieldTypes
     end
 
     # Its look on a step (character_sheets/fields), nil when a section or a step draws it itself
+    # A field to fill in: a list, a text (the look of most types)
+    INPUT_PARTIAL = "character_sheets/fields/input".freeze
+
     def partial
-      "character_sheets/fields/input"
+      INPUT_PARTIAL
+    end
+
+    # The look of this field, when its settings change it (a number with labels is a list); otherwise its partial
+    def partial_for(_field)
+      partial
+    end
+
+    # The choices of a field shown as a list, as [label, value] (character_sheets/fields/_input draws a select); nil
+    # when the field is not a list
+    def list_choices(_field)
+      nil
     end
 
     # Its group in a free layout (CharacterSheets::LayoutHelper::FLOW_GROUPS)

@@ -16,7 +16,7 @@ module CharacterSheets
     # The look of a field, said by its type (FieldTypes::Base#partial: the paths are written in full in the classes
     # of app/models/field_types)
     def sheet_field_partial(field)
-      FieldTypes.of(field).partial
+      FieldTypes.of(field).partial_for(field)
     end
 
     def sheet_section_partial(layout)
