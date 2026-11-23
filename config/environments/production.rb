@@ -62,14 +62,17 @@ Rails.application.configure do
   # app on Heroku, an environment variable (APP_HOST, see .env.example)
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost"), protocol: "https" }
 
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  # The emails go through the SMTP relay of Brevo (decision: free up to 300 emails a day). Its login and its SMTP key
+  # are environment variables of Heroku (see .env.example), never written in the code
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: "smtp-relay.brevo.com",
+    port: 587,
+    user_name: ENV["BREVO_SMTP_LOGIN"],
+    password: ENV["BREVO_SMTP_KEY"],
+    authentication: :login,
+    enable_starttls_auto: true
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

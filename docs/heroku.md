@@ -19,6 +19,7 @@ Ce qu'il faut savoir pour mettre l'application en ligne et l'entretenir. Toute c
 |---|---|---|
 | `RAILS_MASTER_KEY` | Ouvre les secrets chiffrés de Rails (`config/credentials.yml.enc`). Sans elle, l'application ne démarre pas | Anthony, depuis son terminal, sans jamais afficher la valeur |
 | `APP_HOST` | L'adresse du site dans les liens des e-mails (mot de passe oublié), sans `https://` | Heroku, `heroku config:set` |
+| `BREVO_SMTP_LOGIN` et `BREVO_SMTP_KEY` | L'identifiant et la clé SMTP de Brevo, qui envoie les e-mails (Brevo › SMTP & API › SMTP) | Anthony, depuis son terminal |
 | `DATABASE_URL` | L'adresse de la base | Heroku, toute seule, à la création de la base |
 
 Poser la clé (à lancer depuis le dossier du projet, la valeur n'apparaît pas) :
@@ -72,6 +73,5 @@ heroku config -a fumble-quest
 
 ## Reste à faire
 
-- Un service d'envoi d'e-mails et un vrai `mailer_sender` (`config/initializers/devise.rb`) : pour l'instant, « Mot de passe oublié » n'envoie rien.
 - Quand une tâche de fond arrivera (IA) : `SOLID_QUEUE_IN_PUMA=true`, pour faire tourner Solid Queue dans Puma sans second dyno.
 - Plus tard, en même temps que la CI : la pile Heroku-26 et la dernière version corrective de Ruby 3.3.
