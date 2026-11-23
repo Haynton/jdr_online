@@ -203,17 +203,17 @@
   },
   "spell_fields": {
     "fields": [
-      { "key": "level", "label": "Level", "type": "number", "min": 0, "max": 9, "required": true },
-      { "key": "school", "label": "School", "type": "choice", "options": ["Abjuration", "Conjuration", "Divination", "Enchantment", "Evocation", "Illusion", "Necromancy", "Transmutation"], "required": true },
-      { "key": "casting_time", "label": "Casting time", "type": "text", "short": true },
-      { "key": "range", "label": "Range", "type": "text", "short": true },
-      { "key": "components", "label": "Components", "type": "picks", "options": ["V", "S", "M"] },
-      { "key": "material", "label": "Material component", "type": "text", "short": true },
-      { "key": "duration", "label": "Duration", "type": "text", "short": true },
-      { "key": "concentration", "label": "Concentration", "type": "boolean" },
-      { "key": "ritual", "label": "Ritual", "type": "boolean" },
-      { "key": "classes", "label": "Classes", "type": "picks", "options": ["Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"], "required": true },
-      { "key": "higher_levels", "label": "At higher levels", "type": "text" }
+      { "key": "level", "label": "Level", "section": "Level and school", "type": "number", "min": 0, "max": 9, "labels": ["Cantrip", "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9"], "required": true },
+      { "key": "school", "label": "School", "section": "Level and school", "type": "choice", "options": ["Abjuration", "Conjuration", "Divination", "Enchantment", "Evocation", "Illusion", "Necromancy", "Transmutation"], "required": true },
+      { "key": "casting_time", "label": "Casting time", "section": "Casting", "type": "text", "short": true },
+      { "key": "range", "label": "Range", "section": "Casting", "type": "text", "short": true },
+      { "key": "components", "label": "Components", "section": "Components", "type": "picks", "options": ["V", "S", "M"] },
+      { "key": "material", "label": "Material component", "section": "Components", "type": "text", "short": true },
+      { "key": "duration", "label": "Duration", "section": "Casting", "type": "text", "short": true },
+      { "key": "concentration", "label": "Concentration", "section": "Casting", "type": "boolean" },
+      { "key": "ritual", "label": "Ritual", "section": "Casting", "type": "boolean" },
+      { "key": "higher_levels", "label": "At higher levels", "section": "Effect", "type": "text" },
+      { "key": "classes", "label": "Classes", "section": "Classes", "type": "picks", "options": ["Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"], "required": true }
     ]
   },
   "rest_rules": [
