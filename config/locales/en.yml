@@ -69,6 +69,8 @@ en:
         ability_bonus_too_high: "goes past %{count} with the bonus"
         too_many_picks: "%{count} at most"
       models:
+        catalog_entry:
+          one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
             participation_id:
