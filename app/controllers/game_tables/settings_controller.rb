@@ -16,7 +16,7 @@ module GameTables
       return redirect_to edit_game_table_settings_path(@game_table), notice: t(".saved") unless @game_table.draft?
 
       @game_table.reach_creation_step(GameTable.next_creation_step("settings"))
-      redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".saved") }
+      redirect_to edit_game_table_catalog_path(@game_table), flash: { screen_reader_notice: t(".saved") }
     end
 
     private

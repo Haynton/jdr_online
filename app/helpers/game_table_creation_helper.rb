@@ -100,6 +100,7 @@ module GameTableCreationHelper
     case step
     when "details" then edit_game_table_details_path(game_table)
     when "settings" then edit_game_table_settings_path(game_table)
+    when "catalog" then edit_game_table_catalog_path(game_table)
     when "summary" then game_table_summary_path(game_table)
     end
   end

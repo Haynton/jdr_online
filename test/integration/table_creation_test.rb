@@ -10,13 +10,13 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     sign_in @user
   end
 
-  test "the first step shows the five steps, the covers and the templates of the user's language, none chosen" do
+  test "the first step shows the six steps, the covers and the templates of the user's language, none chosen" do
     SheetTemplate.create!(name: "Heroic fantasy", locale: "en")
     get new_game_table_path
 
     assert_response :success
     # The lines that join the steps are list items too, hidden from screen readers
-    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 5
+    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 6
     assert_select "ol > li[aria-current=step]", text: /Informations/
     assert_select "ol > li", text: /Bientôt/, count: 2
     assert_select "input[type=radio][name='game_table[cover_image]']", count: GameTable::COVER_IMAGES.size
