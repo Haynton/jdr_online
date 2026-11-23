@@ -5,7 +5,7 @@
     The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen on a short step %>
 <%= simple_form_for character, url: game_table_character_step_path(character.game_table, step.key), method: :patch,
                                html: { class: "flex flex-1 flex-col" },
-                               data: character_sheet_form_data(character, computed) do |f| %>
+                               data: character_sheet_form_data(character, computed, step) do |f| %>
   <%= hidden_field_tag :go_to, "", id: nil, data: { save_before_leaving_target: "destination" } %>
   <%= form_error_notification(f) %>
   <%# Asked by the step that names the character; required to finish, not for the draft %>

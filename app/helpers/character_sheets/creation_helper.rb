@@ -28,11 +28,14 @@ module CharacterSheets
 
     # What the live calculation reads beside the fields of the page: the values of the other steps, the effects of the
     # lists, and what the server worked out (modifiers, bonuses), for the fields that are not on this page
-    # save-before-leaving: a step of the band sends the form first (save_before_leaving_controller.js)
-    def character_sheet_form_data(character, computed)
-      { controller: "character-sheet save-before-leaving",
+    # save-before-leaving: a step of the band sends the form first (save_before_leaving_controller.js); autosave: the
+    # step is saved in the background while it is filled, and when the page is left (autosave_controller.js)
+    def character_sheet_form_data(character, computed, step)
+      { controller: "character-sheet save-before-leaving autosave",
         action: "input->character-sheet#recompute change->character-sheet#recompute " \
-                "formdata->character-sheet#sendTypedScores",
+                "formdata->character-sheet#sendTypedScores input->autosave#saveSoon change->autosave#save " \
+                "submit->autosave#cancel",
+        autosave_url_value: draft_game_table_character_step_path(character.game_table, step.key),
         character_sheet_level_thresholds_value: character.game_table.level_thresholds.to_json,
         character_sheet_sheet_value: character.sheet.to_json,
         character_sheet_effects_value: choice_effects(character.sheet_fields).to_json,
