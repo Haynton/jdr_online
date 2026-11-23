@@ -13,7 +13,7 @@
   <% if hint %>
     <p id="<%= sheet_field_id(field) %>_hint" class="-mt-0.5 mb-2.5 text-xs text-muted"><%= hint %></p>
   <% end %>
-  <%= hidden_field_tag "character[sheet][#{field['key']}][]", "", id: nil %>
+  <%= hidden_field_tag "#{sheet_field_name(field)}[]", "", id: nil %>
   <%# Two columns as wide as their longest option (max-content, decision): « Langue des signes commune » never goes
       onto two lines, and the options never spread across the screen. One column on a phone, where two would not fit %>
   <div class="grid w-fit grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-[repeat(2,max-content)]">
@@ -27,7 +27,7 @@
       <% box_id = "#{sheet_field_id(field)}_#{index}" %>
       <%# The box on the first line of its label, which may take two (« Langue des signes commune ») %>
       <div class="flex items-start gap-2">
-        <%= check_box_tag "character[sheet][#{field['key']}][]", option, picked.include?(option),
+        <%= check_box_tag "#{sheet_field_name(field)}[]", option, picked.include?(option),
                           id: box_id, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
         <%= label_tag box_id, option, class: SimpleFormFieldClasses::CHECKBOX_LABEL %>
       </div>

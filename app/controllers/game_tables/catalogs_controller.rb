@@ -10,9 +10,15 @@ module GameTables
 
     before_action :set_catalog_kind
 
+    # The entries of the template, each replaced by the table's copy when it changed it, and the entries it added, by
+    # name without accents
     def edit
-      @catalog_entries = CatalogEntry.where(sheet_template_id: @game_table.sheet_template_id, kind: @catalog_kind)
-                                     .order(:name)
+      own_entries = @game_table.catalog_entries.where(kind: @catalog_kind).to_a
+      template_entries = CatalogEntry.where(sheet_template_id: @game_table.sheet_template_id, kind: @catalog_kind)
+                                     .where.not(key: own_entries.map(&:key))
+      @catalog_entries = (template_entries.to_a + own_entries).sort_by do |entry|
+        I18n.transliterate(entry.name).downcase
+      end
       @locked_keys = @catalog_kind == "item" ? Catalogs::StartingEquipmentItemKeys.new(@game_table).call : []
     end
 

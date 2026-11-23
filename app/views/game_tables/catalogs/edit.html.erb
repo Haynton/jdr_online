@@ -4,12 +4,18 @@
     of lines from 768 px; a search without accents or capitals (catalog_search_controller.js, rendered hidden and shown
     by it). Characters already made keep their copy of what they chose: said under the tabs (decision).
     The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
+<%# Saved in the window of an entry, or by a switch: the page is refreshed by morphing, keeping its scroll %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "catalog", game_table: @game_table) do %>
   <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
   <%= form_with url: game_table_catalog_path(@game_table, kind: @catalog_kind), method: :patch,
-                id: creation_form_id, class: "flex flex-1 flex-col", data: { controller: "catalog-search" } do %>
+                id: creation_form_id, class: "flex flex-1 flex-col",
+                data: { controller: "catalog-search submit-on-change", action: "turbo:morph@document->catalog-search#showTools" } do %>
     <%# Unticking every box still sends the list: none offered %>
     <%= hidden_field_tag "offered_keys[]", "", id: nil %>
+    <%# The button a switch submits the form through: saved, the same tab again (go_to) %>
+    <%= button_tag "", type: "submit", name: "go_to", value: @catalog_kind, hidden: true, tabindex: -1,
+                       aria: { hidden: true }, data: { submit_on_change_target: "submitter" } %>
 
     <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
       <div class="inline-flex gap-1 rounded-lg bg-field p-1" role="group" aria-label="<%= t(".tabs") %>">
@@ -21,6 +27,12 @@
       </div>
       <% if @catalog_entries.any? %>
         <p class="text-sm text-muted"><%= catalog_offered_count(@game_table, @catalog_entries) %></p>
+      <% end %>
+      <%# An empty window (decision), whose entry belongs to the table %>
+      <%= link_to new_game_table_catalog_entry_path(@game_table, kind: @catalog_kind),
+                  class: "#{button_classes(:secondary)} sm:ml-auto", data: catalog_entry_dialog_link_data do %>
+        <%= render "shared/icons/plus" %>
+        <%= t(".add.#{@catalog_kind}") %>
       <% end %>
     </div>
     <p class="mt-3 max-w-2xl text-sm text-muted"><%= t(".characters_keep_their_copy") %></p>
@@ -58,4 +70,6 @@
       <% end %>
     </div>
   <% end %>
+  <%# Outside the form of the list: the window holds a form of its own %>
+  <%= render "game_tables/catalogs/dialog" %>
 <% end %>

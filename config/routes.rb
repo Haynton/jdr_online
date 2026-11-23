@@ -14,6 +14,8 @@ Rails.application.routes.draw do
       resource :settings, only: %i[edit update]
       # The spells and items the table offers, from the catalog of its template (Catalogs::TableCatalog)
       resource :catalog, only: %i[edit update]
+      # One spell or item of that catalog, in a window: seen and changed for the table (its copy, same key), or added
+      resources :catalog_entries, only: %i[new create edit update destroy], param: :key
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]
       resource :invite_token, only: :update

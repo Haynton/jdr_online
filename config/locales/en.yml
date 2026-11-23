@@ -42,6 +42,9 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      catalog_entry:
+        description: "Description"
+        name: "Name"
       character:
         name: "Character name"
         spells: "Spells"
@@ -713,19 +716,42 @@ en:
       created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
       title: "Create a table"
+    catalog_entries:
+      form:
+        confirm_added: "Delete “%{name}” from this table?"
+        confirm_changed: "Restore “%{name}” as in the template? Your changes for this table will be lost."
+        delete: "Delete"
+        restore: "Restore the original"
+      window:
+        close: "Close"
+        kind:
+          item: "Item"
+          spell: "Spell"
+        new:
+          item: "New item"
+          spell: "New spell"
     catalogs:
       edit:
+        add:
+          item: "Add an item"
+          spell: "Add a spell"
         back: "Back"
         cantrips: "Cantrips"
+        change: "Change %{name}"
+        change_short: "Change"
         characters_keep_their_copy: "Take out what your game does not use. Characters already made keep their version of what they chose."
         empty:
           item: "This sheet template has no items."
           spell: "This sheet template has no spells."
         level: "Level %{level}"
         no_match: "No entry matches this search."
+        offer: "Offer %{name}"
         offered_count:
           one: "%{count} offered out of %{total}"
           other: "%{count} offered out of %{total}"
+        origin:
+          added: "Added"
+          changed: "Changed"
         other_items: "Other items"
         search: "Search"
         starting_equipment: "Part of the starting equipment"

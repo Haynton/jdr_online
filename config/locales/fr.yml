@@ -13,6 +13,9 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      catalog_entry:
+        description: "Description"
+        name: "Nom"
       character:
         name: "Nom du personnage"
         spells: "Sorts"
@@ -684,19 +687,42 @@ fr:
       created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
       title: "Créer une table"
+    catalog_entries:
+      form:
+        confirm_added: "Supprimer « %{name} » de cette table ?"
+        confirm_changed: "Rétablir « %{name} » comme dans le modèle ? Vos changements pour cette table seront perdus."
+        delete: "Supprimer"
+        restore: "Rétablir l'original"
+      window:
+        close: "Fermer"
+        kind:
+          item: "Objet"
+          spell: "Sort"
+        new:
+          item: "Nouvel objet"
+          spell: "Nouveau sort"
     catalogs:
       edit:
+        add:
+          item: "Ajouter un objet"
+          spell: "Ajouter un sort"
         back: "Retour"
         cantrips: "Sorts mineurs"
+        change: "Modifier %{name}"
+        change_short: "Modifier"
         characters_keep_their_copy: "Retirez ce que votre partie n'utilise pas. Les personnages déjà créés gardent leur version de ce qu'ils ont choisi."
         empty:
           item: "Ce modèle de fiche n'a pas d'objets."
           spell: "Ce modèle de fiche n'a pas de sorts."
         level: "Niveau %{level}"
         no_match: "Aucune entrée ne correspond à cette recherche."
+        offer: "Proposer %{name}"
         offered_count:
           one: "%{count} proposé sur %{total}"
           other: "%{count} proposés sur %{total}"
+        origin:
+          added: "Ajouté"
+          changed: "Modifié"
         other_items: "Autres objets"
         search: "Rechercher"
         starting_equipment: "Fait partie de l'équipement de départ"
