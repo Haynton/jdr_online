@@ -174,8 +174,10 @@ en:
     join:
       joined: "You joined “%{name}”. Now create your character."
     show:
-      create_account: "Create an account"
       join: "Join the table"
+    visitor:
+      create_account: "Create an account"
+      have_account: "Already have an account?"
       sign_in: "Sign in"
   layouts:
     settings:

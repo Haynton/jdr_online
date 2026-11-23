@@ -9,17 +9,18 @@ class InvitationLinkTest < ActionDispatch::IntegrationTest
     @game_table.participations.create!(user: @game_master, role: :game_master)
   end
 
-  test "a visitor sees the table over its cover, who invites them, with create an account and sign in" do
+  test "a visitor sees who invites them to which table, like the sign in pages, with create an account and sign in" do
     get invitation_path(@game_table.invite_token), headers: { "Accept-Language" => "fr" }
 
     assert_response :success
     assert_select "#side-nav", count: 0
-    assert_select "body.bg-page-deep"
-    assert_select "section[aria-labelledby=invitation-table-title]" do
-      assert_select "img.cover-fade[alt=''][src*='covers/dragon']"
+    assert_select "nav", count: 0
+    assert_select "img[src*='covers/']", count: 0
+    assert_select "section[aria-labelledby=auth-card-title]" do
       assert_select "span.text-brass", text: "Invitation"
       assert_select "span", text: "· de Julien"
-      assert_select "h1#invitation-table-title", text: "La Crypte"
+      assert_select "h1#auth-card-title", text: "La Crypte"
+      assert_select "p", text: "Une crypte oubliée"
       assert_select "a[href=?]", new_user_registration_path, text: "Créer un compte"
       assert_select "a[href=?]", new_user_session_path, text: "Se connecter"
     end
@@ -45,6 +46,7 @@ class InvitationLinkTest < ActionDispatch::IntegrationTest
 
     assert_no_difference("Participation.count") { get invitation_path(@game_table.invite_token) }
     assert_select "#side-nav"
+    assert_select "section[aria-labelledby=invitation-table-title] img.cover-fade[alt=''][src*='covers/dragon']"
     assert_select "form[action=?] button", join_invitation_path(@game_table.invite_token), text: "Rejoindre la table"
   end
 
