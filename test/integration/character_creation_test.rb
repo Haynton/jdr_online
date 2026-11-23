@@ -413,6 +413,59 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "the form of a step saves itself in the background" do
+    sign_in @player
+    get sheet_step_path
+
+    assert_select "form[data-controller~=autosave][data-autosave-url-value=?]",
+                  draft_game_table_character_step_path(@game_table, "sheet")
+  end
+
+  test "a draft saved in the background keeps the values, without reaching the next step" do
+    use_template_with_steps
+    sign_in @player
+    patch draft_game_table_character_step_path(@game_table, "class"),
+          params: { character: { sheet: { class: "Mage" } } }
+
+    assert_response :no_content
+    character = @participation.reload.character
+    assert_equal "Mage", character.sheet["class"]
+    assert_equal 9, character.sheet["speed"]
+    assert character.draft?
+    assert_nil character.creation_step
+  end
+
+  test "a required field may stay empty in a draft saved in the background" do
+    use_template_with_steps
+    sign_in @player
+    patch draft_game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: "" } } }
+
+    assert_response :no_content
+    assert_predicate @participation.reload.character, :persisted?
+  end
+
+  test "a value refused in the background keeps the one saved before, the others are saved" do
+    sign_in @player
+    patch draft_game_table_character_step_path(@game_table, "sheet"),
+          params: { character: { sheet: { strength: "12" } } }
+    patch draft_game_table_character_step_path(@game_table, "sheet"),
+          params: { character: { name: "Aldric", sheet: { strength: "45", class: "Mage", background: "Né à Brume" } } }
+
+    character = @participation.reload.character
+    assert_equal 12, character.sheet["strength"]
+    assert_equal "Mage", character.sheet["class"]
+    assert_equal "Né à Brume", character.sheet["background"]
+    assert_equal "Aldric", character.name
+  end
+
+  test "only the player of the character saves its draft in the background" do
+    sign_in @game_table.participations.game_master.first.user
+    patch draft_game_table_character_step_path(@game_table, "sheet"), params: { character: { name: "Intrus" } }
+
+    assert_response :not_found
+    assert_not Character.exists?(name: "Intrus")
+  end
+
   private
 
   # A template without creation steps asks everything in one step, "sheet"
