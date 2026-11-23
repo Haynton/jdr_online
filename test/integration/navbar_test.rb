@@ -23,6 +23,6 @@ class NavbarTest < ActionDispatch::IntegrationTest
   test "on a phone, the logo of the top bar keeps its name for screen readers" do
     get root_path, headers: { "Accept-Language" => "fr" }
 
-    assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", root_path, text: "JDR en ligne"
+    assert_select "nav a[href=?] span.sr-only.sm\\:not-sr-only", root_path, text: "Fumble Quest"
   end
 end

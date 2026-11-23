@@ -10,11 +10,11 @@ class LogoTest < ActionView::TestCase
     assert_no_match(/#[0-9a-fA-F]{3,6}\b/, rendered)
   end
 
-  test "the name is translated" do
+  test "the name is the same in both languages" do
     french_logo = I18n.with_locale(:fr) { render partial: "shared/logo" }
     english_logo = I18n.with_locale(:en) { render partial: "shared/logo" }
 
-    assert_includes french_logo, "JDR en ligne"
-    assert_includes english_logo, "JDR Online"
+    assert_includes french_logo, "Fumble Quest"
+    assert_includes english_logo, "Fumble Quest"
   end
 end

@@ -132,7 +132,7 @@ en:
             username:
               invalid: "can only contain letters, digits, dashes (-) and underscores (_)"
               taken: "is already taken by another player"
-  app_name: "JDR Online"
+  app_name: "Fumble Quest"
   devise:
     passwords:
       edit:
@@ -775,7 +775,7 @@ en:
         copied: "Link copied."
         copy: "Copy the link"
         copy_failed: "Copying failed: the link is selected, copy it with Ctrl+C (⌘+C on a Mac)."
-        email_body: "Hi,\n\nJoin my table “%{name}” on JDR Online: %{link}\n\nSee you soon!"
+        email_body: "Hi,\n\nJoin my table “%{name}” on Fumble Quest: %{link}\n\nSee you soon!"
         email_subject: "Invitation to my table “%{name}”"
         hint: "Send this link to your players: they can follow it as soon as the creation of the table is over."
         invite: "Invite"
