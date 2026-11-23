@@ -36,7 +36,8 @@ class SettingsSecurityTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     # Nothing else on the page says it: a floating message
-    assert_select "div.fixed [data-controller=toast] [role=status]", text: "Mot de passe modifié."
+    assert_select "div.fixed [data-controller=toast][role=status][data-toast-duration-value='5000']",
+                  text: "Mot de passe modifié."
   end
 
   test "a wrong current password keeps the password and shows the section again" do

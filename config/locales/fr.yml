@@ -145,8 +145,10 @@ fr:
     join:
       joined: "Vous avez rejoint « %{name} ». Créez maintenant votre personnage."
     show:
-      create_account: "Créer un compte"
       join: "Rejoindre la table"
+    visitor:
+      create_account: "Créer un compte"
+      have_account: "Déjà un compte ?"
       sign_in: "Se connecter"
   layouts:
     settings:

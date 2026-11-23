@@ -1,6 +1,7 @@
 # The invitation link a game master sends to the players (/invitations/:token). Anyone with the link sees who
-# invites them to which table, with the top bar of the visitors or their navigation (application layout):
-# a visitor signs up or in first, and Devise brings them back here (stored location).
+# invites them to which table. A visitor gets a page like the sign in pages (auth layout, decision: centred, without
+# the cover), signs up or in first, and Devise brings them back here (stored location); a signed in user gets the
+# table over its cover, beside their navigation.
 # Opening the link changes nothing: "Join the table" (join) makes the user a player, then they make their character.
 # A link that was regenerated, or a table still in draft, shows "This link no longer works"
 class InvitationsController < ApplicationController
@@ -9,7 +10,10 @@ class InvitationsController < ApplicationController
   before_action :redirect_if_already_at_table
 
   def show
-    store_location_for(:user, request.fullpath) unless user_signed_in?
+    return if user_signed_in?
+
+    store_location_for(:user, request.fullpath)
+    render :visitor, layout: "auth"
   end
 
   # An invitation by username to the same table, not answered yet, is accepted by the same click

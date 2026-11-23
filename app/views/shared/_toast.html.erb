@@ -1,18 +1,19 @@
-<%# A message floating above the page (see shared/_flashes). Its close button is shown by toast_controller.js;
-    a success message also leaves by itself, an error stays until it is closed.
-    The label is read here: inside the block of render layout:, t(".close") would be looked up under shared/message %>
-<% close_label = t(".close") %>
-<div class="rounded-lg shadow-lg motion-safe:animate-fade-in"
+<%# A message floating above the page, like a notification (see shared/_flashes): on the surface of the theme, the
+    kind of message said by a small green or red icon (decision: the tinted message boxes stood out too much). Its close
+    button is shown by toast_controller.js, which also takes it away after a while (toast_duration: longer for an
+    error), paused while the pointer or the keyboard focus is on it %>
+<div class="<%= toast_classes %>"
+     role="<%= message_role(variant) %>"
      data-controller="toast"
-     data-toast-auto-hide-value="<%= variant == :success %>">
-  <%= render layout: "shared/message", locals: { variant: variant } do %>
-    <div class="flex items-start gap-2">
-      <p class="min-w-0 flex-1"><%= message %></p>
-      <button type="button" hidden class="<%= toast_close_button_classes %>"
-              aria-label="<%= close_label %>" title="<%= close_label %>"
-              data-toast-target="closeButton" data-action="toast#close">
-        <%= render "shared/icons/x", css_class: "size-4" %>
-      </button>
-    </div>
-  <% end %>
+     data-toast-duration-value="<%= toast_duration(variant) %>"
+     data-action="mouseenter->toast#pause mouseleave->toast#resume focusin->toast#pause focusout->toast#resume">
+  <span class="<%= toast_icon_classes(variant) %>">
+    <%= render message_icon(variant), css_class: "size-3.5" %>
+  </span>
+  <p class="min-w-0 flex-1 pt-0.5"><%= message %></p>
+  <button type="button" hidden class="<%= toast_close_button_classes %>"
+          aria-label="<%= t(".close") %>" title="<%= t(".close") %>"
+          data-toast-target="closeButton" data-action="toast#close">
+    <%= render "shared/icons/x", css_class: "size-4" %>
+  </button>
 </div>

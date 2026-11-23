@@ -1,6 +1,9 @@
 <%# Title and form of the visitor pages, straight on the page (decision: a card around the form was one frame too many).
     Use the auth_card helper (app/helpers/auth_cards_helper.rb), not this partial directly %>
 <section aria-labelledby="auth-card-title">
+  <% if eyebrow %>
+    <p class="mb-2 text-xs font-semibold tracking-widest uppercase"><%= eyebrow %></p>
+  <% end %>
   <h1 id="auth-card-title" class="text-[28px] leading-tight font-extrabold tracking-tight text-ink"><%= title %></h1>
   <% if subtitle %>
     <p class="mt-1 text-sm text-muted"><%= subtitle %></p>

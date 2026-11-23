@@ -1,0 +1,12 @@
+<%# The invitation page of a visitor, like the sign in pages (decision: centred, without the cover): who invites them
+    to which table, then create an account or sign in. Devise brings them back to the invitation afterwards
+    (InvitationsController#show) %>
+<%= auth_card(title: @game_table.name, eyebrow: invitation_eyebrow(@game_table)) do %>
+  <% if @game_table.description.present? %>
+    <p class="mb-6 line-clamp-4 text-sm text-muted"><%= @game_table.description %></p>
+  <% end %>
+
+  <%= link_to t(".create_account"), new_user_registration_path, class: button_classes(:primary, full_width: true) %>
+  <%= render "shared/divider", text: t(".have_account") %>
+  <%= link_to t(".sign_in"), new_user_session_path, class: button_classes(:secondary, full_width: true) %>
+<% end %>
