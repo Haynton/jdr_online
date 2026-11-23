@@ -15,7 +15,7 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     get game_table_summary_path(@game_table)
 
     assert_response :success
-    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 5
+    assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 6
     assert_select "ol[aria-label] > li[aria-current=step]", text: /Invitation/
     assert_select "main h2", text: "Votre table est prête", count: 0
     # The name of the table is the title of the page: no other title keeps the cover away from the band of the steps
@@ -43,7 +43,8 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "ol[aria-label] a[href=?]", edit_game_table_details_path(@game_table), text: /Informations\s*Modifier/
     assert_select "ol[aria-label] a[href=?]", edit_game_table_settings_path(@game_table), text: /Réglages\s*Modifier/
     assert_select "ol[aria-label] li[aria-current=step] a", count: 0
-    assert_select "ol[aria-label] a", count: 2
+    assert_select "ol[aria-label] a[href=?]", edit_game_table_catalog_path(@game_table), text: /Sorts et objets\s*Modifier/
+    assert_select "ol[aria-label] a", count: 3
 
     get edit_game_table_details_path(@game_table)
 

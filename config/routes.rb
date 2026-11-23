@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       resource :details, only: %i[edit update]
       # The settings that depend on the template chosen (the starting level), right after it
       resource :settings, only: %i[edit update]
+      # The spells and items the table offers, from the catalog of its template (Catalogs::TableCatalog)
+      resource :catalog, only: %i[edit update]
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]
       resource :invite_token, only: :update

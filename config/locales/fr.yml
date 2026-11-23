@@ -684,6 +684,30 @@ fr:
       created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
       title: "Créer une table"
+    catalogs:
+      edit:
+        back: "Retour"
+        cantrips: "Sorts mineurs"
+        characters_keep_their_copy: "Retirez ce que votre partie n'utilise pas. Les personnages déjà créés gardent leur version de ce qu'ils ont choisi."
+        empty:
+          item: "Ce modèle de fiche n'a pas d'objets."
+          spell: "Ce modèle de fiche n'a pas de sorts."
+        level: "Niveau %{level}"
+        no_match: "Aucune entrée ne correspond à cette recherche."
+        offered_count:
+          one: "%{count} proposé sur %{total}"
+          other: "%{count} proposés sur %{total}"
+        other_items: "Autres objets"
+        search: "Rechercher"
+        starting_equipment: "Fait partie de l'équipement de départ"
+        subtitle: "Les sorts et les objets que vos joueurs pourront choisir, d'après le modèle de fiche."
+        tab:
+          item: "Objets"
+          spell: "Sorts"
+        tabs: "Sorts ou objets"
+        title: "Sorts et objets"
+      update:
+        saved: "Sorts et objets enregistrés."
     creation_actions:
       cancel: "Annuler"
       continue: "Continuer"
@@ -691,6 +715,7 @@ fr:
     creation_steps:
       label: "Étapes de la création"
       steps:
+        catalog: "Sorts et objets"
         details: "Informations"
         maps: "Cartes"
         npcs: "PNJ et ennemis"

@@ -65,12 +65,12 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
     assert_equal 2, @game_table.starting_level
   end
 
-  test "continue saves the starting level and opens the summary" do
+  test "continue saves the starting level and opens the spells and items" do
     patch game_table_settings_path(@game_table), params: { game_table: { starting_level: "3" } }
 
-    assert_redirected_to game_table_summary_path(@game_table)
+    assert_redirected_to edit_game_table_catalog_path(@game_table)
     assert_equal 3, @game_table.reload.starting_level
-    assert_equal "summary", @game_table.resume_creation_step
+    assert_equal "catalog", @game_table.resume_creation_step
   end
 
   test "a starting level out of bounds is refused" do
@@ -82,7 +82,7 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
     assert_equal 1, @game_table.reload.starting_level
   end
 
-  test "a template without levels asks no level, and continue still opens the summary" do
+  test "a template without levels asks no level, and continue still opens the next step" do
     @game_table.use_sheet_template(SheetTemplate.create!(name: "Horreur cosmique", locale: "fr"))
     @game_table.save!
     get edit_game_table_settings_path(@game_table)
@@ -92,7 +92,7 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Partie", count: 0
     assert_select "h2", text: "Fonctions IA"
     patch game_table_settings_path(@game_table)
-    assert_redirected_to game_table_summary_path(@game_table)
+    assert_redirected_to edit_game_table_catalog_path(@game_table)
   end
 
   test "only the game master of the table reaches the settings" do

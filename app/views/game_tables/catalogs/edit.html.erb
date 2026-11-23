@@ -1,0 +1,61 @@
+<%# The third step of a table: the spells and items of the catalog of its template it offers, one tab each
+    (decision: 141 spells and 95 items on one page were too long). The tabs are submit buttons (go_to): changing tab
+    saves the one shown, nothing is lost. The entries grouped (the spells by level, the items by category), two columns
+    of lines from 768 px; a search without accents or capitals (catalog_search_controller.js, rendered hidden and shown
+    by it). Characters already made keep their copy of what they chose: said under the tabs (decision).
+    The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
+<%= creation_page(current_step: "catalog", game_table: @game_table) do %>
+  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= form_with url: game_table_catalog_path(@game_table, kind: @catalog_kind), method: :patch,
+                id: creation_form_id, class: "flex flex-1 flex-col", data: { controller: "catalog-search" } do %>
+    <%# Unticking every box still sends the list: none offered %>
+    <%= hidden_field_tag "offered_keys[]", "", id: nil %>
+
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div class="inline-flex gap-1 rounded-lg bg-field p-1" role="group" aria-label="<%= t(".tabs") %>">
+        <% GameTables::CatalogsController::KINDS.each do |kind| %>
+          <%= button_tag t(".tab.#{kind}"), type: "submit", name: "go_to", value: kind,
+                         aria: { pressed: kind == @catalog_kind },
+                         class: "inline-flex h-8 items-center rounded-md px-3 text-sm text-ink transition-colors hover:bg-surface/60 aria-pressed:bg-surface aria-pressed:font-semibold aria-pressed:shadow-sm" %>
+        <% end %>
+      </div>
+      <% if @catalog_entries.any? %>
+        <p class="text-sm text-muted"><%= catalog_offered_count(@game_table, @catalog_entries) %></p>
+      <% end %>
+    </div>
+    <p class="mt-3 max-w-2xl text-sm text-muted"><%= t(".characters_keep_their_copy") %></p>
+
+    <% if @catalog_entries.empty? %>
+      <p class="mt-8 max-w-xl text-sm text-ink"><%= t(".empty.#{@catalog_kind}") %></p>
+    <% else %>
+      <div class="mt-6 max-w-sm" hidden data-catalog-search-target="tools">
+        <label for="catalog-search" class="sr-only"><%= t(".search") %></label>
+        <input id="catalog-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
+               class="<%= SimpleFormFieldClasses::INPUT %>"
+               data-catalog-search-target="search" data-action="input->catalog-search#filter">
+      </div>
+      <p class="mt-6 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
+
+      <% catalog_entry_groups(@catalog_entries, @catalog_kind).each do |title, entries| %>
+        <section class="mt-8" data-catalog-search-target="group">
+          <h2 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h2>
+          <ul class="mt-2 grid gap-x-12 border-t border-line md:grid-cols-2">
+            <% entries.each do |entry| %>
+              <%= render "game_tables/catalogs/entry", entry: entry, locked: @locked_keys.include?(entry.key) %>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    <% end %>
+
+    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+      <% if @game_table.draft? %>
+        <%= link_to t(".back"), edit_game_table_settings_path(@game_table), class: button_classes(:secondary) %>
+        <%= button_tag t("game_tables.creation_actions.continue"), type: "submit", class: button_classes(:primary) %>
+      <% else %>
+        <%= link_to t("game_tables.creation_actions.cancel"), game_tables_path(table: @game_table.id), class: button_classes(:secondary) %>
+        <%= button_tag t("game_tables.creation_actions.save"), type: "submit", class: button_classes(:primary) %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
