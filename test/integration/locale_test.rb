@@ -55,8 +55,11 @@ class LocaleWithFrenchDefaultTest < ActionDispatch::IntegrationTest
     I18n.default_locale = :fr
   end
 
+  # The request saves the french default as the current locale once it is over (I18n.with_locale puts back the locale
+  # it found), and it would stay for the tests that follow: their messages would be in french
   teardown do
     I18n.default_locale = @original_default_locale
+    I18n.locale = @original_default_locale
   end
 
   test "a less preferred available language beats the default locale" do
