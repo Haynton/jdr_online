@@ -27,7 +27,7 @@ Projet réalisé en deux semaines, en équipe de deux ou trois personnes. Les me
 - Formulaires : Simple Form (sans configuration Bootstrap)
 - CSS : Tailwind v4 via `tailwindcss-rails`. **Pas de Bootstrap, pas de Font Awesome**
 - JavaScript : Stimulus et Turbo. Pas de jQuery
-- Temps réel : Action Cable et Turbo Streams. En production : Redis (Heroku Key-Value Store), pas Solid Cable
+- Temps réel : Action Cable et Turbo Streams. En production : **Solid Cable** (décision du 23 novembre, conseil de la prof : aucun service en plus, PostgreSQL suffit à notre taille ; Redis écarté), dans la base principale (voir Base de données)
 - Images : Active Storage avec Cloudinary
 - Variables d'environnement : `dotenv-rails` en développement, variables Heroku en production
 - Hébergement : Heroku. Kamal et le Dockerfile générés par Rails ne sont pas utilisés
@@ -247,6 +247,7 @@ Construits une fois, réutilisés partout. On les voit tous, dans les deux thèm
 - Toujours commiter `db/schema.rb` avec la migration qui le modifie
 - Conflit sur `db/schema.rb` : prendre la version de `main`, puis relancer `rails db:migrate`
 - Ne jamais lancer `rails db:drop`, `db:reset` ou `db:schema:load` sans le demander d'abord
+- **Une seule base en production** (méthode « Single Database Setup » de Le Wagon, décision du 23 novembre) : Heroku Postgres ne donne qu'une base (`DATABASE_URL`), alors que Rails 8 en prévoit une par gem Solid. Les tables de Solid Cable, Solid Queue et Solid Cache sont créées par trois migrations (`install_solid_cable`, `install_solid_queue`, `install_solid_cache`, recopiées de `db/*_schema.rb`, sans `force: :cascade`) et sont dans `db/schema.rb`, aussi en développement, où elles ne servent pas. Dans `config/database.yml`, les quatre connexions de production pointent vers `DATABASE_URL` ; `database_tasks: false` sur `cache`, `queue` et `cable` laisse migrations et schéma à la base principale (vérifié en local avec l'environnement de production). Quand une tâche de fond arrivera (IA), `SOLID_QUEUE_IN_PUMA=true` sur Heroku fera tourner Solid Queue dans Puma (`config/puma.rb`), sans second dyno
 
 ## Git
 
@@ -774,7 +775,7 @@ Tout ce que prévoyait la fiche `Maquettes-pages-compte.md` (Obsidian) est fait 
 
 Prévu la semaine du 23 novembre 2026.
 
-- Redis pour Action Cable en production (`config/cable.yml`), à la place de Solid Cable
+- Fait : Solid Cable, Solid Queue et Solid Cache dans une seule base (voir Base de données)
 - `mailer_sender` réel et service d'envoi d'e-mails
 - Voir la checklist de déploiement du projet
 
@@ -799,7 +800,7 @@ Prévu la semaine du 23 novembre 2026.
 - Bonus, non prioritaire : vérifier un champ dès qu'on le quitte (blur), avec un contrôleur Stimulus, le serveur restant seul juge. Poser `aria-invalid` sur le champ suffit pour le style d'erreur et pour cacher l'aide
 - RuboCop, branche `chore/p1-rubocop-config` : **décision (retour du référent) : on garde le `.rubocop.yml` de Le Wagon**, plutôt que `rubocop-rails-omakase` (installée par Rails, que ce fichier ignore). Reste à faire : retirer la gem `rubocop-rails-omakase` du `Gemfile` (à valider, retrait de gem) et décider si `config/**` et `test/**`, exclus par Le Wagon, sont analysés. En attendant, lancer RuboCop fichier par fichier sur les fichiers de `config` et `test` modifiés
 
-À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, Solid Cache et Solid Queue.
+À ne pas toucher sans le demander : Kamal, `Dockerfile`, `config/deploy.yml`, et la configuration de Solid Cache, Solid Queue et Solid Cable (base unique, voir Base de données).
 
 ## Documentation du projet
 
