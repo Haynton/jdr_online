@@ -50,6 +50,7 @@ en:
         description: "Description"
         name: "Name"
         sheet_template: "Sheet template"
+        players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
         game_table_id: "Table"
@@ -719,7 +720,71 @@ en:
         details: "Details"
         maps: "Maps"
         npcs: "NPCs and enemies"
+        settings: "Settings"
         summary: "Invitation"
+    settings:
+      ai:
+        action_command:
+          hint: "In the game feed, a player writes /action and what their character does: the AI suggests the dice to roll."
+          label: "/action command"
+        campaign_memory:
+          hint: "The AI remembers the characters, places and events of past sessions, to remind you of them."
+          label: "Campaign memory"
+        natural_language_sheet:
+          hint: "A player describes their character in a few sentences, and the AI offers to fill in their sheet."
+          label: "Sheet in plain words"
+        session_summary:
+          hint: "At the end of a session, the AI suggests a summary, which you read over before sharing it."
+          label: "Session summary"
+      coming_soon: "Coming soon"
+      edit:
+        ai: "AI features"
+        back: "Back"
+        characters: "Characters"
+        game: "Game"
+        players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
+        starting_level_hint: "Your players' characters start at this level."
+        subtitle: "The settings of the game, from the sheet template chosen."
+        title: "Settings"
+      rules:
+        ability_method:
+          hint: "How the players get their scores: 4d6 keeping the best 3, 15, 14, 13, 12, 10 and 8 to place, or 27 points to spend."
+          label: "Ability scores method"
+          options:
+            - "Dice roll"
+            - "Standard array"
+            - "Point buy"
+        encumbrance:
+          hint: "The weight of the items carried slows the characters down."
+          label: "Encumbrance"
+        later_hit_points:
+          hint: "What a character gains at each level, besides their Constitution."
+          label: "Hit points at later levels"
+          options:
+            - "Average of the hit die"
+            - "Roll of the hit die"
+        progression:
+          hint: "How the characters go up in level: by earning experience, or at the milestones of the story you choose."
+          label: "Progression"
+          options:
+            - "Experience points"
+            - "Story milestones"
+        rest:
+          hint: "How long a short rest and a long rest last."
+          label: "Rests"
+          options:
+            - "Standard (1 h and 8 h)"
+            - "Heroic (5 min and 1 h)"
+            - "Gritty (8 h and 7 days)"
+        starting_equipment:
+          hint: "What the players get when they make their character."
+          label: "Starting equipment"
+          options:
+            - "Items or gold, their choice"
+            - "Items only"
+            - "Gold only"
+      update:
+        saved: "Settings saved."
     details:
       edit:
         subtitle: "Your table is a draft: change its details whenever you like."

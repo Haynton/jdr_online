@@ -1,0 +1,8 @@
+<%# The name of a setting announced but not working yet, "Coming soon" beside it, and its help under them %>
+<span class="min-w-0">
+  <span class="flex flex-wrap items-center gap-2">
+    <span id="<%= scope %>-<%= setting %>-label" class="text-sm font-semibold text-ink"><%= t("game_tables.settings.#{scope}.#{setting}.label") %></span>
+    <span class="<%= badge_classes(:pending) %>"><%= t("game_tables.settings.coming_soon") %></span>
+  </span>
+  <span id="<%= scope %>-<%= setting %>-hint" class="mt-1 block text-sm text-muted"><%= t("game_tables.settings.#{scope}.#{setting}.hint") %></span>
+</span>

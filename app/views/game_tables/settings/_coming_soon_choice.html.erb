@@ -1,0 +1,12 @@
+<%# A rule announced but not working yet, with several ways to play it: a line of the list of settings, its list of
+    choices disabled (the rule played today first), with "Coming soon" beside its name. The list has no name: nothing
+    is sent. scope and setting: its texts (game_tables.settings.<scope>.<setting>, choices in its options) and its ids %>
+<div class="<%= setting_line_classes %>">
+  <%= render "game_tables/settings/coming_soon_label", scope: scope, setting: setting %>
+  <span class="relative block w-full shrink-0 sm:w-64">
+    <%= select_tag nil, options_for_select(t("game_tables.settings.#{scope}.#{setting}.options")), id: nil, disabled: true,
+                   aria: { labelledby: "#{scope}-#{setting}-label", describedby: "#{scope}-#{setting}-hint" },
+                   class: coming_soon_choice_classes %>
+    <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+  </span>
+</div>

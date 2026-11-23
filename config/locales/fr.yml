@@ -21,6 +21,7 @@ fr:
         description: "Description"
         name: "Nom"
         sheet_template: "Modèle de fiche"
+        players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
         game_table_id: "Table"
@@ -690,7 +691,71 @@ fr:
         details: "Informations"
         maps: "Cartes"
         npcs: "PNJ et ennemis"
+        settings: "Réglages"
         summary: "Invitation"
+    settings:
+      ai:
+        action_command:
+          hint: "Dans le fil de jeu, un joueur écrit /action et ce que fait son personnage : l'IA propose les jets de dés à faire."
+          label: "Commande /action"
+        campaign_memory:
+          hint: "L'IA se souvient des personnages, des lieux et des événements des séances passées, pour vous les rappeler."
+          label: "Mémoire de campagne"
+        natural_language_sheet:
+          hint: "Un joueur décrit son personnage en quelques phrases, et l'IA propose de remplir sa fiche."
+          label: "Fiche en langage naturel"
+        session_summary:
+          hint: "À la fin d'une séance, l'IA propose un résumé, que vous relisez avant de le partager."
+          label: "Résumé de séance"
+      coming_soon: "Bientôt"
+      edit:
+        ai: "Fonctions IA"
+        back: "Retour"
+        characters: "Personnages"
+        game: "Partie"
+        players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
+        starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."
+        subtitle: "Les réglages de la partie, d'après le modèle de fiche choisi."
+        title: "Réglages"
+      rules:
+        ability_method:
+          hint: "Comment les joueurs obtiennent leurs scores : 4d6 en gardant les 3 meilleurs, 15, 14, 13, 12, 10 et 8 à placer, ou 27 points à dépenser."
+          label: "Méthode des caractéristiques"
+          options:
+            - "Lancer de dés"
+            - "Tableau standard"
+            - "Achat de points"
+        encumbrance:
+          hint: "Le poids des objets portés ralentit les personnages."
+          label: "Encombrement"
+        later_hit_points:
+          hint: "Ce que gagne un personnage à chaque niveau, en plus de sa Constitution."
+          label: "Points de vie aux niveaux suivants"
+          options:
+            - "Moyenne du dé de vie"
+            - "Lancer du dé de vie"
+        progression:
+          hint: "Comment les personnages montent de niveau : en gagnant de l'expérience, ou aux étapes de l'histoire que vous choisissez."
+          label: "Progression"
+          options:
+            - "Points d'expérience"
+            - "Étapes de l'histoire"
+        rest:
+          hint: "La durée d'un repos court et d'un repos long."
+          label: "Repos"
+          options:
+            - "Normal (1 h et 8 h)"
+            - "Héroïque (5 min et 1 h)"
+            - "Réaliste (8 h et 7 jours)"
+        starting_equipment:
+          hint: "Ce que les joueurs reçoivent en créant leur personnage."
+          label: "Équipement de départ"
+          options:
+            - "Objets ou or, au choix"
+            - "Objets seulement"
+            - "Or seulement"
+      update:
+        saved: "Réglages enregistrés."
     details:
       edit:
         subtitle: "Votre table est en brouillon : modifiez ses informations quand vous voulez."

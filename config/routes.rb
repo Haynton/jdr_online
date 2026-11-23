@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     # GameTablesController#new; NPCs and maps come with their milestone
     scope module: :game_tables do
       resource :details, only: %i[edit update]
+      # The settings that depend on the template chosen (the starting level), right after it
+      resource :settings, only: %i[edit update]
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]
       resource :invite_token, only: :update

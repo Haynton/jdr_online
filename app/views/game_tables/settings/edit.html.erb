@@ -1,0 +1,87 @@
+<%# The second step of the creation of a table: the settings that depend on the template chosen at the first step.
+    Laid out as a list of settings (decision, after a first try that stacked them): one line each, its name and its
+    help on the left, its control on the right (under them on a narrow screen), lines split by a thin rule, under the
+    title of their group. Two columns from 1280 px (decision): the characters on the left, the game and the AI on the
+    right; narrower, a column would squeeze the help beside a list, so the groups follow each other, 672 px wide at
+    most. The starting level only when the template has levels: a number between "−" and "+", like the abilities of
+    a character sheet. Then "the players choose their level": its name is the label of its switch, the help stays text
+    (decision: a whole line that toggled was surprising), and the invisible check box over the switch is sized like its track
+    (size-full: Safari keeps a check box at its own 13 px, in the top left corner, whatever its inset). When it is on, the starting level is the one offered to the players, who
+    may change it on the first page of their character.
+    The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
+<%= creation_page(current_step: "settings", game_table: @game_table) do %>
+  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= simple_form_for @game_table, url: game_table_settings_path(@game_table), method: :patch,
+                                   html: { id: creation_form_id, class: "flex flex-1 flex-col" } do |form| %>
+    <%= form_error_notification(form) %>
+
+    <div class="grid max-w-2xl gap-x-16 gap-y-10 xl:max-w-none xl:grid-cols-2">
+      <% if @game_table.asks_starting_level? %>
+        <section class="min-w-0" aria-labelledby="characters-settings-title">
+          <h2 id="characters-settings-title" class="<%= settings_group_title_classes %>"><%= t(".characters") %></h2>
+          <div class="<%= settings_group_lines_classes %>">
+            <div class="<%= setting_line_classes %>">
+              <div class="min-w-0">
+                <%= form.label :starting_level, class: "text-sm font-semibold text-ink" %>
+                <p id="starting-level-hint" class="mt-1 text-sm text-muted"><%= t(".starting_level_hint") %></p>
+                <%= form.error :starting_level, id: "starting-level-error", class: "mt-1 text-sm text-error-ink first-letter:uppercase" %>
+              </div>
+              <%= render "character_sheets/fields/stepper", field: { "label" => GameTable.human_attribute_name(:starting_level) },
+                                                             input: starting_level_input(form) %>
+            </div>
+
+            <div class="<%= setting_line_classes %>">
+              <div class="min-w-0">
+                <%= form.label :players_choose_level, class: "cursor-pointer text-sm font-semibold text-ink" %>
+                <p id="players-choose-level-hint" class="mt-1 text-sm text-muted"><%= t(".players_choose_level_hint") %></p>
+              </div>
+              <span class="relative inline-flex shrink-0">
+                <%= form.check_box :players_choose_level, role: "switch", aria: { describedby: "players-choose-level-hint" },
+                                                          class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+                <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+                <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+              </span>
+            </div>
+
+            <% character_rules_coming_soon.each do |setting| %>
+              <%= render "game_tables/settings/coming_soon_choice", scope: "rules", setting: setting %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <div class="flex min-w-0 flex-col gap-10">
+        <%# Rules of the game announced, not working yet (decision): their ways to play them, disabled. Rules of D&D,
+            so shown with a template that has levels, like the characters; the template will declare them once they
+            work %>
+        <% if @game_table.asks_starting_level? %>
+          <section aria-labelledby="game-settings-title">
+            <h2 id="game-settings-title" class="<%= settings_group_title_classes %>"><%= t(".game") %></h2>
+            <div class="<%= settings_group_lines_classes %>">
+              <% game_rules_coming_soon.each do |setting| %>
+                <%= render "game_tables/settings/coming_soon_choice", scope: "rules", setting: setting %>
+              <% end %>
+              <%= render "game_tables/settings/coming_soon_switch", scope: "rules", setting: "encumbrance" %>
+            </div>
+          </section>
+        <% end %>
+
+        <%# Announced, not working yet (decision: shown so that the page says what is coming, disabled so that nothing
+            is promised). Their keys will be those of game_tables.ai_settings %>
+        <section aria-labelledby="ai-settings-title">
+          <h2 id="ai-settings-title" class="<%= settings_group_title_classes %>"><%= t(".ai") %></h2>
+          <div class="<%= settings_group_lines_classes %>">
+            <% ai_settings.each do |setting| %>
+              <%= render "game_tables/settings/coming_soon_switch", scope: "ai", setting: setting %>
+            <% end %>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+      <%= link_to t(".back"), edit_game_table_details_path(@game_table), class: button_classes(:secondary) %>
+      <%= form.button :submit, t("game_tables.creation_actions.continue"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+<% end %>

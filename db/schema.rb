@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_164212) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_213526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_164212) do
     t.string "cover_image", default: "sentinelle", null: false
     t.bigint "sheet_template_id"
     t.integer "starting_level", default: 1, null: false
+    t.boolean "players_choose_level", default: false, null: false
     t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
     t.check_constraint "starting_level >= 1 AND starting_level <= 20", name: "game_tables_starting_level_check"

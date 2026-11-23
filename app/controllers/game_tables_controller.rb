@@ -27,7 +27,7 @@ class GameTablesController < ApplicationController
     return render :new, status: :unprocessable_content unless @game_table.persisted?
 
     @game_table.reach_creation_step(GameTable.next_creation_step("details"))
-    redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".created") }
+    redirect_to edit_game_table_settings_path(@game_table), flash: { screen_reader_notice: t(".created") }
   end
 
   # Temporary page of a table. Only its participants reach it: anyone else gets a 404.
