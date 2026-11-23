@@ -22,7 +22,10 @@ Rails.application.routes.draw do
       # The character of the player, made before joining the game: new leads to the step to fill in, then each step
       # of the creation shows and saves the draft (/game_tables/:id/character/steps/:step, CharacterCreationSteps)
       resource :character, only: :new
-      resources :character_steps, only: %i[show update], path: "character/steps", param: :step
+      # draft: the step saved in the background while it is filled (autosave_controller.js)
+      resources :character_steps, only: %i[show update], path: "character/steps", param: :step do
+        patch :draft, on: :member
+      end
       # "Roll the dice" of the abilities on that sheet: the server rolls, nothing is stored (JSON)
       resource :ability_roll, only: :create
     end
