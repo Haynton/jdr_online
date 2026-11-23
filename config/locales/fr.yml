@@ -40,6 +40,8 @@ fr:
         ability_bonus_too_high: "dépasse %{count} avec le bonus"
         too_many_picks: "%{count} au plus"
       models:
+        catalog_entry:
+          one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
             participation_id:

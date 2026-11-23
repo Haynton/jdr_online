@@ -37,6 +37,8 @@ class GameTable < ApplicationRecord
   has_many :participations, dependent: :destroy
   has_many :users, through: :participations
   has_many :characters, dependent: :destroy
+  # Its own catalog entries: copies of entries of its template changed for it, entries added (Catalogs::TableCatalog)
+  has_many :catalog_entries, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   validates :cover_image, inclusion: { in: COVER_IMAGES }

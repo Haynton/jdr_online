@@ -2,7 +2,7 @@
 # background) offers options, A (items and some gold) or B (gold), sometimes C; the player picks one per field of type
 # equipment_option, stored as { "option" => "a", "picks" => { "2" => "lute" } }. A line of an option may be an item
 # "of your choice" (choose: groups of the catalog, the musical instruments...): its pick is kept under the position
-# of the line. The items come from the catalog of the template of the table (catalog_entries, kind item)
+# of the line. The items come from the catalog of the table (Catalogs::TableCatalog, kind item)
 module CharacterSheets
   class CharacterSheets::StartingEquipment
     # One equipment_option field: the option picked in its list (the class "Magicien"), the options it offers, the
@@ -67,11 +67,9 @@ module CharacterSheets
       catalog_items.values.select { |entry| groups.include?(entry.properties["group"]) }.sort_by(&:name)
     end
 
+    # The items of the catalog of the table (its template's, changed by its game master: Catalogs::TableCatalog)
     def catalog_items
-      @catalog_items ||= begin
-        sheet_template = @game_table.sheet_template
-        sheet_template ? sheet_template.catalog_entries.where(kind: "item").index_by(&:key) : {}
-      end
+      @catalog_items ||= Catalogs::TableCatalog.new(@game_table).entries("item").index_by(&:key)
     end
 
     # nil when the value fits what its list offers: an option offered, each pick in the groups of its line
