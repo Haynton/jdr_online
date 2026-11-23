@@ -1,11 +1,13 @@
-<%# The values of a spell or an item: its name, then every value its template declares for its kind, drawn by the
-    fields of a character sheet (character_sheets/sections/_flow, under the scope catalog_entry[properties]: the same
-    look as on a sheet, each value checked the same way), then its description. In the window, the values scroll and the
+<%# The values of a spell or an item: its name and its description, then every value the template of the table declares
+    for its kind, by the sections it gives them under gold titles (decision: "Level and school", "Casting",
+    "Components", "Effect", "Classes" for a spell, rather than one mixed grid), drawn by the fields of a character sheet
+    (character_sheets/sections/_flow, under the scope catalog_entry[properties]: the same look as on a sheet, each value
+    checked the same way; the level of a spell a list of names, "Cantrip", "Level 1"). In the window, the values scroll and the
     buttons stay at its foot: "Cancel" closes it; for the table's copy of an entry, "Restore the original"; for an entry
     it added, "Delete". A new entry: an empty window (decision). Full keys: the partial is rendered from two templates %>
 <% creating = entry.key.blank? %>
 <% url = creating ? game_table_catalog_entries_path(@game_table, kind: entry.kind) : game_table_catalog_entry_path(@game_table, entry.key, kind: entry.kind) %>
-<% fields = catalog_entry_shown_fields(entry) %>
+<% fields = catalog_entry_shown_fields(@game_table, entry.kind) %>
 <% origin = catalog_entry_origin(@game_table, entry) %>
 <%= simple_form_for entry, as: :catalog_entry, url: url, method: (creating ? :post : :patch),
                            html: { id: "catalog-entry-form", class: "flex min-h-0 flex-1 flex-col" } do |form| %>
@@ -14,17 +16,37 @@
     <div class="max-w-md">
       <%= form.input :name, required: true, input_html: { maxlength: CatalogEntry::NAME_MAX_LENGTH, autofocus: creating } %>
     </div>
-    <% if fields.any? %>
-      <div class="mt-4">
-        <% with_sheet_field_scope("catalog_entry[properties]") do %>
-          <%= render "character_sheets/sections/flow", character: CatalogEntrySheet.new(entry), fields: fields,
-                                                       all_fields: fields, computed: { modifiers: {}, values: {} } %>
-        <% end %>
-      </div>
-    <% end %>
-    <div class="mt-6">
-      <%= form.input :description, as: :text, required: false, input_html: { class: "min-h-40", rows: 6 } %>
+    <div class="mt-4">
+      <%= form.input :description, as: :text, required: false, input_html: { class: "min-h-32", rows: 5 } %>
     </div>
+    <% catalog_entry_sections(fields).each do |section, section_fields| %>
+      <section class="mt-6 border-t border-line pt-5">
+        <% if section %>
+          <h3 class="mb-3 text-xs font-semibold tracking-wider text-brass uppercase"><%= section %></h3>
+        <% end %>
+        <%# Each value in its cell of the grid (catalog_entry_cell_classes), drawn by the partial of its type; the helps of
+            the boxed values in notes under the grid, opened by their button (i), as on a sheet %>
+        <div class="@container" data-controller="info-notes">
+          <div class="grid grid-cols-1 items-start gap-x-6 gap-y-4 @xl:grid-cols-6 @xl:[&_fieldset>div]:grid-cols-[repeat(4,max-content)]">
+            <% with_sheet_field_scope("catalog_entry[properties]") do %>
+              <% section_fields.each do |field| %>
+                <div class="min-w-0 <%= catalog_entry_cell_classes(field) %>">
+                  <%= render sheet_field_partial(field), character: CatalogEntrySheet.new(entry), field: field,
+                                                         computed: { modifiers: {}, values: {} }, all_fields: fields,
+                                                         modifier: nil, value: nil %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+          <% sheet_section_notes(section_fields).each do |note| %>
+            <p id="<%= note[:id] %>" class="mt-3 rounded-lg bg-field px-4 py-3 text-sm text-ink" data-info-notes-target="note">
+              <%= t("game_tables.characters.new.note_html", labels: tag.span(note[:labels], class: "font-semibold"),
+                                                            text: note[:text]) %>
+            </p>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
   </div>
 
   <div class="<%= in_dialog ? "flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line px-6 py-4" : "mt-10 flex flex-wrap justify-end gap-3" %>">

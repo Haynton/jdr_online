@@ -32,14 +32,21 @@ class CatalogEntry < ApplicationRecord
     properties["level"]
   end
 
-  # The fields the template declares for this kind (spell_fields for a spell), read in the copy of a table for its own
-  # entries; nil for a kind it does not describe yet
+  # The fields the template declares for this kind (spell_fields for a spell); nil for a kind it does not describe yet
   def property_fields
     column = PROPERTY_FIELDS_COLUMNS[kind]
-    return unless column && (sheet_template || game_table)
+    column && self.class.declared_fields(sheet_template || game_table, column)
+  end
 
-    declared = sheet_template ? sheet_template.public_send(column) : game_table.template_snapshot.to_h[column]
-    declared.to_h["fields"].to_a
+  # The fields of a kind of a catalog, for a template or a table. A table reads the template it was made from, as the
+  # entries of that template do (decision: a catalog follows its template, the copies of the table included; the
+  # rules of the game stay in the copy of the table); the copy only once that template is deleted. nil without either
+  def self.declared_fields(owner, column)
+    case owner
+    when SheetTemplate then owner.public_send(column).to_h["fields"].to_a
+    when GameTable
+      declared_fields(owner.sheet_template, column) || owner.template_snapshot.to_h.dig(column, "fields").to_a
+    end
   end
 
   # CatalogPropertiesValidator adds its errors per property ("properties.level"), so that each one shows under its

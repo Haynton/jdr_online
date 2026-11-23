@@ -28,6 +28,30 @@ class TableCatalogEntriesTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the window groups the values by the sections of the template, the level of a spell in a list of names" do
+    fields = [
+      { "key" => "level", "label" => "Niveau", "section" => "Niveau et école", "type" => "number", "min" => 0,
+        "max" => 2, "labels" => ["Sort mineur", "Niveau 1", "Niveau 2"], "required" => true },
+      { "key" => "school", "label" => "École", "section" => "Niveau et école", "type" => "choice",
+        "options" => ["Évocation"] },
+      { "key" => "classes", "label" => "Classes", "section" => "Classes", "type" => "picks",
+        "options" => %w[Mage Prêtre], "required" => true }
+    ]
+    # The window reads the template the table was made from, not its copy (a table made before the sections has them)
+    @sheet_template.update!(spell_fields: { "fields" => fields })
+    get edit_game_table_catalog_entry_path(@game_table, "magic-missile", kind: "spell"), headers: FRAME_HEADERS
+
+    assert_equal ["Niveau et école", "Classes"], css_select("section h3").map(&:text)
+    assert_nil @game_table.reload.template_snapshot.dig("spell_fields", "fields").first["section"]
+    assert_select "select[name='catalog_entry[properties][level]']" do
+      assert_select "option[value='0']", text: "Sort mineur"
+      assert_select "option[value='1'][selected]", text: "Niveau 1"
+    end
+    patch game_table_catalog_entry_path(@game_table, "magic-missile", kind: "spell"),
+          params: { catalog_entry: { name: "Projectile magique", properties: { level: "2", classes: ["", "Mage"] } } }
+    assert_equal 2, @game_table.catalog_entries.find_by!(key: "magic-missile").level
+  end
+
   test "changing a spell of the template makes the table's copy, the template keeps the original" do
     patch game_table_catalog_entry_path(@game_table, "magic-missile", kind: "spell"),
           params: { catalog_entry: { name: "Projectile mystique", description: "Trois fléchettes.",
