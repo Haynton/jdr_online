@@ -21,6 +21,27 @@ jobs:
       - name: Lint Ruby code
         run: bin/rubocop -f github
 
+  # CLAUDE.md is kept by Anthony (Haynton): a pull request from anyone else that changes it fails, with a message
+  # telling to write the change in the description of the pull request instead (rule at the top of CLAUDE.md)
+  claude_md_owner:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Only Haynton changes CLAUDE.md
+        env:
+          PULL_REQUEST_AUTHOR: ${{ github.event.pull_request.user.login }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$PULL_REQUEST_AUTHOR" = "Haynton" ]; then exit 0; fi
+          if git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -qx "CLAUDE.md"; then
+            echo "::error file=CLAUDE.md::Only Haynton changes CLAUDE.md. Write the change in the description of the pull request instead."
+            exit 1
+          fi
+
   test:
     runs-on: ubuntu-24.04
     services:
