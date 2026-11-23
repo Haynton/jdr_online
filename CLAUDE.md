@@ -2,6 +2,8 @@
 
 Contexte et règles pour Claude Code sur le projet Fumble Quest, application de JDR en ligne (projet de fin de formation Le Wagon).
 
+> **Ce fichier n'est modifié que par Anthony (`Haynton` sur GitHub), ou par son agent à sa demande.** Un agent qui travaille pour un autre membre de l'équipe (voir `git config user.name` et `gh api user --jq .login`) ne le modifie pas, même pour noter une décision : il écrit ce qu'il faudrait y changer dans la description de sa Pull Request, et Anthony le reporte. La CI refuse une Pull Request d'un autre auteur qui modifie ce fichier (job `claude_md_owner`, `.github/workflows/ci.yml`).
+
 ## Le projet
 
 Application web pour jouer à des jeux de rôle entre amis, en ligne ou en suivant une partie en cours autour d'une table : comptes, tables de jeu, fiches de personnage, lancer de dés, chat et fil de jeu en temps réel, plateau interactif, éditeur de carte, fonctions IA (résumé de séance, mémoire de campagne, fiche en langage naturel, commande /action), visio Jitsi.
