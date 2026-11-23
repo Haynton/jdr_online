@@ -30,6 +30,16 @@ module GameTables
       redirect_to destination_after_save(next_step)
     end
 
+    # Sent in the background by autosave_controller.js while the player fills the step, and when they leave the page:
+    # the draft keeps what is valid (Character#save_draft_step), nothing else changes, nothing is shown
+    def draft
+      unless @step.summary?
+        @character.save_draft_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
+                                          spell_keys: step_params[:spell_keys])
+      end
+      head :no_content
+    end
+
     private
 
     def set_participation
