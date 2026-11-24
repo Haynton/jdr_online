@@ -1,7 +1,7 @@
 # The items of the starting equipment the template of a table offers (the effects starting_equipment of its lists:
-# the class, the background), by key. They stay offered whatever the game master turns off (decision of 23 November):
-# without them, the starting equipment of a character would lose a line. An item picked in a group ("a musical
-# instrument") is not among them: the group keeps its other items
+# the class, the background), by key: the step "Spells and items" says so under their name, and that turning one off
+# takes it out of the starting equipment of the table (decision of 24 November, before: they could not be turned off).
+# An item picked in a group ("a musical instrument") is not among them
 module Catalogs
   class StartingEquipmentItemKeys
     def initialize(game_table)

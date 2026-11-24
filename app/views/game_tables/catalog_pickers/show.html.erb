@@ -1,0 +1,57 @@
+<%# The whole catalog of a kind of the template of the table: in its window over the step "Spells and items" (its
+    title bar: "Spells" or "Items", how many, the close cross), or, opened directly or without JavaScript, a page of the
+    step. A search without accents or capitals (catalog_search_controller.js, rendered hidden and shown by it), then the
+    entries grouped like on the step, each with "Customize" (the window stays open, and says what was listed) %>
+<% content = capture do %>
+  <%# The search stays above the list (decision: always at hand in a long list); only the list scrolls %>
+  <div class="flex min-h-0 flex-1 flex-col" data-controller="catalog-search">
+    <p id="catalog-picker-status" class="sr-only" role="status"></p>
+    <% if @catalog_entries.any? %>
+      <div class="shrink-0 <%= catalog_picker_in_dialog? ? "border-b border-line px-6 py-4" : "pb-4" %>" hidden data-catalog-search-target="tools">
+        <label for="catalog-picker-search" class="sr-only"><%= t(".search") %></label>
+        <input id="catalog-picker-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
+               class="<%= SimpleFormFieldClasses::INPUT %> max-w-sm"
+               data-catalog-search-target="search" data-action="input->catalog-search#filter">
+      </div>
+    <% end %>
+    <div class="min-h-0 flex-1 overflow-y-auto <%= "px-6 pb-6" if catalog_picker_in_dialog? %>">
+      <% if @catalog_entries.empty? %>
+        <p class="<%= "pt-6" if catalog_picker_in_dialog? %> text-sm text-ink"><%= t("game_tables.catalogs.edit.none.#{@catalog_kind}") %></p>
+      <% else %>
+        <p class="mt-6 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
+        <% catalog_entry_groups(@catalog_entries, @catalog_kind).each do |title, entries| %>
+          <section class="mt-6" data-catalog-search-target="group">
+            <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h3>
+            <ul class="mt-2 grid gap-x-10 border-t border-line md:grid-cols-2">
+              <% entries.each do |entry| %>
+                <%= render "game_tables/catalog_pickers/entry", entry: entry, listed: @listed_keys.include?(entry.key) %>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+<% if catalog_picker_in_dialog? %>
+  <%= turbo_frame_tag GameTables::CatalogEntryDialogHelper::PICKER_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="catalog-picker-dialog-title" class="truncate text-lg font-semibold text-ink"><%= t(".title.#{@catalog_kind}") %></h2>
+        <p class="text-sm text-muted"><%= t(".hint") %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= content %>
+  <% end %>
+<% else %>
+  <%= creation_page(current_step: "catalog", game_table: @game_table) do %>
+    <%= page_header(title: t(".title.#{@catalog_kind}"), subtitle: t(".hint")) do %>
+      <%= link_to t(".back"), edit_game_table_catalog_path(@game_table, kind: @catalog_kind), class: button_classes(:secondary) %>
+    <% end %>
+    <%= content %>
+  <% end %>
+<% end %>

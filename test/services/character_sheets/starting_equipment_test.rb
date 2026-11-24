@@ -24,6 +24,14 @@ class StartingEquipmentTest < ActiveSupport::TestCase
     assert_equal 55, equipment_for("Mage", "option" => "b").gold
   end
 
+  test "an item the table takes out of its catalog leaves the starting equipment, its gold kept" do
+    @game_table.update!(disabled_catalog_keys: { "item" => ["dagger"] })
+    equipment = equipment_for("Mage", "option" => "a", "picks" => { "1" => "lute" })
+
+    assert_equal ["Luth"], equipment.chosen_items.map { |item| item.entry.name }
+    assert_equal 5, equipment.gold
+  end
+
   test "an option not offered, or a pick outside its group, is refused" do
     equipment = equipment_for("Mage")
     field = equipment.choices.first.field

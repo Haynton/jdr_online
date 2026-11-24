@@ -1,7 +1,10 @@
 require "test_helper"
 
-# The third step of a table: the spells and items of the catalog of its template it offers
+# The third step of a table: every entry of the catalog of its template is offered, the step lists only what the
+# game master customizes (picked in the whole catalog, changed, added, turned off)
 class TableCatalogStepTest < ActionDispatch::IntegrationTest
+  PICKER_HEADERS = { "Turbo-Frame" => GameTables::CatalogEntryDialogHelper::PICKER_FRAME }.freeze
+
   setup do
     @user = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
     sheet_template = EquipmentSpellsTemplateBuilder.create_template
@@ -11,58 +14,78 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
     sign_in @user
   end
 
-  test "the spells tab shows every spell of the template by level, all offered" do
+  test "at first every spell is offered and the list of customizations is empty" do
     get edit_game_table_catalog_path(@game_table)
 
     assert_response :success
     assert_select "ol[aria-label] > li[aria-current=step]", text: /Sorts et objets/
-    assert_select "button[name=go_to][value=spell][aria-pressed=true]", text: "Sorts"
-    assert_select "h2", text: "Sorts mineurs"
-    assert_select "h2", text: "Niveau 1"
-    assert_select "input[type=checkbox][role=switch][name='offered_keys[]'][checked]", count: 7
-    assert_select "span", text: "Bouclier"
-    assert_select "a[href=?][data-turbo-frame=catalog_entry_dialog][title=?]",
-                  edit_game_table_catalog_entry_path(@game_table, "shield", kind: "spell"), "Modifier Bouclier",
-                  text: /Modifier\s*Bouclier/
-    assert_select "input#offered-spell-shield[aria-label=?]", "Proposer Bouclier"
-    assert_select "a[href=?]", new_game_table_catalog_entry_path(@game_table, kind: "spell"), text: /Ajouter un sort/
-    assert_select "p", text: "7 proposés sur 7"
-    assert_select "p", text: /Les personnages déjà créés gardent leur version/
+    assert_select "a[aria-current=page]", text: "Sorts"
+    assert_select "p", text: /Les 7 sorts proposés à vos joueurs viennent du modèle/
+    assert_select "#catalog-customizations", text: /Aucun sort personnalisé/
+    assert_select "a[href=?][data-turbo-frame=catalog_picker_dialog]",
+                  game_table_catalog_picker_path(@game_table, kind: "spell"), text: /Personnaliser un sort/
+    assert_select "a[href=?]", new_game_table_catalog_entry_path(@game_table, kind: "spell"), text: /Créer un sort/
   end
 
-  test "continue saves the spells left out and opens the NPCs and enemies" do
-    patch game_table_catalog_path(@game_table, kind: "spell"),
-          params: { offered_keys: ["", "fire-bolt", "light", "mage-hand", "magic-missile", "bless", "blur"] }
+  test "the whole catalog lists every spell, each with Customize" do
+    get game_table_catalog_picker_path(@game_table, kind: "spell"), headers: PICKER_HEADERS
+
+    assert_select "turbo-frame#catalog_picker_dialog" do
+      assert_select "h2", text: "Sorts du modèle"
+      assert_select "h3", text: "Sorts mineurs"
+      assert_select "button[title=?]", "Personnaliser Bouclier"
+    end
+  end
+
+  test "a spell picked is copied for the table and listed, the window staying open" do
+    post game_table_catalog_entries_path(@game_table, kind: "spell"), params: { from_key: "shield" },
+                                                                      headers: PICKER_HEADERS
+
+    assert_equal "text/vnd.turbo-stream.html", response.media_type
+    assert_includes response.body, %(target="catalog-customizations")
+    assert_includes response.body, "Dans la liste : Bouclier."
+    assert_equal ["shield"], @game_table.catalog_entries.pluck(:key)
+
+    post game_table_catalog_entries_path(@game_table, kind: "spell"), params: { from_key: "shield" },
+                                                                      headers: PICKER_HEADERS
+    assert_equal 1, @game_table.catalog_entries.count
+    get edit_game_table_catalog_path(@game_table)
+    assert_select "#catalog-customizations li", count: 1, text: /Bouclier/
+    assert_select "#catalog-customizations span", text: "Modifié", count: 0
+    assert_select "input#offered-spell-shield[checked][aria-label=?]", "Bouclier dans la partie"
+    assert_select "label[for=offered-spell-shield]", text: /Dans la partie\s*Retiré de la partie/
+  end
+
+  test "a switch turns one spell off, and on again" do
+    patch game_table_catalog_entry_offer_path(@game_table, "shield", kind: "spell"), params: { offered: "0" }
+
+    assert_redirected_to edit_game_table_catalog_path(@game_table, kind: "spell")
+    assert_equal({ "spell" => ["shield"] }, @game_table.reload.disabled_catalog_keys)
+    get edit_game_table_catalog_path(@game_table)
+    assert_select "input#offered-spell-shield:not([checked])"
+
+    patch game_table_catalog_entry_offer_path(@game_table, "shield", kind: "spell"), params: { offered: "1" }
+    assert_equal({ "spell" => [] }, @game_table.reload.disabled_catalog_keys)
+  end
+
+  test "an item of the starting equipment can be taken out of it, and put back" do
+    post game_table_catalog_entries_path(@game_table, kind: "item"), params: { from_key: "dagger" }
+    get edit_game_table_catalog_path(@game_table, kind: "item")
+    assert_select "input#offered-item-dagger[checked]:not([disabled])"
+    assert_select "p#offered-item-dagger-detail", text: "Dans l'équipement de départ"
+
+    patch game_table_catalog_entry_offer_path(@game_table, "dagger", kind: "item"), params: { offered: "0" }
+    assert_equal ["dagger"], @game_table.reload.disabled_catalog_keys["item"]
+    assert_not_includes Catalogs::TableCatalog.new(@game_table).entries("item").pluck(:key), "dagger"
+    get edit_game_table_catalog_path(@game_table, kind: "item")
+    assert_select "p#offered-item-dagger-detail", text: "Retiré de l'équipement de départ"
+  end
+
+  test "continue opens the NPCs and enemies" do
+    patch game_table_catalog_path(@game_table)
 
     assert_redirected_to edit_game_table_cast_path(@game_table)
-    assert_equal({ "spell" => ["shield"] }, @game_table.reload.disabled_catalog_keys)
-    assert_equal "npcs", @game_table.resume_creation_step
-  end
-
-  test "changing tab saves the tab shown first" do
-    patch game_table_catalog_path(@game_table, kind: "spell"), params: { offered_keys: [""], go_to: "item" }
-
-    assert_redirected_to edit_game_table_catalog_path(@game_table, kind: "item")
-    assert_equal 7, @game_table.reload.disabled_catalog_keys["spell"].size
-    assert_equal "catalog", @game_table.resume_creation_step
-  end
-
-  test "an item of the starting equipment stays offered, its switch disabled" do
-    get edit_game_table_catalog_path(@game_table, kind: "item")
-
-    assert_select "h2", text: "Arme"
-    assert_select "input#offered-item-dagger[disabled][checked]"
-    assert_select "p#offered-item-dagger-detail", text: "Fait partie de l'équipement de départ"
-    patch game_table_catalog_path(@game_table, kind: "item"), params: { offered_keys: [""] }
-    assert_equal %w[flute lute], @game_table.reload.disabled_catalog_keys["item"]
-  end
-
-  test "on a table ready, save shows the same tab again" do
-    @game_table.finish_creation!
-    patch game_table_catalog_path(@game_table, kind: "item"), params: { offered_keys: ["", "lute", "flute"] }
-
-    assert_redirected_to edit_game_table_catalog_path(@game_table, kind: "item")
-    assert_equal "Sorts et objets enregistrés.", flash[:notice]
+    assert_equal "npcs", @game_table.reload.resume_creation_step
   end
 
   test "only the game master of the table reaches its spells and items" do

@@ -763,6 +763,8 @@ en:
       update:
         saved: "NPCs and enemies saved."
     catalog_entries:
+      create:
+        listed: "Listed: %{name}."
       form:
         confirm_added: "Delete “%{name}” from this table?"
         confirm_changed: "Restore “%{name}” as in the template? Your changes for this table will be lost."
@@ -776,31 +778,56 @@ en:
         new:
           item: "New item"
           spell: "New spell"
+    catalog_pickers:
+      show:
+        back: "Back"
+        close: "Close the catalog"
+        customize: "Customize %{name}"
+        customize_short: "Customize"
+        hint: "Pick what you want to change or take out: it joins your list."
+        listed: "Listed"
+        no_match: "No entry matches this search."
+        search: "Search"
+        title:
+          item: "Items of the template"
+          spell: "Spells of the template"
     catalogs:
       edit:
         add:
-          item: "Add an item"
-          spell: "Add a spell"
+          item: "Create an item"
+          spell: "Create a spell"
+        all_offered:
+          item:
+            one: "%{count} item of the template is offered to your players. Customize here those you want to change or take out."
+            other: "The %{count} items offered to your players come from the template. Customize here those you want to change or take out."
+          spell:
+            one: "%{count} spell of the template is offered to your players. Customize here those you want to change or take out."
+            other: "The %{count} spells offered to your players come from the template. Customize here those you want to change or take out."
         back: "Back"
         cantrips: "Cantrips"
         change: "Change %{name}"
         change_short: "Change"
-        characters_keep_their_copy: "Take out what your game does not use. Characters already made keep their version of what they chose."
+        characters_keep_their_copy: "A character already made does not change: it keeps the spells and equipment it chose. Your changes apply to the characters made afterwards."
+        customize:
+          item: "Customize an item"
+          spell: "Customize a spell"
         empty:
+          item: "No item customized: every item of the template is offered as it is."
+          spell: "No spell customized: every spell of the template is offered as it is."
+        in_game: "In the game"
+        level: "Level %{level}"
+        none:
           item: "This sheet template has no items."
           spell: "This sheet template has no spells."
-        level: "Level %{level}"
-        no_match: "No entry matches this search."
-        offer: "Offer %{name}"
-        offered_count:
-          one: "%{count} offered out of %{total}"
-          other: "%{count} offered out of %{total}"
+        offer: "%{name} in the game"
+        out_of_game: "Out of the game"
         origin:
           added: "Added"
           changed: "Changed"
         other_items: "Other items"
-        search: "Search"
-        starting_equipment: "Part of the starting equipment"
+        starting_equipment:
+          in: "In the starting equipment"
+          out: "Taken out of the starting equipment"
         subtitle: "The spells and items your players may choose, from the sheet template."
         tab:
           item: "Items"

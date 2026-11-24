@@ -734,6 +734,8 @@ fr:
       update:
         saved: "PNJ et ennemis enregistrés."
     catalog_entries:
+      create:
+        listed: "Dans la liste : %{name}."
       form:
         confirm_added: "Supprimer « %{name} » de cette table ?"
         confirm_changed: "Rétablir « %{name} » comme dans le modèle ? Vos changements pour cette table seront perdus."
@@ -747,31 +749,56 @@ fr:
         new:
           item: "Nouvel objet"
           spell: "Nouveau sort"
+    catalog_pickers:
+      show:
+        back: "Retour"
+        close: "Fermer le catalogue"
+        customize: "Personnaliser %{name}"
+        customize_short: "Personnaliser"
+        hint: "Choisissez ce que vous voulez modifier ou retirer : il rejoint votre liste."
+        listed: "Dans la liste"
+        no_match: "Aucune entrée ne correspond à cette recherche."
+        search: "Rechercher"
+        title:
+          item: "Objets du modèle"
+          spell: "Sorts du modèle"
     catalogs:
       edit:
         add:
-          item: "Ajouter un objet"
-          spell: "Ajouter un sort"
+          item: "Créer un objet"
+          spell: "Créer un sort"
+        all_offered:
+          item:
+            one: "%{count} objet du modèle est proposé à vos joueurs. Personnalisez ici ceux que vous voulez modifier ou retirer."
+            other: "Les %{count} objets proposés à vos joueurs viennent du modèle. Personnalisez ici ceux que vous voulez modifier ou retirer."
+          spell:
+            one: "%{count} sort du modèle est proposé à vos joueurs. Personnalisez ici ceux que vous voulez modifier ou retirer."
+            other: "Les %{count} sorts proposés à vos joueurs viennent du modèle. Personnalisez ici ceux que vous voulez modifier ou retirer."
         back: "Retour"
         cantrips: "Sorts mineurs"
         change: "Modifier %{name}"
         change_short: "Modifier"
-        characters_keep_their_copy: "Retirez ce que votre partie n'utilise pas. Les personnages déjà créés gardent leur version de ce qu'ils ont choisi."
+        characters_keep_their_copy: "Un personnage déjà créé ne change pas : il garde les sorts et l'équipement qu'il avait choisis. Vos changements valent pour les personnages créés ensuite."
+        customize:
+          item: "Personnaliser un objet"
+          spell: "Personnaliser un sort"
         empty:
+          item: "Aucun objet personnalisé : tous les objets du modèle sont proposés tels quels."
+          spell: "Aucun sort personnalisé : tous les sorts du modèle sont proposés tels quels."
+        in_game: "Dans la partie"
+        level: "Niveau %{level}"
+        none:
           item: "Ce modèle de fiche n'a pas d'objets."
           spell: "Ce modèle de fiche n'a pas de sorts."
-        level: "Niveau %{level}"
-        no_match: "Aucune entrée ne correspond à cette recherche."
-        offer: "Proposer %{name}"
-        offered_count:
-          one: "%{count} proposé sur %{total}"
-          other: "%{count} proposés sur %{total}"
+        offer: "%{name} dans la partie"
+        out_of_game: "Retiré de la partie"
         origin:
           added: "Ajouté"
           changed: "Modifié"
         other_items: "Autres objets"
-        search: "Rechercher"
-        starting_equipment: "Fait partie de l'équipement de départ"
+        starting_equipment:
+          in: "Dans l'équipement de départ"
+          out: "Retiré de l'équipement de départ"
         subtitle: "Les sorts et les objets que vos joueurs pourront choisir, d'après le modèle de fiche."
         tab:
           item: "Objets"

@@ -75,14 +75,16 @@ class TableCatalogEntriesTest < ActionDispatch::IntegrationTest
     assert_not @game_table.catalog_entries.exists?
   end
 
-  test "restoring the original deletes the table's copy" do
+  test "restoring the original deletes the table's copy and offers the spell again" do
     @game_table.catalog_entries.create!(kind: "spell", key: "magic-missile", name: "Projectile mystique",
                                         properties: { "level" => 1, "classes" => ["Mage"] })
+    @game_table.update!(disabled_catalog_keys: { "spell" => ["magic-missile"] })
     get edit_game_table_catalog_entry_path(@game_table, "magic-missile", kind: "spell"), headers: FRAME_HEADERS
     assert_select "button[form=catalog-entry-removal]", text: "Rétablir l'original"
 
     delete game_table_catalog_entry_path(@game_table, "magic-missile", kind: "spell")
     assert_not @game_table.catalog_entries.exists?
+    assert_empty @game_table.reload.disabled_catalog_keys["spell"]
   end
 
   test "an item is added from an empty window, belongs to the table, and can be deleted" do

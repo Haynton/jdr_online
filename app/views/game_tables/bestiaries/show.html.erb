@@ -3,31 +3,36 @@
     accents or capitals (catalog_search_controller.js, rendered hidden and shown by it), then the creatures by challenge
     rating, each with "Add" (copied into the table; the window stays open, and says what was added) %>
 <% content = capture do %>
-  <div class="@container min-h-0 flex-1 overflow-y-auto <%= "px-6 py-6" if bestiary_in_dialog? %>" data-controller="catalog-search">
+  <%# The search stays above the list (decision: always at hand in a long list); only the list scrolls %>
+  <div class="flex min-h-0 flex-1 flex-col" data-controller="catalog-search">
     <p id="bestiary-status" class="sr-only" role="status"></p>
-    <% if @creatures.empty? %>
-      <p class="text-sm text-ink"><%= t(".empty") %></p>
-    <% else %>
-      <div class="max-w-sm" hidden data-catalog-search-target="tools">
+    <% if @creatures.any? %>
+      <div class="shrink-0 <%= bestiary_in_dialog? ? "border-b border-line px-6 py-4" : "pb-4" %>" hidden data-catalog-search-target="tools">
         <label for="bestiary-search" class="sr-only"><%= t(".search") %></label>
         <input id="bestiary-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
-               class="<%= SimpleFormFieldClasses::INPUT %>"
+               class="<%= SimpleFormFieldClasses::INPUT %> max-w-sm"
                data-catalog-search-target="search" data-action="input->catalog-search#filter">
       </div>
-      <p class="mt-6 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
-      <% bestiary_groups(@game_table, @creatures).each do |title, creatures| %>
-        <section class="mt-6" data-catalog-search-target="group">
-          <% if title %>
-            <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h3>
-          <% end %>
-          <ul class="mt-2 grid gap-x-10 border-t border-line @2xl:grid-cols-2">
-            <% creatures.each do |creature| %>
-              <%= render "game_tables/bestiaries/creature", creature: creature %>
-            <% end %>
-          </ul>
-        </section>
-      <% end %>
     <% end %>
+    <div class="@container min-h-0 flex-1 overflow-y-auto <%= "px-6 pb-6" if bestiary_in_dialog? %>">
+      <% if @creatures.empty? %>
+        <p class="<%= "pt-6" if bestiary_in_dialog? %> text-sm text-ink"><%= t(".empty") %></p>
+      <% else %>
+        <p class="mt-6 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
+        <% bestiary_groups(@game_table, @creatures).each do |title, creatures| %>
+          <section class="mt-6" data-catalog-search-target="group">
+            <% if title %>
+              <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h3>
+            <% end %>
+            <ul class="mt-2 grid gap-x-10 border-t border-line @2xl:grid-cols-2">
+              <% creatures.each do |creature| %>
+                <%= render "game_tables/bestiaries/creature", creature: creature %>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+      <% end %>
+    </div>
   </div>
 <% end %>
 <% if bestiary_in_dialog? %>

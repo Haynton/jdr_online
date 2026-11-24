@@ -25,12 +25,14 @@
         <div class="@container" data-controller="info-notes">
           <div class="grid grid-cols-1 items-start gap-x-6 gap-y-4 @xl:grid-cols-6 @xl:[&_fieldset>div]:grid-cols-[repeat(4,max-content)]">
             <% with_sheet_field_scope("npc[sheet]") do %>
-              <% section_fields.each do |field| %>
-                <div class="min-w-0 <%= catalog_entry_cell_classes(field) %>">
-                  <%= render sheet_field_partial(field), character: npc, field: field,
-                                                         computed: computed, all_fields: fields,
-                                                         modifier: computed[:modifiers][field["key"]],
-                                                         value: computed[:values][field["key"]] %>
+              <% catalog_entry_cells(section_fields).each do |cell_classes, cell_fields| %>
+                <div class="min-w-0 <%= cell_classes %>">
+                  <% cell_fields.each do |field| %>
+                    <%= render sheet_field_partial(field), character: npc, field: field,
+                                                           computed: computed, all_fields: fields,
+                                                           modifier: computed[:modifiers][field["key"]],
+                                                           value: computed[:values][field["key"]] %>
+                  <% end %>
                 </div>
               <% end %>
             <% end %>

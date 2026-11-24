@@ -1,7 +1,7 @@
 <%# The window of an NPC, over the list of the step "NPCs and enemies", like the window of a catalog entry
     (game_tables/catalogs/_dialog): empty until a line or "Create an NPC" is clicked; its form loads into the frame
     and frame_dialog_controller.js opens it. Saved, the server refreshes the list behind and the window closes %>
-<dialog id="npc-dialog" aria-labelledby="npc-dialog-title" tabindex="-1" data-turbo-prefetch="false"
+<dialog id="npc-dialog" aria-labelledby="npc-dialog-title" tabindex="-1" data-turbo-prefetch="false" data-turbo-permanent
         class="m-auto max-h-[min(760px,calc(100dvh-2rem))] w-[min(880px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
         data-controller="frame-dialog"
         data-action="turbo:frame-load->frame-dialog#open click->frame-dialog#closeOnBackdrop close->frame-dialog#empty turbo:submit-end->frame-dialog#closeOnSuccess turbo:before-cache@document->frame-dialog#close">
