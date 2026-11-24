@@ -7,7 +7,7 @@
 class SheetTemplateValidator < ActiveModel::Validator
   CHECKS = [
     SheetTemplates::FieldsCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
-    SheetTemplates::SpellGroupsCheck, SheetTemplates::PresetsCheck
+    SheetTemplates::SpellGroupsCheck, SheetTemplates::AbilityMethodsCheck, SheetTemplates::PresetsCheck
   ].freeze
 
   def validate(sheet_template)
