@@ -2,7 +2,7 @@
     its grid set on it). A segmented switch like the theme selector (Anthony's request): on the field background, the
     chosen one in a surface pill. Drawing is the only way for now: the picture is disabled (faded, like a disabled
     field), with « Bientôt ». Real radio buttons without a name: nothing is sent, screen readers say the choice %>
-<fieldset class="flex rounded-lg bg-field p-1">
+<fieldset class="flex shrink-0 rounded-lg bg-field p-1">
   <legend class="sr-only"><%= t(".label") %></legend>
   <label class="<%= MapTemplatesHelper::MAKING_CHOICE_CLASSES %> cursor-default has-checked:bg-surface has-checked:font-semibold has-checked:shadow-sm">
     <input type="radio" checked class="sr-only" id="map-making-draw">

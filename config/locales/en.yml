@@ -396,6 +396,7 @@ en:
       help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: hold <kbd>Space</kbd> and drag, middle click, or two fingers. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: right click or <kbd>Delete</kbd> on an object or a wall."
       more_columns: "One column more"
       objects_tab: "Objects"
+      presets_tab: "Templates"
       remove_object: "Take object away"
       rotate: "Turn (R) · %{degrees}°"
       rotate_short: "Turn (R)"
@@ -436,6 +437,29 @@ en:
       edges_title: "Walls"
       floors_title: "Floors"
       walls_note: "A room, stone and an enclosure wall themselves on the side of the void. A door also goes between a floor and the void."
+    preset_tools:
+      intro: "Start from a ready-made map, then change it. The template replaces the current map (Undo brings it back)."
+      replace_button: "Replace"
+      replace_question: "Replace the current map with “%{name}”? Undo brings it back."
+      size: "%{columns} × %{rows} cells"
+      use: "Use this template"
+      use_label: "Use the template “%{name}”"
+    presets:
+      camp:
+        description: "A wooded clearing: a tent and a campfire, a pond, rocks and a hidden chest."
+        name: "Camp"
+      river_cabin:
+        description: "A river and a pond, two bridges, a stone cabin with an oven, a fireplace and an altar."
+        name: "The river cabin"
+      inn:
+        description: "A common room with two fireplaces, a counter, a kitchen, bedrooms and a yard with a fountain and a well."
+        name: "The Drooling Frog inn"
+      throne_room:
+        description: "A double throne, the guardroom, a storeroom, an armoury, a graveyard and a forecourt with braziers."
+        name: "Throne room"
+      manor:
+        description: "A banquet hall with columns, a trapped treasure, a yard with fountains, a bedroom and stairs."
+        name: "The mysterious manor"
     index:
       delete_button: "Delete"
       delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."

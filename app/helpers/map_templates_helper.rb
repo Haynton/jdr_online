@@ -16,9 +16,10 @@ module MapTemplatesHelper
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
   ].join(" ").freeze
-  # The name of a button of the bar beside its icon, from 1280 px (Anthony's request: the icons alone on a phone and
-  # a small screen, where the bar would take several lines), the name kept for screen readers and in the tooltip
-  MAP_BAR_LABEL_CLASSES = "max-xl:sr-only".freeze
+  # The name of a button of the bar beside its icon, from 1536 px (Anthony's request: the icons alone on a phone and
+  # a smaller screen, where the bar would take several lines; with the way of making the map in the bar, the names
+  # need about 1370 px), the name kept for screen readers and in the tooltip
+  MAP_BAR_LABEL_CLASSES = "max-2xl:sr-only".freeze
   # A choice of the switch « Dessiner | Image » of the panel (map_templates/_making_choices), like those of the theme
   # selector: half of the switch each, ink on the field background
   MAKING_CHOICE_CLASSES = %w[
@@ -72,6 +73,25 @@ module MapTemplatesHelper
     t("map_templates.size", columns: map_template.columns, rows: map_template.rows)
   end
 
+  # The size of a cell of a drawn map, in units of its SVG (map_editor/square_grid.js, cellSize)
+  MAP_CELL_SIZE = 24
+
+  # What the editor reads of a map ready to use (map_templates/_preset_tools): the size of its grid and its drawing,
+  # like an undo step of the editor (map_editor/map_layout.js#snapshot)
+  def map_preset_data(preset)
+    { columns: preset.columns, rows: preset.rows, layout: preset.layout }.to_json
+  end
+
+  # Its whole grid in its preview
+  def map_preset_view_box(preset)
+    "0 0 #{preset.columns * MAP_CELL_SIZE} #{preset.rows * MAP_CELL_SIZE}"
+  end
+
+  # The tab shown first in the panel: the templates on a map still empty (a good start), the floors otherwise
+  def map_editor_first_tab_index(map_template)
+    map_template.layout_in_database.values_at("floors", "edges", "objects").all?(&:blank?) ? 0 : 1
+  end
+
   # What the map editor needs (map_editor_controller.js): the drawing, the grid, where to save it, its texts
   def map_editor_data(map_template)
     { controller: "map-editor", action: "turbo:morph@document->map-editor#drawEverything",
@@ -89,7 +109,8 @@ module MapTemplatesHelper
       map_editor_saving_label_value: t("map_templates.editor.saving"),
       map_editor_saved_label_value: t("map_templates.editor.saved", time: "__time__"),
       map_editor_shrink_question_value: t("map_templates.editor.shrink_question"),
-      map_editor_clear_question_value: t("map_templates.editor.clear_question") }
+      map_editor_clear_question_value: t("map_templates.editor.clear_question"),
+      map_editor_replace_question_value: t("map_templates.preset_tools.replace_question", name: "__name__") }
   end
 
   # The words of the figures of the drawing, by count (« 1 case », « 12 cases »), for the plural rules of the page

@@ -367,6 +367,7 @@ fr:
       help_html: "<b>Sols</b> : glissez pour peindre. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : <kbd>Espace</kbd> enfoncée et glisser, clic du milieu, ou deux doigts. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler.<br><b>Objets</b> : <kbd>R</kbd> choisit le sens, un clic sur un objet posé le tourne. <b>Retirer</b> : clic droit ou <kbd>Suppr</kbd> sur un objet ou un mur."
       more_columns: "Une colonne de plus"
       objects_tab: "Objets"
+      presets_tab: "Modèles"
       remove_object: "Retirer objet"
       rotate: "Pivoter (R) · %{degrees}°"
       rotate_short: "Pivoter (R)"
@@ -407,6 +408,29 @@ fr:
       edges_title: "Murs"
       floors_title: "Sols"
       walls_note: "Une salle, la pierre et un enclos se murent seuls du côté du vide. Une porte se pose aussi entre un sol et le vide."
+    preset_tools:
+      intro: "Partez d'une carte toute faite, puis modifiez-la. Le modèle remplace la carte en cours (Annuler la ramène)."
+      replace_button: "Remplacer"
+      replace_question: "Remplacer la carte en cours par « %{name} » ? Annuler la ramène."
+      size: "%{columns} × %{rows} cases"
+      use: "Utiliser ce modèle"
+      use_label: "Utiliser le modèle « %{name} »"
+    presets:
+      camp:
+        description: "Une clairière boisée : tente et feu de camp, bassin, rochers et coffre caché."
+        name: "Campement"
+      river_cabin:
+        description: "Une rivière et un étang, deux ponts, une cabane en pierre avec four, cheminée et autel."
+        name: "La cabane de la rivière"
+      inn:
+        description: "Une salle commune aux deux cheminées, un comptoir, une cuisine, des chambres et une cour avec fontaine et puits."
+        name: "L'auberge de la grenouille baveuse"
+      throne_room:
+        description: "Un double trône, la salle des gardes, une réserve, une armurerie, un cimetière et un parvis aux braseros."
+        name: "Salle du trône"
+      manor:
+        description: "Une salle de banquet à colonnes, un trésor piégé, une cour aux fontaines, une chambre et des escaliers."
+        name: "Le manoir mystérieux"
     index:
       delete_button: "Supprimer"
       delete_confirmation: "Supprimer la carte « %{name} » ? Les tables qui l'utilisent gardent leur copie."

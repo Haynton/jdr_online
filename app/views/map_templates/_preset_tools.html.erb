@@ -1,0 +1,23 @@
+<%# The tab Templates: the maps ready to use (MapPresets), like the prototype. Each one with its preview, drawn by the
+    editor on the paper of the maps (map_editor_controller.js#drawPresetPreviews), its name, its description and its
+    button. Its drawing rides on its item (data-map-preset), read by the editor for the preview and to use it, which
+    replaces the map (asked first when something is drawn, Undo brings it back) %>
+<p class="mb-3 text-xs leading-normal text-muted"><%= t(".intro") %></p>
+<ul class="grid gap-3">
+  <% MapPresets.all.each do |preset| %>
+    <% name = t("map_templates.presets.#{preset.key}.name") %>
+    <li class="overflow-hidden rounded-xl bg-surface ring-1 ring-line" data-map-preset="<%= map_preset_data(preset) %>">
+      <svg viewBox="<%= map_preset_view_box(preset) %>" class="block aspect-[4/3] w-full" aria-hidden="true"
+           data-map-editor-target="presetPreview"></svg>
+      <div class="grid gap-1 px-3 pt-2.5 pb-3">
+        <h3 class="text-[13px] font-semibold text-ink"><%= name %></h3>
+        <p class="text-xs leading-normal text-muted"><%= t("map_templates.presets.#{preset.key}.description") %></p>
+        <p class="text-[11px] text-muted"><%= t(".size", columns: preset.columns, rows: preset.rows) %></p>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact, full_width: true) %> mt-1.5"
+                aria-label="<%= t(".use_label", name: name) %>" data-map-preset-name="<%= name %>"
+                data-confirm-button="<%= t(".replace_button") %>" data-confirm-variant="danger"
+                data-action="map-editor#usePreset"><%= t(".use") %></button>
+      </div>
+    </li>
+  <% end %>
+</ul>

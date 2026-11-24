@@ -29,13 +29,26 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     # « Mes cartes » is in the navigation: not again in the panel (Anthony's request)
     assert_select "aside a[href=?]", map_templates_path, count: 0
     assert_select "[data-controller=map-help][hidden] button[aria-controls=map-editor-help][aria-label=?]", "Aide"
-    assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 2
-    assert_select "aside fieldset input[type=radio]:not([name])", count: 2
+    assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 3
+    # How the map is made, in the bar: Draw, the picture still disabled
+    assert_select "header fieldset input[type=radio]:not([name])", count: 2
+    # This map has a cell drawn: its tab Terrain first
+    assert_select "aside[data-tabs-selected-index-value=?]", "1"
     assert_select "header input[name='map_template[name]'][value=?][aria-label=?]", "La taverne", "Nom de la carte"
     assert_select "header input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
     assert_select "header [data-map-editor-target=rowsCount]", text: "10"
     # Deleted from « Mes cartes », not here (Anthony's request)
     assert_select "form[action=?] input[name=_method][value=delete]", map_template_path(@map_template), count: 0
+  end
+
+  test "a map still empty opens on its tab Templates: the maps ready to use, each with its drawing and its button" do
+    get edit_map_template_path(@map_template)
+
+    assert_select "aside[data-tabs-selected-index-value=?]", "0"
+    assert_select "#map-editor-tab-presets", text: "Modèles"
+    assert_select "#map-editor-panel-presets li[data-map-preset]", count: MapPresets::KEYS.size
+    assert_select "#map-editor-panel-presets button[data-action='map-editor#usePreset'][aria-label=?]",
+                  "Utiliser le modèle « Campement »"
   end
 
   test "the tab Objects shows one family at a time; the bar turns and takes objects away" do

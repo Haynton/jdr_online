@@ -1,9 +1,10 @@
-<%# The map editor (map_editor_controller.js), laid out like the prototype: a bar on top (the map, the eraser, the
-    figures of the drawing), the board filling the room left on a deeper background (well), its help and zoom floating
-    over it, a panel of 340 px on the right: the way of making the map, then tabs (the floors and walls, the objects).
-    The map is deleted from « Mes cartes ». From 1024 px the editor holds in the screen; before, the bar, the board at the width of the screen, then
-    the panel. The board keeps the colors of its drawing in the dark theme, like a picture.
-    Board and tools are rendered hidden and shown by the controller: without JavaScript there is nothing to draw with %>
+<%# The map editor (map_editor_controller.js), laid out like the prototype: a bar on top (the map, the way of making
+    it, the tools, the figures of the drawing), the board filling the room left on a deeper background (well), its
+    help and zoom floating over it, a panel of 340 px on the right: tabs (the maps ready to use, the floors and walls,
+    the objects). The map is deleted from « Mes cartes ». From 1024 px the editor holds in the screen; before, the
+    bar, the board at the width of the screen, then the panel. The board keeps the colors of its drawing in the dark
+    theme, like a picture. Board and tools are rendered hidden and shown by the controller: without JavaScript there
+    is nothing to draw with %>
 <main class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh lg:h-dvh" <%= tag.attributes(data: map_editor_data(map_template)) %>>
   <%= render "shared/flashes" %>
   <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:min-h-16 lg:flex-nowrap lg:py-2">
@@ -31,6 +32,8 @@
         <span><%= t(".cells") %></span>
       </p>
     </div>
+    <%# How the map is made, in the bar (Anthony's request): Draw, or a picture (later) %>
+    <%= render "map_templates/making_choices" %>
     <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
       <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
       <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".undo_keys") %>"
@@ -60,14 +63,6 @@
         <%= render "shared/icons/trash_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".clear") %></span>
       </button>
     </div>
-    <%# On the right: when the drawing was saved (a failed save in red, said to screen readers), then its figures. On
-        their own lines, whole: in the line of the size, « Enregistré à… » was cut. The figures leave room from 1280 to
-        1535 px to the names of the tools, which come back from 1280 px %>
-    <div class="w-full text-[11px] leading-snug lg:ml-auto lg:w-auto lg:shrink-0 lg:text-right xl:max-2xl:[&>[data-map-editor-target=figures]]:hidden">
-      <p class="text-muted empty:hidden" data-map-editor-target="saveState"></p>
-      <p class="text-error-ink empty:hidden" role="status" data-map-editor-target="status"></p>
-      <p class="text-muted" data-map-editor-target="figures"></p>
-    </div>
   </header>
 
   <div class="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -78,10 +73,18 @@
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
            data-map-editor-target="board"
-           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown.delete@window->map-editor#deleteWithKey keydown.backspace@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
+      <%# Floating at the bottom left of the board, across from the zoom (the bar had no room left for it once the way
+          of making the map joined it): when the drawing was saved (a failed save in red, said to screen readers),
+          then its figures %>
+      <div class="pointer-events-none absolute bottom-5 left-5 max-w-[calc(100%-6rem)] rounded-lg bg-surface/90 px-2.5 py-1.5 text-[11px] leading-snug shadow-md lg:bottom-6 lg:left-6">
+        <p class="text-muted empty:hidden" data-map-editor-target="saveState"></p>
+        <p class="text-error-ink empty:hidden" role="status" data-map-editor-target="status"></p>
+        <p class="text-muted" data-map-editor-target="figures"></p>
+      </div>
       <%# Round buttons floating at the bottom right of the board (Anthony's requests): the help, then the zoom, the
           whole map at the foot. In the board: on a phone, above the floating bar of the navigation %>
       <div class="absolute right-5 bottom-5 flex flex-col items-end gap-4 lg:right-6 lg:bottom-6">
@@ -98,13 +101,11 @@
     </div>
 
     <aside class="flex min-h-0 flex-col border-t border-line bg-surface lg:border-t-0 lg:border-l" aria-label="<%= t(".panel_label") %>"
-           data-controller="tabs" data-action="turbo:morph@document->tabs#refresh">
-      <div class="grid gap-2 px-3 pt-3">
-        <%= render "map_templates/making_choices" %>
-      </div>
+           data-controller="tabs" data-action="turbo:morph@document->tabs#refresh"
+           data-tabs-selected-index-value="<%= map_editor_first_tab_index(map_template) %>">
 
       <div hidden role="tablist" aria-label="<%= t(".tabs_label") %>" class="mt-3 flex gap-0.5 border-b border-line px-3" data-tabs-target="list">
-        <% [["floors", t(".terrain_tab")], ["objects", t(".objects_tab")]].each do |panel, label| %>
+        <% [["presets", t(".presets_tab")], ["floors", t(".terrain_tab")], ["objects", t(".objects_tab")]].each do |panel, label| %>
           <button type="button" role="tab" id="map-editor-tab-<%= panel %>" aria-controls="map-editor-panel-<%= panel %>"
                   aria-selected="false" class="<%= MapTemplatesHelper::MAP_TAB_CLASSES %>"
                   data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys"><%= label %></button>
@@ -112,6 +113,9 @@
       </div>
 
       <div class="min-h-0 flex-1 overflow-y-auto px-3.5 py-3">
+        <section id="map-editor-panel-presets" role="tabpanel" aria-labelledby="map-editor-tab-presets" data-tabs-target="panel">
+          <%= render "map_templates/preset_tools" %>
+        </section>
         <section id="map-editor-panel-floors" role="tabpanel" aria-labelledby="map-editor-tab-floors" data-tabs-target="panel">
           <%= render "map_templates/floor_tools" %>
         </section>

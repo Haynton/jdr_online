@@ -37,14 +37,15 @@ const takingAwayKinds = ["eraser", "remover"]
 const smallestGridSize = 10
 const largestGridSize = 60
 const zoomStep = 1.25
+const deletingKeys = ["Delete", "Backspace"]
 
 export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
-                     "saveState", "zoomButtons"]
+                     "saveState", "zoomButtons", "presetPreview"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
-                    shrinkQuestion: String, clearQuestion: String }
+                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -76,6 +77,7 @@ export default class extends Controller {
       swatch.replaceChildren()
       toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey)
     })
+    this.drawPresetPreviews()
     this.showRotation()
     this.showSize()
     this.saveStateTarget.textContent = this.lastSaveState ?? ""
@@ -232,6 +234,32 @@ export default class extends Controller {
     this.save()
   }
 
+  // Each map ready to use of the tab Templates drawn in its little board, on the paper of the maps
+  drawPresetPreviews() {
+    this.presetPreviewTargets.forEach((preview) => {
+      const { columns, rows, layout } = presetOf(preview)
+      preview.style.backgroundColor = voidGround
+      renderMap(preview, { grid: new SquareGrid(columns, rows), floors: new Map(Object.entries(layout.floors)),
+                           edges: new Map(Object.entries(layout.edges)), objects: layout.objects })
+    })
+  }
+
+  // A map ready to use replaces the drawing, its grid with it: asked first when something is drawn, undone like a
+  // stroke, then saved
+  async usePreset(event) {
+    const button = event.currentTarget
+    const preset = presetOf(button)
+    const question = this.replaceQuestionValue.replace("__name__", button.dataset.mapPresetName)
+    if (!this.layout.isEmpty() && !(await confirmWithDialog(question, button))) return
+
+    const before = this.layout.snapshot()
+    this.useGridSize(this.layout.restore(JSON.stringify(preset)))
+    this.gridRatio = preset.rows / preset.columns
+    this.render()
+    this.keepChange(before)
+    this.showWholeMap()
+  }
+
   // Asked first in the window of the app (Anthony's request), though Undo brings it all back
   async clearEverything() {
     if (this.layout.isEmpty()) return
@@ -371,7 +399,9 @@ export default class extends Controller {
     this.deleteAt(this.boardPoint(event))
   }
 
+  // Delete or Backspace (Stimulus knows neither as a key filter of an action: checked here)
   deleteWithKey(event) {
+    if (!deletingKeys.includes(event.key)) return
     if (!this.isPointerOverBoard || !this.lastPoint || isTyping(event)) return
 
     event.preventDefault()
@@ -535,6 +565,11 @@ export default class extends Controller {
       headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
     })
   }
+}
+
+// The size of the grid and the drawing of a map ready to use, carried by its item (map_templates/_preset_tools)
+function presetOf(element) {
+  return JSON.parse(element.closest("[data-map-preset]").dataset.mapPreset)
 }
 
 function isTyping(event) {
