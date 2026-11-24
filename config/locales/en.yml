@@ -904,8 +904,8 @@ en:
         count:
           one: "%{count} map"
           other: "%{count} maps"
-        empty: "No map yet. Add the plans of your places: one image per map."
-        intro: "The maps of your game: one image per place, with its grid."
+        empty: "No map yet. Add the ones you drew in “My maps”."
+        intro: "The maps of your game, copied from “My maps”: the table keeps its own copy, cell by cell."
         purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
         title: "Maps"
       update:
@@ -918,13 +918,18 @@ en:
         grid_cell_size_hint: "The size of a cell, in pixels of the image: the width of a square drawn on the map."
         grid_visible_hint: "The lines of the grid show on the board."
         image_change_hint: "Pick an image to replace this one: PNG, JPEG or WebP, %{size} MB at most."
-        image_hint: "PNG, JPEG or WebP, %{size} MB at most."
       grid:
+        cells: "%{columns} × %{rows} cells"
         hidden: "Grid of %{size} px, hidden"
         shown: "Grid of %{size} px, shown"
+      picker:
+        add_label: "Add the map “%{name}”"
+        empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."
+        intro: "Choose a map of “My maps”: the table keeps its own copy, which you can change without touching the original."
+        my_maps: "Go to “My maps”"
       window:
         close: "Close the map"
-        new: "New map"
+        new: "Add a map"
     hit_dice_rolls:
       create:
         rolled: "Hit dice rolled: %{results}."

@@ -1,6 +1,8 @@
-# One map of a table, in a window over the step Maps (GameTables::MapDialogHelper): its name, its image, its grid.
-# Saved in the window, the list behind is refreshed and the window closes; refused, the errors stay in it (an image
-# chosen is to be chosen again: a browser never fills a file field back)
+# The maps of a table, in a window over the step Maps (GameTables::MapDialogHelper). « Ajouter une carte » lists the
+# maps of « Mes cartes » of the game master: the one chosen is copied into the table (MapTemplates::TableCopier,
+# Anthony's decision: the table plays on its copy). A map copied changes its name here (its drawing in the editor);
+# a map sent as an image before the editor, its name, its image and its grid. Saved in the window, the list behind is
+# refreshed and the window closes; refused, the errors stay in it
 module GameTables
   class GameMapsController < ApplicationController
     include TableOfGameMaster
@@ -10,19 +12,26 @@ module GameTables
     before_action :set_game_map, only: %i[edit update destroy]
 
     def new
-      @game_map = @game_table.game_maps.build
+      @map_templates = current_user.map_templates.with_attached_picture.order(updated_at: :desc)
     end
 
+    # Only a map of one's own (404 otherwise)
     def create
-      @game_map = @game_table.game_maps.build
-      save_game_map(:new)
+      map_template = current_user.map_templates.find(params.expect(:map_template_id))
+      MapTemplates::TableCopier.new(map_template, @game_table).call
+      show_list
     end
 
     def edit
     end
 
+    # An image left empty keeps the one the map has
     def update
-      save_game_map(:edit)
+      attributes = game_map_params
+      @game_map.assign_attributes(attributes[:image].blank? ? attributes.except(:image) : attributes)
+      return show_list if @game_map.save
+
+      render :edit, status: :unprocessable_content
     end
 
     def destroy
@@ -37,17 +46,10 @@ module GameTables
       @game_map = @game_table.game_maps.find(params[:id])
     end
 
-    # An image left empty while changing a map keeps the one it has
-    def save_game_map(form_action)
-      attributes = game_map_params
-      @game_map.assign_attributes(attributes[:image].blank? ? attributes.except(:image) : attributes)
-      return show_list if @game_map.save
-
-      render form_action, status: :unprocessable_content
-    end
-
+    # A map copied keeps its grid and its drawing here: only its name
     def game_map_params
-      params.fetch(:game_map, {}).permit(:name, :image, :grid_cell_size, :grid_visible)
+      permitted = @game_map.drawn? ? %i[name] : %i[name image grid_cell_size grid_visible]
+      params.fetch(:game_map, {}).permit(*permitted)
     end
 
     # In the window: the list behind is drawn again, where it was. Opened directly: back to the list

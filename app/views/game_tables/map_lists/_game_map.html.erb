@@ -1,7 +1,13 @@
-<%# One map of the table: its image (cut to 16:9, the whole map shows in its window), its name, its grid, and
-    "Change", which opens its window %>
+<%# One map of the table: a copy of a map of « Mes cartes » shows its preview, drawn like in the editor (the whole map
+    in the frame); a map sent as an image, its image (cut to 16:9, the whole map shows in its window). Then its name,
+    its grid, and "Change", which opens its window %>
 <li class="flex min-w-0 flex-col overflow-hidden rounded-xl border border-line bg-surface">
-  <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+  <% if game_map.drawn? %>
+    <svg viewBox="<%= game_map_view_box(game_map) %>" class="block aspect-video w-full" aria-hidden="true"
+         <%= tag.attributes(data: game_map_preview_data(game_map)) %>></svg>
+  <% else %>
+    <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+  <% end %>
   <div class="flex items-center justify-between gap-4 px-4 py-3">
     <div class="min-w-0">
       <p class="truncate text-sm font-semibold text-ink" title="<%= game_map.name %>"><%= game_map.name %></p>

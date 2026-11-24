@@ -1,0 +1,38 @@
+<%# « Ajouter une carte »: the maps of « Mes cartes » of the game master, each one with its preview, its name and the
+    size of its grid; a click copies it into the table (Anthony's decision: the table plays on its copy, « Mes cartes »
+    never changes). Without a map yet, a link to « Mes cartes », where maps are drawn. Full keys: the partial is
+    rendered from two templates %>
+<% scope = "game_tables.game_maps.picker" %>
+<div class="<%= in_dialog ? "min-h-0 flex-1 overflow-y-auto px-6 py-6" : "" %>">
+  <% if @map_templates.empty? %>
+    <div class="rounded-xl border border-dashed border-line px-6 py-8 text-center">
+      <p class="text-sm text-muted"><%= t("#{scope}.empty") %></p>
+      <%= link_to t("#{scope}.my_maps"), map_templates_path, class: "#{button_classes(:secondary)} mt-4",
+                                                             data: { turbo_frame: "_top" } %>
+    </div>
+  <% else %>
+    <p class="mb-4 text-sm text-muted"><%= t("#{scope}.intro") %></p>
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <% @map_templates.each do |map_template| %>
+        <li>
+          <%= button_to game_table_game_maps_path(@game_table), params: { map_template_id: map_template.id },
+                        form_class: "h-full", class: "#{SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES} w-full text-left",
+                        aria: { label: t("#{scope}.add_label", name: map_template.name) } do %>
+            <% if map_preview?(map_template) %>
+              <svg viewBox="<%= map_template_view_box(map_template) %>" class="block aspect-video w-full" aria-hidden="true"
+                   <%= tag.attributes(data: map_preview_data(map_template)) %>></svg>
+            <% else %>
+              <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+                <%= render "shared/icons/map", css_class: "size-10" %>
+              </span>
+            <% end %>
+            <span class="flex flex-col gap-1 px-4 pt-3 pb-4">
+              <span class="truncate font-semibold text-ink"><%= map_template.name %></span>
+              <span class="text-sm text-muted"><%= map_template_size(map_template) %></span>
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

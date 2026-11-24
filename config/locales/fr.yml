@@ -875,8 +875,8 @@ fr:
         count:
           one: "%{count} carte"
           other: "%{count} cartes"
-        empty: "Aucune carte pour l'instant. Ajoutez les plans de vos lieux : une image par carte."
-        intro: "Les cartes de votre partie : une image par lieu, avec sa grille."
+        empty: "Aucune carte pour l'instant. Ajoutez celles que vous avez dessinées dans « Mes cartes »."
+        intro: "Les cartes de votre partie, copiées de « Mes cartes » : la table garde sa propre copie, case par case."
         purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
         title: "Cartes"
       update:
@@ -889,13 +889,18 @@ fr:
         grid_cell_size_hint: "La taille d'une case, en pixels de l'image : la largeur d'un carré dessiné sur la carte."
         grid_visible_hint: "Les lignes de la grille se voient sur le plateau."
         image_change_hint: "Choisissez une image pour remplacer celle-ci : PNG, JPEG ou WebP, %{size} Mo au plus."
-        image_hint: "PNG, JPEG ou WebP, %{size} Mo au plus."
       grid:
+        cells: "%{columns} × %{rows} cases"
         hidden: "Grille de %{size} px, masquée"
         shown: "Grille de %{size} px, affichée"
+      picker:
+        add_label: "Ajouter la carte « %{name} »"
+        empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."
+        intro: "Choisissez une carte de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
+        my_maps: "Aller à « Mes cartes »"
       window:
         close: "Fermer la carte"
-        new: "Nouvelle carte"
+        new: "Ajouter une carte"
     hit_dice_rolls:
       create:
         rolled: "Dés de vie lancés : %{results}."

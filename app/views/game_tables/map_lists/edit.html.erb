@@ -1,5 +1,6 @@
-<%# The fifth step of a table: its maps (decision: an empty list at first). "Add a map" opens an empty window; each
-    card opens its window (its name, its image, its grid). Everything is saved as it is done: the buttons only go to
+<%# The fifth step of a table: its maps (decision: an empty list at first). "Add a map" opens a window with the maps
+    of « Mes cartes », one of which is copied into the table; each card opens its window (its name; the image and the
+    grid of a map sent as an image before the editor). Everything is saved as it is done: the buttons only go to
     the step before or after. Saved in a window, the page is refreshed by morphing, keeping its scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "maps", game_table: @game_table) do %>

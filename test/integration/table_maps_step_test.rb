@@ -1,7 +1,7 @@
 require "test_helper"
 
-# The step Maps of a table: the list of its maps, each one added, changed and deleted in its window, for its game
-# master only
+# The step Maps of a table: the list of its maps, each one copied from « Mes cartes », changed and deleted in its
+# window, for its game master only. Maps sent as an image before the editor are still changed and deleted
 class TableMapsStepTest < ActionDispatch::IntegrationTest
   MAP_HEADERS = { "Turbo-Frame" => GameTables::MapDialogHelper::MAP_FRAME }.freeze
 
@@ -25,29 +25,47 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_table_summary_path(@game_table)
   end
 
-  test "a map is added in its window with its image and grid, then listed" do
-    post game_table_game_maps_path(@game_table), headers: MAP_HEADERS,
-                                                 params: { game_map: { name: "Taverne du Pendu", grid_cell_size: "70",
-                                                                       grid_visible: "0", image: map_image } }
+  test "« Ajouter une carte » lists my maps only, and the one chosen is copied into the table, then listed" do
+    tavern = @game_master.map_templates.create!(name: "Taverne du Pendu", columns: 20, rows: 15, layout: drawing)
+    stranger = User.create!(email: "other@example.com", username: "autre", password: TEST_PASSWORD)
+    stranger.map_templates.create!(name: "Donjon d'un autre")
 
+    get new_game_table_game_map_path(@game_table), headers: MAP_HEADERS
+    assert_select "turbo-frame#map_dialog form[action=?] button[aria-label=?]", game_table_game_maps_path(@game_table),
+                  "Ajouter la carte « Taverne du Pendu »"
+    assert_select "button", text: /Donjon d'un autre/, count: 0
+
+    post game_table_game_maps_path(@game_table), headers: MAP_HEADERS, params: { map_template_id: tavern.id }
     assert_equal "text/vnd.turbo-stream.html", response.media_type
     game_map = @game_table.game_maps.sole
-    assert_equal ["Taverne du Pendu", 70, false], [game_map.name, game_map.grid_cell_size, game_map.grid_visible]
-    assert_predicate game_map.image, :attached?
+    assert_equal [tavern, "Taverne du Pendu", 20, 15, drawing], game_map.slice(:map_template, :name, :columns, :rows, :layout).values
 
     get edit_game_table_map_list_path(@game_table)
-    assert_select "#map-list li", text: /Taverne du Pendu\s+Grille de 70 px, masquée/
+    assert_select "#map-list li svg[data-controller=map-preview]"
+    assert_select "#map-list li", text: /Taverne du Pendu\s+20 × 15 cases/
   end
 
-  test "a map needs a name and an image, a picture" do
-    post game_table_game_maps_path(@game_table), headers: MAP_HEADERS, params: { game_map: { name: "" } }
-    assert_response :unprocessable_content
-    assert_select "turbo-frame#map_dialog p", text: /doit être rempli/
+  test "without a map of my own, the window leads to « Mes cartes »; the map of another is not found" do
+    get new_game_table_game_map_path(@game_table), headers: MAP_HEADERS
+    assert_select "turbo-frame#map_dialog a[href=?][data-turbo-frame=_top]", map_templates_path
 
-    post game_table_game_maps_path(@game_table), headers: MAP_HEADERS,
-                                                 params: { game_map: { name: "Notes", image: map_image("notes.txt") } }
-    assert_select "p", text: "doit être une image PNG, JPEG ou WebP"
+    stranger = User.create!(email: "other@example.com", username: "autre", password: TEST_PASSWORD)
+    map_of_another = stranger.map_templates.create!(name: "Donjon d'un autre")
+    post game_table_game_maps_path(@game_table), headers: MAP_HEADERS, params: { map_template_id: map_of_another.id }
+    assert_response :not_found
     assert_empty @game_table.game_maps
+  end
+
+  test "a map copied changes only its name here" do
+    tavern = @game_master.map_templates.create!(name: "Taverne", layout: drawing)
+    game_map = MapTemplates::TableCopier.new(tavern, @game_table).call
+
+    get edit_game_table_game_map_path(@game_table, game_map), headers: MAP_HEADERS
+    assert_select "input[name='game_map[image]']", count: 0
+    patch game_table_game_map_path(@game_table, game_map), headers: MAP_HEADERS,
+                                                           params: { game_map: { name: "Taverne basse", columns: "40" } }
+
+    assert_equal ["Taverne basse", 28], game_map.reload.slice(:name, :columns).values
   end
 
   test "changing a map keeps its image unless another is chosen, and it can be deleted" do
@@ -73,6 +91,10 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def drawing
+    MapTemplate::BLANK_LAYOUT.merge("floors" => { "1,1" => "room", "2,1" => "room" })
+  end
 
   def map_image(name = "map.png")
     fixture_file_upload(name, name.end_with?(".png") ? "image/png" : "text/plain")
