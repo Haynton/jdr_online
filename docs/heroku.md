@@ -50,7 +50,7 @@ git push heroku main
 
 Les migrations passent toutes seules à chaque déploiement (`release` du `Procfile`), avant que la nouvelle version reçoive du trafic. Si elles échouent, l'ancienne version reste en ligne.
 
-À savoir : la commande `release` tourne aussi **à chaque changement de variable**, avec le code déjà en ligne. Si elle échoue, Heroku **annule** le changement de variable (« release command failed » dans `heroku releases`).
+À savoir : la commande `release` tourne aussi **à chaque changement de variable**, avec le code déjà en ligne. Si elle échoue (« release command failed » dans `heroku releases`), la version d'avant reste en ligne, **mais la variable changée reste enregistrée** : les changements suivants repartent d'elle, et échouent tant qu'elle est fausse (vu le 24 novembre). Pour la retrouver, `heroku releases:output v<numéro> -a fumble-quest` donne la sortie de la commande ratée.
 
 ## Charger ou recharger les modèles fournis
 
@@ -91,17 +91,25 @@ heroku config:get CLOUDINARY_URL -a fumble-quest | cut -c1-15
 
 ## Changer la clé de Rails
 
-Si `config/master.key` a été vue par quelqu'un d'autre (affichée, envoyée par erreur), elle est brûlée : on la remplace. Poser la nouvelle clé avant ou après le déploiement échoue (voir « Déployer » : la commande `release` tourne avec le code en ligne, et Heroku annule ce qui échoue). L'ordre qui marche, une commande à la fois, en vérifiant chaque version avec `heroku releases -a fumble-quest -n 1` :
+Si `config/master.key` a été vue par quelqu'un d'autre (affichée, envoyée par erreur), elle est brûlée : on la remplace. Rails lit les secrets chiffrés **dès son démarrage** (le chiffrement d'Active Record) : chaque commande `release` échoue (`ActiveSupport::MessageEncryptor::InvalidMessage`) tant que Heroku a une clé qui ne va pas avec le fichier du code en ligne. Poser la nouvelle clé avant le déploiement échoue donc, et la poser après aussi. L'ordre qui marche (fait le 24 novembre), **toujours en ligne de commande, jamais dans le panneau de Heroku** (une valeur mal collée y bloque tout ce qui suit), une commande à la fois, en attendant à chaque fois que `heroku releases -a fumble-quest -n 1` ne dise plus « executing » :
 
 1. En local, dans une branche : supprimer `config/credentials.yml.enc` et `config/master.key`, puis `EDITOR=true bin/rails credentials:edit > /dev/null` (sans `> /dev/null`, Rails affiche la nouvelle clé). Recopier dans les nouveaux credentials ce que contenaient les anciens (aujourd'hui, seulement `secret_key_base`, recréé tout seul). Commiter `credentials.yml.enc`, Pull Request, fusion.
-2. Donner à Heroku un secret provisoire et vider la clé :
-   `heroku config:set SECRET_KEY_BASE="$(bin/rails secret)" RAILS_MASTER_KEY="" -a fumble-quest > /dev/null`
-3. Déployer : `git push heroku main`
-4. Poser la nouvelle clé : `heroku config:set RAILS_MASTER_KEY="$(cat config/master.key)" -a fumble-quest > /dev/null`
-5. Retirer le secret provisoire (sinon il passe avant celui des credentials) : `heroku config:unset SECRET_KEY_BASE -a fumble-quest`
-6. Garder la nouvelle `config/master.key` pour soi : elle ne quitte pas la machine d'Anthony. L'application ne lit aucun secret chiffré en développement (`.env` suffit), les autres membres de l'équipe n'en ont pas besoin, et chaque copie est une occasion de plus de la voir fuiter.
+2. Donner à Heroku un secret provisoire, **en gardant l'ancienne clé** (elle ouvre encore le fichier en ligne) :
+   `heroku config:set SECRET_KEY_BASE="$(bin/rails secret)" -a fumble-quest > /dev/null`
+3. Retirer l'ancienne clé (sans clé, Rails ne déchiffre rien et prend le secret provisoire) :
+   `heroku config:unset RAILS_MASTER_KEY -a fumble-quest`
+4. Déployer le nouveau fichier : `git push heroku main`
+5. Poser la nouvelle clé : `heroku config:set RAILS_MASTER_KEY="$(cat config/master.key)" -a fumble-quest > /dev/null`
+6. Retirer le secret provisoire (sinon il passe avant celui des credentials) : `heroku config:unset SECRET_KEY_BASE -a fumble-quest`
+7. Garder la nouvelle `config/master.key` pour soi : elle ne quitte pas la machine d'Anthony. L'application ne lit aucun secret chiffré en développement (`.env` suffit), les autres membres de l'équipe n'en ont pas besoin, et chaque copie est une occasion de plus de la voir fuiter.
 
 Chacun devra se reconnecter une fois (nouveau `secret_key_base`).
+
+Si une étape échoue, ne pas réessayer au hasard : lire la sortie de la version ratée (`heroku releases:output`). Pour savoir quelle clé Heroku a, sans l'afficher, comparer son empreinte à celle de `config/master.key` :
+
+```bash
+heroku config:get RAILS_MASTER_KEY -a fumble-quest | ruby -rdigest -e 'heroku_key = $stdin.read.strip; local_key = File.read("config/master.key").strip; puts heroku_key.empty? ? "Heroku n a pas de clé" : (Digest::SHA256.hexdigest(heroku_key) == Digest::SHA256.hexdigest(local_key) ? "Heroku a la nouvelle clé" : "Heroku a une autre clé")'
+```
 
 ## Vérifier
 
