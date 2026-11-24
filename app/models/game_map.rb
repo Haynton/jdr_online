@@ -12,6 +12,8 @@ class GameMap < ApplicationRecord
   IMAGE_CONTENT_TYPES = %w[image/png image/jpeg image/webp].freeze
   IMAGE_MAX_SIZE = 10.megabytes
 
+  include PlayedOnPicture
+
   belongs_to :game_table
   belongs_to :map_template, optional: true
   has_one_attached :image
@@ -28,6 +30,15 @@ class GameMap < ApplicationRecord
   # A copy of a map of « Mes cartes », drawn in the editor (or played on its picture), rather than an image alone
   def drawn?
     !layout.nil?
+  end
+
+  # The map editor reads and sends the picture of a map under this name (MapTemplate#picture): here, its image
+  def picture
+    image
+  end
+
+  def picture=(file)
+    self.image = file
   end
 
   # Played on its picture: the drawing says so (MapTemplate, mode "picture")

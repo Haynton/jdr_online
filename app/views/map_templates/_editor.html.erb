@@ -61,6 +61,13 @@
         </div>
       </div>
     </div>
+    <%# A map of a table goes back to the step Maps of its table (back_path:); a map of « Mes cartes », by the
+        navigation %>
+    <% if local_assigns[:back_path] %>
+      <%= link_to local_assigns[:back_path], class: "#{button_classes(:secondary, size: :compact)} lg:justify-self-end" do %>
+        <%= render "shared/icons/chevron_left" %><%= local_assigns[:back_label] %>
+      <% end %>
+    <% end %>
   </header>
 
   <div class="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_340px]">

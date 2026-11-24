@@ -8,14 +8,14 @@
 <%# A zone to drop the picture on (file_drop_controller.js): sent as soon as it is dropped or chosen (Anthony's
     request), the page comes back with it. The field itself is read by screen readers and the keyboard; its visible
     button is its label. Without JavaScript, the field and the button « Envoyer l'image » %>
-<%= form_with url: map_template_picture_path(map_template), method: :post, multipart: true,
+<%= form_with url: polymorphic_path([*map_editor_record(map_template), :picture]), method: :post, multipart: true,
               class: MapTemplatesHelper::PICTURE_DROP_ZONE_CLASSES,
               data: { controller: "file-drop", file_drop_sending_label_value: t(".sending"),
                       action: "dragenter->file-drop#showDragging dragover->file-drop#showDragging dragleave->file-drop#hideDragging drop->file-drop#drop turbo:morph@document->file-drop#hideSubmit" } do |form| %>
   <%= render "shared/icons/image_up", css_class: "size-7 text-brass" %>
   <p class="text-[13px] font-semibold text-ink"><%= t(".drop_here") %></p>
   <p class="text-xs text-muted" aria-hidden="true"><%= t(".or") %></p>
-  <%= form.file_field "map_template[picture]", id: "map-picture-file", required: true,
+  <%= form.file_field :picture, id: "map-picture-file", required: true,
                       accept: GameMap::IMAGE_CONTENT_TYPES.join(","), aria: { describedby: "map-picture-hint" },
                       class: "peer sr-only", data: { file_drop_target: "input", action: "change->file-drop#send" } %>
   <label for="map-picture-file" class="<%= button_classes(:secondary, size: :compact) %> cursor-pointer peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring">
@@ -61,7 +61,7 @@
       <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="map-editor#fitPicture"><%= t(".fit") %></button>
     </div>
 
-    <%= button_to t(".remove"), map_template_picture_path(map_template), method: :delete,
+    <%= button_to t(".remove"), polymorphic_path([*map_editor_record(map_template), :picture]), method: :delete,
                   class: button_classes(:danger, size: :compact, full_width: true),
                   data: { turbo_confirm: t(".remove_question"), confirm_button: t(".remove"), confirm_variant: "danger" } %>
   </section>

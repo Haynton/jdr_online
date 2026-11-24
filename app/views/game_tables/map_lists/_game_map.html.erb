@@ -1,6 +1,7 @@
 <%# One map of the table: a copy of a map of « Mes cartes » shows its preview, drawn like in the editor (the whole map
     in the frame); a map sent as an image, its image (cut to 16:9, the whole map shows in its window). Then its name,
-    its grid, and "Change", which opens its window %>
+    its grid, and "Change": a map copied or drawn for the table opens in the map editor, with a bin beside it (after a
+    question, like in « Mes cartes »); a map sent as an image, its window (where it is deleted) %>
 <li class="flex min-w-0 flex-col overflow-hidden rounded-xl border border-line bg-surface">
   <% if game_map.drawn? %>
     <svg viewBox="<%= game_map_view_box(game_map) %>" class="block aspect-video w-full" aria-hidden="true"
@@ -13,12 +14,25 @@
       <p class="truncate text-sm font-semibold text-ink" title="<%= game_map.name %>"><%= game_map.name %></p>
       <p class="truncate text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
     </div>
-    <%= link_to edit_game_table_game_map_path(@game_table, game_map),
-                class: "#{button_classes(:secondary, size: :compact)} shrink-0",
-                title: t("game_tables.map_lists.edit.change", name: game_map.name), data: map_dialog_link_data do %>
-      <%= render "shared/icons/pencil" %>
-      <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
-      <span class="sr-only"><%= game_map.name %></span>
-    <% end %>
+    <div class="flex shrink-0 items-center gap-2">
+      <%= link_to edit_game_table_game_map_path(@game_table, game_map),
+                  class: button_classes(:secondary, size: :compact),
+                  title: t("game_tables.map_lists.edit.change", name: game_map.name),
+                  data: (map_dialog_link_data unless game_map.drawn?) do %>
+        <%= render "shared/icons/pencil" %>
+        <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
+        <span class="sr-only"><%= game_map.name %></span>
+      <% end %>
+      <% if game_map.drawn? %>
+        <%= button_to game_table_game_map_path(@game_table, game_map), method: :delete,
+                      class: button_classes(:secondary, size: :compact_icon),
+                      title: t("game_tables.map_lists.edit.delete", name: game_map.name),
+                      aria: { label: t("game_tables.map_lists.edit.delete", name: game_map.name) },
+                      data: { turbo_confirm: t("game_tables.game_maps.form.confirm_delete", name: game_map.name),
+                              confirm_button: t("game_tables.game_maps.form.delete"), confirm_variant: "danger" } do %>
+          <%= render "shared/icons/trash_2" %>
+        <% end %>
+      <% end %>
+    </div>
   </div>
 </li>

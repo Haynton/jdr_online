@@ -30,12 +30,18 @@ module MapEditorHelper
     map_template.layout_in_database.values_at("floors", "edges", "objects").all?(&:blank?) ? 0 : 1
   end
 
+  # The editor works on a map of « Mes cartes » or on its copy in a table (GameMap): the same drawing, the same
+  # picture, at their own addresses (a map of a table under its table)
+  def map_editor_record(map)
+    map.is_a?(GameMap) ? [map.game_table, map] : [map]
+  end
+
   # What the map editor needs (map_editor_controller.js): the drawing, the grid, where to save it, its texts
   def map_editor_data(map_template)
     { controller: "map-editor", action: "turbo:morph@document->map-editor#drawEverything",
       map_editor_layout_value: map_template.layout_in_database.to_json,
       map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
-      map_editor_url_value: map_template_layout_path(map_template),
+      map_editor_url_value: polymorphic_path([*map_editor_record(map_template), :layout]),
       map_editor_figure_labels_value: map_editor_figure_labels.to_json,
       map_editor_picture_url_value: map_picture_url(map_template), **map_editor_texts }
   end

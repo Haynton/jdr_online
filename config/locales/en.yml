@@ -904,13 +904,18 @@ en:
         count:
           one: "%{count} map"
           other: "%{count} maps"
-        empty: "No map yet. Add the ones you drew in “My maps”."
-        intro: "The maps of your game, copied from “My maps”: the table keeps its own copy, cell by cell."
+        delete: "Delete %{name}"
+        empty: "No map yet. Draw one, or add the ones of “My maps”."
+        intro: "The maps of your game, drawn for it or copied from “My maps”: the table keeps its own copy, cell by cell."
         purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
         title: "Maps"
       update:
         saved: "Maps saved."
     game_maps:
+      create:
+        default_name: "New map"
+      editor:
+        back: "Maps of the table"
       form:
         confirm_delete: "Delete the map “%{name}”?"
         delete: "Delete the map"
@@ -925,8 +930,11 @@ en:
       picker:
         add_label: "Add the map “%{name}”"
         empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."
-        intro: "Choose a map of “My maps”: the table keeps its own copy, which you can change without touching the original."
+        from_my_maps: "From “My maps”"
+        intro: "Draw a map for this table, or choose one of “My maps”: the table keeps its own copy, which you can change without touching the original."
         my_maps: "Go to “My maps”"
+        new: "Create a map"
+        new_hint: "An empty map, drawn for this table only."
       window:
         close: "Close the map"
         new: "Add a map"

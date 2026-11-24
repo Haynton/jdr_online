@@ -1,7 +1,7 @@
 require "test_helper"
 
 # The step Maps of a table: the list of its maps, each one copied from « Mes cartes », changed and deleted in its
-# window, for its game master only. Maps sent as an image before the editor are still changed and deleted
+# window or in the map editor, for its game master only. Maps sent as an image before the editor are still changed and deleted
 class TableMapsStepTest < ActionDispatch::IntegrationTest
   MAP_HEADERS = { "Turbo-Frame" => GameTables::MapDialogHelper::MAP_FRAME }.freeze
 
@@ -56,16 +56,71 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_empty @game_table.game_maps
   end
 
-  test "a map copied changes only its name here" do
+  test "a map copied opens in the map editor, which saves its drawing on the copy only" do
     tavern = @game_master.map_templates.create!(name: "Taverne", layout: drawing)
     game_map = MapTemplates::TableCopier.new(tavern, @game_table).call
 
-    get edit_game_table_game_map_path(@game_table, game_map), headers: MAP_HEADERS
-    assert_select "input[name='game_map[image]']", count: 0
-    patch game_table_game_map_path(@game_table, game_map), headers: MAP_HEADERS,
-                                                           params: { game_map: { name: "Taverne basse", columns: "40" } }
+    get edit_game_table_map_list_path(@game_table)
+    assert_select "#map-list a[href=?]:not([data-turbo-frame])", edit_game_table_game_map_path(@game_table, game_map)
 
+    get edit_game_table_game_map_path(@game_table, game_map)
+    assert_select "main[data-controller=map-editor][data-map-editor-url-value=?]",
+                  game_table_game_map_layout_path(@game_table, game_map)
+    assert_select "header input[name='game_map[name]'][value=Taverne]"
+    assert_select "header a[href=?]", edit_game_table_map_list_path(@game_table), text: /Cartes de la table/
+
+    new_drawing = drawing.merge("edges" => { "1,1|2,1" => "door" })
+    patch game_table_game_map_layout_path(@game_table, game_map), params: { layout: new_drawing.to_json, columns: "30" }
+    assert_response :no_content
+    assert_equal [new_drawing, 30], game_map.reload.slice(:layout, :columns).values
+    assert_equal drawing, tavern.reload.layout
+  end
+
+  test "a map copied is renamed in its editor; its grid stays" do
+    game_map = MapTemplates::TableCopier.new(@game_master.map_templates.create!(name: "Taverne"), @game_table).call
+
+    patch game_table_game_map_path(@game_table, game_map), params: { game_map: { name: "Taverne basse", columns: "40" } }
+    assert_redirected_to edit_game_table_game_map_path(@game_table, game_map)
     assert_equal ["Taverne basse", 28], game_map.reload.slice(:name, :columns).values
+
+    patch game_table_game_map_path(@game_table, game_map), params: { game_map: { name: "" } }
+    assert_response :unprocessable_content
+    assert_select "header input[name='game_map[name]'][aria-invalid=true]"
+  end
+
+  test "« Créer une carte » draws an empty map for the table and opens its editor" do
+    get new_game_table_game_map_path(@game_table), headers: MAP_HEADERS
+    assert_select "turbo-frame#map_dialog form[action=?][data-turbo-frame=_top]", game_table_game_maps_path(@game_table),
+                  text: /Créer une carte/
+
+    post game_table_game_maps_path(@game_table)
+    game_map = @game_table.game_maps.sole
+    assert_redirected_to edit_game_table_game_map_path(@game_table, game_map)
+    assert_equal ["Nouvelle carte", 28, 21, nil], game_map.slice(:name, :columns, :rows, :map_template).values
+    assert_predicate game_map, :drawn?
+  end
+
+  test "a map of the table plays on a picture of its own, sent and taken away in its editor" do
+    game_map = MapTemplates::TableCopier.new(@game_master.map_templates.create!(name: "Taverne"), @game_table).call
+
+    post game_table_game_map_picture_path(@game_table, game_map), params: { picture: map_image }
+    assert_redirected_to edit_game_table_game_map_path(@game_table, game_map)
+    assert_predicate game_map.reload, :on_picture?
+    assert_predicate game_map.image, :attached?
+
+    delete game_table_game_map_picture_path(@game_table, game_map)
+    assert_not game_map.reload.image.attached?
+  end
+
+  test "the drawing and the picture of a map sent as an image, or of another table, are not found" do
+    image_map = @game_table.game_maps.create!(name: "Crypte", image: map_image)
+    assert_not_found { patch game_table_game_map_layout_path(@game_table, image_map), params: { layout: drawing.to_json } }
+
+    stranger = User.create!(email: "other@example.com", username: "autre", password: TEST_PASSWORD)
+    other_table = GameTableCreator.new(user: stranger, attributes: { name: "Ailleurs" },
+                                       sheet_template: SheetTemplate.create!(name: "Autre", locale: "fr")).call
+    other_map = MapTemplates::TableCopier.new(stranger.map_templates.create!(name: "Donjon"), other_table).call
+    assert_not_found { post game_table_game_map_picture_path(other_table, other_map), params: { picture: map_image } }
   end
 
   test "changing a map keeps its image unless another is chosen, and it can be deleted" do
@@ -91,6 +146,13 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # A 404 does not save the session: signed in again for the next request
+  def assert_not_found
+    yield
+    assert_response :not_found
+    sign_in @game_master
+  end
 
   def drawing
     MapTemplate::BLANK_LAYOUT.merge("floors" => { "1,1" => "room", "2,1" => "room" })

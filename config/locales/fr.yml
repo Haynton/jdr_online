@@ -875,13 +875,18 @@ fr:
         count:
           one: "%{count} carte"
           other: "%{count} cartes"
-        empty: "Aucune carte pour l'instant. Ajoutez celles que vous avez dessinées dans « Mes cartes »."
-        intro: "Les cartes de votre partie, copiées de « Mes cartes » : la table garde sa propre copie, case par case."
+        delete: "Supprimer %{name}"
+        empty: "Aucune carte pour l'instant. Dessinez-en une, ou ajoutez celles de « Mes cartes »."
+        intro: "Les cartes de votre partie, dessinées pour elle ou copiées de « Mes cartes » : la table garde sa propre copie, case par case."
         purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
         title: "Cartes"
       update:
         saved: "Cartes enregistrées."
     game_maps:
+      create:
+        default_name: "Nouvelle carte"
+      editor:
+        back: "Cartes de la table"
       form:
         confirm_delete: "Supprimer la carte « %{name} » ?"
         delete: "Supprimer la carte"
@@ -896,8 +901,11 @@ fr:
       picker:
         add_label: "Ajouter la carte « %{name} »"
         empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."
-        intro: "Choisissez une carte de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
+        from_my_maps: "Depuis « Mes cartes »"
+        intro: "Dessinez une carte pour cette table, ou choisissez-en une de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
         my_maps: "Aller à « Mes cartes »"
+        new: "Créer une carte"
+        new_hint: "Une carte vide, dessinée pour cette table seulement."
       window:
         close: "Fermer la carte"
         new: "Ajouter une carte"
