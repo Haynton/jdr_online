@@ -6,8 +6,10 @@
 # character_sheet_controller.js works them out the same way while the player types: changing one means changing both
 module CharacterSheets
   class Calculator
-    def initialize(fields:, sheet:, level_thresholds:)
+    # hit_point_rolls: the hit dice rolled for the levels after the first, nil for their average
+    def initialize(fields:, sheet:, level_thresholds:, hit_point_rolls: nil)
       @fields = fields
+      @hit_point_rolls = hit_point_rolls
       @sheet = sheet.to_h
       @level_thresholds = level_thresholds.to_a.sort_by { |threshold| threshold["level"] }
     end
@@ -49,7 +51,7 @@ module CharacterSheets
     # Each computed field by its rule (ComputedRules), which reads the sheet through a SheetReader
     def computed_field_values(modifiers)
       reader = SheetReader.new(fields: @fields, sheet: @sheet, level_thresholds: @level_thresholds,
-                               modifiers: modifiers)
+                               modifiers: modifiers, hit_point_rolls: @hit_point_rolls)
       @fields.select { |field| field["type"] == "computed" }
              .to_h { |field| [field["key"], ComputedRules.of(field).value(field, reader)] }
     end
