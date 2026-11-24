@@ -1,6 +1,6 @@
 <%# The maps of the game master, laid out like « Mes modèles »: across the whole width, a row of cards. The first one
     creates a map and opens its editor (always there: it says how to start while there is none), then one card per
-    map, each a link to its page %>
+    map, each a link to its page, with its delete button in a corner %>
 <%# The main landmark of the page: a page across the whole width carries its own (layouts/application does not) %>
 <% content_for :full_width_page do %>
   <main class="px-4 pt-8 pb-12 sm:px-8">
@@ -24,8 +24,19 @@
         <% end %>
       </li>
       <% @map_templates.each do |map_template| %>
-        <li class="w-[62%] shrink-0 sm:w-56">
+        <li class="relative w-[62%] shrink-0 sm:w-56">
           <%= render "map_templates/tile", map_template: map_template %>
+          <%# Deleted from here (Anthony's request: not in the editor), asked first with a red button. Beside the link of
+              the card, not in it (a button in a link is not allowed), over the corner of its picture like « Dupliquer »
+              on « Mes modèles ». Full keys: inside a render layout: block, a short key is looked up under the row %>
+          <%= button_to map_template_path(map_template), method: :delete, form_class: "absolute top-2 right-2",
+                        class: button_classes(:secondary, size: :compact_icon),
+                        title: t("map_templates.index.delete_label", name: map_template.name),
+                        aria: { label: t("map_templates.index.delete_label", name: map_template.name) },
+                        data: { turbo_confirm: t("map_templates.index.delete_confirmation", name: map_template.name),
+                                confirm_button: t("map_templates.index.delete_button"), confirm_variant: "danger" } do %>
+            <%= render "shared/icons/trash_2" %>
+          <% end %>
         </li>
       <% end %>
     <% end %>

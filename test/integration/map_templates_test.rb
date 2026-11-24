@@ -49,11 +49,13 @@ class MapTemplatesTest < ActionDispatch::IntegrationTest
     assert_select "header #map-name-error", text: /doit être rempli/
   end
 
-  test "deleting a map, after a question, takes it out of my maps" do
+  test "deleting a map from its card of my maps, after a question, takes it out of them" do
     map_template = @game_master.map_templates.create!(name: "La taverne")
-    get edit_map_template_path(map_template)
-    assert_select "form[action=?] button[data-turbo-confirm][data-confirm-variant=danger]",
-                  map_template_path(map_template)
+    get map_templates_path
+    # Beside the link of the card, not in it (a button in a link is not allowed)
+    assert_select "li form[action=?] button[aria-label=?][data-turbo-confirm][data-confirm-variant=danger]",
+                  map_template_path(map_template), "Supprimer La taverne"
+    assert_select "li a form", count: 0
 
     assert_difference -> { MapTemplate.count }, -1 do
       delete map_template_path(map_template)
