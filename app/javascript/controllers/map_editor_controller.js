@@ -5,7 +5,8 @@ import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
 import { renderPicture } from "map_editor/picture_renderer"
-import { renderBlockedCells } from "map_editor/blocked_renderer"
+import { renderBlockedCells, renderNaturalBlocks } from "map_editor/blocked_renderer"
+import { naturalBlocks } from "map_editor/passage"
 import { renderTokens, drawToken } from "map_editor/token_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
@@ -231,6 +232,9 @@ export default class extends Controller {
     this.pressCurrentTool()
     this.hidePointer()
     this.showBoardCursor()
+    // What blocks by itself shows while the blocked zones are painted
+    if (chosenTool.kind === "blocker" || this.wasPaintingBlocked) this.render()
+    this.wasPaintingBlocked = this.tool.kind === "blocker"
   }
 
   // H chooses the hand, or leaves it (Anthony's request: with a mouse, holding space was a chore). Not while typing
@@ -563,6 +567,10 @@ export default class extends Controller {
     } else {
       renderMap(this.drawingTarget, { grid: this.grid, floors: this.layout.floors, edges: this.layout.edges,
                                       objects: this.layout.objects })
+    }
+    if (this.tool.kind === "blocker" && !this.layout.isPicture()) {
+      renderNaturalBlocks(this.drawingTarget, this.grid, naturalBlocks({ grid: this.grid, floors: this.layout.floors,
+                                                                          edges: this.layout.edges }))
     }
     renderBlockedCells(this.drawingTarget, this.layout.blocked)
     renderTokens(this.drawingTarget, this.layout.tokens, this.tokenCharactersValue)

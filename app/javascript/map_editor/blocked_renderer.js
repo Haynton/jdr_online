@@ -1,5 +1,7 @@
 // The cells painted with the brush « Zones bloquantes » (a map of a table: no token stands on them, MapPassage), drawn
-// over the map in the editor only: a red veil, hatched, so that they show on any floor and on any picture
+// over the map in the editor only: a red veil, hatched, so that they show on any floor and on any picture. While they
+// are painted, what blocks by itself shows too (map_editor/passage.js): the empty ground in a paler veil, without
+// hatching, the walls that stop a token in a red line
 import { cellSize, cellPosition } from "map_editor/square_grid"
 import { createSvgElement } from "map_editor/svg"
 import { refusedMark } from "map_editor/palette"
@@ -23,6 +25,26 @@ export function renderBlockedCells(group, blockedCells) {
                              "stroke-width": 1, "stroke-opacity": 0.6 }, layer)
   createSvgElement("path", { d: hatching, fill: "none", stroke: refusedMark, "stroke-width": 1.2,
                              "stroke-opacity": 0.55, "stroke-linecap": "round" }, layer)
+}
+
+// grid: to find the ends of a side. A side is { column, row, sideIndex }
+export function renderNaturalBlocks(group, grid, { emptyCells, sides }) {
+  const layer = createSvgElement("g", { "pointer-events": "none" }, group)
+  let veil = ""
+  emptyCells.forEach(([column, row]) => {
+    veil += `M${column * cellSize} ${row * cellSize} h${cellSize} v${cellSize} h${-cellSize} Z `
+  })
+  if (veil) createSvgElement("path", { d: veil, fill: refusedMark, "fill-opacity": 0.1 }, layer)
+
+  let walls = ""
+  sides.forEach(({ column, row, sideIndex }) => {
+    const { start, end } = grid.side(column, row, sideIndex)
+    walls += `M${start[0]} ${start[1]} L${end[0]} ${end[1]} `
+  })
+  if (walls) {
+    createSvgElement("path", { d: walls, fill: "none", stroke: refusedMark, "stroke-width": 3, "stroke-opacity": 0.75,
+                               "stroke-linecap": "round" }, layer)
+  }
 }
 
 // Lines from the bottom left to the top right, each one inside the cell
