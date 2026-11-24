@@ -5,7 +5,7 @@
 // map_objects)
 import { floorOf, isAir } from "map_floors"
 import { edgeOf, doorKey } from "map_edges"
-import { objectOf, footprintSize } from "map_objects"
+import { objectOf, footprintSize, drawObject } from "map_objects"
 import { cellKey, cellPosition, cellSize, sideKey } from "map_editor/square_grid"
 import { createSvgElement, polygonPath, pointKey, rounded } from "map_editor/svg"
 import { noise } from "map_editor/noise"
@@ -13,7 +13,7 @@ import { drawHatching } from "map_editor/hatching"
 import { drawBoulder } from "map_editor/boulder"
 import { drawInkWall } from "map_editor/wall_drawing"
 import { regionLoops, offsetLoop, loopPath } from "map_editor/region_outline"
-import { waterPattern, glowGradient, objectShadowFilter } from "map_editor/patterns"
+import { waterPattern, glowGradient } from "map_editor/patterns"
 import { markDensity, markDepth } from "map_editor/drawing_settings"
 import * as palette from "map_editor/palette"
 
@@ -243,8 +243,9 @@ function drawCellLines(group, sides) {
   }, lines))
 }
 
-// Ripples in the water cells, then along each bank two lines inside it and the ink of the bank. Not in a cell of
-// water almost alone, nor inside a loop too small to hold them: they would go over its bank
+// Ripples in the water cells, then along each bank its line and dashes inside it, without the thick ink of the
+// prototype (Anthony's request: no heavy black border). Not in a cell of water almost alone, nor inside a loop too
+// small to hold them: they would go over its bank
 function drawBanks(group, grid, waterCells, loops) {
   const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, group)
   const isWaterCell = new Set(waterCells.map(([column, row]) => cellKey(column, row)))
@@ -260,13 +261,13 @@ function drawBanks(group, grid, waterCells, loops) {
                                "stroke-width": 0.8, "stroke-opacity": 0.6 }, banks)
   })
   loops.forEach((points) => {
-    if (isLargeEnoughForRipples(points)) {
-      createSvgElement("path", { d: loopPath(offsetLoop(points, 7)), stroke: palette.shoreWave, "stroke-width": 0.7,
-                                 "stroke-opacity": 0.55, "stroke-dasharray": "2.5 3" }, banks)
-      createSvgElement("path", { d: loopPath(offsetLoop(points, 3.4)), stroke: palette.shoreWave, "stroke-width": 1.1,
-                                 "stroke-opacity": 0.8 }, banks)
-    }
-    createSvgElement("path", { d: loopPath(points), stroke: palette.ink, "stroke-width": 1.7 }, banks)
+    createSvgElement("path", { d: loopPath(points), stroke: palette.shoreWave, "stroke-width": 1.3 }, banks)
+    if (!isLargeEnoughForRipples(points)) return
+
+    createSvgElement("path", { d: loopPath(offsetLoop(points, 7)), stroke: palette.shoreWave, "stroke-width": 0.7,
+                               "stroke-opacity": 0.55, "stroke-dasharray": "2.5 3" }, banks)
+    createSvgElement("path", { d: loopPath(offsetLoop(points, 3.4)), stroke: palette.shoreWave, "stroke-width": 1.1,
+                               "stroke-opacity": 0.8 }, banks)
   })
 }
 
@@ -369,9 +370,10 @@ function drawRocks(group, borders) {
     .forEach((rock) => drawBoulder(rockGroup, rock.x, rock.y, rock.radius, rock.seed))
 }
 
-// Under the walls, with a soft shadow; what blocks the way over the rest. Then the light of the fires
+// Under the walls, without the drop shadow of the prototype (Anthony: « un espèce de shadow bizarre »); what blocks
+// the way over the rest. Then the light of the fires
 function drawObjects(group, grid, objects) {
-  const objectGroup = createSvgElement("g", { filter: objectShadowFilter }, group)
+  const objectGroup = createSvgElement("g", {}, group)
   const lightGroup = createSvgElement("g", { "pointer-events": "none" }, group)
   const drawable = objects.filter((placedObject) => objectOf(placedObject.key))
   const drawnLast = (placedObject) => (objectOf(placedObject.key).drawnOnTop ? 1 : 0)
@@ -396,6 +398,6 @@ export function objectCenter(placedObject, mapObject) {
 export function drawPlacedObject(group, placedObject, mapObject, centerX, centerY) {
   const objectTransform = `translate(${rounded(centerX)} ${rounded(centerY)}) rotate(${placedObject.rotation * 90})`
   const seed = placedObject.column * 131 + placedObject.row * 7
-  mapObject.draw(createSvgElement("g", { transform: objectTransform }, group), mapObject.width * cellSize,
-                 mapObject.height * cellSize, seed)
+  drawObject(createSvgElement("g", { transform: objectTransform }, group), mapObject, mapObject.width * cellSize,
+             mapObject.height * cellSize, seed)
 }

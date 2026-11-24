@@ -10,7 +10,6 @@ export const grassPattern = "url(#map-pattern-grass)"
 export const dirtPattern = "url(#map-pattern-dirt)"
 export const waterPattern = "url(#map-pattern-water)"
 export const glowGradient = "url(#map-glow)"
-export const objectShadowFilter = "url(#map-shadow)"
 
 const woodTones = ["#e6d3b9", "#e3cfb4", "#e9d7be", "#e0ccb0", "#e5d1b6", "#e8d5bb"]
 const stoneTones = ["#ebe6da", "#e8e2d5", "#eee9de", "#e5dfd1", "#eae4d8"]
@@ -31,7 +30,6 @@ export function addMapPatterns(svg) {
                                             count: 14, seed: 231 }, drawDirtSpecks)
   drawBlotches(pattern("water", 120, 120), { base: "#c9dfdc", tones: ["#d2e6e3", "#c1d8d5", "#cde3e0"],
                                              count: 14, seed: 241 }, () => {})
-  addShadowFilter(definitions)
   addGlowGradient(definitions)
 }
 
@@ -102,10 +100,3 @@ function wrapAround(size, x, y, draw) {
   ;[[0, 0], [-size, 0], [0, -size], [-size, -size]].forEach(([shiftX, shiftY]) => draw(x + shiftX, y + shiftY))
 }
 
-// The soft shadow under what stands on the map
-function addShadowFilter(definitions) {
-  const filter = createSvgElement("filter", { id: "map-shadow", x: "-5%", y: "-5%", width: "110%", height: "110%" },
-                                  definitions)
-  createSvgElement("feDropShadow", { dx: 1, dy: 1.7, stdDeviation: 1.1, "flood-color": "#2a1f16",
-                                     "flood-opacity": 0.18 }, filter)
-}

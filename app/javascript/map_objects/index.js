@@ -7,6 +7,7 @@ import nature from "map_objects/nature"
 import { drawSwatchTile } from "map_editor/swatch"
 import { cellSize } from "map_editor/square_grid"
 import { createSvgElement } from "map_editor/svg"
+import { inkInObjectColor } from "map_editor/object_ink"
 
 const mapObjects = { ...furniture, ...decor, ...nature }
 
@@ -20,6 +21,13 @@ export function footprintSize(mapObject, rotation) {
   return rotation % 2 ? [mapObject.height, mapObject.width] : [mapObject.width, mapObject.height]
 }
 
+// Draws an object into a group, centered on it, then gives its outlines its own color (map_editor/object_ink): on the
+// map and on the swatch of its tool alike
+export function drawObject(group, mapObject, length, depth, seed) {
+  mapObject.draw(group, length, depth, seed)
+  inkInObjectColor(group)
+}
+
 // The swatch of a tool of the tab Objects: the object on a tile, a large one shrunk to fit
 export function drawObjectSwatch(svg, key) {
   const mapObject = objectOf(key)
@@ -27,5 +35,5 @@ export function drawObjectSwatch(svg, key) {
   const length = cellSize * mapObject.width
   const depth = cellSize * mapObject.height
   const scale = mapObject.width === 1 && mapObject.height === 1 ? 1 : 25 / Math.max(length, depth)
-  mapObject.draw(createSvgElement("g", { transform: `translate(16 16) scale(${scale.toFixed(3)})` }, svg), length, depth, 5)
+  drawObject(createSvgElement("g", { transform: `translate(16 16) scale(${scale.toFixed(3)})` }, svg), mapObject, length, depth, 5)
 }
