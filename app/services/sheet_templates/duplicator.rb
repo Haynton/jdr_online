@@ -1,6 +1,6 @@
 # Makes a template of a game master from another one (a predefined template, or one of their own): the first step of
 # the template editor (decision: start from a template that works rather than from an empty one). The copy keeps all
-# its content (fields, steps, groups of spells, ready-made NPCs and items) and a copy of every line of its catalog
+# its content (fields, steps, groups of spells, ready-made items) and a copy of every line of its catalog
 # (decision: the lines are copied, not inherited), so that changing it never changes the original nor the tables
 # that use the original. It belongs to the game master, remembers where it comes from (parent) and has no language
 # (a template of a game master is written in their own words)
@@ -9,7 +9,7 @@ module SheetTemplates
     # What the copy takes from the original: its content, never who owns it nor where it comes from
     CONTENT_COLUMNS = %w[
       description icon banner_color character_fields npc_fields item_fields spell_fields rest_rules level_thresholds
-      preset_characters preset_items
+      preset_items
     ].freeze
     CATALOG_COLUMNS = %w[kind key name description properties].freeze
 

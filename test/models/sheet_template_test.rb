@@ -48,17 +48,15 @@ class SheetTemplateTest < ActiveSupport::TestCase
     assert_not_includes available, someone_elses
   end
 
-  test "the snapshot holds the definitions, not the ready-made characters" do
+  test "the snapshot holds the definitions, not the name" do
     sheet_template = SheetTemplate.new(
       name: "Fantasy",
-      character_fields: { "fields" => [{ "key" => "strength", "type" => "number" }] },
-      preset_characters: [{ "name" => "Gobelin" }]
+      character_fields: { "fields" => [{ "key" => "strength", "type" => "number" }] }
     )
 
     snapshot = sheet_template.snapshot
 
     assert_equal [{ "key" => "strength", "type" => "number" }], snapshot.dig("character_fields", "fields")
-    assert_not snapshot.key?("preset_characters")
     assert_not snapshot.key?("name")
   end
 

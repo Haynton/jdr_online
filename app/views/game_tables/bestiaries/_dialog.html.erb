@@ -1,0 +1,9 @@
+<%# The window of the bestiary, over the list of the step "NPCs and enemies": empty until "Add from the bestiary" is
+    clicked. It stays open while creatures are added (no closeOnSuccess: each "Add" replaces the list behind) %>
+<dialog id="bestiary-dialog" aria-labelledby="bestiary-dialog-title" tabindex="-1" data-turbo-prefetch="false"
+        class="m-auto h-[min(760px,calc(100dvh-2rem))] w-[min(880px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-controller="frame-dialog"
+        data-action="turbo:frame-load->frame-dialog#open click->frame-dialog#closeOnBackdrop close->frame-dialog#empty turbo:before-cache@document->frame-dialog#close">
+  <%= turbo_frame_tag GameTables::NpcDialogHelper::BESTIARY_FRAME, class: "flex min-h-0 flex-1 flex-col",
+                                                                  data: { frame_dialog_target: "frame" } %>
+</dialog>

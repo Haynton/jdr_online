@@ -1,0 +1,14 @@
+<%# The NPCs and enemies of the table, in the order they were added, two columns of lines from 768 px; a dashed box
+    while there is none. Replaced as a whole when a creature is added from the bestiary (id cast-list) %>
+<div id="cast-list" class="mt-8">
+  <% if npcs.empty? %>
+    <p class="max-w-xl rounded-xl border border-dashed border-line px-6 py-8 text-sm text-muted"><%= t("game_tables.casts.edit.empty") %></p>
+  <% else %>
+    <h2 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= t("game_tables.casts.edit.count", count: npcs.size) %></h2>
+    <ul class="mt-2 grid gap-x-12 border-t border-line md:grid-cols-2">
+      <% npcs.each do |npc| %>
+        <%= render "game_tables/casts/npc", npc: npc %>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

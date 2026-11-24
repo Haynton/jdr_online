@@ -10,7 +10,8 @@ module GameTables
     # line, long texts and check boxes across (their options on 4 columns), a short group of boxes (V, S, M) on two
     # columns, leaving room beside it
     CELL_CLASSES = {
-      lists: "@xl:col-span-2", boxes: "@xl:col-span-2", switches: "@xl:col-span-3", texts: "@xl:col-span-6"
+      lists: "@xl:col-span-2", boxes: "@xl:col-span-2", switches: "@xl:col-span-3", texts: "@xl:col-span-6",
+      attacks: "@xl:col-span-6"
     }.freeze
     SHORT_PICKS_CELL_CLASSES = "@xl:col-span-2".freeze
     PICKS_CELL_CLASSES = "@xl:col-span-6".freeze

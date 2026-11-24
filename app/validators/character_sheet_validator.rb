@@ -1,10 +1,9 @@
-# Checks the values of a player character sheet against the fields of the template copied into its table, each by the
-# check of its type (FieldTypes): JSONB has no check of its own in the database. A wrong value gets its error on
-# "sheet.<key of the field>", shown under that field of the form. Only the player characters for now (NPCs and monsters:
-# P4)
+# Checks the values of a character sheet (a player character, an NPC, a monster) against the fields of the template
+# copied into its table (Character#sheet_fields), each by the check of its type (FieldTypes): JSONB has no check of its
+# own in the database. A wrong value gets its error on "sheet.<key of the field>", shown under that field of the form
 class CharacterSheetValidator < ActiveModel::Validator
   def validate(character)
-    return unless character.pc? && character.game_table
+    return unless character.game_table
 
     fields_by_key = character.sheet_fields.index_by { |field| field["key"] }
     character.sheet.each do |key, value|

@@ -18,8 +18,8 @@ class SheetTemplate < ApplicationRecord
   # The colors of its banner, gold by default: named colors of application.css (banner-*), drawn by
   # SheetTemplatesHelper::BANNER_CLASSES
   BANNER_COLORS = %w[gold crimson forest night arcane stone].freeze
-  # What a game table copies when it picks this template. The ready-made NPCs and monsters are not in it:
-  # they become rows of their own, which the game master can change (characters, later)
+  # What a game table copies when it picks this template. Its NPCs and monsters come from the bestiary of its catalog
+  # (kind monster), each copied into the table as a character of its own by the game master
   SNAPSHOT_ATTRIBUTES = %w[
     character_fields npc_fields item_fields spell_fields rest_rules level_thresholds preset_items
   ].freeze

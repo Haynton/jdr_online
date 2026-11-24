@@ -15,7 +15,7 @@ module CharacterSheets
     # The groups of a flow, in this order (decision): lists and short texts in a grid of equal widths, then the
     # boxes and tiles side by side, then the groups of check boxes (picks: the languages), then the long texts across
     # the width, then the switches, each on its line
-    FLOW_GROUPS = %i[lists boxes picks texts switches].freeze
+    FLOW_GROUPS = %i[lists boxes picks texts attacks switches].freeze
     # How each group lays out its fields. The grid of lists follows the width of the section (container query):
     # one list per line, two from 384 px, three from 512 px, six from 1024 px
     FLOW_GROUP_CLASSES = {
@@ -27,6 +27,7 @@ module CharacterSheets
       # backstory and features); four on one line made them too narrow
       # Their text areas 144 px high (decision: they fill the screen better than the 96 px of a single text area)
       texts: "grid gap-x-6 @3xl:grid-cols-2 [&_textarea]:min-h-36",
+      attacks: "flex flex-col",
       switches: "flex flex-col gap-2"
     }.freeze
 

@@ -69,6 +69,9 @@ en:
         username: "Username"
     errors:
       messages:
+        attack_bonus_not_integer: "the bonus to hit of an attack must be a whole number, from -20 to +100"
+        attack_without_name: "each attack needs a name"
+        too_many_attacks: "%{count} attacks at most"
         ability_bonus_too_high: "goes past %{count} with the bonus"
         too_many_picks: "%{count} at most"
       models:
@@ -143,6 +146,15 @@ en:
     passwords:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
+  character_sheets:
+    fields:
+      attacks:
+        add: "Add an attack"
+        damage: "Damage"
+        name: "Name"
+        range: "Reach or range"
+        remove: "Remove the attack"
+        to_hit: "To hit"
   devise:
     passwords:
       edit:
@@ -467,6 +479,9 @@ en:
       level_from:
         hint: "The field that gives the level of the character."
         label: "Level field"
+      listed:
+        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP)."
+        label: "Shown in the NPC list"
       max:
         hint: "The highest value allowed. Optional."
         label: "Maximum"
@@ -719,6 +734,34 @@ en:
       created: "Table created as a draft. You can resume its creation at any time."
     create_table_card:
       title: "Create a table"
+    bestiaries:
+      show:
+        add: "Add %{name}"
+        add_short: "Add"
+        back: "Back to the NPCs"
+        close: "Close the bestiary"
+        count:
+          one: "%{count} creature"
+          other: "%{count} creatures"
+        empty: "The template of this table has no bestiary. Create your NPCs yourself."
+        no_match: "No creature matches this search."
+        search: "Search a creature"
+        title: "Bestiary"
+    casts:
+      edit:
+        add_from_bestiary: "Add from the bestiary"
+        back: "Back"
+        change: "Change %{name}"
+        count:
+          one: "%{count} NPC or enemy"
+          other: "%{count} NPCs and enemies"
+        create: "Create an NPC"
+        empty: "No NPC yet. Add creatures from the bestiary, or create your own characters."
+        subtitle: "The characters you will play. Each one has its own sheet, which you can change without touching the bestiary."
+        title: "NPCs and enemies"
+        visible: "Show %{name} to the players"
+      update:
+        saved: "NPCs and enemies saved."
     catalog_entries:
       form:
         confirm_added: "Delete “%{name}” from this table?"
@@ -879,6 +922,22 @@ en:
     invite_tokens:
       update:
         regenerated: "New link generated: the old one no longer works."
+    npcs:
+      create:
+        added: "Added to the table: %{name}."
+      form:
+        confirm_delete: "Delete “%{name}”?"
+        delete: "Delete"
+        gm_notes: "GM notes"
+        gm_notes_hint: "What only you see: its part in the story, its secrets."
+        kind: "Role"
+        name: "Name"
+      kinds:
+        monster: "Enemy"
+        npc: "NPC"
+      window:
+        close: "Close the sheet"
+        new: "New NPC"
     player_invitations:
       create:
         invited: "Invitation sent to %{username}, waiting for their answer."

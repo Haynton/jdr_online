@@ -42,6 +42,19 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     assert_equal({ 0 => 27, 1 => 57, 2 => 57 }, spells_by_level)
   end
 
+  test "the heroic fantasy has the creatures of challenge 0 to 2 of the SRD 5.2, the same in both languages" do
+    bestiaries = %w[en fr].map do |locale|
+      read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_monsters.#{locale}.json"))["entries"]
+    end
+    numbers = %w[challenge armor_class hp speed strength]
+
+    assert_equal [177, 177], bestiaries.map(&:size)
+    assert_equal({ "0" => 28, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 44 },
+                 bestiaries.first.map { |creature| creature.dig("properties", "challenge") }.tally)
+    assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature["properties"].slice(*numbers).except("speed") } })
+    assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
+  end
+
   test "every class with spells has enough of them to choose from, at levels 1 to 4" do
     each_catalog do |catalog_file, catalog, sheet_template|
       next unless catalog["kind"] == "spell"

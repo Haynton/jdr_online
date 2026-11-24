@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   root to: "pages#home"
   resources :game_tables, only: %i[index new create show edit] do
     # The steps of the creation of a draft (app/controllers/game_tables/). The first one of a new table is
-    # GameTablesController#new; NPCs and maps come with their milestone
+    # GameTablesController#new; the maps come with their milestone
     scope module: :game_tables do
       resource :details, only: %i[edit update]
       # The settings that depend on the template chosen (the starting level), right after it
@@ -16,6 +16,11 @@ Rails.application.routes.draw do
       resource :catalog, only: %i[edit update]
       # One spell or item of that catalog, in a window: seen and changed for the table (its copy, same key), or added
       resources :catalog_entries, only: %i[new create edit update destroy], param: :key
+      # The NPCs and enemies of the table: the step lists them (cast), each one opens in a window (npcs), added from
+      # the bestiary of the catalog (copied) or from nothing
+      resource :cast, only: %i[edit update]
+      resources :npcs, only: %i[new create edit update destroy]
+      resource :bestiary, only: :show
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]
       resource :invite_token, only: :update

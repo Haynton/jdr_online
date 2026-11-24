@@ -60,8 +60,8 @@
       { "key": "size", "label": "Size", "abbreviation": "SIZ", "type": "number", "min": 1, "max": 60, "section": "Characteristics" },
       { "key": "power", "label": "Power", "abbreviation": "POW", "type": "number", "min": 1, "max": 60, "section": "Characteristics" },
       { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "number", "min": 1, "max": 60, "section": "Characteristics" },
-      { "key": "hp", "label": "Hit points", "abbreviation": "HP", "type": "resource", "receives_damage": true, "section": "Condition" },
-      { "key": "armor", "label": "Protection", "type": "number", "min": 0, "max": 20, "section": "Condition" },
+      { "key": "hp", "listed": true, "label": "Hit points", "abbreviation": "HP", "type": "resource", "receives_damage": true, "section": "Condition" },
+      { "key": "armor", "listed": true, "label": "Protection", "type": "number", "min": 0, "max": 20, "section": "Condition" },
       { "key": "dread", "label": "Dread", "type": "text", "section": "Condition",
         "help": "Sanity lost by whoever sees the creature, set by the game master." },
       { "key": "attacks", "label": "Attacks", "type": "attacks", "section": "Combat",
@@ -81,63 +81,6 @@
     { "key": "rest", "label": "Night of rest" }
   ],
   "level_thresholds": [],
-  "preset_characters": [
-    {
-      "name": "Ghoul", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 16 }, "constitution": { "value": 13 }, "size": { "value": 13 },
-        "power": { "value": 10 }, "dexterity": { "value": 13 },
-        "hp": { "current": 13, "max": 13 }, "armor": { "value": 0 },
-        "dread": "A small loss at first sight, more when it is seen feeding.",
-        "attacks": [
-          { "name": "Claws", "to_hit": 40, "damage": "1d6", "range": "Melee" },
-          { "name": "Bite", "to_hit": 30, "damage": "1d6, then holds its prey", "range": "Melee" }
-        ],
-        "traits": "A stooped, dog-faced creature haunting graveyards and the tunnels under the city. Smells of damp earth; moves without a sound in the dark."
-      }
-    },
-    {
-      "name": "Deep One", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 15 }, "constitution": { "value": 12 }, "size": { "value": 15 },
-        "power": { "value": 11 }, "dexterity": { "value": 10 },
-        "hp": { "current": 14, "max": 14 }, "armor": { "value": 1 },
-        "dread": "A moderate loss: its gait is far too close to a man's.",
-        "attacks": [
-          { "name": "Webbed claws", "to_hit": 35, "damage": "1d6+1", "range": "Melee" },
-          { "name": "Trident", "to_hit": 30, "damage": "1d8", "range": "Melee" }
-        ],
-        "traits": "A grey-scaled being from the depths, out of a sunken city off the coast. Breathes underwater; thick skin."
-      }
-    },
-    {
-      "name": "Mi-Go", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 10 }, "constitution": { "value": 10 }, "size": { "value": 10 },
-        "power": { "value": 13 }, "dexterity": { "value": 14 },
-        "hp": { "current": 10, "max": 10 }, "armor": { "value": 0 },
-        "dread": "A moderate loss, worse when one finds out what it carries.",
-        "attacks": [
-          { "name": "Pincers", "to_hit": 30, "damage": "1d6", "range": "Melee" }
-        ],
-        "traits": "A winged fungal creature from beyond the stars, at strange work in lonely hills. Flies slowly; photographs only show a blur."
-      }
-    },
-    {
-      "name": "Cultist", "kind": "npc",
-      "sheet": {
-        "strength": { "value": 11 }, "constitution": { "value": 11 }, "size": { "value": 12 },
-        "power": { "value": 12 }, "dexterity": { "value": 11 },
-        "hp": { "current": 12, "max": 12 }, "armor": { "value": 0 },
-        "dread": "None.",
-        "attacks": [
-          { "name": "Ritual knife", "to_hit": 35, "damage": "1d4+1", "range": "Melee" },
-          { "name": "Revolver", "to_hit": 25, "damage": "1d10", "range": "Ranged, 50 ft" }
-        ],
-        "traits": "A follower of a secret cult. Believes what they worship protects them, and may know an incantation."
-      }
-    }
-  ],
   "preset_items": [
     { "name": "Flashlight", "description": "A battery lamp with a shaky beam.",
       "properties": { "category": "Tool", "effect": "Lights about thirty feet straight ahead.", "uses": 3 } },
