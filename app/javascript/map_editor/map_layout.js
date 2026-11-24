@@ -1,6 +1,7 @@
 // The drawing of a map while it is edited: its floors ("column,row" → floor key), its edges ("cell|cell" → edge key)
-// and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Sent to the server as
-// the layout that MapLayoutValidator checks
+// and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Also how the map is
+// made (mode: "draw", or "picture" for a picture of one's own) and how its picture sits under the grid (picture:
+// { cells_wide, offset_x, offset_y, opacity }). Sent to the server as the layout that MapLayoutValidator checks
 import { cellKey, cellPosition, sideKey } from "map_editor/square_grid"
 import { doorKey } from "map_edges"
 import { objectOf, footprintSize } from "map_objects"
@@ -10,16 +11,23 @@ export const layoutVersion = 1
 const eraserReach = 5
 
 export default class MapLayout {
-  constructor({ floors = {}, edges = {}, objects = [] } = {}, grid) {
+  constructor({ floors = {}, edges = {}, objects = [], mode = "draw", picture = null } = {}, grid) {
     this.grid = grid
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
     this.objects = objects.map((placedObject) => ({ ...placedObject }))
+    this.mode = mode
+    this.picture = picture && { ...picture }
   }
 
   toJSON() {
-    return { version: layoutVersion, floors: Object.fromEntries(this.floors), edges: Object.fromEntries(this.edges),
-             objects: this.objects }
+    const drawing = { version: layoutVersion, floors: Object.fromEntries(this.floors),
+                      edges: Object.fromEntries(this.edges), objects: this.objects, mode: this.mode }
+    return this.picture ? { ...drawing, picture: this.picture } : drawing
+  }
+
+  isPicture() {
+    return this.mode === "picture"
   }
 
   // A copy of the drawing as it is, with the size of its grid, to come back to it (undo, redo)
@@ -29,10 +37,12 @@ export default class MapLayout {
 
   // Gives back the size of the grid of the copy: the editor makes its grid again when it changed
   restore(snapshot) {
-    const { layout: { floors, edges, objects }, columns, rows } = JSON.parse(snapshot)
+    const { layout: { floors, edges, objects, mode = "draw", picture = null }, columns, rows } = JSON.parse(snapshot)
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
     this.objects = objects
+    this.mode = mode
+    this.picture = picture
     return { columns, rows }
   }
 

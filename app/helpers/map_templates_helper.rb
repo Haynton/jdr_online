@@ -23,8 +23,15 @@ module MapTemplatesHelper
   # A choice of the switch « Dessiner | Image » of the panel (map_templates/_making_choices), like those of the theme
   # selector: half of the switch each, ink on the field background
   MAKING_CHOICE_CLASSES = %w[
-    flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md px-2 text-[13px] text-ink transition-colors
+    flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md px-2 text-[13px] whitespace-nowrap text-ink
+    transition-colors
     has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring
+  ].join(" ").freeze
+  # The zone to drop the picture of a map on (the tab Image): dashed like the cards still to fill, gold while a file is
+  # dragged over it
+  PICTURE_DROP_ZONE_CLASSES = %w[
+    grid justify-items-center gap-2 rounded-xl border-2 border-dashed border-field-line px-4 py-5 text-center
+    transition-colors data-dragging:border-brass data-dragging:bg-primary-soft
   ].join(" ").freeze
   # A family of the tab Objects, a pill like the filters of « Mes tables »: tonal gold once chosen
   MAP_FAMILY_TAB_CLASSES = %w[
@@ -71,46 +78,6 @@ module MapTemplatesHelper
   # The grid of a map, in words: « 28 × 21 cases »
   def map_template_size(map_template)
     t("map_templates.size", columns: map_template.columns, rows: map_template.rows)
-  end
-
-  # The size of a cell of a drawn map, in units of its SVG (map_editor/square_grid.js, cellSize)
-  MAP_CELL_SIZE = 24
-
-  # What the editor reads of a map ready to use (map_templates/_preset_tools): the size of its grid and its drawing,
-  # like an undo step of the editor (map_editor/map_layout.js#snapshot)
-  def map_preset_data(preset)
-    { columns: preset.columns, rows: preset.rows, layout: preset.layout }.to_json
-  end
-
-  # Its whole grid in its preview
-  def map_preset_view_box(preset)
-    "0 0 #{preset.columns * MAP_CELL_SIZE} #{preset.rows * MAP_CELL_SIZE}"
-  end
-
-  # The tab shown first in the panel: the templates on a map still empty (a good start), the floors otherwise
-  def map_editor_first_tab_index(map_template)
-    map_template.layout_in_database.values_at("floors", "edges", "objects").all?(&:blank?) ? 0 : 1
-  end
-
-  # What the map editor needs (map_editor_controller.js): the drawing, the grid, where to save it, its texts
-  def map_editor_data(map_template)
-    { controller: "map-editor", action: "turbo:morph@document->map-editor#drawEverything",
-      map_editor_layout_value: map_template.layout_in_database.to_json,
-      map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
-      map_editor_url_value: map_template_layout_path(map_template),
-      map_editor_figure_labels_value: map_editor_figure_labels.to_json, **map_editor_texts }
-  end
-
-  # The texts the editor writes or asks: the number of degrees and the time are written by the page, in the place of
-  # their marks
-  def map_editor_texts
-    { map_editor_save_failed_message_value: t("map_templates.editor.save_failed"),
-      map_editor_rotation_label_value: t("map_templates.editor.rotate", degrees: "__degrees__"),
-      map_editor_saving_label_value: t("map_templates.editor.saving"),
-      map_editor_saved_label_value: t("map_templates.editor.saved", time: "__time__"),
-      map_editor_shrink_question_value: t("map_templates.editor.shrink_question"),
-      map_editor_clear_question_value: t("map_templates.editor.clear_question"),
-      map_editor_replace_question_value: t("map_templates.preset_tools.replace_question", name: "__name__") }
   end
 
   # The words of the figures of the drawing, by count (« 1 case », « 12 cases »), for the plural rules of the page

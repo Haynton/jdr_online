@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   # The maps of a game master (« Mes cartes »), drawn in the map editor
   resources :map_templates, only: %i[index create edit update destroy] do
     resource :layout, only: :update, module: :map_templates
+    resource :picture, only: %i[create destroy], module: :map_templates
   end
 
   resources :sheet_templates, only: %i[index show update destroy] do

@@ -1,6 +1,7 @@
 # A map of a game master (« Mes cartes »), drawn in the map editor, to be copied into a table: a name, a grid of square
-# cells (columns × rows) and its drawing (layout), checked by MapLayoutValidator. A table plays on its copy: changing
-# the map later never touches a table
+# cells (columns × rows) and its drawing (layout), checked by MapLayoutValidator. Or played on a picture of one's own
+# (its layout says so, mode "picture", and how the picture sits under the grid), of the formats a browser shows, 10 MB
+# at most, like the maps of a table (GameMap). A table plays on its copy: changing the map later never touches a table
 class MapTemplate < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
@@ -12,6 +13,7 @@ class MapTemplate < ApplicationRecord
   }.freeze
 
   belongs_to :owner, class_name: "User", inverse_of: :map_templates
+  has_one_attached :picture
 
   attribute :layout, default: -> { BLANK_LAYOUT.deep_dup }
 
@@ -20,4 +22,27 @@ class MapTemplate < ApplicationRecord
   validates :columns, :rows, numericality: { only_integer: true, in: GRID_SIZES,
                                              minimum: GRID_SIZES.min, maximum: GRID_SIZES.max }
   validates_with MapLayoutValidator
+  validate :picture_is_an_image, if: -> { picture.attached? }
+
+  # The picture laid under the grid: as wide as the grid, from its top left corner, fully seen
+  def self.picture_settings_for(columns)
+    { "cells_wide" => columns, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 }
+  end
+
+  # Played on its picture: the layout switched to the mode "picture", the picture laid as wide as the grid the first
+  # time (its settings are kept when it is replaced)
+  def use_picture(file)
+    self.picture = file
+    self.layout = layout.merge("mode" => "picture",
+                               "picture" => layout["picture"] || self.class.picture_settings_for(columns))
+  end
+
+  private
+
+  def picture_is_an_image
+    errors.add(:picture, :content_type) unless GameMap::IMAGE_CONTENT_TYPES.include?(picture.blob.content_type)
+    return unless picture.blob.byte_size > GameMap::IMAGE_MAX_SIZE
+
+    errors.add(:picture, :too_big, count: GameMap::IMAGE_MAX_SIZE / 1.megabyte)
+  end
 end

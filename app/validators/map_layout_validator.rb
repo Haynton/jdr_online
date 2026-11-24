@@ -4,15 +4,17 @@
 #   { "version" => 1,
 #     "floors" => { "3,4" => "room" },            # a cell "column,row" and its floor (MapFloors)
 #     "edges" => { "3,4|4,4" => "wall" },         # two neighbouring cells, in sorted order, and their edge (MapEdges)
-#     "objects" => [{ "key" => "table", "column" => 3, "row" => 4, "rotation" => 1 }] }   # MapLayouts::ObjectsCheck
+#     "objects" => [{ "key" => "table", "column" => 3, "row" => 4, "rotation" => 1 }],    # MapLayouts::ObjectsCheck
+#     "mode" => "picture",                                     # drawn (draw) or played on a picture: PictureCheck
+#     "picture" => { "cells_wide" => 28, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 } }
 #
-# "objects" may be missing (a drawing saved before the objects).
+# "objects" may be missing (a drawing saved before the objects), "mode" and "picture" too (a map drawn).
 #
 # The errors go on :layout. Only the first wrong cell and the first wrong edge are told: a broken layout could hold
 # hundreds of them
 class MapLayoutValidator < ActiveModel::Validator
   CURRENT_VERSION = 1
-  LAYOUT_KEYS = %w[version floors edges objects].freeze
+  LAYOUT_KEYS = %w[version floors edges objects mode picture].freeze
   CELL_FORMAT = /\A(\d+),(\d+)\z/
 
   def validate(map)
@@ -22,6 +24,7 @@ class MapLayoutValidator < ActiveModel::Validator
     validate_floors(map, layout["floors"])
     validate_edges(map, layout["edges"])
     validate_objects(map, layout.fetch("objects", []))
+    validate_picture(map, layout)
   end
 
   private
@@ -45,6 +48,11 @@ class MapLayoutValidator < ActiveModel::Validator
     return map.errors.add(:layout, :invalid_edge_side, side:) unless valid_side?(map, side)
 
     map.errors.add(:layout, :unknown_edge, edge:)
+  end
+
+  def validate_picture(map, layout)
+    error_type, error_options = MapLayouts::PictureCheck.new(layout).call
+    map.errors.add(:layout, error_type, **error_options) if error_type
   end
 
   def validate_objects(map, objects)

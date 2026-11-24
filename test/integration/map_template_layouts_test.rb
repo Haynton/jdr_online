@@ -30,10 +30,13 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_select "aside a[href=?]", map_templates_path, count: 0
     assert_select "[data-controller=map-help][hidden] button[aria-controls=map-editor-help][aria-label=?]", "Aide"
     assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 3
-    # How the map is made, in the bar: Draw, the picture still disabled
-    assert_select "header fieldset input[type=radio]:not([name])", count: 2
+    # How the map is made, in the bar: drawn here, the drawing panel shown, the panel of the picture hidden
+    assert_select "header input[name=map-making][value=draw][checked]"
+    assert_select "header input[name=map-making][value=picture]:not([checked])"
+    assert_select "[data-map-editor-target=drawingPanel]:not([hidden])"
+    assert_select "[data-map-editor-target=picturePanel][hidden]"
     # This map has a cell drawn: its tab Terrain first
-    assert_select "aside[data-tabs-selected-index-value=?]", "1"
+    assert_select "[data-map-editor-target=drawingPanel][data-tabs-selected-index-value=?]", "1"
     assert_select "header input[name='map_template[name]'][value=?][aria-label=?]", "La taverne", "Nom de la carte"
     assert_select "header input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
     assert_select "header [data-map-editor-target=rowsCount]", text: "10"
@@ -44,7 +47,7 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
   test "a map still empty opens on its tab Templates: the maps ready to use, each with its drawing and its button" do
     get edit_map_template_path(@map_template)
 
-    assert_select "aside[data-tabs-selected-index-value=?]", "0"
+    assert_select "[data-map-editor-target=drawingPanel][data-tabs-selected-index-value=?]", "0"
     assert_select "#map-editor-tab-presets", text: "Modèles"
     assert_select "#map-editor-panel-presets li[data-map-preset]", count: MapPresets::KEYS.size
     assert_select "#map-editor-panel-presets button[data-action='map-editor#usePreset'][aria-label=?]",

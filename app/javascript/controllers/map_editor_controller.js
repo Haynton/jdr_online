@@ -4,6 +4,8 @@ import BoardView from "map_editor/board_view"
 import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
+import { renderPicture } from "map_editor/picture_renderer"
+import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
@@ -42,10 +44,11 @@ const deletingKeys = ["Delete", "Backspace"]
 export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
-                     "saveState", "zoomButtons", "presetPreview"]
+                     "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
+                     "drawingTools", "pictureWidth", "pictureSlider"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
-                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String }
+                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -61,6 +64,20 @@ export default class extends Controller {
     this.boardResizeObserver = new ResizeObserver(() => this.resizeView())
     this.boardResizeObserver.observe(this.boardTarget)
     this.drawEverything()
+  }
+
+  // The proportions of the picture of the map, known once it is loaded: it is drawn then. Also when a new picture
+  // comes back with the page refreshed by morphing (sent from the tab Image), which does not connect the editor again
+  pictureUrlValueChanged() {
+    this.pictureRatio = null
+    if (!this.pictureUrlValue) return this.layout && this.render()
+
+    const picture = new Image()
+    picture.addEventListener("load", () => {
+      this.pictureRatio = picture.naturalHeight / picture.naturalWidth
+      if (this.layout) this.render()
+    })
+    picture.src = this.pictureUrlValue
   }
 
   disconnect() {
@@ -178,7 +195,8 @@ export default class extends Controller {
     this.boardTarget.setPointerCapture(event.pointerId)
     this.activePointers.set(event.pointerId, [event.clientX, event.clientY])
     if (this.activePointers.size === 2) return this.startPinch()
-    if (event.button === 1 || this.isSpaceHeld) {
+    // On a picture there is nothing to draw: dragging moves the map
+    if (event.button === 1 || this.isSpaceHeld || (event.button === 0 && this.layout.isPicture())) {
       // The middle button would otherwise start the scrolling of the browser
       event.preventDefault()
       this.panningFrom = [event.clientX, event.clientY]
@@ -258,6 +276,85 @@ export default class extends Controller {
     this.render()
     this.keepChange(before)
     this.showWholeMap()
+  }
+
+  // Drawn or on a picture: the drawing is kept either way, the change is undone like a stroke
+  chooseMaking(event) {
+    const before = this.layout.snapshot()
+    this.layout.mode = event.target.value
+    if (this.layout.isPicture() && !this.layout.picture) this.layout.picture = defaultPicture(this.grid)
+    this.render()
+    this.keepChange(before)
+  }
+
+  // The switch of the bar, the panel and the tools of the drawing follow the way the map is made (after an undo too)
+  showMaking() {
+    const isPicture = this.layout.isPicture()
+    this.makingChoiceTargets.forEach((choice) => { choice.checked = choice.value === this.layout.mode })
+    this.drawingPanelTarget.hidden = isPicture
+    this.picturePanelTarget.hidden = !isPicture
+    this.drawingToolsTarget.hidden = isPicture
+    this.showPictureSettings()
+  }
+
+  showPictureSettings() {
+    const picture = this.layout.picture
+    if (!picture || !this.hasPictureWidthTarget) return
+
+    if (document.activeElement !== this.pictureWidthTarget) this.pictureWidthTarget.value = picture.cells_wide
+    this.pictureSliderTargets.forEach((slider) => {
+      const { bounds, toSlider } = sliders[slider.dataset.setting]
+      const [lowest, highest] = bounds(this.grid)
+      Object.assign(slider, { min: lowest, max: highest })
+      slider.value = toSlider(picture[slider.dataset.setting])
+    })
+  }
+
+  // A setting moved: drawn at once, kept as one step of the history once let go (keepPictureSetting)
+  changePictureSetting(event) {
+    this.pictureBefore ??= this.layout.snapshot()
+    const field = event.target
+    if (field === this.pictureWidthTarget) {
+      this.layout.picture = withCellsWide(this.layout.picture, Number(field.value))
+    } else {
+      this.layout.picture = { ...this.layout.picture,
+                              [field.dataset.setting]: sliders[field.dataset.setting].fromSlider(Number(field.value)) }
+    }
+    this.render()
+  }
+
+  keepPictureSetting() {
+    if (!this.pictureBefore) return
+
+    this.keepChange(this.pictureBefore)
+    this.pictureBefore = null
+    this.showPictureSettings()
+  }
+
+  narrowPicture() {
+    this.changePicture((picture) => withCellsWide(picture, picture.cells_wide - 1))
+  }
+
+  widenPicture() {
+    this.changePicture((picture) => withCellsWide(picture, picture.cells_wide + 1))
+  }
+
+  centerPicture() {
+    if (!this.pictureRatio) return
+
+    this.changePicture((picture) => centered(picture, this.grid, this.pictureRatio))
+  }
+
+  // As wide as the grid, from its top left corner (its opacity kept)
+  fitPicture() {
+    this.changePicture((picture) => ({ ...defaultPicture(this.grid), opacity: picture.opacity }))
+  }
+
+  changePicture(change) {
+    const before = this.layout.snapshot()
+    this.layout.picture = change(this.layout.picture)
+    this.render()
+    this.keepChange(before)
   }
 
   // Asked first in the window of the app (Anthony's request), though Undo brings it all back
@@ -372,8 +469,14 @@ export default class extends Controller {
   }
 
   render() {
-    renderMap(this.drawingTarget, { grid: this.grid, floors: this.layout.floors, edges: this.layout.edges,
-                                    objects: this.layout.objects })
+    if (this.layout.isPicture()) {
+      renderPicture(this.drawingTarget, { grid: this.grid, url: this.pictureUrlValue, picture: this.layout.picture,
+                                          ratio: this.pictureRatio })
+    } else {
+      renderMap(this.drawingTarget, { grid: this.grid, floors: this.layout.floors, edges: this.layout.edges,
+                                      objects: this.layout.objects })
+    }
+    this.showMaking()
     this.showFigures()
   }
 
@@ -420,7 +523,9 @@ export default class extends Controller {
   }
 
   // « 120 cases · 14 murs · 3 portes », in the plural rules of the language of the page
+  // Not for a map played on a picture: they count the drawing, kept aside
   showFigures() {
+    this.figuresTarget.hidden = this.layout.isPicture()
     const doorCount = [...this.layout.edges.values()].filter((edgeKey) => edgeKey === doorKey).length
     const counts = { cells: this.layout.floors.size, walls: this.layout.edges.size - doorCount, doors: doorCount,
                      objects: this.layout.objects.length }
@@ -477,6 +582,8 @@ export default class extends Controller {
   // Where the tool would act: the cell, or the side for a wall, in red where a wall cannot stand
   markPointer(event) {
     this.hidePointer()
+    if (this.layout.isPicture()) return
+
     this.isPointerOverBoard = true
     this.lastPoint = this.boardPoint(event)
     const side = this.grid.nearestSide(this.lastPoint)

@@ -16,6 +16,7 @@ fr:
       map_template:
         columns: "Colonnes"
         layout: "Dessin de la carte"
+        picture: "Image"
         name: "Nom"
         owner: "Propriétaire"
         rows: "Lignes"
@@ -67,6 +68,9 @@ fr:
           attributes:
             columns:
               in: "doit être de %{minimum} à %{maximum}"
+            picture:
+              content_type: "doit être une image PNG, JPEG ou WebP"
+              too_big: "ne doit pas dépasser %{count} Mo"
             rows:
               in: "doit être de %{minimum} à %{maximum}"
             layout:
@@ -80,6 +84,8 @@ fr:
               object_outside_grid: "contient un objet qui sort de la grille : %{object_name}"
               object_off_floor: "contient un objet posé hors d'un sol : %{object_name}"
               objects_overlap: "contient deux objets sur les mêmes cases : %{object_name}"
+              unknown_mode: "contient une façon de faire la carte inconnue : %{mode}"
+              invalid_picture: "contient un calage de l'image qui n'a pas la forme attendue"
         game_map:
           attributes:
             image:
@@ -347,8 +353,8 @@ fr:
       columns_label: "Nombre de colonnes (les lignes suivent, pour garder les proportions)"
       clear: "Tout effacer"
       clear_button: "Tout effacer"
-      clear_hint: "Efface toute la carte (Annuler la ramène)"
-      clear_question: "Effacer toute la carte ? Annuler la ramène."
+      clear_hint: "Efface toute la carte"
+      clear_question: "Effacer toute la carte ?"
       eraser: "Gomme"
       fewer_columns: "Une colonne de moins"
       figures:
@@ -379,7 +385,7 @@ fr:
       saved: "Enregistré à %{time}"
       saving: "Enregistrement…"
       shrink_button: "Réduire"
-      shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré (Annuler le ramène)."
+      shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré."
       tabs_label: "Outils"
       terrain_tab: "Terrain"
       undo: "Annuler"
@@ -408,10 +414,33 @@ fr:
       edges_title: "Murs"
       floors_title: "Sols"
       walls_note: "Une salle, la pierre et un enclos se murent seuls du côté du vide. Une porte se pose aussi entre un sol et le vide."
+    picture_tools:
+      cells: "cases"
+      center: "Centrer"
+      drop_here: "Déposez une image ici"
+      file_label: "Choisir une image"
+      fit: "Ajuster à la grille"
+      grid_title: "Caler la grille"
+      hint: "PNG, JPEG ou WebP, %{count} Mo au plus."
+      intro: "Pour jouer sur votre propre carte (dessinée, achetée ou générée) : la grille se pose par-dessus et les jetons restent calés sur les cases."
+      narrower: "Image plus étroite d'une case"
+      offset_x: "Décalage horizontal"
+      offset_y: "Décalage vertical"
+      opacity: "Opacité"
+      or: "ou"
+      remove: "Retirer l'image"
+      remove_question: "Retirer l'image de la carte ?"
+      replace_label: "Choisir une autre image"
+      send: "Envoyer l'image"
+      sending: "Envoi de l'image…"
+      title: "Image de la carte"
+      wider: "Image plus large d'une case"
+      width_hint: "Le nombre de cases que l'image couvre en largeur : comptez les cases dessinées sur votre image."
+      width_label: "Largeur de l'image"
     preset_tools:
-      intro: "Partez d'une carte toute faite, puis modifiez-la. Le modèle remplace la carte en cours (Annuler la ramène)."
+      intro: "Partez d'une carte toute faite, puis modifiez-la. Le modèle remplace la carte en cours."
       replace_button: "Remplacer"
-      replace_question: "Remplacer la carte en cours par « %{name} » ? Annuler la ramène."
+      replace_question: "Remplacer la carte en cours par « %{name} » ?"
       size: "%{columns} × %{rows} cases"
       use: "Utiliser ce modèle"
       use_label: "Utiliser le modèle « %{name} »"
@@ -441,10 +470,9 @@ fr:
       subtitle: "Dessinez vos cartes, puis utilisez-les dans vos parties."
       title: "Mes cartes"
     making_choices:
-      coming_soon: "Bientôt"
       draw: "Dessiner"
       label: "Façon de créer la carte"
-      picture: "Image"
+      picture: "Utiliser une image"
     object_tools:
       families:
         decor: "Décors"

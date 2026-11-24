@@ -45,6 +45,7 @@ en:
       map_template:
         columns: "Columns"
         layout: "Map drawing"
+        picture: "Picture"
         name: "Name"
         owner: "Owner"
         rows: "Rows"
@@ -96,6 +97,9 @@ en:
           attributes:
             columns:
               in: "must be from %{minimum} to %{maximum}"
+            picture:
+              content_type: "must be a PNG, JPEG or WebP image"
+              too_big: "must not be over %{count} MB"
             rows:
               in: "must be from %{minimum} to %{maximum}"
             layout:
@@ -109,6 +113,8 @@ en:
               object_outside_grid: "holds an object that goes out of the grid: %{object_name}"
               object_off_floor: "holds an object put off a floor: %{object_name}"
               objects_overlap: "holds two objects on the same cells: %{object_name}"
+              unknown_mode: "holds an unknown way of making the map: %{mode}"
+              invalid_picture: "holds settings of the picture in an unexpected form"
         game_map:
           attributes:
             image:
@@ -376,8 +382,8 @@ en:
       columns_label: "Number of columns (the rows follow, to keep the proportions)"
       clear: "Clear everything"
       clear_button: "Clear everything"
-      clear_hint: "Clears the whole map (Undo brings it back)"
-      clear_question: "Clear the whole map? Undo brings it back."
+      clear_hint: "Clears the whole map"
+      clear_question: "Clear the whole map?"
       eraser: "Eraser"
       fewer_columns: "One column less"
       figures:
@@ -408,7 +414,7 @@ en:
       saved: "Saved at %{time}"
       saving: "Saving…"
       shrink_button: "Shrink"
-      shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away (Undo brings it back)."
+      shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away."
       tabs_label: "Tools"
       terrain_tab: "Terrain"
       undo: "Undo"
@@ -437,10 +443,33 @@ en:
       edges_title: "Walls"
       floors_title: "Floors"
       walls_note: "A room, stone and an enclosure wall themselves on the side of the void. A door also goes between a floor and the void."
+    picture_tools:
+      cells: "cells"
+      center: "Center"
+      drop_here: "Drop a picture here"
+      file_label: "Choose a picture"
+      fit: "Fit to the grid"
+      grid_title: "Set the grid"
+      hint: "PNG, JPEG or WebP, %{count} MB at most."
+      intro: "To play on a map of your own (drawn, bought or generated): the grid lies over it and the tokens stay on the cells."
+      narrower: "Picture one cell narrower"
+      offset_x: "Horizontal offset"
+      offset_y: "Vertical offset"
+      opacity: "Opacity"
+      or: "or"
+      remove: "Remove the picture"
+      remove_question: "Remove the picture of the map?"
+      replace_label: "Choose another picture"
+      send: "Send the picture"
+      sending: "Sending the picture…"
+      title: "Picture of the map"
+      wider: "Picture one cell wider"
+      width_hint: "How many cells the picture covers across: count the squares drawn on your picture."
+      width_label: "Width of the picture"
     preset_tools:
-      intro: "Start from a ready-made map, then change it. The template replaces the current map (Undo brings it back)."
+      intro: "Start from a ready-made map, then change it. The template replaces the current map."
       replace_button: "Replace"
-      replace_question: "Replace the current map with “%{name}”? Undo brings it back."
+      replace_question: "Replace the current map with “%{name}”?"
       size: "%{columns} × %{rows} cells"
       use: "Use this template"
       use_label: "Use the template “%{name}”"
@@ -470,10 +499,9 @@ en:
       subtitle: "Draw your maps, then use them in your games."
       title: "My maps"
     making_choices:
-      coming_soon: "Coming soon"
       draw: "Draw"
       label: "Way of making the map"
-      picture: "Picture"
+      picture: "Use a picture"
     object_tools:
       families:
         decor: "Decor"

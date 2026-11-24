@@ -1,16 +1,16 @@
-<%# How the map is made: draw it (this editor), or use a picture (later: the board drawn over an image of one's own,
-    its grid set on it). A segmented switch like the theme selector (Anthony's request): on the field background, the
-    chosen one in a surface pill. Drawing is the only way for now: the picture is disabled (faded, like a disabled
-    field), with « Bientôt ». Real radio buttons without a name: nothing is sent, screen readers say the choice %>
+<%# How the map is made, in the bar: drawn (floors, walls, objects), or played on a picture of one's own (the tab
+    Image). A segmented switch like the theme selector (Anthony's request): on the field background, the chosen one in
+    a surface pill. Real radio buttons of one group (the arrows of the keyboard move between them), without a form:
+    the editor changes the mode of the layout and saves it (map_editor_controller.js#chooseMaking), undone like a
+    stroke. The drawing is kept when the picture is chosen %>
 <fieldset class="flex shrink-0 rounded-lg bg-field p-1">
   <legend class="sr-only"><%= t(".label") %></legend>
-  <label class="<%= MapTemplatesHelper::MAKING_CHOICE_CLASSES %> cursor-default has-checked:bg-surface has-checked:font-semibold has-checked:shadow-sm">
-    <input type="radio" checked class="sr-only" id="map-making-draw">
-    <%= t(".draw") %>
-  </label>
-  <label class="<%= MapTemplatesHelper::MAKING_CHOICE_CLASSES %> cursor-not-allowed opacity-50">
-    <input type="radio" disabled class="sr-only" id="map-making-picture">
-    <%= t(".picture") %>
-    <span class="rounded-full px-1.5 text-[10px] font-semibold tracking-wide uppercase ring-1 ring-field-line ring-inset"><%= t(".coming_soon") %></span>
-  </label>
+  <%# Each with its icon (Anthony's request: « Image » alone was not clear) %>
+  <% [["draw", t(".draw"), "shared/icons/pencil"], ["picture", t(".picture"), "shared/icons/image"]].each do |mode, label, icon| %>
+    <label class="<%= MapTemplatesHelper::MAKING_CHOICE_CLASSES %> cursor-pointer has-checked:bg-surface has-checked:font-semibold has-checked:shadow-sm">
+      <input type="radio" name="map-making" value="<%= mode %>" class="sr-only" <%= "checked" if map_making_mode(map_template) == mode %>
+             data-map-editor-target="makingChoice" data-action="change->map-editor#chooseMaking">
+      <%= render icon, css_class: "size-4" %><%= label %>
+    </label>
+  <% end %>
 </fieldset>

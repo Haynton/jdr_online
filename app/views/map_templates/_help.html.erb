@@ -3,7 +3,7 @@
     and its keys drawn like those of the prototype (the text comes from the translations). Rendered hidden: without
     JavaScript there is nothing to draw with %>
 <div hidden class="relative" data-controller="map-help"
-     data-action="keydown@window->map-help#closeWithEscape pointerdown@window->map-help#closeFromOutside">
+     data-action="keydown@window->map-help#closeWithEscape pointerdown@window->map-help#closeFromOutside turbo:morph@document->map-help#reveal">
   <section hidden id="map-editor-help" aria-labelledby="map-editor-help-title" data-map-help-target="bubble"
            class="absolute right-full bottom-0 mr-3 w-80 max-w-[calc(100vw-6rem)] rounded-xl border border-line bg-surface p-4 shadow-lg">
     <div class="mb-2 flex items-center justify-between gap-3">

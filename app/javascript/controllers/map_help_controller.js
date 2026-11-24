@@ -17,6 +17,11 @@ export default class extends Controller {
     this.rememberSeen()
   }
 
+  // After a refresh by morphing, which puts back the page as the server drew it (hidden) without connecting again
+  reveal() {
+    this.element.hidden = false
+  }
+
   toggle() {
     this.bubbleTarget.hidden ? this.open() : this.close()
   }

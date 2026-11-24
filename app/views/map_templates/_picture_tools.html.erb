@@ -1,0 +1,68 @@
+<%# The panel of a map played on a picture of one's own (Anthony's decision: the picture alone, the drawing kept for
+    when the game master goes back to Draw). Send the picture (a form: the page comes back with it), then set the grid
+    on it: its width in cells, its offset, its opacity, changed live by the editor and undone like a stroke
+    (map_editor_controller.js). These controls have no name: they are not sent, the editor saves the layout %>
+<h2 class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".title") %></h2>
+<p class="mb-3 text-xs leading-normal text-muted"><%= t(".intro") %></p>
+
+<%# A zone to drop the picture on (file_drop_controller.js): sent as soon as it is dropped or chosen (Anthony's
+    request), the page comes back with it. The field itself is read by screen readers and the keyboard; its visible
+    button is its label. Without JavaScript, the field and the button « Envoyer l'image » %>
+<%= form_with url: map_template_picture_path(map_template), method: :post, multipart: true,
+              class: MapTemplatesHelper::PICTURE_DROP_ZONE_CLASSES,
+              data: { controller: "file-drop", file_drop_sending_label_value: t(".sending"),
+                      action: "dragenter->file-drop#showDragging dragover->file-drop#showDragging dragleave->file-drop#hideDragging drop->file-drop#drop turbo:morph@document->file-drop#hideSubmit" } do |form| %>
+  <%= render "shared/icons/image_up", css_class: "size-7 text-brass" %>
+  <p class="text-[13px] font-semibold text-ink"><%= t(".drop_here") %></p>
+  <p class="text-xs text-muted" aria-hidden="true"><%= t(".or") %></p>
+  <%= form.file_field "map_template[picture]", id: "map-picture-file", required: true,
+                      accept: GameMap::IMAGE_CONTENT_TYPES.join(","), aria: { describedby: "map-picture-hint" },
+                      class: "peer sr-only", data: { file_drop_target: "input", action: "change->file-drop#send" } %>
+  <label for="map-picture-file" class="<%= button_classes(:secondary, size: :compact) %> cursor-pointer peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus-ring">
+    <%= map_template.picture.attached? ? t(".replace_label") : t(".file_label") %>
+  </label>
+  <p id="map-picture-hint" class="text-xs text-muted"><%= t(".hint", count: GameMap::IMAGE_MAX_SIZE / 1.megabyte) %></p>
+  <p class="text-xs font-semibold text-ink empty:hidden" role="status" data-file-drop-target="status"></p>
+  <%= form.button t(".send"), type: :submit, class: button_classes(:secondary, size: :compact, full_width: true),
+                              data: { file_drop_target: "submit" } %>
+<% end %>
+
+<% if map_template.picture.attached? %>
+  <section class="mt-6 grid gap-4" aria-labelledby="map-picture-grid-title">
+    <h2 id="map-picture-grid-title" class="text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".grid_title") %></h2>
+
+    <div class="grid gap-1.5">
+      <label for="map-picture-width" class="text-[13px] font-semibold text-ink"><%= t(".width_label") %></label>
+      <div class="flex items-center gap-1.5">
+        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#narrowPicture"
+                aria-label="<%= t(".narrower") %>" title="<%= t(".narrower") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
+        <input type="number" id="map-picture-width" min="<%= MapLayouts::PictureCheck::CELLS_WIDE.min %>"
+               max="<%= MapLayouts::PictureCheck::CELLS_WIDE.max %>" class="<%= MapTemplatesHelper::MAP_COLUMNS_FIELD_CLASSES %>"
+               aria-describedby="map-picture-width-hint" data-map-editor-target="pictureWidth"
+               data-action="input->map-editor#changePictureSetting change->map-editor#keepPictureSetting">
+        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#widenPicture"
+                aria-label="<%= t(".wider") %>" title="<%= t(".wider") %>"><%= render "shared/icons/plus", css_class: "size-3.5" %></button>
+        <span class="text-xs text-muted"><%= t(".cells") %></span>
+      </div>
+      <p id="map-picture-width-hint" class="text-xs leading-normal text-muted"><%= t(".width_hint") %></p>
+    </div>
+
+    <% [["offset_x", t(".offset_x")], ["offset_y", t(".offset_y")], ["opacity", t(".opacity")]].each do |setting, label| %>
+      <div class="grid gap-1">
+        <label for="map-picture-<%= setting %>" class="text-[13px] font-semibold text-ink"><%= label %></label>
+        <input type="range" id="map-picture-<%= setting %>" class="w-full accent-brass"
+               data-map-editor-target="pictureSlider" data-setting="<%= setting %>"
+               data-action="input->map-editor#changePictureSetting change->map-editor#keepPictureSetting">
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="map-editor#centerPicture"><%= t(".center") %></button>
+      <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="map-editor#fitPicture"><%= t(".fit") %></button>
+    </div>
+
+    <%= button_to t(".remove"), map_template_picture_path(map_template), method: :delete,
+                  class: button_classes(:danger, size: :compact, full_width: true),
+                  data: { turbo_confirm: t(".remove_question"), confirm_button: t(".remove"), confirm_variant: "danger" } %>
+  </section>
+<% end %>
