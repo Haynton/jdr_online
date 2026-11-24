@@ -938,6 +938,7 @@ Fait dans `feature/p1-map-tokens` (les jetons des PNJ et ennemis sur une carte d
 
 À savoir :
 
+- **Zoom de Safari sur iPhone dans un champ** (signalé par Anthony) : Safari zoome dès qu'on touche un champ dont le texte fait moins de 16 px, et ne dézoome pas. Corrigé une fois pour toutes dans `application.css`, hors des couches de Tailwind (une règle sans couche l'emporte sur `text-sm`) : sur un écran tactile sans souris (`(hover: none) and (pointer: coarse)`), tout champ de saisie, liste ou zone de texte passe à 16 px. Ne pas mettre `maximum-scale=1` dans le `viewport` : il interdirait aussi le zoom dont un lecteur a besoin. Un nouveau champ n'a rien à faire de plus
 - Le serveur de prévisualisation lancé par Claude Code (`.claude/launch.json`, local) lance `bin/rails tailwindcss:watch` avec `rails server` : avec `rails server` seul, une classe Tailwind nouvelle n'existait pas dans le CSS servi (le champ du nom prenait toute la barre)
 - Stimulus ne connaît que certaines touches comme filtre d'une action (`keydown.enter`, `keydown.esc`, `keydown.space`, les flèches, les lettres...) : `keydown.delete` ou `keydown.backspace` lèvent une erreur à **chaque** touche pressée. Écouter `keydown` et vérifier `event.key` dans la méthode
 - Après un envoi de formulaire, Turbo revient sur la même adresse par un rafraîchissement par morphing : `connect` n'est pas relancé. Une valeur Stimulus qui change (l'adresse d'une image) se suit par son `…ValueChanged` ; ce qui est montré par un contrôleur (`hidden` retiré) se remontre sur `turbo:morph@document`
