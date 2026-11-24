@@ -17,11 +17,15 @@ module FieldParameters
     "at_creation" => :asked_at_creation,
     "min" => :integer, "max" => :integer, "count" => :integer, "total" => :integer, "max_per_ability" => :integer,
     "step" => :decimal,
+    # The level from which a list is asked (the subclass, from level 3)
+    "from_level" => :integer,
     "options" => :lines, "granted" => :lines, "labels" => :lines,
     "column" => :choice, "from_table" => :choice, "on_rest" => :choice, "modifier" => :choice, "rule" => :choice,
     # Set once and for all: the key names the field everywhere (forms, sheets saved), the type its whole behavior;
     # the effects and the descriptions of the options will have their own editor
-    "key" => :fixed, "type" => :fixed, "effects" => :fixed, "descriptions" => :fixed
+    "key" => :fixed, "type" => :fixed, "effects" => :fixed, "descriptions" => :fixed,
+    # The options of a list for each option of the list it depends on (the subclasses of each class)
+    "options_by" => :fixed
   }.freeze
 
   # What the game master tunes on a template duplicated from a working one (decision: the window of a field asks only

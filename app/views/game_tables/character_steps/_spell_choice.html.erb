@@ -2,13 +2,19 @@
     height), what it costs to cast, then "Details" under the box, aligned with it, and Concentration and Ritual on the
     right of that line (decision: on the line of the name, a long name pushed them onto a second line). The details
     sit beside the label, never inside it: a click on "Details" must not tick the box. data-level, -school and
-    -casting are read by the filters (spell_choices_controller.js) %>
+    -casting are read by the filters (spell_choices_controller.js). A spell always prepared (always_prepared) has its
+    box ticked and disabled: it is never sent, the server copies it %>
 <% box_id = spell_box_id(spell) %>
 <%= tag.li class: CharacterSheets::SpellChoicesHelper::SPELL_ROW_CLASSES, data: spell_card_data(spell) do %>
   <div class="flex items-start gap-2.5">
-    <%= check_box_tag "character[spell_keys][]", spell.key, spell_chosen?(character, spell), id: box_id,
-                      class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
-                      aria: { describedby: "#{box_id}_summary" } %>
+    <% if local_assigns[:always_prepared] %>
+      <%= check_box_tag nil, spell.key, true, id: box_id, disabled: true, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
+                                               aria: { describedby: "#{box_id}_summary" } %>
+    <% else %>
+      <%= check_box_tag "character[spell_keys][]", spell.key, spell_chosen?(character, spell), id: box_id,
+                        class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
+                        aria: { describedby: "#{box_id}_summary" } %>
+    <% end %>
     <div class="min-w-0 flex-1">
       <%= label_tag box_id, spell.name, class: "block truncate text-[15px] leading-5 font-semibold text-ink",
                                         title: spell.name %>

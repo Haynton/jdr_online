@@ -6,10 +6,10 @@
 # anything (decision). A new effect: its class, its line in ALL (in the order of the summary of the choices)
 module ChoiceEffects
   ALL = [
-    ChoiceEffects::HitDie, ChoiceEffects::Proficient, ChoiceEffects::SkillChoices, ChoiceEffects::Spellcasting,
-    ChoiceEffects::AbilityBonusChoices, ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense,
-    ChoiceEffects::Training, ChoiceEffects::Tools, ChoiceEffects::FeaturesByLevel, ChoiceEffects::Traits,
-    ChoiceEffects::StartingEquipment
+    ChoiceEffects::HitDie, ChoiceEffects::HitPointsPerLevel, ChoiceEffects::Proficient, ChoiceEffects::SkillChoices,
+    ChoiceEffects::Spellcasting, ChoiceEffects::AlwaysPreparedSpells, ChoiceEffects::AbilityBonusChoices,
+    ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense, ChoiceEffects::Training,
+    ChoiceEffects::Tools, ChoiceEffects::FeaturesByLevel, ChoiceEffects::Traits, ChoiceEffects::StartingEquipment
   ].freeze
 
   def self.all

@@ -83,6 +83,20 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
+  test "every class of the heroic fantasy has its subclass of the SRD 5.2, asked from level 3" do
+    %w[fr en].each do |locale|
+      template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))
+      fields = template.dig("character_fields", "fields").index_by { |field| field["key"] }
+      subclass = fields["subclass"]
+
+      assert_equal fields["class"]["options"].sort, subclass["options_by"].keys.sort, locale
+      assert(subclass["options_by"].values.all? { |options| options.size == 1 }, locale)
+      assert_equal [3, "level"], subclass.values_at("from_level", "level_from"), locale
+      assert_equal subclass["options"].sort, subclass["descriptions"].keys.sort, locale
+      assert(subclass["effects"].values.all? { |effects| effects["features_by_level"].key?("3") }, locale)
+    end
+  end
+
   private
 
   def heroic_fantasy_classes

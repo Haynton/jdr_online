@@ -96,29 +96,17 @@ module CharacterSheets
         template: t("#{SCOPE}.chosen", chosen: CHOSEN_PLACEHOLDER, allowed: ALLOWED_PLACEHOLDER) }
     end
 
+    # "Donnés par Domaine de la Vie : ils ne comptent pas dans vos sorts à choisir."
+    def always_prepared_spells_hint(always_prepared)
+      t("#{SCOPE}.always_prepared_hint", sources: always_prepared.sources.to_sentence)
+    end
+
     # The prepared spells by level: [[1, [...]], [2, [...]]]
     def spells_by_level(group)
       group.spells.group_by(&:level).sort
     end
 
-    # The spells chosen, for the summary sheet: [["Sorts mineurs", [...]], ["Sorts préparés de niveau 1", [...]]]
-    def summary_spell_groups(character)
-      declared_groups = character.game_table.spell_groups
-      character.spells.sort_by { |spell| [spell["level"].to_i, spell["name"].to_s] }
-               .group_by { |spell| spell["level"].to_i }
-               .map { |level, spells| [summary_spell_level_title(declared_groups, level), spells] }
-    end
-
     private
-
-    # The label of the group of that level, with the level when the group spans several ("Sorts préparés de niveau 1")
-    def summary_spell_level_title(declared_groups, level)
-      declared_group = declared_groups.find { |candidate| CharacterSheets::SpellChoices.covers_level?(candidate, level) }
-      return t("#{SCOPE}.level", level: level) unless declared_group
-      return declared_group["label"] unless CharacterSheets::SpellChoices.several_levels?(declared_group)
-
-      t("#{SCOPE}.group_level", group: declared_group["label"], level: level)
-    end
 
     # A level alone in its group is named by the group ("Sorts mineurs"), the others by their number ("Niveau 1")
     def spell_level_pills(groups)

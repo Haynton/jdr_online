@@ -4,6 +4,8 @@
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
   include CharacterAbilityMethod
+  include CharacterSkillChoices
+  include CharacterDraftSaving
   include CharacterHitPoints
   include PlacedOnMaps
 
@@ -56,9 +58,9 @@ class Character < ApplicationRecord
   end
 
   # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option changed
-  # in a list applies its effects to the other steps too (CharacterSheets::ChoiceEffectsApplier), and the starting
-  # equipment and the spells its new class does not offer go. The step that chooses the spells copies those chosen
-  # (spell_keys)
+  # in a list applies its effects to the other steps too, and a value the others no longer offer goes (the subclass of
+  # a class changed: CharacterSheets::ChoiceEffectsApplier), and the starting equipment and the spells its new
+  # class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
   def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
@@ -66,18 +68,8 @@ class Character < ApplicationRecord
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
     self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }
+    self.checks_skill_choices = step.field_keys.intersect?(skill_choices.skill_keys)
     fill_behaviors(step, spell_keys: spell_keys)
-  end
-
-  # Saved in the background while the player fills a step (decision: nothing typed is lost, even when the tab closes):
-  # what is valid is kept, a refused value keeps the one saved before (its error shows on Continue), and a required
-  # field may stay empty in a draft. The step reached does not move
-  def save_draft_step(step, sheet_values:, name: nil, spell_keys: nil)
-    saved_values = { sheet: sheet.deep_dup, name: self.name, spells: spells.deep_dup }
-    fill_step(step, sheet_values: sheet_values, name: name, spell_keys: spell_keys)
-    self.required_sheet_fields = nil
-    restore_refused_values(saved_values) if invalid?
-    save
   end
 
   # Each behavior of the creation (CreationStepBehaviors) keeps what was picked on its own step, and on the other steps
@@ -123,13 +115,14 @@ class Character < ApplicationRecord
                                     level_thresholds: game_table.level_thresholds).call
   end
 
-  # A copy of each spell chosen (decision: the catalog changing never changes a character). A key not offered stays as
-  # a bare key, refused by CharacterSpellsValidator
+  # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options
+  # always prepare. A key not offered stays as a bare key, refused by CharacterSpellsValidator
   def choose_spells(spell_keys)
     choices = spell_choices
-    self.spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
+    chosen_spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
       choices.copy_of(spell_key) || { "key" => spell_key }
     end
+    self.spells = chosen_spells + choices.always_prepared.copies
   end
 
   # CharacterSheetValidator adds its errors per field ("sheet.strength"), so that each one shows under its field.
@@ -138,26 +131,5 @@ class Character < ApplicationRecord
     return super unless attribute.to_s.start_with?("sheet.")
 
     sheet[attribute.to_s.delete_prefix("sheet.")]
-  end
-
-  private
-
-  # Each value refused by the validators goes back to the one saved before (a field of the sheet, the scores, the name,
-  # the spells)
-  def restore_refused_values(saved_values)
-    errors.attribute_names.each do |attribute|
-      next restore_ability_scores(saved_values[:sheet]) if attribute == :ability_scores
-
-      field_key = attribute.to_s.delete_prefix("sheet.")
-      next restore_sheet_value(field_key, saved_values[:sheet]) unless field_key == attribute.to_s
-
-      self[attribute] = saved_values[attribute] if saved_values.key?(attribute)
-    end
-  end
-
-  def restore_sheet_value(field_key, saved_sheet)
-    return self.sheet = sheet.except(field_key) unless saved_sheet.key?(field_key)
-
-    self.sheet = sheet.merge(field_key => saved_sheet[field_key])
   end
 end

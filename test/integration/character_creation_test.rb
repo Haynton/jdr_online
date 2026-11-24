@@ -434,6 +434,10 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_equal 5, @participation.reload.character.sheet["level"]
     get game_table_character_step_path(@game_table, "description")
     assert_select "input[name=?]", "character[sheet][level]", count: 0
+    patch game_table_character_step_path(@game_table, "spells"), params: { character: { sheet: {} } }
+    patch game_table_character_step_path(@game_table, "description"), params: { character: { name: "Aldric" } }
+    follow_redirect!
+    assert_select "dt", text: "Niveau", count: 1
   end
 
   test "the form of a step saves itself in the background" do

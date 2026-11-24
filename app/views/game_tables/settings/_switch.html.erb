@@ -1,0 +1,16 @@
+<%# A setting that is on or off: its name is the label of its switch, its help stays text (decision: a whole line that
+    toggled was surprising). The invisible check box over the switch is sized like its track (size-full: Safari keeps
+    a check box at its own 13 px, in the top left corner, whatever its inset) %>
+<% hint_id = "#{attribute.to_s.dasherize}-hint" %>
+<div class="<%= setting_line_classes %>">
+  <div class="min-w-0">
+    <%= form.label attribute, class: "cursor-pointer text-sm font-semibold text-ink" %>
+    <p id="<%= hint_id %>" class="mt-1 text-sm text-muted"><%= hint %></p>
+  </div>
+  <span class="relative inline-flex shrink-0">
+    <%= form.check_box attribute, role: "switch", aria: { describedby: hint_id },
+                                  class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+    <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+    <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+  </span>
+</div>

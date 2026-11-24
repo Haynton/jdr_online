@@ -40,8 +40,9 @@ module EquipmentSpellsTemplateBuilder
 
   module_function
 
-  def create_template
-    sheet_template = SheetTemplate.create!(name: "Fantasy", locale: "fr", character_fields: character_fields,
+  # extra_fields: fields added to the sheet of the character (a subclass)
+  def create_template(extra_fields: [])
+    sheet_template = SheetTemplate.create!(name: "Fantasy", locale: "fr", character_fields: character_fields(extra_fields),
                                            spell_fields: spell_fields, item_fields: item_fields)
     SPELLS.each do |key, name, level, classes|
       sheet_template.catalog_entries.create!(kind: "spell", key: key, name: name, description: "Un sort.",
@@ -55,9 +56,9 @@ module EquipmentSpellsTemplateBuilder
     sheet_template
   end
 
-  def character_fields
+  def character_fields(extra_fields = [])
     { "creation_steps" => creation_steps, "spell_groups" => SPELL_GROUPS, "spell_slots" => SPELL_SLOTS,
-      "fields" => fields }
+      "fields" => fields + extra_fields }
   end
 
   def creation_steps
