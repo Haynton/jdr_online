@@ -244,11 +244,11 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     point_buy = { "type" => "point_buy", "label" => "Achat de points", "points" => 27, "costs" => { "8" => 0 } }
     assert_predicate with_ability_methods([roll, array, point_buy]), :valid?
 
-    assert_error with_ability_methods([roll.merge("type" => "rolls")]), :unknown_ability_method
-    assert_error with_ability_methods([roll, roll]), :duplicate_ability_method
-    assert_error with_ability_methods([roll.merge("label" => "")]), :invalid_ability_method_label
-    assert_error with_ability_methods([roll.merge("faces" => 6)]), :unknown_ability_method_parameter
-    assert_error with_ability_methods([roll.except("sides")]), :missing_ability_method_parameter
+    assert_error with_ability_methods([roll.merge("type" => "rolls")]), :unknown_rule_method
+    assert_error with_ability_methods([roll, roll]), :duplicate_rule_method
+    assert_error with_ability_methods([roll.merge("label" => "")]), :invalid_rule_method_label
+    assert_error with_ability_methods([roll.merge("faces" => 6)]), :unknown_rule_method_parameter
+    assert_error with_ability_methods([roll.except("sides")]), :missing_rule_method_parameter
     assert_error with_ability_methods([roll.merge("keep_highest" => 5)]), :invalid_ability_method_dice
     assert_error with_ability_methods([array.merge("values" => [15, 14])]), :invalid_standard_array,
                  "La méthode « Tableau standard » : il faut une valeur par caractéristique (1 en tout), des nombres entiers positifs"
