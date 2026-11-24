@@ -16,7 +16,7 @@
       <%= render "map_templates/name_form", map_template: map_template %>
       <%# The columns between « − » and « + » (Anthony's request: clearer than the arrows of a number field), still typed
           if one wants; the rows follow %>
-      <p class="flex shrink-0 items-center gap-1.5 text-xs text-muted">
+      <p class="flex shrink-0 items-center gap-2 text-xs text-muted">
         <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#removeColumn"
                 aria-label="<%= t(".fewer_columns") %>" title="<%= t(".fewer_columns") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
         <label for="map-columns" class="sr-only"><%= t(".columns_label") %></label>

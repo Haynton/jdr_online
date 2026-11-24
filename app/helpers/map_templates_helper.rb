@@ -9,9 +9,10 @@ module MapTemplatesHelper
     aria-pressed:ring-inset focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
   # A button of the bar on top of the editor (undo, the eraser, zoom): 36 px high like the buttons of the bar of the
-  # prototype, faded while it can do nothing
+  # prototype, faded while it can do nothing; narrower while it shows its icon alone (under 1536 px)
   MAP_BAR_TOOL_CLASSES = %w[
-    inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-[13px] font-semibold
+    inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-[13px] font-semibold
+    2xl:px-2.5
     text-ink transition-colors hover:bg-surface-raised aria-pressed:border-brass aria-pressed:bg-primary-soft
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
@@ -46,18 +47,19 @@ module MapTemplatesHelper
     rounded border border-transparent bg-transparent px-1 text-ink hover:border-field-line focus:border-ink
     focus:bg-field focus:outline-none aria-invalid:border-error-ink aria-invalid:bg-error-bg
   ].join(" ").freeze
-  # « − » and « + » around the number of columns: small, in the size of the line of text
+  # « − » and « + » around the number of columns (and the width of a picture), 32 px
   MAP_SIZE_BUTTON_CLASSES = %w[
-    flex size-6 shrink-0 items-center justify-center rounded border border-line bg-surface text-ink transition-colors
+    flex size-8 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors
     hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
   # The number of columns, without the arrows of a number field (the buttons around it do that)
   MAP_COLUMNS_FIELD_CLASSES = [
-    MAP_INLINE_FIELD_CLASSES, "h-6 w-10 text-center text-xs tabular-nums", *CharacterSheets::FieldsHelper::NO_ARROWS_CLASSES
+    MAP_INLINE_FIELD_CLASSES, "h-8 w-14 text-center text-sm tabular-nums", *CharacterSheets::FieldsHelper::NO_ARROWS_CLASSES
   ].join(" ").freeze
-  # A round button floating over the board (zoom): the surface of the panels, a shadow to stand out of the map
+  # A button floating over the board (help, zoom), square with rounded corners (Anthony's request, rather than round):
+  # the surface of the panels, a shadow to stand out of the map
   MAP_FLOATING_BUTTON_CLASSES = %w[
-    flex size-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-md
+    flex size-10 items-center justify-center rounded-xl border border-line bg-surface text-ink shadow-md
     transition-colors hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring
   ].join(" ").freeze

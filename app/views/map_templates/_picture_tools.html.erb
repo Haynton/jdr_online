@@ -33,7 +33,7 @@
 
     <div class="grid gap-1.5">
       <label for="map-picture-width" class="text-[13px] font-semibold text-ink"><%= t(".width_label") %></label>
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-2">
         <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#narrowPicture"
                 aria-label="<%= t(".narrower") %>" title="<%= t(".narrower") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
         <input type="number" id="map-picture-width" min="<%= MapLayouts::PictureCheck::CELLS_WIDE.min %>"
