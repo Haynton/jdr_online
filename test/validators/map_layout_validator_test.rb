@@ -13,7 +13,7 @@ class MapLayoutValidatorTest < ActiveSupport::TestCase
   end
 
   test "a layout without its version, or with something else, is refused" do
-    refused = [nil, [], { "floors" => {}, "edges" => {} }, MapTemplate::BLANK_LAYOUT.merge("tokens" => []),
+    refused = [nil, [], { "floors" => {}, "edges" => {} }, MapTemplate::BLANK_LAYOUT.merge("pawns" => []),
                MapTemplate::BLANK_LAYOUT.merge("floors" => [])]
 
     refused.each do |layout|

@@ -52,6 +52,26 @@ class GameMap < ApplicationRecord
     MapPassage.new(self) if drawn?
   end
 
+  # For the board: the tokens put in the editor, where the game begins (Anthony's decision: the board starts from
+  # them). [{ character:, column:, row:, number: }], number counting the tokens of the same character on this map
+  # (« Gobelin 2 »), in the order they were put
+  def placed_tokens
+    tokens = layout.to_h.fetch("tokens", [])
+    characters = game_table.npcs.where(id: tokens.pluck("character_id")).index_by(&:id)
+    numbers = Hash.new(0)
+    tokens.map do |token|
+      character = characters.fetch(token["character_id"])
+      { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1 }
+    end
+  end
+
+  # A character of the table deleted: its tokens leave the maps (unchecked: only a list is shortened)
+  def take_away_tokens_of(character)
+    tokens = layout.to_h.fetch("tokens", [])
+    kept_tokens = tokens.reject { |token| token["character_id"] == character.id }
+    update_columns(layout: layout.merge("tokens" => kept_tokens)) if kept_tokens.size < tokens.size
+  end
+
   private
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet

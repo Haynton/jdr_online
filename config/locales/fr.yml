@@ -91,6 +91,11 @@ fr:
               unknown_mode: "contient une façon de faire la carte inconnue : %{mode}"
               invalid_picture: "contient un calage de l'image qui n'a pas la forme attendue"
               invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
+              tokens_without_table: "contient des jetons, alors qu'elle n'appartient à aucune table"
+              invalid_token: "contient un jeton qui n'a pas la forme attendue"
+              unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
+              token_outside_grid: "contient un jeton hors de la grille"
+              tokens_overlap: "contient deux jetons sur la même case"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -398,6 +403,7 @@ fr:
       shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré."
       tabs_label: "Outils"
       terrain_tab: "Terrain"
+      tokens_tab: "Jetons"
       undo: "Annuler"
       undo_keys: "Ctrl ou Cmd + Z"
       whole_map: "Afficher toute la carte"
@@ -562,6 +568,10 @@ fr:
       save: "Enregistrer"
       rename: "Renommer la carte"
     size: "%{columns} × %{rows} cases"
+    token_tools:
+      add: "Ajouter des PNJ et ennemis"
+      empty: "Cette table n'a pas encore de PNJ ni d'ennemi."
+      intro: "Choisissez un personnage, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
     update:
       renamed: "Carte renommée."
   sheet_templates:

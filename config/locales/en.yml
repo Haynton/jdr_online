@@ -120,6 +120,11 @@ en:
               unknown_mode: "holds an unknown way of making the map: %{mode}"
               invalid_picture: "holds settings of the picture in an unexpected form"
               invalid_blocked: "holds blocked zones in an unexpected form"
+              tokens_without_table: "holds tokens, though it belongs to no table"
+              invalid_token: "holds a token in an unexpected form"
+              unknown_token_character: "holds the token of a character who is not a non-player character or an enemy of the table"
+              token_outside_grid: "holds a token outside the grid"
+              tokens_overlap: "holds two tokens on the same cell"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -427,6 +432,7 @@ en:
       shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away."
       tabs_label: "Tools"
       terrain_tab: "Terrain"
+      tokens_tab: "Tokens"
       undo: "Undo"
       undo_keys: "Ctrl or Cmd + Z"
       whole_map: "Show the whole map"
@@ -591,6 +597,10 @@ en:
       save: "Save"
       rename: "Rename the map"
     size: "%{columns} × %{rows} cells"
+    token_tools:
+      add: "Add non-player characters and enemies"
+      empty: "This table has no non-player character or enemy yet."
+      intro: "Choose a character, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
     update:
       renamed: "Map renamed."
   sheet_templates:
