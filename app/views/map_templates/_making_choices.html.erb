@@ -3,7 +3,7 @@
     a surface pill. Real radio buttons of one group (the arrows of the keyboard move between them), without a form:
     the editor changes the mode of the layout and saves it (map_editor_controller.js#chooseMaking), undone like a
     stroke. The drawing is kept when the picture is chosen %>
-<fieldset class="flex shrink-0 rounded-lg bg-field p-1">
+<fieldset class="flex w-full shrink-0 rounded-lg bg-field p-1 sm:w-auto">
   <legend class="sr-only"><%= t(".label") %></legend>
   <%# Each with its icon (Anthony's request: « Image » alone was not clear) %>
   <% [["draw", t(".draw"), "shared/icons/pencil"], ["picture", t(".picture"), "shared/icons/image"]].each do |mode, label, icon| %>

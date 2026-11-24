@@ -11,9 +11,9 @@ module MapTemplatesHelper
   # A button of the bar on top of the editor (undo, the eraser, zoom): 36 px high like the buttons of the bar of the
   # prototype, faded while it can do nothing; narrower while it shows its icon alone (under 1536 px)
   MAP_BAR_TOOL_CLASSES = %w[
-    inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-[13px] font-semibold
-    2xl:px-2.5
-    text-ink transition-colors hover:bg-surface-raised aria-pressed:border-brass aria-pressed:bg-primary-soft
+    inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-surface px-2 text-[13px]
+    font-semibold 2xl:px-2.5 text-ink transition-colors hover:bg-surface-raised aria-pressed:border-brass
+    aria-pressed:bg-primary-soft
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
   ].join(" ").freeze

@@ -10,17 +10,19 @@
   <%# From 1024 px, three columns: the name on the left, the way of making the map and the tools in the middle of the
       bar (Anthony's request), an empty column on the right to keep them there. The left one is at least as wide as the
       name: on a narrow screen the middle moves right rather than over the name %>
-  <header class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[minmax(max-content,1fr)_auto_1fr] lg:py-2">
+  <header class="flex flex-wrap items-center gap-x-3 gap-y-2.5 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[minmax(max-content,1fr)_auto_1fr] lg:py-2">
     <%# The name, changed right here (it looks like a title until it is pointed at). The size of the grid floats over
         the board (map_templates/_grid_size) %>
-    <div class="flex min-w-0 basis-full flex-wrap items-center gap-x-3 gap-y-2 lg:basis-auto lg:flex-none">
+    <div class="flex min-w-0 basis-full items-center lg:basis-auto lg:flex-none">
       <h1 class="sr-only"><%= map_template.name_in_database %></h1>
       <%= render "map_templates/name_form", map_template: map_template %>
     </div>
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 lg:flex-nowrap">
+    <%# On a phone (under 640 px), one row each across the whole width (Anthony's request): the way of making the map
+        in two halves, then the tools in buttons of the same width, without their separator %>
+    <div class="flex w-full flex-wrap items-center gap-x-3 gap-y-2.5 lg:w-auto lg:flex-nowrap">
       <%# How the map is made, in the bar (Anthony's request): Draw, or a picture %>
       <%= render "map_templates/making_choices", map_template: map_template %>
-      <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
+      <div hidden class="flex w-full items-center gap-1.5 max-sm:[&_button]:flex-1 sm:w-auto sm:gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
         <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
         <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".undo_keys") %>"
                 data-map-editor-target="undoButton" data-action="map-editor#undo">
@@ -32,7 +34,7 @@
         </button>
         <%# The tools of the drawing: not for a map played on a picture (the editor hides them) %>
         <div class="contents" data-map-editor-target="drawingTools">
-          <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
+          <span class="mx-1 h-6 w-px bg-line max-sm:hidden" aria-hidden="true"></span>
           <%# The direction of the next object put: its degrees only in its tooltip, written by the controller (Anthony's
               request: in its label, they changed the width of the button) %>
           <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#rotatePlacement"
