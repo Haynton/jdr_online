@@ -72,15 +72,5 @@ module SheetTemplates
 
       [[:unknown_effect_value, place.merge(effect: group["changes_from"], value: changes)]]
     end
-
-    # [where, spellcasting] for each option of a list of the sheet whose effects cast spells (the classes)
-    def spellcasting_options
-      @spellcasting_options ||= character_fields.select { |field| field["effects"] }.flat_map do |field|
-        field["effects"].filter_map do |option, effects|
-          spellcasting = effects.to_h["spellcasting"]
-          [context("character_fields", field).merge(option: option), spellcasting.to_h] if spellcasting
-        end
-      end
-    end
   end
 end

@@ -183,6 +183,39 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  "manque, le groupe «\u00A0Sorts préparés\u00A0» la lit"
   end
 
+  test "a spell slot table gives a list of whole numbers for each of the 20 levels" do
+    template = build_template { |fields| class_effects(fields)["spellcasting"]["slots"] = [[2], [3, -1]] }
+
+    assert_error template, :invalid_slot_table
+  end
+
+  test "the spell slots have a label, their table and known settings" do
+    template = build_template(spell_slots: { "label" => "", "color" => "red" })
+
+    assert_error template, :invalid_spell_slots_label
+    assert_error template, :unknown_spell_slots_parameter
+    assert_error template, :missing_spell_slots_parameter
+  end
+
+  test "every class that casts spells has the slot table, and a label of one line of its own" do
+    template = build_template do |fields|
+      spellcasting = class_effects(fields)["spellcasting"]
+      spellcasting.delete("slots")
+      spellcasting["slots_label"] = "Faveurs\ndu dieu"
+    end
+
+    assert_error template, :missing_slot_table,
+                 "Fiche du personnage › Classe › Guerrier\u00A0: la table «\u00A0slots\u00A0» des emplacements " \
+                 "de sorts manque"
+    assert_error template, :invalid_class_slots_label
+  end
+
+  test "a template without spell slots needs no slot table" do
+    template = build_template(spell_slots: nil) { |fields| class_effects(fields)["spellcasting"].delete("slots") }
+
+    assert_predicate template, :valid?
+  end
+
   test "a template without groups of spells needs no spell table" do
     assert_predicate build_template(spell_groups: []), :valid?
   end
@@ -262,13 +295,15 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
   end
 
-  def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS)
+  def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS,
+                     spell_slots: EquipmentSpellsTemplateBuilder::SPELL_SLOTS)
     fields = character_fields
     yield fields if block_given?
     SheetTemplate.new(
       name: "Petit jeu", locale: "fr",
       character_fields: { "fields" => fields, "creation_steps" => steps.map(&:dup),
-                          "spell_groups" => spell_groups.map(&:dup) },
+                          "spell_groups" => spell_groups.map(&:dup),
+                          "spell_slots" => spell_slots&.dup }.compact,
       item_fields: { "fields" => [{ "key" => "group", "label" => "Groupe", "type" => "choice",
                                     "options" => ["weapon"] }] }
     )
@@ -296,7 +331,8 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   def guerrier_effects
     { "hit_die" => 10, "proficient" => ["athletics"],
       "spellcasting" => { "ability" => "strength", "cantrips" => [0] * 20, "prepared" => [0] * 20,
-                          "max_spell_level" => [0] * 20, "prepared_changes" => "long_rest" },
+                          "max_spell_level" => [0] * 20, "prepared_changes" => "long_rest",
+                          "slots" => [[]] * 20 },
       "starting_equipment" => { "options" => [{ "key" => "a", "items" => [{ "choose" => ["weapon"] }] },
                                               { "key" => "b", "gold" => 50 }] } }
   end
