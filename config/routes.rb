@@ -46,6 +46,8 @@ Rails.application.routes.draw do
       end
       # "Roll the dice" of the abilities on that sheet: the server rolls, nothing is stored (JSON)
       resource :ability_roll, only: :create
+      # "Roll the hit dice" on the summary of that character: the server rolls once and keeps the results
+      resource :hit_dice_roll, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player

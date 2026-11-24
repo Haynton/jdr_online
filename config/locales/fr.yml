@@ -25,6 +25,7 @@ fr:
         name: "Nom"
         sheet_template: "Modèle de fiche"
         ability_method_choice: "Méthode des caractéristiques"
+        hit_point_method_choice: "Points de vie aux niveaux suivants"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -54,6 +55,8 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            hit_point_rolls:
+              not_rolled: "Lancez vos dés de vie avant de terminer."
             ability_scores:
               too_many_points:
                 one: "Retirez 1 point pour continuer."
@@ -78,14 +81,14 @@ fr:
         sheet_template:
           duplicate_equipment_option: "%{part} › %{field} › %{option} : l'option d'équipement %{letter} est déclarée deux fois"
           duplicate_key: "%{part} : la clé « %{key} » est utilisée par deux champs"
-          duplicate_ability_method: "La méthode des caractéristiques « %{type} » est déclarée deux fois"
+          duplicate_rule_method: "La méthode « %{type} » (%{rule}) est déclarée deux fois"
           invalid_ability_method_dice: "La méthode « %{method} » : les dés (dice, sides, keep_highest) doivent être des nombres entiers positifs, sans garder plus de dés que lancés"
-          invalid_ability_method_label: "La méthode « %{method} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_rule_method_label: "La méthode « %{method} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_point_buy: "La méthode « %{method} » : les points doivent être un nombre entier positif, et chaque score un coût entier"
           invalid_standard_array: "La méthode « %{method} » : il faut une valeur par caractéristique (%{count} en tout), des nombres entiers positifs"
-          missing_ability_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est obligatoire"
-          unknown_ability_method: "La méthode des caractéristiques « %{type} » est inconnue"
-          unknown_ability_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est inconnu"
+          missing_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est obligatoire"
+          unknown_rule_method: "La méthode « %{type} » (%{rule}) est inconnue"
+          unknown_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est inconnu"
           duplicate_spell_group: "Le groupe de sorts « %{group} » est déclaré deux fois"
           duplicate_step: "L'étape « %{step} » est déclarée deux fois"
           field_without_step: "« %{field} » est demandé à la création, mais n'est rangé dans aucune étape"
@@ -556,6 +559,9 @@ fr:
     update:
       renamed: "Modèle renommé."
     validator:
+      rules:
+        ability_methods: "des caractéristiques"
+        hit_point_methods: "des points de vie"
       field_types:
         ability: "caractéristique"
         ability_bonuses: "bonus de caractéristiques"
@@ -597,6 +603,9 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    hit_dice_rolls:
+      create:
+        rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
     character_steps:
@@ -653,6 +662,11 @@ fr:
         sheet: "Fiche"
         summary: "Récapitulatif"
       summary:
+        hit_dice:
+          may_roll: "Les points de vie des niveaux suivants comptent la moyenne. Vous pouvez plutôt lancer vos dés de vie (%{dice}) : un seul lancer, gardé."
+          roll: "Lancer les dés de vie"
+          rolled: "Dés de vie lancés (%{dice}) : %{results}."
+          to_roll: "Lancez vos dés de vie des niveaux suivants (%{dice}) avant de terminer : un seul lancer, gardé."
         answer_no: "Non"
         answer_yes: "Oui"
         unnamed: "Personnage sans nom"
@@ -881,7 +895,8 @@ fr:
         back: "Retour"
         characters: "Personnages"
         game: "Partie"
-        ability_method_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
+        ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
+        hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."
@@ -891,12 +906,6 @@ fr:
         encumbrance:
           hint: "Le poids des objets portés ralentit les personnages."
           label: "Encombrement"
-        later_hit_points:
-          hint: "Ce que gagne un personnage à chaque niveau, en plus de sa Constitution."
-          label: "Points de vie aux niveaux suivants"
-          options:
-            - "Moyenne du dé de vie"
-            - "Lancer du dé de vie"
         progression:
           hint: "Comment les personnages montent de niveau : en gagnant de l'expérience, ou aux étapes de l'histoire que vous choisissez."
           label: "Progression"

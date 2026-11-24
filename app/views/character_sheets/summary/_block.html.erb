@@ -5,7 +5,7 @@
     the upload comes with Active Storage and Cloudinary. Decorative until then (hidden from screen readers).
     in_grid: the block sits in a column of the sheet (summary_columns), which spaces its blocks itself.
     A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it. The block of the step
-    that chooses the spells lists them (summary_spells) %>
+    that chooses the spells lists them (summary_spells), the one of the hit points their hit dice (summary/_hit_dice) %>
 <% header = local_assigns[:header] %>
 <% sections = step.fields.group_by { |field| field["section"] }
                          .reject { |_section, fields| summary_section_empty?(character, fields) } %>
@@ -46,6 +46,10 @@
     <% end %>
     <% step.behaviors.each do |behavior| %>
       <%= render behavior.summary_partial, character: character %>
+    <% end %>
+    <%# Under the hit points worked out by their rule: the hit dice of the levels after the first %>
+    <% if step.fields.any? { |field| field["rule"] == ComputedRules::HitPointsByLevel::KEY } %>
+      <%= render "character_sheets/summary/hit_dice", character: character %>
     <% end %>
   </div>
 </section>

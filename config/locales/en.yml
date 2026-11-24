@@ -54,6 +54,7 @@ en:
         name: "Name"
         sheet_template: "Sheet template"
         ability_method_choice: "Ability score method"
+        hit_point_method_choice: "Hit points at the next levels"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -83,6 +84,8 @@ en:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            hit_point_rolls:
+              not_rolled: "Roll your hit dice before finishing."
             ability_scores:
               too_many_points:
                 one: "Take off 1 point to continue."
@@ -107,14 +110,14 @@ en:
         sheet_template:
           duplicate_equipment_option: "%{part} › %{field} › %{option}: the equipment option %{letter} is declared twice"
           duplicate_key: "%{part}: the key “%{key}” is used by two fields"
-          duplicate_ability_method: "The ability score method “%{type}” is declared twice"
+          duplicate_rule_method: "The method “%{type}” (%{rule}) is declared twice"
           invalid_ability_method_dice: "The method “%{method}”: the dice (dice, sides, keep_highest) must be positive whole numbers, keeping no more dice than rolled"
-          invalid_ability_method_label: "The method “%{method}”: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_rule_method_label: "The method “%{method}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_point_buy: "The method “%{method}”: the points must be a positive whole number, and each score a whole cost"
           invalid_standard_array: "The method “%{method}”: it needs one value per ability (%{count} in all), positive whole numbers"
-          missing_ability_method_parameter: "The method “%{method}”: the setting “%{parameter}” is required"
-          unknown_ability_method: "The ability score method “%{type}” is unknown"
-          unknown_ability_method_parameter: "The method “%{method}”: the setting “%{parameter}” is unknown"
+          missing_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is required"
+          unknown_rule_method: "The method “%{type}” (%{rule}) is unknown"
+          unknown_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is unknown"
           duplicate_spell_group: "The group of spells “%{group}” is declared twice"
           duplicate_step: "The step “%{step}” is declared twice"
           field_without_step: "“%{field}” is asked at creation, but is in no step"
@@ -585,6 +588,9 @@ en:
     update:
       renamed: "Template renamed."
     validator:
+      rules:
+        ability_methods: "ability scores"
+        hit_point_methods: "hit points"
       field_types:
         ability: "ability"
         ability_bonuses: "ability bonuses"
@@ -626,6 +632,9 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    hit_dice_rolls:
+      create:
+        rolled: "Hit dice rolled: %{results}."
     rules:
       former_roll: "Dice roll"
     character_steps:
@@ -682,6 +691,11 @@ en:
         sheet: "Sheet"
         summary: "Summary"
       summary:
+        hit_dice:
+          may_roll: "The hit points of the next levels count the average. You may roll your hit dice instead (%{dice}): one roll only, kept."
+          roll: "Roll the hit dice"
+          rolled: "Hit dice rolled (%{dice}): %{results}."
+          to_roll: "Roll your hit dice of the next levels (%{dice}) before finishing: one roll only, kept."
         answer_no: "No"
         answer_yes: "Yes"
         unnamed: "Unnamed character"
@@ -910,7 +924,8 @@ en:
         back: "Back"
         characters: "Characters"
         game: "Game"
-        ability_method_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
+        ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
+        hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."
@@ -920,12 +935,6 @@ en:
         encumbrance:
           hint: "The weight of the items carried slows the characters down."
           label: "Encumbrance"
-        later_hit_points:
-          hint: "What a character gains at each level, besides their Constitution."
-          label: "Hit points at later levels"
-          options:
-            - "Average of the hit die"
-            - "Roll of the hit die"
         progression:
           hint: "How the characters go up in level: by earning experience, or at the milestones of the story you choose."
           label: "Progression"
