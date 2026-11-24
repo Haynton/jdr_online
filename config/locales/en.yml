@@ -399,7 +399,8 @@ en:
         walls:
           one: "%{count} wall"
           other: "%{count} walls"
-      help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: hold <kbd>Space</kbd> and drag, middle click, or two fingers. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: right click or <kbd>Delete</kbd> on an object or a wall."
+      hand: "Hand (H)"
+      help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: the hand (<kbd>H</kbd>) then drag, two fingers on the touchpad or the screen, hold <kbd>Space</kbd> and drag, or middle click. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: right click or <kbd>Delete</kbd> on an object or a wall."
       more_columns: "One column more"
       objects_tab: "Objects"
       presets_tab: "Templates"

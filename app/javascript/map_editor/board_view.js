@@ -1,24 +1,28 @@
-// The part of the map the board shows (its viewBox): the whole map at first, then zoomed in around a point and moved.
-// Never further out than the whole map, never moved past its edges (decision): on a side where the whole map does
-// not fill the board, it stays in the middle. The view keeps the proportions of the board, so that a cell stays square
-// The whole map touches the edges of the board, like the prototype: the ground fills what is left
-const marginInCells = 0
+// The part of the map the board shows (its viewBox): the whole map at first, filling the board, then zoomed in around
+// a point and moved. Never further out than the whole map. The pieces floating over the board (the size of the grid,
+// the zoom, what was saved) cover some of it: its insets, in pixels. The map may move past its edges by them, and no
+// further (Anthony's choice: the map keeps the whole board, rather than shrinking to stay clear of them), so that any
+// cell can come out from under them, zoomed in or not. The view keeps the proportions of the board, so that a cell
+// stays square; the ground fills the rest
 const smallestZoom = 1
 const largestZoom = 8
+const noInsets = { top: 0, right: 0, bottom: 0, left: 0 }
 
 export default class BoardView {
-  constructor(grid, cellSize) {
+  constructor(grid) {
     this.grid = grid
-    this.margin = marginInCells * cellSize
+    this.insets = noInsets
     this.zoom = 1
     this.centerX = grid.width / 2
     this.centerY = grid.height / 2
   }
 
-  // The board has a new size (first display, window resized): the same zoom and the same center
-  resize(boardWidth, boardHeight) {
+  // The board has a new size (first display, window resized) or its floating pieces moved: the same zoom, the same
+  // center
+  resize(boardWidth, boardHeight, insets = this.insets) {
     this.boardWidth = boardWidth
     this.boardHeight = boardHeight
+    this.insets = insets
     this.keepInsideTheMap()
   }
 
@@ -31,9 +35,7 @@ export default class BoardView {
 
   // How many units of the map one pixel of the board shows, the whole map at a zoom of 1
   unitsPerPixel() {
-    const fittingUnitsPerPixel = Math.max((this.grid.width + this.margin * 2) / this.boardWidth,
-                                          (this.grid.height + this.margin * 2) / this.boardHeight)
-    return fittingUnitsPerPixel / this.zoom
+    return Math.max(this.grid.width / this.boardWidth, this.grid.height / this.boardHeight) / this.zoom
   }
 
   // factor above 1 zooms in. The point of the map under [x, y] stays under the pointer
@@ -55,8 +57,11 @@ export default class BoardView {
 
   // Also after a resize of the board
   keepInsideTheMap() {
-    this.centerX = centerWithin(this.centerX, this.boardWidth * this.unitsPerPixel(), this.grid.width)
-    this.centerY = centerWithin(this.centerY, this.boardHeight * this.unitsPerPixel(), this.grid.height)
+    const unitsPerPixel = this.unitsPerPixel()
+    this.centerX = centerWithin(this.centerX, this.boardWidth * unitsPerPixel, this.grid.width,
+                                this.insets.left * unitsPerPixel, this.insets.right * unitsPerPixel)
+    this.centerY = centerWithin(this.centerY, this.boardHeight * unitsPerPixel, this.grid.height,
+                                this.insets.top * unitsPerPixel, this.insets.bottom * unitsPerPixel)
   }
 
   // The point of the map under a pixel of the board, counted from its top left corner: the view keeps the
@@ -79,9 +84,10 @@ export default class BoardView {
   }
 }
 
-// The center of a view of that size, so that the view stays on the map; in the middle when the view is larger
-function centerWithin(center, viewSize, mapSize) {
-  if (viewSize >= mapSize) return mapSize / 2
-
-  return Math.min(mapSize - viewSize / 2, Math.max(viewSize / 2, center))
+// The center of a view of that size on one side of the map: the view stays on the map, in the middle when it is
+// larger, and may go past its edges by what covers them at the start (before) and at the end (after) of the board
+function centerWithin(center, viewSize, mapSize, before, after) {
+  const lowest = Math.min(viewSize / 2, mapSize / 2) - before
+  const highest = Math.max(mapSize - viewSize / 2, mapSize / 2) + after
+  return Math.min(highest, Math.max(lowest, center))
 }

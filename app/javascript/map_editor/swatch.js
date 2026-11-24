@@ -1,4 +1,5 @@
-// The small square that shows a tool of the editor (a floor, a wall) beside its name, 32 units wide
+// The small square that shows a tool of the editor (a wall, an object) beside its name, 32 units wide. A floor shows
+// a piece of itself instead (map_editor/floor_sample.js)
 import { paper } from "map_editor/palette"
 import { createSvgElement } from "map_editor/svg"
 
@@ -7,5 +8,3 @@ export function drawSwatchTile(svg, fill = paper) {
 }
 
 export const verticalSide = { start: [16, 4], end: [16, 28], normalX: 1, normalY: 0 }
-export const topSide = { start: [4, 9], end: [28, 9], normalX: 0, normalY: -1 }
-export const bottomSide = { start: [4, 23], end: [28, 23], normalX: 0, normalY: 1 }

@@ -32,9 +32,15 @@
                 data-map-editor-target="redoButton" data-action="map-editor#redo">
           <%= render "shared/icons/redo_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".redo") %></span>
         </button>
-        <%# The tools of the drawing: not for a map played on a picture (the editor hides them) %>
-        <div class="contents" data-map-editor-target="drawingTools">
+        <%# The tools of the drawing: not for a map played on a picture (data-picture, set by the editor). From 1024 px
+            they keep their room, invisible, so that the switch in the middle of the bar does not move (Anthony's
+            request); under it, where the switch does not move with them, they go %>
+        <div class="contents data-picture:max-lg:hidden data-picture:lg:invisible" data-map-editor-target="drawingTools">
           <span class="mx-1 h-6 w-px bg-line max-sm:hidden" aria-hidden="true"></span>
+          <%# The hand: the main button moves the map instead of drawing (Anthony's request: with a mouse, holding space
+              was a chore). Clicked again, or H, gives back the tool used before %>
+          <%= render "map_templates/tool", kind: "hand", key: "hand", label: t(".hand"), in_bar: true,
+                                           icon: render("shared/icons/hand", css_class: "size-4") %>
           <%# The direction of the next object put: its degrees only in its tooltip, written by the controller (Anthony's
               request: in its label, they changed the width of the button) %>
           <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#rotatePlacement"
@@ -65,7 +71,7 @@
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
            data-map-editor-target="board"
-           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive gesturestart->map-editor#startGesture:!passive gesturechange->map-editor#zoomWithGesture:!passive gestureend->map-editor#startGesture:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomOrMoveWithWheel:!passive gesturestart->map-editor#startGesture:!passive gesturechange->map-editor#zoomWithGesture:!passive gestureend->map-editor#startGesture:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown.h@window->map-editor#chooseHandWithKey keydown@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
