@@ -14,13 +14,17 @@
     instead of a fieldset and its legend (a fieldset is for the fields of a form), drawn the same %>
 <% filters = local_assigns[:filters] %>
 <% heading_id = local_assigns[:heading_id] %>
+<%# Without a hint, the legend takes the height of the arrows (40 px, from 768 px, like "All my tables"), and 24 px
+    under it (Anthony's request: more room between the arrows and the cards): otherwise the row started under them
+    and its cards covered them %>
+<% legend_classes = "#{choice_legend_classes} float-left w-full #{"md:mb-6 md:leading-10" unless local_assigns[:hint]}" %>
 <%= content_tag (heading_id ? :section : :fieldset), class: "relative mb-8 min-w-0",
                 aria: ({ labelledby: heading_id } if heading_id),
                 data: choice_row_data(filterable: filters.present?) do %>
   <% if heading_id %>
-    <h2 id="<%= heading_id %>" class="<%= choice_legend_classes %> float-left w-full"><%= legend %></h2>
+    <h2 id="<%= heading_id %>" class="<%= legend_classes %>"><%= legend %></h2>
   <% else %>
-    <legend class="<%= choice_legend_classes %> float-left w-full"><%= legend %></legend>
+    <legend class="<%= legend_classes %>"><%= legend %></legend>
   <% end %>
   <% if local_assigns[:hint] %>
     <p class="<%= choice_row_hint_classes(filterable: filters.present?) %>"><%= hint %></p>
