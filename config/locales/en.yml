@@ -53,6 +53,7 @@ en:
         description: "Description"
         name: "Name"
         sheet_template: "Sheet template"
+        ability_method_choice: "Ability score method"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -73,12 +74,19 @@ en:
         attack_without_name: "each attack needs a name"
         too_many_attacks: "%{count} attacks at most"
         ability_bonus_too_high: "goes past %{count} with the bonus"
+        not_in_standard_array: "pick one of %{values}"
+        outside_point_buy: "from %{minimum} to %{maximum} with point buy"
+        standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
       models:
         catalog_entry:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            ability_scores:
+              too_many_points:
+                one: "Take off 1 point to continue."
+                other: "Take off %{count} points to continue."
             participation_id:
               already_has_character: "already has a character at this table"
             spells:
@@ -99,6 +107,14 @@ en:
         sheet_template:
           duplicate_equipment_option: "%{part} › %{field} › %{option}: the equipment option %{letter} is declared twice"
           duplicate_key: "%{part}: the key “%{key}” is used by two fields"
+          duplicate_ability_method: "The ability score method “%{type}” is declared twice"
+          invalid_ability_method_dice: "The method “%{method}”: the dice (dice, sides, keep_highest) must be positive whole numbers, keeping no more dice than rolled"
+          invalid_ability_method_label: "The method “%{method}”: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_point_buy: "The method “%{method}”: the points must be a positive whole number, and each score a whole cost"
+          invalid_standard_array: "The method “%{method}”: it needs one value per ability (%{count} in all), positive whole numbers"
+          missing_ability_method_parameter: "The method “%{method}”: the setting “%{parameter}” is required"
+          unknown_ability_method: "The ability score method “%{type}” is unknown"
+          unknown_ability_method_parameter: "The method “%{method}”: the setting “%{parameter}” is unknown"
           duplicate_spell_group: "The group of spells “%{group}” is declared twice"
           duplicate_step: "The step “%{step}” is declared twice"
           field_without_step: "“%{field}” is asked at creation, but is in no step"
@@ -610,6 +626,8 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    rules:
+      former_roll: "Dice roll"
     character_steps:
       band_label: "Steps of your character"
       equipment_choices:
@@ -687,13 +705,15 @@ en:
         modifier: "Modifier"
         note_html: "%{labels}: %{text}"
         offered: "Suggested"
+        method_legend: "Method"
         place_result: "Assign"
         place_result_on: "Assign a result to %{label}"
+        place_value: "Place"
+        points_spent: "%{spent} points spent out of %{points}"
         proficient: "(proficient)"
         reroll: "Roll again"
         resource_hint: "Maximum value: the character starts full."
         roll: "Roll the dice"
-        roll_method: "%{dice}d%{sides} per ability, keeping the %{kept} best. Assign each result, or type your own scores."
         score_column: "Score"
         scores_title: "Your scores"
         skill_choices: "%{option}: choose %{count} skills among those marked “Suggested”. Ticked: %{chosen} of %{count}."
@@ -890,18 +910,13 @@ en:
         back: "Back"
         characters: "Characters"
         game: "Game"
+        ability_method_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
+        player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."
         subtitle: "The settings of the game, from the sheet template chosen."
         title: "Settings"
       rules:
-        ability_method:
-          hint: "How the players get their scores: 4d6 keeping the best 3, 15, 14, 13, 12, 10 and 8 to place, or 27 points to spend."
-          label: "Ability scores method"
-          options:
-            - "Dice roll"
-            - "Standard array"
-            - "Point buy"
         encumbrance:
           hint: "The weight of the items carried slows the characters down."
           label: "Encumbrance"

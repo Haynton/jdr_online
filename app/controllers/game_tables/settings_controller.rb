@@ -1,5 +1,6 @@
-# The second step of a table: the settings that depend on the template chosen at the first step. For now the starting
-# level of the characters, asked only when the template has levels (GameTable#asks_starting_level?). On a draft,
+# The second step of a table: the settings that depend on the template chosen at the first step: the starting level
+# of the characters, asked only when the template has levels (GameTable#asks_starting_level?), and the way to get the
+# scores of the abilities, when the template offers some (TableRules). On a draft,
 # Continue opens the next step; on a table ready (its "Game settings"), Save shows the same page again
 module GameTables
   class SettingsController < ApplicationController
@@ -23,7 +24,7 @@ module GameTables
 
     # Nothing sent by a template without settings: the table keeps what it has
     def settings_params
-      params.fetch(:game_table, {}).permit(:starting_level, :players_choose_level)
+      params.fetch(:game_table, {}).permit(:starting_level, :players_choose_level, :ability_method_choice)
     end
   end
 end

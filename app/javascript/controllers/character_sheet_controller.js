@@ -109,6 +109,8 @@ export default class extends Controller {
     input.dataset.typedMin ??= input.min
     if (score !== null && bonus !== shownBonus) input.value = score + bonus - shownBonus
     if (input.dataset.typedMin !== "") input.min = Number(input.dataset.typedMin) + bonus
+    // A point buy bounds the score typed too (15 at most): with the bonus shown, the score shown goes up as far
+    if (input.dataset.typedMax) input.max = Number(input.dataset.typedMax) + bonus
     input.dataset.shownBonus = bonus
   }
 

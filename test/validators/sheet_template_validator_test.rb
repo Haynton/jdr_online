@@ -238,9 +238,30 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     end
   end
 
+  test "the ways to get the scores are of a known type, used once, with their settings" do
+    roll = { "type" => "roll", "label" => "Lancer de dés", "dice" => 4, "sides" => 6, "keep_highest" => 3 }
+    array = { "type" => "standard_array", "label" => "Tableau standard", "values" => [15] }
+    point_buy = { "type" => "point_buy", "label" => "Achat de points", "points" => 27, "costs" => { "8" => 0 } }
+    assert_predicate with_ability_methods([roll, array, point_buy]), :valid?
+
+    assert_error with_ability_methods([roll.merge("type" => "rolls")]), :unknown_ability_method
+    assert_error with_ability_methods([roll, roll]), :duplicate_ability_method
+    assert_error with_ability_methods([roll.merge("label" => "")]), :invalid_ability_method_label
+    assert_error with_ability_methods([roll.merge("faces" => 6)]), :unknown_ability_method_parameter
+    assert_error with_ability_methods([roll.except("sides")]), :missing_ability_method_parameter
+    assert_error with_ability_methods([roll.merge("keep_highest" => 5)]), :invalid_ability_method_dice
+    assert_error with_ability_methods([array.merge("values" => [15, 14])]), :invalid_standard_array,
+                 "La méthode « Tableau standard » : il faut une valeur par caractéristique (1 en tout), des nombres entiers positifs"
+    assert_error with_ability_methods([point_buy.merge("costs" => { "huit" => 0 })]), :invalid_point_buy
+  end
+
   private
 
   # The template given to the block (its character fields) can be changed before it is built
+  def with_ability_methods(methods)
+    build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
   def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS)
     fields = character_fields
     yield fields if block_given?

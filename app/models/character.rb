@@ -3,6 +3,8 @@
 # The values of the sheet are JSONB, keyed by the fields of the template copied into the table (template_snapshot: the
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
+  include CharacterAbilityMethod
+
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
 
@@ -61,6 +63,7 @@ class Character < ApplicationRecord
                                                       .call(sheet.except(*step.field_keys).merge(filled_values))
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
+    self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }
     fill_behaviors(step, spell_keys: spell_keys)
   end
 
@@ -137,9 +140,12 @@ class Character < ApplicationRecord
 
   private
 
-  # Each value refused by the validators goes back to the one saved before (a field of the sheet, the name, the spells)
+  # Each value refused by the validators goes back to the one saved before (a field of the sheet, the scores, the name,
+  # the spells)
   def restore_refused_values(saved_values)
     errors.attribute_names.each do |attribute|
+      next restore_ability_scores(saved_values[:sheet]) if attribute == :ability_scores
+
       field_key = attribute.to_s.delete_prefix("sheet.")
       next restore_sheet_value(field_key, saved_values[:sheet]) unless field_key == attribute.to_s
 

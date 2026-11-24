@@ -1,5 +1,6 @@
 class GameTable < ApplicationRecord
   include TemplateCopy
+  include TableRules
 
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
@@ -79,13 +80,6 @@ class GameTable < ApplicationRecord
   # The abilities of the character sheet (fields of the ability type), the ones the dice can roll
   def ability_fields
     character_sheet_fields.select { |field| field["type"] == "ability" }
-  end
-
-  # How the template rolls the abilities ({ "dice" => 4, "sides" => 6, "keep_highest" => 3 }), or nil: no roll
-  def ability_roll_method
-    return nil if ability_fields.empty?
-
-    template_snapshot.to_h.dig("character_fields", "ability_roll")
   end
 
   # Players join through the invitation link once the creation is over
