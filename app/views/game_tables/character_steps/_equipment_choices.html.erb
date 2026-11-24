@@ -17,7 +17,9 @@
     <% error = sheet_field_error(character, choice.field) %>
     <%= tag.fieldset class: "group @container min-w-0", aria: { invalid: (true if error) } do %>
       <legend class="text-lg leading-7 font-bold text-ink"><%= equipment_source_title(choice, character.sheet_fields) %></legend>
-      <div class="<%= CharacterSheets::EquipmentChoicesHelper::SWITCH_CLASSES %> mt-3">
+      <%# A single option (the rule of the table keeps only the items, or only the gold): nothing to switch, the radio
+          stays checked and hidden, still sent, and still showing its panel %>
+      <%= tag.div class: "#{CharacterSheets::EquipmentChoicesHelper::SWITCH_CLASSES} mt-3", hidden: choice.options.one? do %>
         <% choice.options.each do |option| %>
           <label class="<%= CharacterSheets::EquipmentChoicesHelper::SWITCH_OPTION_CLASSES %>">
             <%= radio_button_tag equipment_option_input_name(choice, "option"), option["key"],
@@ -26,7 +28,7 @@
             <%= equipment_option_label(choice, option) %>
           </label>
         <% end %>
-      </div>
+      <% end %>
       <% if error %>
         <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
       <% end %>

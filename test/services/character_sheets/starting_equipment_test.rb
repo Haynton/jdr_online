@@ -32,6 +32,19 @@ class StartingEquipmentTest < ActiveSupport::TestCase
     assert_equal 5, equipment.gold
   end
 
+  test "the rule of the table keeps the options with items, or the gold alone; a choice it drops is refused" do
+    methods = %w[either items_only gold_only].map { |type| { "type" => type, "label" => type } }
+    @game_table.template_snapshot["character_fields"]["starting_equipment_methods"] = methods
+
+    @game_table.starting_equipment_method_choice = "items_only"
+    assert_equal ["a"], equipment_for("Mage").choices.first.options.pluck("key")
+
+    @game_table.starting_equipment_method_choice = "gold_only"
+    equipment = equipment_for("Mage")
+    assert_equal ["b"], equipment.choices.first.options.pluck("key")
+    assert_equal [:inclusion], equipment.error_for(equipment.choices.first.field, { "option" => "a" })
+  end
+
   test "an option not offered, or a pick outside its group, is refused" do
     equipment = equipment_for("Mage")
     field = equipment.choices.first.field
