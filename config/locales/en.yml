@@ -42,6 +42,11 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      game_map:
+        grid_cell_size: "Cell size (px)"
+        grid_visible: "Show the grid"
+        image: "Image"
+        name: "Name"
       catalog_entry:
         description: "Description"
         name: "Name"
@@ -81,6 +86,11 @@ en:
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
       models:
+        game_map:
+          attributes:
+            image:
+              content_type: "must be a PNG, JPEG or WebP image"
+              too_big: "must not be over %{count} MB"
         catalog_entry:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
@@ -634,6 +644,35 @@ en:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    map_lists:
+      edit:
+        add: "Add a map"
+        back: "Back"
+        change: "Change %{name}"
+        count:
+          one: "%{count} map"
+          other: "%{count} maps"
+        empty: "No map yet. Add the plans of your places: one image per map."
+        intro: "The maps of your game: one image per place, with its grid."
+        purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
+        title: "Maps"
+      update:
+        saved: "Maps saved."
+    game_maps:
+      form:
+        confirm_delete: "Delete the map “%{name}”?"
+        delete: "Delete the map"
+        grid: "Grid"
+        grid_cell_size_hint: "The size of a cell, in pixels of the image: the width of a square drawn on the map."
+        grid_visible_hint: "The lines of the grid show on the board."
+        image_change_hint: "Pick an image to replace this one: PNG, JPEG or WebP, %{size} MB at most."
+        image_hint: "PNG, JPEG or WebP, %{size} MB at most."
+      grid:
+        hidden: "Grid of %{size} px, hidden"
+        shown: "Grid of %{size} px, shown"
+      window:
+        close: "Close the map"
+        new: "New map"
     hit_dice_rolls:
       create:
         rolled: "Hit dice rolled: %{results}."

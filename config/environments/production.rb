@@ -21,8 +21,9 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Uploaded files (the images of the maps) go to Cloudinary: the disk of a Heroku dyno is wiped at each restart
+  # (config/storage.yml, CLOUDINARY_URL)
+  config.active_storage.service = :cloudinary
 
   # Not assume_ssl: it makes every request look like HTTPS, so force_ssl never redirected http:// (seen on Heroku).
   # The router of Heroku already tells Rails how the request came (X-Forwarded-Proto)

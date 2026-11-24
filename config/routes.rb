@@ -28,6 +28,10 @@ Rails.application.routes.draw do
       resource :cast, only: %i[edit update]
       resources :npcs, only: %i[new create edit update destroy]
       resource :bestiary, only: :show
+      # The maps of the table: the step lists them (map_list), each one opens in a window (maps: its name, its image,
+      # its grid)
+      resource :map_list, only: %i[edit update]
+      resources :game_maps, only: %i[new create edit update destroy], path: "maps"
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]
       resource :invite_token, only: :update

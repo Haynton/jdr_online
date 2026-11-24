@@ -13,6 +13,11 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      game_map:
+        grid_cell_size: "Taille d'une case (px)"
+        grid_visible: "Afficher la grille"
+        image: "Image"
+        name: "Nom"
       catalog_entry:
         description: "Description"
         name: "Nom"
@@ -52,6 +57,11 @@ fr:
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
       models:
+        game_map:
+          attributes:
+            image:
+              content_type: "doit être une image PNG, JPEG ou WebP"
+              too_big: "ne doit pas dépasser %{count} Mo"
         catalog_entry:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
@@ -605,6 +615,35 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    map_lists:
+      edit:
+        add: "Ajouter une carte"
+        back: "Retour"
+        change: "Modifier %{name}"
+        count:
+          one: "%{count} carte"
+          other: "%{count} cartes"
+        empty: "Aucune carte pour l'instant. Ajoutez les plans de vos lieux : une image par carte."
+        intro: "Les cartes de votre partie : une image par lieu, avec sa grille."
+        purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
+        title: "Cartes"
+      update:
+        saved: "Cartes enregistrées."
+    game_maps:
+      form:
+        confirm_delete: "Supprimer la carte « %{name} » ?"
+        delete: "Supprimer la carte"
+        grid: "Grille"
+        grid_cell_size_hint: "La taille d'une case, en pixels de l'image : la largeur d'un carré dessiné sur la carte."
+        grid_visible_hint: "Les lignes de la grille se voient sur le plateau."
+        image_change_hint: "Choisissez une image pour remplacer celle-ci : PNG, JPEG ou WebP, %{size} Mo au plus."
+        image_hint: "PNG, JPEG ou WebP, %{size} Mo au plus."
+      grid:
+        hidden: "Grille de %{size} px, masquée"
+        shown: "Grille de %{size} px, affichée"
+      window:
+        close: "Fermer la carte"
+        new: "Nouvelle carte"
     hit_dice_rolls:
       create:
         rolled: "Dés de vie lancés : %{results}."

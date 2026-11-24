@@ -47,7 +47,7 @@
       of the screen on a short page (mt-auto), with at least 40 px above, as on the steps of a character %>
   <%= form_with url: game_table_summary_path(@game_table), method: :patch, class: "mt-auto pt-10" do |form| %>
     <div class="flex flex-wrap justify-end gap-3">
-      <%= link_to t(".back"), edit_game_table_cast_path(@game_table), class: button_classes(:secondary) %>
+      <%= link_to t(".back"), edit_game_table_map_list_path(@game_table), class: button_classes(:secondary) %>
       <%# On a table ready (its "Game settings"): each step saved its own changes, this one leads back to "My tables" %>
       <% if @game_table.draft? %>
         <%= form.button t(".finish_and_join"), name: "join_game", value: "1", class: button_classes(:secondary) %>

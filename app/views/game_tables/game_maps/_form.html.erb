@@ -1,0 +1,46 @@
+<%# The values of a map: its name, its image (PNG, JPEG or WebP; changing a map, the image it has shows and stays
+    unless another is chosen), then its grid: the size of a cell in pixels of the image, and whether it shows (the
+    board will snap the tokens to it). In the window, the values scroll and the buttons stay at its foot: "Cancel"
+    closes it; a map saved already has "Delete", asked first. Full keys: the partial is rendered from two templates %>
+<% creating = game_map.new_record? %>
+<% scope = "game_tables.game_maps.form" %>
+<%= simple_form_for game_map, url: (creating ? game_table_game_maps_path(@game_table) : game_table_game_map_path(@game_table, game_map)),
+                              method: (creating ? :post : :patch),
+                              html: { id: "map-form", class: "flex min-h-0 flex-1 flex-col" } do |form| %>
+  <div class="<%= in_dialog ? "min-h-0 flex-1 overflow-y-auto px-6 py-6" : "max-w-xl" %>">
+    <%= form_error_notification(form) %>
+    <%= form.input :name, required: true, input_html: { maxlength: GameMap::NAME_MAX_LENGTH, autofocus: creating } %>
+    <% if game_map.image.attached? && game_map.image.persisted? %>
+      <%= image_tag game_map.image, alt: "", class: "mb-4 max-h-64 w-full rounded-lg border border-line bg-field object-contain" %>
+    <% end %>
+    <%= form.input :image, as: :file, required: creating,
+                           hint: t(creating ? "#{scope}.image_hint" : "#{scope}.image_change_hint", size: GameMap::IMAGE_MAX_SIZE / 1.megabyte),
+                           input_html: { accept: game_map_image_accept, class: "file:mr-3 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-1 file:text-sm file:font-semibold file:text-ink" } %>
+    <section class="mt-6 border-t border-line pt-5">
+      <h3 class="mb-3 text-xs font-semibold tracking-wider text-brass uppercase"><%= t("#{scope}.grid") %></h3>
+      <%= form.input :grid_cell_size, as: :integer, hint: t("#{scope}.grid_cell_size_hint"),
+                                      input_html: { min: GameMap::GRID_CELL_SIZES.min, max: GameMap::GRID_CELL_SIZES.max, class: "max-w-40" } %>
+      <%= form.input :grid_visible, as: :boolean, hint: t("#{scope}.grid_visible_hint") %>
+    </section>
+  </div>
+
+  <div class="<%= in_dialog ? "flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line px-6 py-4" : "mt-10 flex flex-wrap justify-end gap-3" %>">
+    <% unless creating %>
+      <%= button_tag t("#{scope}.delete"), type: "submit", form: "map-removal", class: "#{button_classes(:danger)} mr-auto" %>
+    <% end %>
+    <% if in_dialog %>
+      <%= button_tag t("game_tables.creation_actions.cancel"), type: "button", class: button_classes(:secondary),
+                                                              data: { action: "frame-dialog#close" } %>
+    <% else %>
+      <%= link_to t("game_tables.creation_actions.cancel"), edit_game_table_map_list_path(@game_table), class: button_classes(:secondary) %>
+    <% end %>
+    <%= form.button :submit, t("game_tables.creation_actions.save"), class: button_classes(:primary) %>
+  </div>
+<% end %>
+<%# Outside the form above (no form inside a form): deleting a map, asked first in the confirm window %>
+<% unless creating %>
+  <%= form_with url: game_table_game_map_path(@game_table, game_map), method: :delete, id: "map-removal", class: "hidden",
+                data: { turbo_confirm: t("#{scope}.confirm_delete", name: game_map.name_in_database),
+                        confirm_button: t("#{scope}.delete"), confirm_variant: "danger" } do %>
+  <% end %>
+<% end %>

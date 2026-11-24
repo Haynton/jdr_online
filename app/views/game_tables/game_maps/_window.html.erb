@@ -1,0 +1,20 @@
+<%# A map of the table: in the window of the step Maps (its title bar: its name, the close cross), or, opened directly
+    or without JavaScript, a page of the step. title: its name, or "New map" %>
+<% if map_in_dialog? %>
+  <%= turbo_frame_tag GameTables::MapDialogHelper::MAP_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-center justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <h2 id="map-dialog-title" class="truncate text-lg font-semibold text-ink"><%= title %></h2>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t("game_tables.game_maps.window.close") %>" title="<%= t("game_tables.game_maps.window.close") %>"
+              data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= render "game_tables/game_maps/form", game_map: @game_map, in_dialog: true %>
+  <% end %>
+<% else %>
+  <%= creation_page(current_step: "maps", game_table: @game_table) do %>
+    <%= page_header(title: title) %>
+    <%= render "game_tables/game_maps/form", game_map: @game_map, in_dialog: false %>
+  <% end %>
+<% end %>
