@@ -4,14 +4,16 @@ import { Controller } from "@hotwired/stimulus"
 // browser) and answers with one result per ability; they show as chips (chipTemplate), and each ability tile offers
 // them in its "Place a result" list. A result placed on one ability is no longer offered elsewhere. Placing a
 // result only fills the score of the tile and tells the live calculation: the player can still change it, roll again,
-// or type their own scores (decision: an aid, not a check). Rendered hidden and shown here: nothing without JavaScript
+// or type their own scores (decision: an aid, not a check). Rendered hidden and shown here: nothing without JavaScript.
+// The standard array uses it too, given its values (preset) instead of rolling them: offered from the start, nothing to
+// roll (the server checks each value is placed once, AbilityMethods::StandardArray)
 export default class extends Controller {
   static targets = ["controls", "button", "buttonLabel", "results", "chipTemplate", "choice"]
-  static values = { url: String, rerollLabel: String, placeholder: String }
+  static values = { url: String, rerollLabel: String, placeholder: String, preset: Array }
 
   // The lists of the tiles show from the start, disabled until a roll: the tiles keep their height
   connect() {
-    this.controlsTarget.hidden = false
+    if (this.hasControlsTarget) this.controlsTarget.hidden = false
     this.rolledResults = []
     this.choiceTargets.forEach((choice) => {
       const select = choice.querySelector("select")
@@ -19,6 +21,13 @@ export default class extends Controller {
       select.disabled = true
       choice.hidden = false
     })
+    if (this.presetValue.length > 0) this.offerPreset()
+  }
+
+  offerPreset() {
+    this.rolledResults = this.presetValue.map((total) => ({ total, dice: [] }))
+    this.showResults()
+    this.offerResults()
   }
 
   async roll() {
@@ -53,7 +62,7 @@ export default class extends Controller {
     const chips = this.rolledResults.map(({ total, dice }) => {
       const chip = this.chipTemplateTarget.content.firstElementChild.cloneNode(true)
       chip.querySelector("[data-total]").textContent = total
-      chip.querySelector("[data-dice]").textContent = `(${dice.join(", ")})`
+      chip.querySelector("[data-dice]").textContent = dice.length > 0 ? `(${dice.join(", ")})` : ""
       return chip
     })
     this.resultsTarget.replaceChildren(...chips)

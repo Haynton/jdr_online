@@ -1,0 +1,19 @@
+<%# When the table leaves the way to get the scores to the player: the ways of the template, drawn like the switch of
+    the starting equipment (the theme selector: one always chosen, the whole option clickable, without JavaScript too),
+    its options sharing the width of the guide, on one line.
+    Changing it saves the step and shows it again with the guide of the new way (save_before_leaving_controller.js#stay,
+    the key of the step shown); without JavaScript, the way chosen is saved with the step %>
+<fieldset class="mt-3 min-w-0">
+  <legend class="sr-only"><%= t("game_tables.characters.new.method_legend") %></legend>
+  <div class="flex gap-1 rounded-lg bg-field p-1">
+    <% chosen_type = character.ability_method_in_use&.dig("type") %>
+    <% character.game_table.ability_methods.each do |method| %>
+      <label class="<%= ability_method_option_classes %>">
+        <%= radio_button_tag "character[ability_method]", method["type"], method["type"] == chosen_type,
+                             class: "sr-only", id: nil,
+                             data: { save_step_key: @step.key, action: "change->save-before-leaving#stay" } %>
+        <%= method["label"] %>
+      </label>
+    <% end %>
+  </div>
+</fieldset>

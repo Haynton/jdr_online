@@ -5,13 +5,15 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
     { "key" => key, "label" => key.capitalize, "type" => "ability", "min" => 1, "max" => 30,
       "modifier" => "half_above_ten", "section" => "Caractéristiques" }
   end.freeze
+  ROLL_METHOD = { "type" => "roll", "label" => "Lancer de dés", "dice" => 4, "sides" => 6, "keep_highest" => 3,
+                  "help" => "4d6 par caractéristique, en gardant les 3 meilleurs." }.freeze
 
   setup do
     game_master = User.create!(email: "julien@example.com", username: "Julien", password: TEST_PASSWORD)
     @player = User.create!(email: "player@example.com", username: "player", password: TEST_PASSWORD, locale: "fr")
     @game_table = GameTable.create!(name: "La Crypte", status: GameTable::READY_STATUS, template_snapshot: {
                                       "character_fields" => {
-                                        "ability_roll" => { "dice" => 4, "sides" => 6, "keep_highest" => 3 },
+                                        "ability_methods" => [ROLL_METHOD],
                                         "fields" => ABILITIES
                                       }
                                     })
@@ -38,6 +40,16 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /4d6 par caractéristique, en gardant les 3 meilleurs/
     assert_select "select[aria-label=?][data-score-input=character_sheet_strength]:not([name])",
                   "Attribuer un résultat à Strength"
+  end
+
+  test "a table made before the ways keeps its dice roll" do
+    @game_table.update!(template_snapshot: { "character_fields" => {
+                          "ability_roll" => { "dice" => 4, "sides" => 6, "keep_highest" => 3 }, "fields" => ABILITIES
+                        } })
+    sign_in @player
+    get game_table_character_step_path(@game_table, "sheet")
+
+    assert_select "button[data-action='ability-roll#roll']", text: /Lancer les dés/
   end
 
   test "without a roll method in the template, there is nothing to roll" do

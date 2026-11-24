@@ -16,6 +16,13 @@ export default class extends Controller {
     document.removeEventListener("click", this.followStep)
   }
 
+  // A choice that changes what the step shows (the way to get the scores, picked by the player): the step is saved and
+  // shown again, its key in data-save-step-key
+  stay(event) {
+    this.destinationTarget.value = event.target.dataset.saveStepKey
+    this.element.requestSubmit()
+  }
+
   followStep(event) {
     const link = event.target.closest("a[data-save-step-key]")
     if (!link || event.defaultPrevented || isOpeningElsewhere(event)) return

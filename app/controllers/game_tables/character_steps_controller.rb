@@ -21,6 +21,7 @@ module GameTables
     def update
       return complete_character if @step.summary?
 
+      @character.choose_ability_method(step_params[:ability_method])
       @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
                                   spell_keys: step_params[:spell_keys])
       next_step = @character.creation_steps.after(@step)
@@ -34,6 +35,7 @@ module GameTables
     # the draft keeps what is valid (Character#save_draft_step), nothing else changes, nothing is shown
     def draft
       unless @step.summary?
+        @character.choose_ability_method(step_params[:ability_method])
         @character.save_draft_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
                                           spell_keys: step_params[:spell_keys])
       end
@@ -91,7 +93,7 @@ module GameTables
 
     # Nothing sent on the summary, whose button only confirms
     def step_params
-      params.fetch(:character, {}).permit(:name, sheet: {}, spell_keys: [])
+      params.fetch(:character, {}).permit(:name, :ability_method, sheet: {}, spell_keys: [])
     end
   end
 end

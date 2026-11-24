@@ -83,15 +83,20 @@ module CharacterSheets
       FieldTypes.of(bonus_field).too_much?(placed_bonuses(character, bonus_field), bonus_field)
     end
 
-    # The controllers of the abilities section: the roll of the dice when the template has one, and the bonus when it
-    # has one
-    def abilities_section_data(game_table, bonus_field)
-      roll_data = ability_roll_data(game_table)
+    # The controllers of the abilities section: the way to get the scores (a roll, an array, a point buy), and the bonus
+    # when the template has one
+    def abilities_section_data(character, bonus_field)
+      method_data = ability_method_data(character)
       bonus_data = bonus_field ? ability_bonus_data(bonus_field) : {}
-      roll_data.merge(bonus_data, controller: [roll_data[:controller], bonus_data[:controller]].compact.join(" "))
+      method_data.merge(bonus_data, controller: joined_data(method_data, bonus_data, :controller),
+                                    action: joined_data(method_data, bonus_data, :action)).compact_blank
     end
 
     private
+
+    def joined_data(*data, key)
+      data.filter_map { |values| values[key] }.join(" ")
+    end
 
     def placed_bonuses(character, bonus_field)
       character.sheet[bonus_field["key"]].to_h.transform_values(&:to_i)

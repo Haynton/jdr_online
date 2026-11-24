@@ -1,0 +1,12 @@
+<%# The point buy: the points spent on the scores typed, counted again while the player types (point_buy_controller.js,
+    the bonus of the background shown in the scores left aside), in red past the points. The scores stay between the
+    lowest and the highest cost (the bounds of the tiles); the server refuses more points than allowed
+    (AbilityMethods::PointBuy), its message under the count %>
+<% too_many_points = character.errors[:ability_scores].first %>
+<%= tag.p point_buy_status(character, ability_method), role: "status",
+          class: "mt-4 text-sm font-medium text-ink tabular-nums data-invalid:text-error-ink",
+          data: { point_buy_target: "status",
+                  invalid: ("" if points_spent(character, ability_method) > ability_method["points"]) } %>
+<% if too_many_points %>
+  <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= too_many_points %></p>
+<% end %>

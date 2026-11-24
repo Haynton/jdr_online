@@ -24,6 +24,7 @@ fr:
         description: "Description"
         name: "Nom"
         sheet_template: "Modèle de fiche"
+        ability_method_choice: "Méthode des caractéristiques"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -44,12 +45,19 @@ fr:
         attack_without_name: "chaque attaque doit avoir un nom"
         too_many_attacks: "%{count} attaques au plus"
         ability_bonus_too_high: "dépasse %{count} avec le bonus"
+        not_in_standard_array: "à choisir parmi %{values}"
+        outside_point_buy: "de %{minimum} à %{maximum} en achat de points"
+        standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
       models:
         catalog_entry:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            ability_scores:
+              too_many_points:
+                one: "Retirez 1 point pour continuer."
+                other: "Retirez %{count} points pour continuer."
             participation_id:
               already_has_character: "a déjà un personnage à cette table"
             spells:
@@ -70,6 +78,14 @@ fr:
         sheet_template:
           duplicate_equipment_option: "%{part} › %{field} › %{option} : l'option d'équipement %{letter} est déclarée deux fois"
           duplicate_key: "%{part} : la clé « %{key} » est utilisée par deux champs"
+          duplicate_ability_method: "La méthode des caractéristiques « %{type} » est déclarée deux fois"
+          invalid_ability_method_dice: "La méthode « %{method} » : les dés (dice, sides, keep_highest) doivent être des nombres entiers positifs, sans garder plus de dés que lancés"
+          invalid_ability_method_label: "La méthode « %{method} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_point_buy: "La méthode « %{method} » : les points doivent être un nombre entier positif, et chaque score un coût entier"
+          invalid_standard_array: "La méthode « %{method} » : il faut une valeur par caractéristique (%{count} en tout), des nombres entiers positifs"
+          missing_ability_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est obligatoire"
+          unknown_ability_method: "La méthode des caractéristiques « %{type} » est inconnue"
+          unknown_ability_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est inconnu"
           duplicate_spell_group: "Le groupe de sorts « %{group} » est déclaré deux fois"
           duplicate_step: "L'étape « %{step} » est déclarée deux fois"
           field_without_step: "« %{field} » est demandé à la création, mais n'est rangé dans aucune étape"
@@ -581,6 +597,8 @@ fr:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   game_tables:
+    rules:
+      former_roll: "Lancer de dés"
     character_steps:
       band_label: "Étapes de votre personnage"
       equipment_choices:
@@ -658,13 +676,15 @@ fr:
         modifier: "Modificateur"
         note_html: "%{labels} : %{text}"
         offered: "Proposée"
+        method_legend: "Méthode"
         place_result: "Attribuer"
         place_result_on: "Attribuer un résultat à %{label}"
+        place_value: "Placer"
+        points_spent: "%{spent} points dépensés sur %{points}"
         proficient: "(maîtrise)"
         reroll: "Relancer les dés"
         resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
-        roll_method: "%{dice}d%{sides} par caractéristique, en gardant les %{kept} meilleurs. Attribuez chaque résultat, ou tapez vos propres scores."
         score_column: "Score"
         scores_title: "Vos scores"
         skill_choices: "%{option} : choisissez %{count} compétences parmi celles marquées « Proposée ». Cochées : %{chosen} sur %{count}."
@@ -861,18 +881,13 @@ fr:
         back: "Retour"
         characters: "Personnages"
         game: "Partie"
+        ability_method_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
+        player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."
         subtitle: "Les réglages de la partie, d'après le modèle de fiche choisi."
         title: "Réglages"
       rules:
-        ability_method:
-          hint: "Comment les joueurs obtiennent leurs scores : 4d6 en gardant les 3 meilleurs, 15, 14, 13, 12, 10 et 8 à placer, ou 27 points à dépenser."
-          label: "Méthode des caractéristiques"
-          options:
-            - "Lancer de dés"
-            - "Tableau standard"
-            - "Achat de points"
         encumbrance:
           hint: "Le poids des objets portés ralentit les personnages."
           label: "Encombrement"
