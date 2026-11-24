@@ -27,8 +27,9 @@ class GameTable < ApplicationRecord
   # Settings comes right after the choice of the template, since its settings depend on it (the starting level)
   # Then the catalog of the table (the spells and items offered), before its NPCs
   CREATION_STEPS = %w[details settings catalog npcs maps summary].freeze
-  # It comes with its milestone (P3): shown as coming soon until then, and skipped by the creation
-  LATER_CREATION_STEPS = %w[maps].freeze
+  # A step that comes with its milestone: shown as coming soon until then, and skipped by the creation. None for now
+  # (the maps are a step since feature/p1-table-maps-step)
+  LATER_CREATION_STEPS = [].freeze
   AVAILABLE_CREATION_STEPS = (CREATION_STEPS - LATER_CREATION_STEPS).freeze
   # The level of the characters when the game begins, chosen by the game master. Same bounds as in the database
   STARTING_LEVELS = (1..20)
@@ -45,6 +46,8 @@ class GameTable < ApplicationRecord
   has_many :npcs, -> { of_game_master.order(:id) }, class_name: "Character", inverse_of: :game_table
   # Its own catalog entries: copies of entries of its template changed for it, entries added (Catalogs::TableCatalog)
   has_many :catalog_entries, dependent: :destroy
+  # Its maps, in the order they were added (step Maps)
+  has_many :game_maps, -> { order(:id) }, dependent: :destroy, inverse_of: :game_table
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
   validates :cover_image, inclusion: { in: COVER_IMAGES }

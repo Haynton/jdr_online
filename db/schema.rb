@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_092910) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_102340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "catalog_entries", force: :cascade do |t|
     t.bigint "sheet_template_id"
@@ -53,6 +81,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_092910) do
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
     t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
+  end
+
+  create_table "game_maps", force: :cascade do |t|
+    t.bigint "game_table_id", null: false
+    t.string "name", limit: 60, null: false
+    t.integer "grid_cell_size", default: 50, null: false
+    t.boolean "grid_visible", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_table_id"], name: "index_game_maps_on_game_table_id"
+    t.check_constraint "grid_cell_size >= 10 AND grid_cell_size <= 500", name: "game_maps_grid_cell_size_check"
   end
 
   create_table "game_tables", force: :cascade do |t|
@@ -312,10 +351,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_092910) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "catalog_entries", "game_tables"
   add_foreign_key "catalog_entries", "sheet_templates"
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
+  add_foreign_key "game_maps", "game_tables"
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
   add_foreign_key "inventory_items", "characters"
   add_foreign_key "participations", "game_tables"
