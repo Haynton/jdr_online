@@ -1,40 +1,76 @@
-// The drawing of a map while it is edited: its floors ("column,row" → floor key) and its edges ("cell|cell" → edge
-// key), and what a stroke of the editor may change. Sent to the server as the layout that MapLayoutValidator checks
-import { cellKey, sideKey } from "map_editor/square_grid"
+// The drawing of a map while it is edited: its floors ("column,row" → floor key), its edges ("cell|cell" → edge key)
+// and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Also how the map is
+// made (mode: "draw", or "picture" for a picture of one's own) and how its picture sits under the grid (picture:
+// { cells_wide, offset_x, offset_y, opacity }). Sent to the server as the layout that MapLayoutValidator checks
+import { cellKey, cellPosition, sideKey } from "map_editor/square_grid"
 import { doorKey } from "map_edges"
+import { objectOf, footprintSize } from "map_objects"
 
 export const layoutVersion = 1
 // How close to a side the pointer must be for the eraser to take its wall rather than the floor of the cell
 const eraserReach = 5
 
 export default class MapLayout {
-  constructor({ floors = {}, edges = {} } = {}) {
+  constructor({ floors = {}, edges = {}, objects = [], mode = "draw", picture = null } = {}, grid) {
+    this.grid = grid
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
+    this.objects = objects.map((placedObject) => ({ ...placedObject }))
+    this.mode = mode
+    this.picture = picture && { ...picture }
   }
 
   toJSON() {
-    return { version: layoutVersion, floors: Object.fromEntries(this.floors), edges: Object.fromEntries(this.edges) }
+    const drawing = { version: layoutVersion, floors: Object.fromEntries(this.floors),
+                      edges: Object.fromEntries(this.edges), objects: this.objects, mode: this.mode }
+    return this.picture ? { ...drawing, picture: this.picture } : drawing
   }
 
-  // A copy of the drawing as it is, to come back to it (undo, redo)
+  isPicture() {
+    return this.mode === "picture"
+  }
+
+  // A copy of the drawing as it is, with the size of its grid, to come back to it (undo, redo)
   snapshot() {
-    return JSON.stringify(this.toJSON())
+    return JSON.stringify({ layout: this.toJSON(), columns: this.grid.columns, rows: this.grid.rows })
   }
 
+  // Gives back the size of the grid of the copy: the editor makes its grid again when it changed
   restore(snapshot) {
-    const { floors, edges } = JSON.parse(snapshot)
+    const { layout: { floors, edges, objects, mode = "draw", picture = null }, columns, rows } = JSON.parse(snapshot)
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
+    this.objects = objects
+    this.mode = mode
+    this.picture = picture
+    return { columns, rows }
+  }
+
+  // Whether something drawn would go out of a grid of that size (its cells kept from the top left)
+  hasSomethingOutside(columns, rows) {
+    const isOutside = ([column, row]) => column >= columns || row >= rows
+    return [...this.floors.keys()].some((key) => isOutside(cellPosition(key))) ||
+      [...this.edges.keys()].some((key) => key.split("|").some((cell) => isOutside(cellPosition(cell)))) ||
+      this.objects.some((placedObject) => this.cellsOf(placedObject).some(isOutside))
+  }
+
+  // What goes out of the new grid is taken out: floors, walls and doors, objects that do not hold in it whole
+  cropTo(grid) {
+    const isOutside = ([column, row]) => !grid.inside(column, row)
+    this.floors = new Map([...this.floors].filter(([key]) => !isOutside(cellPosition(key))))
+    this.edges = new Map([...this.edges].filter(([key]) => !key.split("|").some((cell) => isOutside(cellPosition(cell)))))
+    this.objects = this.objects.filter((placedObject) => !this.cellsOf(placedObject).some(isOutside))
+    this.grid = grid
   }
 
   isEmpty() {
-    return this.floors.size === 0 && this.edges.size === 0
+    return this.floors.size === 0 && this.edges.size === 0 && this.objects.length === 0
   }
 
   clear() {
     this.floors.clear()
     this.edges.clear()
+    this.objects = []
   }
 
   // true when the cell changed
@@ -70,11 +106,67 @@ export default class MapLayout {
     return this.edges.delete(keyOfSide(side))
   }
 
-  // Close to a side that holds a wall: the wall goes. Otherwise the floor of the cell. true when something went
+  // An object on the cell first, then the wall of a side close to the pointer, then the floor. true when something went
   erase(side) {
+    if (this.removeObjectAt(side.column, side.row)) return true
     if (side.distance < eraserReach && this.removeEdge(side)) return true
 
     return this.floors.delete(cellKey(side.column, side.row))
+  }
+
+  // The cells of an object once turned: [[column, row], ...]
+  cellsOf({ key, column, row, rotation }) {
+    const [columns, rows] = footprintSize(objectOf(key), rotation)
+    const cells = []
+    for (let columnOffset = 0; columnOffset < columns; columnOffset++) {
+      for (let rowOffset = 0; rowOffset < rows; rowOffset++) cells.push([column + columnOffset, row + rowOffset])
+    }
+    return cells
+  }
+
+  objectAt(column, row) {
+    return this.objects.find((placedObject) => this.cellsOf(placedObject).some(([cellColumn, cellRow]) => (
+      cellColumn === column && cellRow === row
+    )))
+  }
+
+  // Every cell inside the grid, on a floor, free (an object being turned does not stand in its own way)
+  mayPlace(placedObject, ignoredObject = null) {
+    return this.cellsOf(placedObject).every(([column, row]) => {
+      const objectThere = this.objectAt(column, row)
+      return this.grid.inside(column, row) && this.floors.has(cellKey(column, row)) &&
+        (!objectThere || objectThere === ignoredObject)
+    })
+  }
+
+  placeObject(placedObject) {
+    if (!this.mayPlace(placedObject)) return false
+
+    this.objects.push(placedObject)
+    return true
+  }
+
+  removeObjectAt(column, row) {
+    const placedObject = this.objectAt(column, row)
+    if (!placedObject) return false
+
+    this.objects = this.objects.filter((candidate) => candidate !== placedObject)
+    return true
+  }
+
+  // The next quarter turn that fits, like the prototype; nothing when none does
+  turnObjectAt(column, row) {
+    const placedObject = this.objectAt(column, row)
+    if (!placedObject) return false
+
+    for (let turn = 1; turn <= 3; turn++) {
+      const turned = { ...placedObject, rotation: (placedObject.rotation + turn) % 4 }
+      if (!this.mayPlace(turned, placedObject)) continue
+
+      placedObject.rotation = turned.rotation
+      return true
+    }
+    return false
   }
 }
 

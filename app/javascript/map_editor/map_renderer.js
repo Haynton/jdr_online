@@ -1,24 +1,26 @@
 // Draws a map (its floors and its edges) into a group of the board, like the prototype: the floors filled with their
 // texture, the walls that a walled floor gets on its own where it meets another floor or the empty ground, the walls
-// and doors drawn by the game master, the hatching, pebbles and boulders outside, the banks of the water. The floors
-// say what they do to their sides (map_floors), the edges how they are drawn (map_edges)
+// and doors drawn by the game master, the hatching, pebbles and boulders outside, the banks of the water, the objects.
+// The floors say what they do to their sides (map_floors), the edges and the objects how they are drawn (map_edges,
+// map_objects)
 import { floorOf, isAir } from "map_floors"
 import { edgeOf, doorKey } from "map_edges"
+import { objectOf, footprintSize, drawObject } from "map_objects"
 import { cellKey, cellPosition, cellSize, sideKey } from "map_editor/square_grid"
 import { createSvgElement, polygonPath, pointKey, rounded } from "map_editor/svg"
 import { noise } from "map_editor/noise"
 import { drawHatching } from "map_editor/hatching"
 import { drawBoulder } from "map_editor/boulder"
 import { drawInkWall } from "map_editor/wall_drawing"
-import { waterLoops, offsetLoop, loopPath } from "map_editor/water_outline"
-import { waterPattern } from "map_editor/patterns"
+import { regionLoops, offsetLoop, loopPath } from "map_editor/region_outline"
+import { waterPattern, glowGradient } from "map_editor/patterns"
 import { markDensity, markDepth } from "map_editor/drawing_settings"
 import * as palette from "map_editor/palette"
 
 // The floors of the border cells go on beyond the grid, so that the walls stop at the edge of the board, not before
 const paddingCells = 3
 
-export function renderMap(group, { grid, floors, edges }) {
+export function renderMap(group, { grid, floors, edges, objects = [] }) {
   group.replaceChildren()
   const floorView = extendBeyondTheGrid(floors, grid)
   const map = { grid, edges, floorView, floorAt: (column, row) => floorOf(floorView.get(cellKey(column, row))) }
@@ -32,6 +34,7 @@ export function renderMap(group, { grid, floors, edges }) {
   drawFloors(group, map)
   drawWater(group, map, insides)
   drawShadows(group, borders, insides)
+  drawObjects(group, grid, objects)
   drawWalls(group, borders, insides)
   drawRocks(group, borders.filter((border) => border.floor.rocksOutside))
 }
@@ -143,18 +146,47 @@ function pointOutside({ start, end, normalX, normalY }, ratio, distance) {
           start[1] + (end[1] - start[1]) * ratio + normalY * distance]
 }
 
-// Each texture filled in one path. Under the water, the floor of a neighbour, or deep water
+// Each texture filled in one path. Under the water, the floor of a neighbour, or nothing (water alone in the empty
+// ground is only its rounded pond, drawn with its banks). A floor with a soft edge
+// (open air) is filled first, along its soft outline: a meadow alone ends in an irregular, rounded edge, not in squares
+// (Anthony's request), and the other floors, drawn over it, cover its straight sides
 function drawFloors(group, map) {
   const floorGroup = createSvgElement("g", {}, group)
+  drawSoftEdgedFloors(floorGroup, map)
   const pathsByFill = new Map()
   map.floorView.forEach((floorKey, key) => {
+    const floor = floorOf(floorKey)
+    if (floor?.softEdge) return
+
     const [column, row] = cellPosition(key)
-    const fill = fillUnder(map, floorOf(floorKey), column, row)
+    const fill = fillUnder(map, floor, column, row)
+    if (!fill) return
+
     pathsByFill.set(fill, (pathsByFill.get(fill) || "") + polygonPath(map.grid.corners(column, row)))
   })
   pathsByFill.forEach((path, fill) => createSvgElement("path", { d: path, fill, stroke: fill, "stroke-width": 0.8 },
                                                        floorGroup))
   map.floorView.forEach((floorKey, key) => drawSpeckles(floorGroup, map.grid, floorOf(floorKey), cellPosition(key)))
+}
+
+// Rough only on the sides that face the empty ground
+function drawSoftEdgedFloors(group, map) {
+  const cellsByFloor = new Map()
+  map.floorView.forEach((floorKey, key) => {
+    if (!floorOf(floorKey)?.softEdge) return
+
+    if (!cellsByFloor.has(floorKey)) cellsByFloor.set(floorKey, [])
+    cellsByFloor.get(floorKey).push(cellPosition(key))
+  })
+  cellsByFloor.forEach((cells, floorKey) => {
+    const loops = regionLoops(cells, map.grid, {
+      isInRegion: (column, row) => map.floorView.get(cellKey(column, row)) === floorKey,
+      sideStyleOf: (column, row) => (map.floorAt(column, row) ? "straight" : "free"),
+      bulge: 6
+    })
+    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: floorOf(floorKey).pattern, "fill-rule": "evenodd" },
+                     group)
+  })
 }
 
 function fillUnder(map, floor, column, row) {
@@ -163,7 +195,7 @@ function fillUnder(map, floor, column, row) {
 
   const neighbour = map.grid.neighbours(column, row).map((position) => map.floorAt(...position))
     .find((candidate) => candidate && !candidate.liquid)
-  return neighbour ? neighbour.pattern : waterPattern
+  return neighbour ? neighbour.pattern : null
 }
 
 // A few specks of dirt or grass on a cell, and sometimes a tuft
@@ -188,10 +220,15 @@ function drawSpeckles(group, grid, floor, [column, row]) {
 }
 
 // The water over its cells, the faint lines between the cells of a floor, then the ripples and the banks
+// Organic banks that never go over the empty ground (Anthony: « l'eau déborde », then « c'est sensé être organique »):
+// against it, they only round off inwards; against another floor, freely. The water and its line follow the same loop
 function drawWater(group, map, insides) {
   const waterCells = [...map.floorView].filter(([, floorKey]) => floorOf(floorKey)?.liquid)
     .map(([key]) => cellPosition(key))
-  const loops = waterLoops(waterCells, map.grid, (column, row) => Boolean(map.floorAt(column, row)?.liquid))
+  const loops = regionLoops(waterCells, map.grid, {
+    isInRegion: (column, row) => Boolean(map.floorAt(column, row)?.liquid),
+    sideStyleOf: (column, row) => (map.floorAt(column, row) ? "free" : "inward")
+  })
   if (loops.length) {
     createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd" }, group)
   }
@@ -206,11 +243,16 @@ function drawCellLines(group, sides) {
   }, lines))
 }
 
+// Ripples in the water cells, then along each bank its line and dashes inside it, without the thick ink of the
+// prototype (Anthony's request: no heavy black border). Not in a cell of water almost alone, nor inside a loop too
+// small to hold them: they would go over its bank
 function drawBanks(group, grid, waterCells, loops) {
   const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, group)
+  const isWaterCell = new Set(waterCells.map(([column, row]) => cellKey(column, row)))
   waterCells.forEach(([column, row]) => {
     const seed = column * 733 + row * 19
-    if (noise(seed, 0, 70) >= 0.55) return
+    const waterNeighbours = grid.neighbours(column, row).filter((position) => isWaterCell.has(cellKey(...position)))
+    if (noise(seed, 0, 70) >= 0.55 || waterNeighbours.length < 2) return
 
     const [x, y] = grid.center(column, row)
     const waveX = x + (noise(seed, 1, 71) - 0.5) * 8
@@ -219,12 +261,21 @@ function drawBanks(group, grid, waterCells, loops) {
                                "stroke-width": 0.8, "stroke-opacity": 0.6 }, banks)
   })
   loops.forEach((points) => {
+    createSvgElement("path", { d: loopPath(points), stroke: palette.shoreWave, "stroke-width": 1.3 }, banks)
+    if (!isLargeEnoughForRipples(points)) return
+
     createSvgElement("path", { d: loopPath(offsetLoop(points, 7)), stroke: palette.shoreWave, "stroke-width": 0.7,
                                "stroke-opacity": 0.55, "stroke-dasharray": "2.5 3" }, banks)
     createSvgElement("path", { d: loopPath(offsetLoop(points, 3.4)), stroke: palette.shoreWave, "stroke-width": 1.1,
                                "stroke-opacity": 0.8 }, banks)
-    createSvgElement("path", { d: loopPath(points), stroke: palette.ink, "stroke-width": 1.7 }, banks)
   })
+}
+
+// Wider and higher than the two lines inside it, on each side
+function isLargeEnoughForRipples(points) {
+  const xs = points.map(([x]) => x)
+  const ys = points.map(([, y]) => y)
+  return Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) > cellSize * 0.75
 }
 
 // A soft shadow along the walls, inside the walled floors and under the walls drawn by the game master
@@ -317,4 +368,36 @@ function drawRocks(group, borders) {
   const rockGroup = createSvgElement("g", {}, group)
   rocks.sort((first, second) => first.y - second.y)
     .forEach((rock) => drawBoulder(rockGroup, rock.x, rock.y, rock.radius, rock.seed))
+}
+
+// Under the walls, without the drop shadow of the prototype (Anthony: « un espèce de shadow bizarre »); what blocks
+// the way over the rest. Then the light of the fires
+function drawObjects(group, grid, objects) {
+  const objectGroup = createSvgElement("g", {}, group)
+  const lightGroup = createSvgElement("g", { "pointer-events": "none" }, group)
+  const drawable = objects.filter((placedObject) => objectOf(placedObject.key))
+  const drawnLast = (placedObject) => (objectOf(placedObject.key).drawnOnTop ? 1 : 0)
+  drawable.sort((first, second) => drawnLast(first) - drawnLast(second)).forEach((placedObject) => {
+    const mapObject = objectOf(placedObject.key)
+    const [centerX, centerY] = objectCenter(placedObject, mapObject)
+    drawPlacedObject(objectGroup, placedObject, mapObject, centerX, centerY)
+    if (!mapObject.glow) return
+
+    createSvgElement("circle", { cx: rounded(centerX), cy: rounded(centerY), r: rounded(mapObject.glow * cellSize),
+                                 fill: glowGradient }, lightGroup)
+  })
+}
+
+// The middle of the cells of an object once turned
+export function objectCenter(placedObject, mapObject) {
+  const [columns, rows] = footprintSize(mapObject, placedObject.rotation)
+  return [(placedObject.column + columns / 2) * cellSize, (placedObject.row + rows / 2) * cellSize]
+}
+
+// Drawn around its center, then turned: its length and depth are those of the object before it is turned
+export function drawPlacedObject(group, placedObject, mapObject, centerX, centerY) {
+  const objectTransform = `translate(${rounded(centerX)} ${rounded(centerY)}) rotate(${placedObject.rotation * 90})`
+  const seed = placedObject.column * 131 + placedObject.row * 7
+  drawObject(createSvgElement("g", { transform: objectTransform }, group), mapObject, mapObject.width * cellSize,
+             mapObject.height * cellSize, seed)
 }

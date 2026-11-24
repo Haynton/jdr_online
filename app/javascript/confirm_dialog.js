@@ -24,10 +24,22 @@ function settingsFrom(form, submitter) {
 
 function prepare(dialog, question, { label, variant }) {
   const confirmButton = dialog.querySelector("[data-confirm-dialog-button]")
-  dialog.querySelector("#confirm-dialog-question").textContent = question
+  const { asked, detail } = splitQuestion(question)
+  dialog.querySelector("#confirm-dialog-question").textContent = asked
+  const detailLine = dialog.querySelector("#confirm-dialog-detail")
+  detailLine.textContent = detail
+  detailLine.hidden = !detail
   confirmButton.textContent = label || dialog.dataset.defaultLabel
   confirmButton.className = variant === "danger" ? dialog.dataset.dangerClasses : dialog.dataset.primaryClasses
   closeOnBackdropClick(dialog)
+}
+
+// The question up to its question mark, then what it adds under it, smaller (Anthony's request): « Supprimer la
+// table « Aube » ? Ses personnages seront supprimés. » gives the question and its consequence on their own lines.
+// A question without anything after its mark stays whole
+function splitQuestion(question) {
+  const [, asked, detail] = question.match(/^(.*?\?)\s+(\S.*)$/s) || [null, question, ""]
+  return { asked, detail }
 }
 
 // A click on the backdrop reaches the <dialog> itself, a click inside lands on its content: it answers no

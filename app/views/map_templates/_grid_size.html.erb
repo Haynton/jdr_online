@@ -1,0 +1,27 @@
+<%# The size of the grid, in a bubble floating at the top left of the board (Anthony's request), like the other floating
+    pieces of the editor: the columns between « − » and « + », still typed if one wants, the rows following
+    (map_editor_controller.js#resizeGrid). Rendered hidden and shown by the editor: it does nothing without JavaScript %>
+<div hidden role="group" aria-labelledby="map-grid-size-title" data-map-editor-target="gridSize"
+     class="absolute top-5 left-5 rounded-xl border border-line bg-surface px-2.5 pt-1.5 pb-2 shadow-md lg:top-6 lg:left-6">
+  <p id="map-grid-size-title" class="mb-1 text-[10px] font-bold tracking-widest text-brass uppercase"><%= t(".title") %></p>
+  <div class="flex items-center gap-1.5">
+    <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#removeColumn"
+            aria-label="<%= t("map_templates.editor.fewer_columns") %>" title="<%= t("map_templates.editor.fewer_columns") %>">
+      <%= render "shared/icons/minus", css_class: "size-3" %>
+    </button>
+    <label for="map-columns" class="sr-only"><%= t("map_templates.editor.columns_label") %></label>
+    <input type="number" id="map-columns" value="<%= map_template.columns_in_database %>"
+           min="<%= MapTemplate::GRID_SIZES.min %>" max="<%= MapTemplate::GRID_SIZES.max %>"
+           class="<%= MapTemplatesHelper::MAP_COLUMNS_FIELD_CLASSES %>"
+           data-map-editor-target="columnsInput" data-action="change->map-editor#resizeGrid"
+           data-confirm-button="<%= t("map_templates.editor.shrink_button") %>" data-confirm-variant="danger">
+    <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#addColumn"
+            aria-label="<%= t("map_templates.editor.more_columns") %>" title="<%= t("map_templates.editor.more_columns") %>">
+      <%= render "shared/icons/plus", css_class: "size-3" %>
+    </button>
+    <p class="ml-0.5 text-xs text-muted">
+      <span aria-hidden="true">×</span> <span class="font-semibold text-ink tabular-nums" data-map-editor-target="rowsCount"><%= map_template.rows_in_database %></span>
+      <%= t("map_templates.editor.cells") %>
+    </p>
+  </div>
+</div>
