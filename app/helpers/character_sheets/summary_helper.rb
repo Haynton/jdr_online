@@ -77,9 +77,12 @@ module CharacterSheets
       fields.all? { |field| summary_group(field) == :texts } && summary_texts(character, fields).empty?
     end
 
-    # The values the table gives (the level), shown with the facts of the first block
+    # The values the table gives (the level), shown with the facts of the first block, unless a step shows them
+    # already: a level the players choose is a field of the first page (CharacterCreationSteps
+    # #with_fields_chosen_by_players)
     def summary_table_fields(character)
-      character.sheet_fields.select { |field| field["from_table"] }
+      shown_keys = character.creation_steps.summary_blocks.flat_map(&:field_keys)
+      character.sheet_fields.select { |field| field["from_table"] && shown_keys.exclude?(field["key"]) }
     end
 
     def summary_proficient?(character, field)
