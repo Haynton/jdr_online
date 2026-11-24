@@ -25,11 +25,27 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
                   "Afficher toute la carte"
     assert_select "svg[data-map-editor-target=board][hidden]"
     assert_select "aside a[href=?]", map_templates_path, text: "Mes cartes"
-    assert_select "aside [role=tablist][hidden] button[role=tab]", count: 2
+    assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 3
+    assert_select "#map-editor-panel-map input[name='map_template[name]'][value=?]", "La taverne"
+  end
+
+  test "the tab Objects shows one family at a time; the bar turns and takes objects away" do
+    get edit_map_template_path(@map_template)
+
+    assert_select "#map-editor-panel-objects [role=tablist][hidden] button[role=tab]", text: "Mobilier"
+    assert_select "#map-objects-panel-furniture button[data-tool-kind=object]",
+                  count: MapObjects.of_family("furniture").size
+    assert_select "#map-editor-panel-objects button[data-tool-kind=object]", count: MapObjects::ALL.size
+    assert_select "button[data-tool-key=bed] span[aria-hidden=true]", text: "2×1"
+    assert_select "header [role=toolbar] button[data-action='map-editor#rotatePlacement']", text: "Pivoter (R) · 0°"
+    assert_select "header [role=toolbar] button[data-tool-kind=remover]", text: "Retirer objet"
+    # Only the tools of the panel have a swatch to draw: a swatch of another kind would stop the editor
+    assert_select "header [data-map-editor-target=swatch]", count: 0
+    drawn_kinds = %w[floor edge object].map { |kind| ":not([data-tool-kind=#{kind}])" }.join
+    assert_select "[data-map-editor-target=swatch]#{drawn_kinds}", count: 0
     assert_select "#map-editor-panel-floors[role=tabpanel] button[data-tool-kind=floor]", count: MapFloors.keys.size
     assert_select "#map-editor-panel-floors button[data-tool-kind=edge]", count: MapEdges.keys.size
     assert_select "#map-editor-panel-floors button[data-tool-key=room]", text: "Salle"
-    assert_select "#map-editor-panel-map input[name='map_template[name]'][value=?]", "La taverne"
   end
 
   test "the figures of the drawing are given in the words of the page, by count" do
@@ -37,6 +53,7 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
 
     labels = JSON.parse(css_select("main[data-controller=map-editor]").first["data-map-editor-figure-labels-value"])
     assert_equal I18n.t("map_templates.editor.figures.cells", locale: :fr).stringify_keys, labels["cells"]
+    assert_equal I18n.t("map_templates.editor.figures.objects", locale: :fr).stringify_keys, labels["objects"]
   end
 
   test "a drawing sent by the editor is saved, and the answer says nothing" do
@@ -45,6 +62,18 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
 
     assert_response :no_content
     assert_equal drawing, @map_template.reload.layout
+  end
+
+  test "a drawing with objects is saved; an object off the floor is refused" do
+    drawing = layout_with(floors: { "0,0" => "room", "1,0" => "room" })
+    drawing["objects"] = [{ "key" => "bed", "column" => 0, "row" => 0, "rotation" => 0 }]
+    patch map_template_layout_path(@map_template), params: { layout: drawing.to_json }
+    assert_response :no_content
+    assert_equal drawing, @map_template.reload.layout
+
+    drawing["objects"] = [{ "key" => "bed", "column" => 1, "row" => 0, "rotation" => 0 }]
+    patch map_template_layout_path(@map_template), params: { layout: drawing.to_json }
+    assert_response :unprocessable_content
   end
 
   test "a wrong drawing is refused with its message, and the saved one stays" do

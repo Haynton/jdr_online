@@ -18,6 +18,10 @@
       <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".redo_keys") %>"
               data-map-editor-target="redoButton" data-action="map-editor#redo"><%= t(".redo") %></button>
       <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
+      <%# The direction of the next object put: its label says the degrees (the controller writes them) %>
+      <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#rotatePlacement"
+              data-map-editor-target="rotationLabel"><%= t(".rotate", degrees: 0) %></button>
+      <%= render "map_templates/tool", kind: "remover", key: "remover", label: t(".remove_object"), in_bar: true %>
       <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"), in_bar: true,
                                        icon: render("shared/icons/eraser", css_class: "size-4") %>
       <%# Not asked first, like the prototype: Undo brings it all back %>
@@ -48,7 +52,7 @@
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
            data-map-editor-target="board"
-           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys">
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown.delete@window->map-editor#deleteWithKey keydown.backspace@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
@@ -57,14 +61,14 @@
 
     <aside class="flex min-h-0 flex-col border-t border-line bg-surface lg:border-t-0 lg:border-l" aria-label="<%= t(".panel_label") %>"
            data-controller="tabs" data-action="turbo:morph@document->tabs#refresh"
-           data-tabs-selected-index-value="<%= map_template.errors.any? ? 1 : 0 %>">
+           data-tabs-selected-index-value="<%= map_template.errors.any? ? 2 : 0 %>">
       <div class="grid gap-2 px-3 pt-3">
         <%= render "map_templates/making_choices" %>
         <%= link_to t(".my_maps"), map_templates_path, class: button_classes(:secondary, size: :compact, full_width: true) %>
       </div>
 
       <div hidden role="tablist" aria-label="<%= t(".tabs_label") %>" class="mt-3 flex gap-0.5 border-b border-line px-3" data-tabs-target="list">
-        <% [["floors", t(".terrain_tab")], ["map", t(".map_tab")]].each do |panel, label| %>
+        <% [["floors", t(".terrain_tab")], ["objects", t(".objects_tab")], ["map", t(".map_tab")]].each do |panel, label| %>
           <button type="button" role="tab" id="map-editor-tab-<%= panel %>" aria-controls="map-editor-panel-<%= panel %>"
                   aria-selected="false" class="<%= MapTemplatesHelper::MAP_TAB_CLASSES %>"
                   data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys"><%= label %></button>
@@ -74,6 +78,9 @@
       <div class="min-h-0 flex-1 overflow-y-auto px-3.5 py-3">
         <section id="map-editor-panel-floors" role="tabpanel" aria-labelledby="map-editor-tab-floors" data-tabs-target="panel">
           <%= render "map_templates/floor_tools" %>
+        </section>
+        <section id="map-editor-panel-objects" role="tabpanel" aria-labelledby="map-editor-tab-objects" data-tabs-target="panel">
+          <%= render "map_templates/object_tools" %>
         </section>
         <section id="map-editor-panel-map" role="tabpanel" aria-labelledby="map-editor-tab-map" data-tabs-target="panel">
           <%= render "map_templates/settings", map_template: map_template %>

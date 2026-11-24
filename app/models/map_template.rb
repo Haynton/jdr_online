@@ -7,7 +7,9 @@ class MapTemplate < ApplicationRecord
   # Same bounds as in the database: under 10 cells there is no room to move, over 60 the editor gets too small to draw
   GRID_SIZES = (10..60)
   # A new map: nothing drawn yet
-  BLANK_LAYOUT = { "version" => MapLayoutValidator::CURRENT_VERSION, "floors" => {}, "edges" => {} }.freeze
+  BLANK_LAYOUT = {
+    "version" => MapLayoutValidator::CURRENT_VERSION, "floors" => {}, "edges" => {}, "objects" => []
+  }.freeze
 
   belongs_to :owner, class_name: "User", inverse_of: :map_templates
 

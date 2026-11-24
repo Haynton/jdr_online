@@ -1,13 +1,20 @@
 <%# A tool of the map editor, pressed while it is the tool in use. In the panel (map_templates/_floor_tools), a tile
     like those of the prototype: its swatch drawn by its JavaScript twin (map_floors, map_edges), its name under it.
-    in_bar: a button of the bar on top (the eraser), its icon (rendered already) beside its name %>
+    in_bar: a button of the bar on top (the eraser), its icon (rendered already) beside its name. size: the size of an
+    object of more than one cell %>
 <% in_bar = local_assigns[:in_bar] %>
 <button type="button" aria-pressed="false" data-map-editor-target="tool" data-action="map-editor#chooseTool"
         data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"
-        class="<%= in_bar ? MapTemplatesHelper::MAP_BAR_TOOL_CLASSES : MapTemplatesHelper::MAP_TOOL_CLASSES %>">
+        class="<%= in_bar ? MapTemplatesHelper::MAP_BAR_TOOL_CLASSES : MapTemplatesHelper::MAP_TOOL_CLASSES %> relative">
+  <%# The size of an object of more than one cell, in a corner, like the prototype (said by the name too: decorative) %>
+  <% if local_assigns[:size] %>
+    <span class="absolute top-0.5 left-1 rounded bg-surface/80 px-0.5 text-[9px] font-semibold text-ink" aria-hidden="true"><%= size %></span>
+  <% end %>
+  <%# A button of the bar shows its icon if it has one (the eraser), or only its name (Take object away): never a
+      swatch, which only the tools of the panel have (map_editor_controller.js draws them) %>
   <% if local_assigns[:icon] %>
     <%= icon %>
-  <% else %>
+  <% elsif !in_bar %>
     <svg viewBox="0 0 32 32" class="mx-auto mb-1 block size-11 overflow-hidden rounded-lg" aria-hidden="true"
          data-map-editor-target="swatch" data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"></svg>
   <% end %>

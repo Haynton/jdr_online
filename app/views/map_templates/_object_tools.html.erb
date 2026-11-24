@@ -1,0 +1,21 @@
+<%# The tab of the objects: one family at a time (Furniture, Decor, Nature), chosen with pills like the prototype
+    (tabs inside the tab: tabs_controller.js), then its objects in a grid of four, like the floors %>
+<div data-controller="tabs" data-action="turbo:morph@document->tabs#refresh">
+  <div hidden role="tablist" aria-label="<%= t(".families_label") %>" class="mb-3 flex gap-1.5" data-tabs-target="list">
+    <% MapObjects::FAMILIES.each do |family| %>
+      <button type="button" role="tab" id="map-objects-tab-<%= family %>" aria-controls="map-objects-panel-<%= family %>"
+              aria-selected="false" class="<%= MapTemplatesHelper::MAP_FAMILY_TAB_CLASSES %>"
+              data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys"><%= t(".families.#{family}") %></button>
+    <% end %>
+  </div>
+  <% MapObjects::FAMILIES.each do |family| %>
+    <section id="map-objects-panel-<%= family %>" role="tabpanel" aria-labelledby="map-objects-tab-<%= family %>" data-tabs-target="panel">
+      <ul class="mb-3 grid grid-cols-4 gap-1.5">
+        <% map_object_tools(family).each do |key, label, size| %>
+          <li><%= render "map_templates/tool", kind: "object", key: key, label: label, size: size %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+  <p class="text-xs leading-normal text-muted"><%= t(".note") %></p>
+</div>

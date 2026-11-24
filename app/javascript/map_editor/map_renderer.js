@@ -1,9 +1,11 @@
 // Draws a map (its floors and its edges) into a group of the board, like the prototype: the floors filled with their
 // texture, the walls that a walled floor gets on its own where it meets another floor or the empty ground, the walls
-// and doors drawn by the game master, the hatching, pebbles and boulders outside, the banks of the water. The floors
-// say what they do to their sides (map_floors), the edges how they are drawn (map_edges)
+// and doors drawn by the game master, the hatching, pebbles and boulders outside, the banks of the water, the objects.
+// The floors say what they do to their sides (map_floors), the edges and the objects how they are drawn (map_edges,
+// map_objects)
 import { floorOf, isAir } from "map_floors"
 import { edgeOf, doorKey } from "map_edges"
+import { objectOf, footprintSize } from "map_objects"
 import { cellKey, cellPosition, cellSize, sideKey } from "map_editor/square_grid"
 import { createSvgElement, polygonPath, pointKey, rounded } from "map_editor/svg"
 import { noise } from "map_editor/noise"
@@ -11,14 +13,14 @@ import { drawHatching } from "map_editor/hatching"
 import { drawBoulder } from "map_editor/boulder"
 import { drawInkWall } from "map_editor/wall_drawing"
 import { waterLoops, offsetLoop, loopPath } from "map_editor/water_outline"
-import { waterPattern } from "map_editor/patterns"
+import { waterPattern, glowGradient, objectShadowFilter } from "map_editor/patterns"
 import { markDensity, markDepth } from "map_editor/drawing_settings"
 import * as palette from "map_editor/palette"
 
 // The floors of the border cells go on beyond the grid, so that the walls stop at the edge of the board, not before
 const paddingCells = 3
 
-export function renderMap(group, { grid, floors, edges }) {
+export function renderMap(group, { grid, floors, edges, objects = [] }) {
   group.replaceChildren()
   const floorView = extendBeyondTheGrid(floors, grid)
   const map = { grid, edges, floorView, floorAt: (column, row) => floorOf(floorView.get(cellKey(column, row))) }
@@ -32,6 +34,7 @@ export function renderMap(group, { grid, floors, edges }) {
   drawFloors(group, map)
   drawWater(group, map, insides)
   drawShadows(group, borders, insides)
+  drawObjects(group, grid, objects)
   drawWalls(group, borders, insides)
   drawRocks(group, borders.filter((border) => border.floor.rocksOutside))
 }
@@ -317,4 +320,35 @@ function drawRocks(group, borders) {
   const rockGroup = createSvgElement("g", {}, group)
   rocks.sort((first, second) => first.y - second.y)
     .forEach((rock) => drawBoulder(rockGroup, rock.x, rock.y, rock.radius, rock.seed))
+}
+
+// Under the walls, with a soft shadow; what blocks the way over the rest. Then the light of the fires
+function drawObjects(group, grid, objects) {
+  const objectGroup = createSvgElement("g", { filter: objectShadowFilter }, group)
+  const lightGroup = createSvgElement("g", { "pointer-events": "none" }, group)
+  const drawable = objects.filter((placedObject) => objectOf(placedObject.key))
+  const drawnLast = (placedObject) => (objectOf(placedObject.key).drawnOnTop ? 1 : 0)
+  drawable.sort((first, second) => drawnLast(first) - drawnLast(second)).forEach((placedObject) => {
+    const mapObject = objectOf(placedObject.key)
+    const [centerX, centerY] = objectCenter(placedObject, mapObject)
+    drawPlacedObject(objectGroup, placedObject, mapObject, centerX, centerY)
+    if (!mapObject.glow) return
+
+    createSvgElement("circle", { cx: rounded(centerX), cy: rounded(centerY), r: rounded(mapObject.glow * cellSize),
+                                 fill: glowGradient }, lightGroup)
+  })
+}
+
+// The middle of the cells of an object once turned
+export function objectCenter(placedObject, mapObject) {
+  const [columns, rows] = footprintSize(mapObject, placedObject.rotation)
+  return [(placedObject.column + columns / 2) * cellSize, (placedObject.row + rows / 2) * cellSize]
+}
+
+// Drawn around its center, then turned: its length and depth are those of the object before it is turned
+export function drawPlacedObject(group, placedObject, mapObject, centerX, centerY) {
+  const objectTransform = `translate(${rounded(centerX)} ${rounded(centerY)}) rotate(${placedObject.rotation * 90})`
+  const seed = placedObject.column * 131 + placedObject.row * 7
+  mapObject.draw(createSvgElement("g", { transform: objectTransform }, group), mapObject.width * cellSize,
+                 mapObject.height * cellSize, seed)
 }

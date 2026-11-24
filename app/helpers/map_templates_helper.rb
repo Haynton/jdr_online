@@ -16,6 +16,13 @@ module MapTemplatesHelper
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
   ].join(" ").freeze
+  # A family of the tab Objects, a pill like the filters of « Mes tables »: tonal gold once chosen
+  MAP_FAMILY_TAB_CLASSES = %w[
+    h-7 flex-1 rounded-full border border-line bg-surface px-2 text-xs font-semibold text-muted transition-colors
+    hover:text-ink aria-selected:border-primary-soft-ink/50 aria-selected:bg-primary-soft
+    aria-selected:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
+    focus-visible:outline-focus-ring
+  ].join(" ").freeze
   # A tab of the panel of the editor: its name in muted, ink and a line of brass under it once chosen
   MAP_TAB_CLASSES = %w[
     flex-1 border-b-2 border-transparent px-0.5 py-2 text-[12.5px] font-semibold text-muted transition-colors
@@ -42,12 +49,14 @@ module MapTemplatesHelper
       map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
       map_editor_url_value: map_template_layout_path(map_template),
       map_editor_save_failed_message_value: t("map_templates.editor.save_failed"),
-      map_editor_figure_labels_value: map_editor_figure_labels.to_json }
+      map_editor_figure_labels_value: map_editor_figure_labels.to_json,
+      # The number of degrees is written by the page, in the place of this mark
+      map_editor_rotation_label_value: t("map_templates.editor.rotate", degrees: "__degrees__") }
   end
 
   # The words of the figures of the drawing, by count (« 1 case », « 12 cases »), for the plural rules of the page
   def map_editor_figure_labels
-    %i[cells walls doors].index_with { |figure| t("map_templates.editor.figures.#{figure}") }
+    %i[cells walls doors objects].index_with { |figure| t("map_templates.editor.figures.#{figure}") }
   end
 
   # The tools of the editor, in the order of their registry: [[key, name], ...]
@@ -57,5 +66,13 @@ module MapTemplatesHelper
 
   def map_edge_tools
     MapEdges.keys.map { |key| [key, t("map_templates.edges.#{key}")] }
+  end
+
+  # The objects of a family: [[key, name, size]], the size written only for an object of more than one cell (« 2×1 »)
+  def map_object_tools(family)
+    MapObjects.of_family(family).map do |map_object|
+      size = "#{map_object.width}×#{map_object.height}" unless map_object.width * map_object.height == 1
+      [map_object.key, t("map_templates.objects.#{map_object.key}"), size]
+    end
   end
 end
