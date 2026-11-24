@@ -17,6 +17,8 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
                   map_template_layout_path(@map_template)
     assert_includes css_select("main[data-controller=map-editor]").first["data-map-editor-layout-value"], '"1,1":"room"'
     assert_select "header h1", text: "La taverne"
+    # The brush of the blocked zones is for a map of a table only
+    assert_select "button[data-tool-kind=blocker]", count: 0
     assert_select "header [role=toolbar][hidden] button[data-tool-kind=eraser]", text: "Gomme"
     assert_select "header [role=toolbar] button[data-action='map-editor#undo'][disabled]", text: "Annuler"
     assert_select "header [role=toolbar] button[data-action='map-editor#redo'][disabled]", text: "Rétablir"

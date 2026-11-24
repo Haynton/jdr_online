@@ -59,6 +59,14 @@
             <%= render "shared/icons/brush_cleaning", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".clear") %></span>
           </button>
         </div>
+        <%# A map of a table only (blocking:): the brush that paints the cells no token stands on, drawn or on a
+            picture (Anthony's decision: the game master paints them, nothing else blocks but the empty ground and the
+            walls of rooms and stones). Clicked again, it gives back the tool used before %>
+        <% if map_editor_blocking?(map_template) %>
+          <span class="mx-1 h-6 w-px bg-line max-sm:hidden" aria-hidden="true"></span>
+          <%= render "map_templates/tool", kind: "blocker", key: "blocker", label: t(".blocked_zones"), in_bar: true,
+                                           icon: render("shared/icons/ban", css_class: "size-4") %>
+        <% end %>
       </div>
     </div>
     <%# A map of a table goes back to the step Maps of its table (back_path:); a map of « Mes cartes », by the

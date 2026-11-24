@@ -69,12 +69,14 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
                   game_table_game_map_layout_path(@game_table, game_map)
     assert_select "header input[name='game_map[name]'][value=Taverne]"
     assert_select "header a[href=?]", edit_game_table_map_list_path(@game_table), text: /Cartes de la table/
+    assert_select "header button[data-tool-kind=blocker][title=?]", "Zones bloquantes"
 
-    new_drawing = drawing.merge("edges" => { "1,1|2,1" => "door" })
+    new_drawing = drawing.merge("edges" => { "1,1|2,1" => "door" }, "blocked" => ["5,5"])
     patch game_table_game_map_layout_path(@game_table, game_map), params: { layout: new_drawing.to_json, columns: "30" }
     assert_response :no_content
     assert_equal [new_drawing, 30], game_map.reload.slice(:layout, :columns).values
     assert_equal drawing, tavern.reload.layout
+    assert_includes game_map.passage.blocked_cells, [5, 5]
   end
 
   test "a map copied is renamed in its editor; its grid stays" do

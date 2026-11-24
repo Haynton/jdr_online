@@ -5,6 +5,7 @@ import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
 import { renderPicture } from "map_editor/picture_renderer"
+import { renderBlockedCells } from "map_editor/blocked_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
@@ -24,8 +25,10 @@ import { confirmWithDialog } from "confirm_dialog"
 // chosen by Turn (R); a click on an object put turns it; Take object away, a right click or Delete takes it (or a wall)
 // away. The number of columns of the bar resizes the grid, the rows following to keep its proportions (Anthony's
 // request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
-// undone like a stroke. The bar says when the drawing was saved. The board and the tools are rendered hidden and
-// shown here: without JavaScript there is nothing to draw with
+// undone like a stroke. The bar says when the drawing was saved. On a map of a table, the brush « Zones bloquantes »
+// paints the cells no token stands on, drawn or on a picture (the first cell of the stroke says whether it paints or
+// takes the paint away). The board and the tools are rendered hidden and shown here: without JavaScript there is
+// nothing to draw with
 const toolSwatches = {
   floor: (swatch, key) => drawFloorSample(swatch, key),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
@@ -35,7 +38,7 @@ const toolSwatches = {
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
 // The tools of the bar left by clicking them again: the tool used before comes back
-const toolsLeftByClickingAgain = ["eraser", "remover", "hand"]
+const toolsLeftByClickingAgain = ["eraser", "remover", "hand", "blocker"]
 // The bounds of a grid, the same as MapTemplate::GRID_SIZES
 const smallestGridSize = 10
 const largestGridSize = 60
@@ -218,6 +221,7 @@ export default class extends Controller {
     }
     this.pressCurrentTool()
     this.hidePointer()
+    this.showBoardCursor()
   }
 
   // H chooses the hand, or leaves it (Anthony's request: with a mouse, holding space was a chore). Not while typing
@@ -239,17 +243,22 @@ export default class extends Controller {
     this.showBoardCursor()
   }
 
-  // The middle button, the space bar held, the hand, or the main button on a map played on a picture (nothing to draw)
+  // The middle button, the space bar held, the hand, or the main button on a map played on a picture (nothing to draw
+  // there but the blocked zones)
   movesTheMap(event) {
     if (event.button === 1 || this.isSpaceHeld) return true
 
-    return event.button === 0 && (this.tool.kind === "hand" || this.layout.isPicture())
+    return event.button === 0 && (this.tool.kind === "hand" || this.picturePansTheMap())
+  }
+
+  picturePansTheMap() {
+    return this.layout.isPicture() && this.tool.kind !== "blocker"
   }
 
   // A hand over the map while it can be moved (the hand, the space bar held, a map played on a picture), a closed
   // hand while it moves, the cross of drawing otherwise
   showBoardCursor() {
-    const movesTheMap = this.tool.kind === "hand" || this.isSpaceHeld || this.layout.isPicture()
+    const movesTheMap = this.tool.kind === "hand" || this.isSpaceHeld || this.picturePansTheMap()
     this.boardTarget.style.cursor = this.panningFrom ? "grabbing" : (movesTheMap ? "grab" : "")
   }
 
@@ -546,6 +555,7 @@ export default class extends Controller {
       renderMap(this.drawingTarget, { grid: this.grid, floors: this.layout.floors, edges: this.layout.edges,
                                       objects: this.layout.objects })
     }
+    renderBlockedCells(this.drawingTarget, this.layout.blocked)
     this.showMaking()
     this.showFigures()
   }
@@ -622,6 +632,7 @@ export default class extends Controller {
   // whether the stroke puts that wall, or takes it away from the sides that hold it already
   changeLayout(side, isFirstCell) {
     if (this.tool.kind === "floor") return this.layout.paintFloor(side.column, side.row, this.tool.key)
+    if (this.tool.kind === "blocker") return this.paintBlocked(side)
     if (this.tool.kind === "eraser") return this.layout.erase(side)
     if (this.tool.kind === "remover") return this.layout.removeObjectAt(side.column, side.row)
     if (this.tool.kind === "object") return this.putObject(side, isFirstCell)
@@ -629,6 +640,12 @@ export default class extends Controller {
 
     this.stroke.removing ??= this.layout.hasEdge(side, this.tool.key)
     return this.stroke.removing ? this.layout.removeEdge(side) : this.layout.putEdge(side, this.tool.key)
+  }
+
+  // The first cell of the stroke says whether it paints the blocked zones, or takes them away
+  paintBlocked({ column, row }) {
+    this.stroke.removing ??= this.layout.isBlocked(column, row)
+    return this.stroke.removing ? this.layout.unblock(column, row) : this.layout.block(column, row)
   }
 
   // On an object put, the first cell of the stroke turns it. A small object is put on every cell of the stroke, a large
@@ -652,7 +669,7 @@ export default class extends Controller {
   // Where the tool would act: the cell, or the side for a wall, in red where a wall cannot stand
   markPointer(event) {
     this.hidePointer()
-    if (this.layout.isPicture() || this.tool.kind === "hand") return
+    if (this.picturePansTheMap() || this.tool.kind === "hand") return
 
     this.isPointerOverBoard = true
     this.lastPoint = this.boardPoint(event)

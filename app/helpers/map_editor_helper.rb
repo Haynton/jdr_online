@@ -36,6 +36,11 @@ module MapEditorHelper
     map.is_a?(GameMap) ? [map.game_table, map] : [map]
   end
 
+  # The brush « Zones bloquantes »: a map of a table only, where tokens will move (MapPassage)
+  def map_editor_blocking?(map)
+    map.is_a?(GameMap)
+  end
+
   # What the map editor needs (map_editor_controller.js): the drawing, the grid, where to save it, its texts
   def map_editor_data(map_template)
     { controller: "map-editor", action: "turbo:morph@document->map-editor#drawEverything",
