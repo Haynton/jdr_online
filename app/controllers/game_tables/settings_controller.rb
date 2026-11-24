@@ -26,7 +26,8 @@ module GameTables
     # Nothing sent by a template without settings: the table keeps what it has
     def settings_params
       params.fetch(:game_table, {}).permit(:starting_level, :players_choose_level, :ability_method_choice,
-                                           :hit_point_method_choice, :starting_equipment_method_choice)
+                                           :hit_point_method_choice, :starting_equipment_method_choice,
+                                           :limit_skill_choices)
     end
   end
 end

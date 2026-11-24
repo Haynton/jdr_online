@@ -7,9 +7,9 @@ module CharacterSheets
     # An option of the choice of the way, as the switch of the starting equipment, but sharing the width of the guide
     # (352 px) with the others, its text a little smaller: three ways hold on one line
     ABILITY_METHOD_OPTION_CLASSES = %w[
-      inline-flex h-8 flex-1 cursor-pointer items-center justify-center rounded-md px-2 text-[13px] whitespace-nowrap
-      text-ink transition-colors hover:bg-surface/60 has-checked:bg-surface has-checked:font-semibold
-      has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2
+      inline-flex min-h-8 min-w-0 flex-auto cursor-pointer items-center justify-center rounded-md px-1.5 py-1
+      text-center text-[13px] leading-tight text-ink transition-colors hover:bg-surface/60 has-checked:bg-surface
+      has-checked:font-semibold has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-2
       has-focus-visible:outline-focus-ring
     ].join(" ").freeze
 
