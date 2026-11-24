@@ -48,8 +48,7 @@ class CatalogEntry < ApplicationRecord
   def self.declared_fields(owner, column)
     case owner
     when SheetTemplate then owner.public_send(column).to_h["fields"].to_a
-    when GameTable
-      declared_fields(owner.sheet_template, column) || owner.template_snapshot.to_h.dig(column, "fields").to_a
+    when GameTable then owner.current_template_fields(column)
     end
   end
 

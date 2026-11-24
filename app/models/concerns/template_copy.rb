@@ -1,5 +1,7 @@
-# What a game table reads in the frozen copy of its template (template_snapshot): the fields of a player character
-# and of an NPC, the steps of the creation of a character, its groups of spells, its levels. Empty without a template
+# What a game table reads in the frozen copy of its template (template_snapshot): the fields of a player character,
+# the steps of the creation of a character, its groups of spells, its levels. Empty without a template. The fields of
+# an NPC and of a catalog entry are read in the template itself (decision of 24 November: they follow their template,
+# like its catalog; the rules of the players stay in the copy), the copy only once that template is deleted
 module TemplateCopy
   extend ActiveSupport::Concern
 
@@ -8,9 +10,16 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "fields") || []
   end
 
-  # The fields of an NPC or a monster of the table, in the copy of its template
+  # The fields of an NPC or a monster of the table, in its template as it is now
   def npc_sheet_fields
-    template_snapshot.to_h.dig("npc_fields", "fields") || []
+    current_template_fields("npc_fields")
+  end
+
+  # The fields of a part of the template (npc_fields, spell_fields...) as it is now, or in the copy once the template
+  # is deleted
+  def current_template_fields(column)
+    fields = sheet_template&.public_send(column).to_h["fields"]
+    fields || template_snapshot.to_h.dig(column, "fields") || []
   end
 
   # The steps declared by the template to make a character (CharacterCreationSteps), none for a single page

@@ -127,6 +127,19 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "the sheet of an NPC follows the template as it is now, the copy once the template is deleted" do
+    fields = NPC_FIELDS + [{ "key" => "alignment", "label" => "Alignement", "type" => "choice",
+                             "options" => ["Neutre", "Sans alignement"], "section" => "Identité" }]
+    @game_table.sheet_template.update!(npc_fields: { "fields" => fields })
+    get new_game_table_npc_path(@game_table), headers: NPC_HEADERS
+
+    assert_select "select[name='npc[sheet][alignment]'] option", text: "Sans alignement"
+    assert_equal 4, @game_table.reload.template_snapshot.dig("npc_fields", "fields").size
+
+    @game_table.update!(sheet_template: nil)
+    assert_equal 4, @game_table.npc_sheet_fields.size
+  end
+
   test "continue reaches the step and opens the summary" do
     patch game_table_cast_path(@game_table)
 
