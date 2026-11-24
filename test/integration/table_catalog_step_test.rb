@@ -95,4 +95,43 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "the changes are applied to the characters already made, after a question" do
+    character = character_with_spell("shield")
+    get edit_game_table_catalog_path(@game_table)
+    assert_select "button", text: "Appliquer aux personnages déjà créés", count: 0
+
+    shield = @game_table.sheet_template.catalog_entries.find_by!(kind: "spell", key: "shield")
+    @game_table.catalog_entries.create!(kind: "spell", key: "shield", name: "Bouclier de givre",
+                                        description: shield.description, properties: shield.properties)
+    get edit_game_table_catalog_path(@game_table)
+    assert_select "p", text: "1 personnage a une ancienne version d'un sort ou d'un objet que vous avez modifié."
+    assert_select "form[data-turbo-confirm^=?] button", "Appliquer vos changements au personnage déjà créé ?",
+                  text: "Appliquer aux personnages déjà créés"
+
+    post game_table_catalog_application_path(@game_table, kind: "spell")
+    assert_redirected_to edit_game_table_catalog_path(@game_table, kind: "spell")
+    assert_equal "Changements appliqués à 1 personnage.", flash[:notice]
+    assert_equal "Bouclier de givre", character.reload.spells.first["name"]
+  end
+
+  test "only the game master applies the changes" do
+    other = User.create!(email: "other@example.com", username: "other", password: TEST_PASSWORD)
+    sign_in other
+
+    post game_table_catalog_application_path(@game_table)
+    assert_response :not_found
+  end
+
+  private
+
+  def character_with_spell(spell_key)
+    player = User.create!(email: "lia@example.com", username: "lia_player", password: TEST_PASSWORD)
+    participation = @game_table.participations.create!(user: player, role: "player")
+    spell = @game_table.sheet_template.catalog_entries.find_by!(kind: "spell", key: spell_key)
+    character = @game_table.characters.create!(kind: "pc", participation: participation, name: "Lia", status: "draft")
+    character.update_columns(spells: [{ "key" => spell.key, "name" => spell.name, "level" => spell.level,
+                                        "description" => spell.description, "properties" => spell.properties }])
+    character
+  end
 end
