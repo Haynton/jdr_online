@@ -261,3 +261,16 @@
   }
 }
 
+
+/* Safari on an iPhone zooms into a field whose text is under 16 px as soon as it is touched, and does not zoom back
+   (Anthony's report): our fields are 14 px (13 px in the map editor). On a touch screen without a mouse, every field
+   that takes typing or a choice shows its text at 16 px. Outside the layers of Tailwind on purpose: an unlayered
+   rule wins over the text-sm of the utilities, so no field is forgotten. Not maximum-scale=1 in the viewport, which
+   would also forbid the zoom a reader needs */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="hidden"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
