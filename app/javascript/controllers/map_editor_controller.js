@@ -1,15 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
-import SquareGrid, { cellSize } from "map_editor/square_grid"
+import SquareGrid from "map_editor/square_grid"
 import BoardView from "map_editor/board_view"
 import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
 import { renderPicture } from "map_editor/picture_renderer"
+import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
-import { floorOf } from "map_floors"
 import { edgeOf, doorKey } from "map_edges"
 import { objectOf, drawObjectSwatch } from "map_objects"
 import { confirmWithDialog } from "confirm_dialog"
@@ -27,19 +27,24 @@ import { confirmWithDialog } from "confirm_dialog"
 // undone like a stroke. The bar says when the drawing was saved. The board and the tools are rendered hidden and
 // shown here: without JavaScript there is nothing to draw with
 const toolSwatches = {
-  floor: (swatch, key) => floorOf(key).drawSwatch(swatch),
+  floor: (swatch, key) => drawFloorSample(swatch, key),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
   object: (swatch, key) => drawObjectSwatch(swatch, key)
 }
 // How close to a side a right click must be to take its wall away
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
-const takingAwayKinds = ["eraser", "remover"]
+// The tools of the bar left by clicking them again: the tool used before comes back
+const toolsLeftByClickingAgain = ["eraser", "remover", "hand"]
 // The bounds of a grid, the same as MapTemplate::GRID_SIZES
 const smallestGridSize = 10
 const largestGridSize = 60
 const zoomStep = 1.25
 const deletingKeys = ["Delete", "Backspace"]
+// The room kept between the floating pieces and the map, in pixels
+const floatingRoom = 8
+// A line of a wheel turned by lines, in pixels
+const pixelsPerWheelLine = 40
 
 export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
@@ -59,7 +64,7 @@ export default class extends Controller {
     this.history = new DrawingHistory()
     // The first floor: the eraser comes first in the page, on the bar
     this.tool = this.firstFloorTool()
-    this.view = new BoardView(this.grid, cellSize)
+    this.view = new BoardView(this.grid)
     this.activePointers = new Map()
     this.boardResizeObserver = new ResizeObserver(() => this.resizeView())
     this.boardResizeObserver.observe(this.boardTarget)
@@ -112,8 +117,25 @@ export default class extends Controller {
   resizeView() {
     if (!this.boardTarget.clientWidth || !this.boardTarget.clientHeight) return
 
-    this.view.resize(this.boardTarget.clientWidth, this.boardTarget.clientHeight)
+    this.view.resize(this.boardTarget.clientWidth, this.boardTarget.clientHeight, this.floatingInsets())
     this.showView()
+  }
+
+  // How far the floating pieces reach into the board, side by side: the size of the grid at the top, the help and the
+  // zoom on the right, what was saved at the bottom. A little room beyond them, so that a cell is not drawn against
+  // their edge
+  floatingInsets() {
+    const board = this.boardTarget.getBoundingClientRect()
+    const reach = (element, side) => {
+      if (!element || element.offsetParent === null) return 0
+
+      const piece = element.getBoundingClientRect()
+      const distance = { top: piece.bottom - board.top, right: board.right - piece.left,
+                         bottom: board.bottom - piece.top }[side]
+      return Math.max(0, distance + floatingRoom)
+    }
+    return { top: reach(this.gridSizeTarget, "top"), right: reach(this.zoomButtonsTarget.parentElement, "right"),
+             bottom: reach(this.figuresTarget.parentElement, "bottom"), left: 0 }
   }
 
   showView() {
@@ -135,11 +157,16 @@ export default class extends Controller {
     this.showView()
   }
 
-  // A pinch of a touchpad comes as a wheel with ctrlKey, in smaller steps than a mouse wheel
-  zoomWithWheel(event) {
+  // Two fingers sliding on a touchpad move the map (Anthony's request, like Figma: holding space was a chore); a pinch
+  // of a touchpad (a wheel with ctrlKey, in small steps) and the wheel of a mouse zoom
+  zoomOrMoveWithWheel(event) {
     event.preventDefault()
-    const speed = event.ctrlKey ? 0.01 : 0.0015
-    this.view.zoomAround(this.boardPoint(event), Math.exp(-event.deltaY * speed))
+    if (!event.ctrlKey && isTouchpadSlide(event)) {
+      this.view.moveByPixels(-event.deltaX, -event.deltaY)
+    } else {
+      const speed = event.ctrlKey ? 0.01 : 0.0015
+      this.view.zoomAround(this.boardPoint(event), Math.exp(-wheelPixels(event) * speed))
+    }
     this.showView()
   }
 
@@ -164,7 +191,7 @@ export default class extends Controller {
 
     event.preventDefault()
     this.isSpaceHeld = true
-    this.boardTarget.style.cursor = "grab"
+    this.showBoardCursor()
   }
 
   releaseSpace(event) {
@@ -172,7 +199,7 @@ export default class extends Controller {
 
     event.preventDefault()
     this.isSpaceHeld = false
-    this.boardTarget.style.cursor = ""
+    this.showBoardCursor()
   }
 
   enterBoard() {
@@ -183,14 +210,21 @@ export default class extends Controller {
   // at first): the pointer goes back to drawing
   chooseTool(event) {
     const chosenTool = toolOf(event.currentTarget)
-    if (isSameTool(chosenTool, this.tool) && takingAwayKinds.includes(chosenTool.kind)) {
+    if (isSameTool(chosenTool, this.tool) && toolsLeftByClickingAgain.includes(chosenTool.kind)) {
       this.tool = this.toolBeforeTakingAway ?? this.firstFloorTool()
     } else {
-      if (!takingAwayKinds.includes(this.tool.kind)) this.toolBeforeTakingAway = this.tool
+      if (!toolsLeftByClickingAgain.includes(this.tool.kind)) this.toolBeforeTakingAway = this.tool
       this.tool = chosenTool
     }
     this.pressCurrentTool()
     this.hidePointer()
+  }
+
+  // H chooses the hand, or leaves it (Anthony's request: with a mouse, holding space was a chore). Not while typing
+  chooseHandWithKey(event) {
+    if (isTyping(event) || event.ctrlKey || event.metaKey || event.altKey) return
+
+    this.toolTargets.find((button) => button.dataset.toolKind === "hand")?.click()
   }
 
   firstFloorTool() {
@@ -202,6 +236,21 @@ export default class extends Controller {
       const isCurrent = button.dataset.toolKind === this.tool.kind && button.dataset.toolKey === this.tool.key
       button.setAttribute("aria-pressed", isCurrent)
     })
+    this.showBoardCursor()
+  }
+
+  // The middle button, the space bar held, the hand, or the main button on a map played on a picture (nothing to draw)
+  movesTheMap(event) {
+    if (event.button === 1 || this.isSpaceHeld) return true
+
+    return event.button === 0 && (this.tool.kind === "hand" || this.layout.isPicture())
+  }
+
+  // A hand over the map while it can be moved (the hand, the space bar held, a map played on a picture), a closed
+  // hand while it moves, the cross of drawing otherwise
+  showBoardCursor() {
+    const movesTheMap = this.tool.kind === "hand" || this.isSpaceHeld || this.layout.isPicture()
+    this.boardTarget.style.cursor = this.panningFrom ? "grabbing" : (movesTheMap ? "grab" : "")
   }
 
   // One finger or the main button draws; a second finger turns the stroke into a pinch; the middle button, or the
@@ -211,10 +260,11 @@ export default class extends Controller {
     this.activePointers.set(event.pointerId, [event.clientX, event.clientY])
     if (this.activePointers.size === 2) return this.startPinch()
     // On a picture there is nothing to draw: dragging moves the map
-    if (event.button === 1 || this.isSpaceHeld || (event.button === 0 && this.layout.isPicture())) {
+    if (this.movesTheMap(event)) {
       // The middle button would otherwise start the scrolling of the browser
       event.preventDefault()
       this.panningFrom = [event.clientX, event.clientY]
+      this.showBoardCursor()
       return
     }
     if (event.button !== 0) return
@@ -235,6 +285,7 @@ export default class extends Controller {
     this.activePointers.delete(event.pointerId)
     if (this.activePointers.size < 2) this.pinch = null
     this.panningFrom = null
+    this.showBoardCursor()
     this.finishStroke()
   }
 
@@ -308,7 +359,8 @@ export default class extends Controller {
     this.makingChoiceTargets.forEach((choice) => { choice.checked = choice.value === this.layout.mode })
     this.drawingPanelTarget.hidden = isPicture
     this.picturePanelTarget.hidden = !isPicture
-    this.drawingToolsTarget.hidden = isPicture
+    this.drawingToolsTarget.toggleAttribute("data-picture", isPicture)
+    this.showBoardCursor()
     this.showPictureSettings()
   }
 
@@ -421,7 +473,7 @@ export default class extends Controller {
     if (columns !== this.grid.columns || rows !== this.grid.rows) {
       this.grid = new SquareGrid(columns, rows)
       this.layout.grid = this.grid
-      this.view = new BoardView(this.grid, cellSize)
+      this.view = new BoardView(this.grid)
       this.resizeView()
     }
     this.showSize()
@@ -597,7 +649,7 @@ export default class extends Controller {
   // Where the tool would act: the cell, or the side for a wall, in red where a wall cannot stand
   markPointer(event) {
     this.hidePointer()
-    if (this.layout.isPicture()) return
+    if (this.layout.isPicture() || this.tool.kind === "hand") return
 
     this.isPointerOverBoard = true
     this.lastPoint = this.boardPoint(event)
@@ -686,6 +738,22 @@ export default class extends Controller {
       headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
     })
   }
+}
+
+// A touchpad slides in pixels, often sideways too, and Chrome and Safari give it a wheelDeltaY of exactly -3 times its
+// deltaY; a mouse wheel turns by lines (Firefox) or by notches that do not follow that rule. Firefox gives no
+// wheelDeltaY: in pixels there, it is a touchpad
+function isTouchpadSlide(event) {
+  if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return false
+  if (event.deltaX !== 0) return true
+  if (event.wheelDeltaY === undefined) return true
+
+  return event.wheelDeltaY === -3 * event.deltaY
+}
+
+// How far the wheel turned, in pixels: Firefox counts a mouse wheel in lines (about 3 a notch), which hardly zoomed
+function wheelPixels(event) {
+  return event.deltaMode === WheelEvent.DOM_DELTA_LINE ? event.deltaY * pixelsPerWheelLine : event.deltaY
 }
 
 // The size of the grid and the drawing of a map ready to use, carried by its item (map_templates/_preset_tools)

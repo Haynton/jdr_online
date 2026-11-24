@@ -20,16 +20,19 @@ import * as palette from "map_editor/palette"
 // The floors of the border cells go on beyond the grid, so that the walls stop at the edge of the board, not before
 const paddingCells = 3
 
-export function renderMap(group, { grid, floors, edges, objects = [] }) {
+// showGrid: the dots of the empty ground and the faint lines between the cells of a floor; left out of the swatches
+// of the panel (map_editor/floor_sample.js), where they blurred the floor
+export function renderMap(group, { grid, floors, edges, objects = [], showGrid = true }) {
   group.replaceChildren()
   const floorView = extendBeyondTheGrid(floors, grid)
-  const map = { grid, edges, floorView, floorAt: (column, row) => floorOf(floorView.get(cellKey(column, row))) }
+  const map = { grid, edges, floorView, showGrid,
+                floorAt: (column, row) => floorOf(floorView.get(cellKey(column, row))) }
   const { borders, insides } = collectSides(map)
 
   // The ground goes on far around the grid: the board may be zoomed out, or wider than the map
   createSvgElement("rect", { x: -grid.width * 4, y: -grid.height * 4, width: grid.width * 9, height: grid.height * 9,
                              fill: palette.voidGround }, group)
-  drawGridDots(group, grid)
+  if (showGrid) drawGridDots(group, grid)
   drawMarksOutside(group, map, borders)
   drawFloors(group, map)
   drawWater(group, map, insides)
@@ -232,7 +235,7 @@ function drawWater(group, map, insides) {
   if (loops.length) {
     createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd" }, group)
   }
-  drawCellLines(group, insides.filter((side) => !side.edge && !side.shore))
+  if (map.showGrid) drawCellLines(group, insides.filter((side) => !side.edge && !side.shore))
   drawBanks(group, map.grid, waterCells, loops)
 }
 
