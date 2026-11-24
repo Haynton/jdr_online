@@ -94,13 +94,22 @@ ABILITY_SCORES = {
   "intelligence" => 12, "wisdom" => 15, "charisma" => 8
 }.freeze
 
-# A player who finished their character: "Join the game"
-def add_player_with_character(game_table, user, name:, **choices)
+# A player who finished their character: "Join the game". A spellcaster takes the spells given, copied as the step
+# Spells copies them
+def add_player_with_character(game_table, user, name:, spell_keys: [], **choices)
   participation = add_player(game_table, user)
   character = participation.build_character(game_table: game_table, name: name, status: "draft",
                                             sheet: fantasy_sheet(game_table, **choices).merge(ABILITY_SCORES))
+  character.choose_spells(spell_keys)
   character.complete_creation
   character.save!
+end
+
+# A spell of the template changed for the table (its copy, same key), as the step "Spells and items" saves it
+def customize_spell(game_table, key, **changed_properties)
+  original = game_table.sheet_template.catalog_entries.find_by!(kind: "spell", key: key)
+  game_table.catalog_entries.create!(kind: "spell", key: key, name: original.name, description: original.description,
+                                     properties: original.properties.merge(changed_properties.stringify_keys))
 end
 
 # A player who stopped on a step of their character: "Resume my character"
@@ -139,14 +148,17 @@ valdoria = create_game_table(
   description: "Un vaste continent composé de royaumes rivaux, de forêts enchantées et de montagnes mystérieuses. " \
                "Les aventuriers devront naviguer entre intrigues politiques, magie ancienne et dangers oubliés."
 )
-add_player_with_character(valdoria, luara, name: "Elowen", class_name: "Druide", background: "Sage", species: "Elfe")
+add_player_with_character(valdoria, luara, name: "Elowen", class_name: "Druide", background: "Sage", species: "Elfe",
+                                           spell_keys: %w[guidance druidcraft goodberry speak-with-animals])
 add_player_with_character(valdoria, brannoc, name: "Grom", class_name: "Barbare", background: "Soldat",
                                              species: "Goliath")
 add_player_with_character(valdoria, isolde, name: "Mirelle", class_name: "Clerc", background: "Acolyte",
-                                            species: "Humain")
+                                            species: "Humain", spell_keys: %w[guidance sacred-flame light bless])
 add_player_with_character(valdoria, fennick, name: "Pip", class_name: "Barde", background: "Criminel",
                                              species: "Halfelin", size: "Petite")
 invite_player(valdoria, yrsa)
+# Changed after Elowen and Mirelle chose it: the step "Spells and items" offers to apply it to their sheets
+customize_spell(valdoria, "guidance", range: "9 mètres")
 
 # Ready, nobody has joined yet
 create_game_table(

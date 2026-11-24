@@ -825,8 +825,8 @@ en:
             other: "Apply your changes to the %{count} characters already made? Their spells and items take the table's version. A spell or item removed from the game stays on their sheet."
           confirm_button: "Apply"
           outdated:
-            one: "1 character has an older version of a spell or item you changed."
-            other: "%{count} characters have an older version of a spell or item you changed."
+            one: "1 character has an older version of a changed spell or item."
+            other: "%{count} characters have an older version of a changed spell or item."
         characters_keep_their_copy: "A character already made keeps the spells and equipment it chose, as they were then. Your changes apply to the characters made afterwards, or to all of them if you apply them."
         customize:
           item: "Customize an item"

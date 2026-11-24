@@ -9,6 +9,9 @@ module ButtonsHelper
     primary: "bg-primary text-primary-ink hover:bg-primary-hover",
     secondary: "border border-line bg-surface text-ink hover:bg-surface-raised",
     quiet: "bg-transparent text-ink hover:bg-surface-raised",
+    # An action waiting for the user (apply changes to characters already made): gold tonal, like the game master
+    # badge, never the filled plate of primary. Its brass border keeps its shape visible on the page (above 3)
+    attention: "border border-brass bg-primary-soft text-primary-soft-ink hover:bg-primary-soft/70",
     # Filled, like primary: an outlined red button did not stand out enough in the light theme
     danger: "bg-danger text-white hover:bg-danger-hover"
   }.freeze
