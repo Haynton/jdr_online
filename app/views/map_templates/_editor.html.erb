@@ -1,50 +1,78 @@
-<%# The map editor (map_editor_controller.js): the board, as large as the room allows, the tools beside it from
-    1024 px (under it before). The board stays the same in the light and the dark theme, like a picture. Kept as it is
-    when the page refreshes by morphing (renaming): the drawing lives in the page (data-turbo-permanent, with its id).
-    Rendered hidden, shown by the controller: without JavaScript there is nothing to draw with %>
-<div id="map-editor" data-turbo-permanent <%= tag.attributes(data: map_editor_data(map_template)) %>>
-  <div hidden class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-8" data-map-editor-target="editor">
-    <div class="min-w-0">
-      <div class="overflow-hidden rounded-xl ring-1 ring-line">
-        <%# touch-none: on a phone, a finger draws instead of scrolling the page %>
-        <svg role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
-             class="block h-auto w-full cursor-crosshair touch-none select-none" data-map-editor-target="board"
-             data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerleave->map-editor#hidePointer">
-          <g data-map-editor-target="drawing"></g>
-          <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
-        </svg>
+<%# The map editor (map_editor_controller.js), laid out like the prototype: a bar on top (the map, the eraser, the
+    figures of the drawing), the board filling the room left on a deeper background (well), a panel of 340 px on the
+    right: the way of making the map, « Mes cartes », then tabs (the floors and walls, the map itself) and a help at
+    the foot. From 1024 px the editor holds in the screen; before, the bar, the board at the width of the screen, then
+    the panel. The board keeps the colors of its drawing in the dark theme, like a picture.
+    Board and tools are rendered hidden and shown by the controller: without JavaScript there is nothing to draw with %>
+<main class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh lg:h-dvh" <%= tag.attributes(data: map_editor_data(map_template)) %>>
+  <%= render "shared/flashes" %>
+  <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:h-16 lg:flex-nowrap lg:py-0">
+    <div class="min-w-0 flex-1 lg:w-60 lg:flex-none">
+      <h1 class="truncate text-[15px] leading-tight font-extrabold text-ink"><%= map_template.name_in_database %></h1>
+      <p class="truncate text-xs text-muted"><%= map_template_size(map_template) %></p>
+    </div>
+    <div hidden class="flex items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
+      <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"), in_bar: true,
+                                       icon: render("shared/icons/eraser", css_class: "size-4") %>
+      <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
+      <%# Zoom: out, the whole map (its label says the zoom), in %>
+      <div class="flex items-center gap-0.5" role="group" aria-label="<%= t(".zoom_label") %>">
+        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#zoomOut"
+                aria-label="<%= t(".zoom_out") %>" title="<%= t(".zoom_out") %>"><%= render "shared/icons/minus" %></button>
+        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %> min-w-16 justify-center tabular-nums"
+                data-action="map-editor#showWholeMap" title="<%= t(".whole_map") %>"
+                aria-label="<%= t(".whole_map") %>" data-map-editor-target="zoomLabel">100 %</button>
+        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#zoomIn"
+                aria-label="<%= t(".zoom_in") %>" title="<%= t(".zoom_in") %>"><%= render "shared/icons/plus" %></button>
       </div>
-      <p class="mt-2 min-h-5 text-sm text-error-ink" role="status" data-map-editor-target="status"></p>
+    </div>
+    <%# Only a failed save is said, in its place on the bar %>
+    <p class="text-xs text-error-ink empty:hidden" role="status" data-map-editor-target="status"></p>
+    <p class="w-full text-[11px] leading-snug text-muted lg:ml-auto lg:w-auto lg:text-right" data-map-editor-target="figures"></p>
+  </header>
+
+  <div class="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <%# The board fills the room, a thin margin of the deeper background around it, like the prototype: the whole
+        map at first, then zoomed and moved (map_editor/board_view.js). 65 % of the height of a phone %>
+    <div class="flex h-[65dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-well p-2 lg:h-auto lg:p-3">
+      <%# touch-none: on a phone, a finger draws instead of scrolling the page %>
+      <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
+           class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
+           data-map-editor-target="board"
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace">
+        <g data-map-editor-target="drawing"></g>
+        <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
+      </svg>
+      <noscript><p class="text-sm text-ink"><%= t(".needs_javascript") %></p></noscript>
     </div>
 
-    <div class="flex flex-col gap-6" role="group" aria-label="<%= t(".tools_label") %>">
-      <section aria-labelledby="map-floors-title">
-        <h2 id="map-floors-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".floors_title") %></h2>
-        <p class="mt-1 text-sm text-muted"><%= t(".floors_hint") %></p>
-        <ul class="mt-3 grid grid-cols-2 gap-2">
-          <% map_floor_tools.each do |key, label| %>
-            <li><%= render "map_templates/tool", kind: "floor", key: key, label: label %></li>
-          <% end %>
-        </ul>
-      </section>
-      <section aria-labelledby="map-edges-title">
-        <h2 id="map-edges-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".edges_title") %></h2>
-        <p class="mt-1 text-sm text-muted"><%= t(".edges_hint") %></p>
-        <ul class="mt-3 grid grid-cols-2 gap-2">
-          <% map_edge_tools.each do |key, label| %>
-            <li><%= render "map_templates/tool", kind: "edge", key: key, label: label %></li>
-          <% end %>
-        </ul>
-      </section>
-      <section aria-labelledby="map-eraser-title">
-        <h2 id="map-eraser-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".eraser_title") %></h2>
-        <p class="mt-1 text-sm text-muted"><%= t(".eraser_hint") %></p>
-        <div class="mt-3 grid grid-cols-2 gap-2">
-          <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"),
-                                            icon: render("shared/icons/eraser", css_class: "size-5") %>
-        </div>
-      </section>
-    </div>
+    <aside class="flex min-h-0 flex-col border-t border-line bg-surface lg:border-t-0 lg:border-l" aria-label="<%= t(".panel_label") %>"
+           data-controller="tabs" data-action="turbo:morph@document->tabs#refresh"
+           data-tabs-selected-index-value="<%= map_template.errors.any? ? 1 : 0 %>">
+      <div class="grid gap-2 px-3 pt-3">
+        <%= render "map_templates/making_choices" %>
+        <%= link_to t(".my_maps"), map_templates_path, class: button_classes(:secondary, size: :compact, full_width: true) %>
+      </div>
+
+      <div hidden role="tablist" aria-label="<%= t(".tabs_label") %>" class="mt-3 flex gap-0.5 border-b border-line px-3" data-tabs-target="list">
+        <% [["floors", t(".terrain_tab")], ["map", t(".map_tab")]].each do |panel, label| %>
+          <button type="button" role="tab" id="map-editor-tab-<%= panel %>" aria-controls="map-editor-panel-<%= panel %>"
+                  aria-selected="false" class="<%= MapTemplatesHelper::MAP_TAB_CLASSES %>"
+                  data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys"><%= label %></button>
+        <% end %>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto px-3.5 py-3">
+        <section id="map-editor-panel-floors" role="tabpanel" aria-labelledby="map-editor-tab-floors" data-tabs-target="panel">
+          <%= render "map_templates/floor_tools" %>
+        </section>
+        <section id="map-editor-panel-map" role="tabpanel" aria-labelledby="map-editor-tab-map" data-tabs-target="panel">
+          <%= render "map_templates/settings", map_template: map_template %>
+        </section>
+      </div>
+
+      <%# Its words in bold and its keys drawn like those of the prototype (the text comes from the translations) %>
+      <p class="border-t border-line bg-page px-3.5 py-3 text-[11.5px] leading-relaxed text-muted [&_b]:font-semibold [&_b]:text-ink [&_kbd]:rounded [&_kbd]:border [&_kbd]:border-b-2 [&_kbd]:border-field-line [&_kbd]:bg-surface [&_kbd]:px-1 [&_kbd]:text-[10.5px] [&_kbd]:font-semibold [&_kbd]:text-ink"><%= t(".help_html") %></p>
+    </aside>
   </div>
-  <noscript><p class="text-sm text-muted"><%= t(".needs_javascript") %></p></noscript>
-</div>
+</main>

@@ -363,26 +363,32 @@ en:
       created: "Map “%{name}” created."
     destroy:
       deleted: "Map “%{name}” deleted."
-    edit:
-      back: "My maps"
-      delete: "Delete the map"
-      delete_button: "Delete"
-      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
-      delete_description: "The map leaves “My maps”. This cannot be undone."
-      presentation_title: "Presentation"
-      save: "Save"
     editor:
+      actions_label: "Actions on the map"
       board_label: "Drawing of the map “%{name}”"
-      edges_hint: "Aim at the side between two cells. Go over it again to take it away."
-      edges_title: "Walls and doors"
       eraser: "Eraser"
-      eraser_hint: "Near a side, takes its wall away; otherwise, the floor of the cell."
-      eraser_title: "Erase"
-      floors_hint: "Drag over the cells to paint them. The walls around a room draw themselves."
-      floors_title: "Floors"
+      figures:
+        cells:
+          one: "%{count} cell"
+          other: "%{count} cells"
+        doors:
+          one: "%{count} door"
+          other: "%{count} doors"
+        walls:
+          one: "%{count} wall"
+          other: "%{count} walls"
+      help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: hold <kbd>Space</kbd> and drag, middle click, or two fingers."
+      map_tab: "Map"
+      my_maps: "My maps"
       needs_javascript: "The map editor needs JavaScript to draw."
+      panel_label: "Tools of the editor"
       save_failed: "The drawing could not be saved. It will be with the next stroke."
-      tools_label: "Tools of the editor"
+      tabs_label: "Tools"
+      terrain_tab: "Terrain"
+      whole_map: "Show the whole map"
+      zoom_in: "Zoom in"
+      zoom_label: "Zoom"
+      zoom_out: "Zoom out"
     edges:
       door: "Door"
       low_wall: "Low wall"
@@ -395,18 +401,35 @@ en:
       room: "Room"
       stone: "Stone"
       water: "Water"
+    floor_tools:
+      edges_title: "Walls"
+      floors_title: "Floors"
+      walls_note: "A room, stone and an enclosure wall themselves on the side of the void. A door also goes between a floor and the void."
     index:
       new: "Create a map"
       new_hint: "Draw a room, a dungeon, a village"
       own_title: "Your maps"
       subtitle: "Draw your maps, then use them in your games."
       title: "My maps"
+    making_choices:
+      coming_soon: "Coming soon"
+      draw: "Draw the map"
+      draw_hint: "Floors, walls and doors"
+      label: "Way of making the map"
+      picture: "Use a picture"
     new:
       cancel: "Cancel"
       create: "Create the map"
       size_hint: "From 10 to 60 cells. It cannot be changed afterwards."
       subtitle: "Its name and the size of its grid, in cells."
       title: "New map"
+    settings:
+      delete: "Delete the map"
+      delete_button: "Delete"
+      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
+      delete_description: "The map leaves “My maps”. This cannot be undone."
+      save: "Save"
+      title: "Map"
     size: "%{columns} × %{rows} cells"
     update:
       renamed: "Map renamed."

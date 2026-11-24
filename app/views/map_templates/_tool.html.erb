@@ -1,14 +1,15 @@
-<%# A tool of the map editor (map_templates/_editor): a button pressed while it is the tool in use, its swatch drawn
-    by its JavaScript twin (map_floors, map_edges) beside its name. icon (optional): an icon instead, rendered already
-    (the eraser) %>
-<button type="button" class="<%= MapTemplatesHelper::MAP_TOOL_CLASSES %>" aria-pressed="false"
-        data-map-editor-target="tool" data-action="map-editor#chooseTool"
-        data-tool-kind="<%= kind %>" data-tool-key="<%= key %>">
+<%# A tool of the map editor, pressed while it is the tool in use. In the panel (map_templates/_floor_tools), a tile
+    like those of the prototype: its swatch drawn by its JavaScript twin (map_floors, map_edges), its name under it.
+    in_bar: a button of the bar on top (the eraser), its icon (rendered already) beside its name %>
+<% in_bar = local_assigns[:in_bar] %>
+<button type="button" aria-pressed="false" data-map-editor-target="tool" data-action="map-editor#chooseTool"
+        data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"
+        class="<%= in_bar ? MapTemplatesHelper::MAP_BAR_TOOL_CLASSES : MapTemplatesHelper::MAP_TOOL_CLASSES %>">
   <% if local_assigns[:icon] %>
-    <span class="flex size-8 shrink-0 items-center justify-center text-ink" aria-hidden="true"><%= icon %></span>
+    <%= icon %>
   <% else %>
-    <svg viewBox="0 0 32 32" class="size-8 shrink-0" aria-hidden="true"
+    <svg viewBox="0 0 32 32" class="mx-auto mb-1 block size-11 overflow-hidden rounded-lg" aria-hidden="true"
          data-map-editor-target="swatch" data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"></svg>
   <% end %>
-  <span class="min-w-0 truncate"><%= label %></span>
+  <span class="<%= in_bar ? "" : "block truncate" %>"><%= label %></span>
 </button>

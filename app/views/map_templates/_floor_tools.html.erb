@@ -1,0 +1,14 @@
+<%# The tab of the floors and the walls: a grid of tools, four per row, like the prototype %>
+<h2 class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".floors_title") %></h2>
+<ul class="mb-4 grid grid-cols-4 gap-1.5">
+  <% map_floor_tools.each do |key, label| %>
+    <li><%= render "map_templates/tool", kind: "floor", key: key, label: label %></li>
+  <% end %>
+</ul>
+<h2 class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".edges_title") %></h2>
+<ul class="mb-3 grid grid-cols-4 gap-1.5">
+  <% map_edge_tools.each do |key, label| %>
+    <li><%= render "map_templates/tool", kind: "edge", key: key, label: label %></li>
+  <% end %>
+</ul>
+<p class="text-xs leading-normal text-muted"><%= t(".walls_note") %></p>
