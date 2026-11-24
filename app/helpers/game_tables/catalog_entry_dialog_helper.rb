@@ -9,10 +9,11 @@ module GameTables
     # Where a value sits in the window, a grid of 6 columns once it is 576 px wide (decision: the layout of a sheet,
     # made for a narrow column, left half the window empty): lists and short texts three per line, switches two per
     # line, long texts and check boxes across (their options on 4 columns), a short group of boxes (V, S, M) on two
-    # columns, leaving room beside it
+    # columns, leaving room beside it. The attacks of an NPC keep 24 px above them (decision: right under a row of
+    # boxes, 16 px looked cramped)
     CELL_CLASSES = {
       lists: "@xl:col-span-2", boxes: "@xl:col-span-2", switches: "@xl:col-span-3", texts: "@xl:col-span-6",
-      attacks: "@xl:col-span-6"
+      attacks: "mt-2 @xl:col-span-6"
     }.freeze
     # A short group of boxes (V, S, M) on one line beside the lists, as high as a field, its boxes 24 px apart
     SHORT_PICKS_CELL_CLASSES = "@xl:col-span-2 [&_fieldset>div]:flex [&_fieldset>div]:min-h-10 " \
@@ -22,6 +23,9 @@ module GameTables
     # Boxes that follow each other share one cell, side by side 12 px apart (decision: the weight and the value of an
     # item on one line, beside its category), two thirds of the grid
     BOX_RUN_CLASSES = "flex flex-wrap items-start gap-3 @xl:col-span-4".freeze
+    # A section of boxes only (the abilities of an NPC) takes the whole width of the window, its boxes stretched in a
+    # grid of 3 columns, 2 on a phone (decision: two boxes of 192 px left a third of the window empty)
+    BOX_SECTION_CLASSES = "grid grid-cols-2 gap-3 @xl:col-span-6 @xl:grid-cols-3 [&>*]:w-full!".freeze
 
     # Into the window, never prefetched (an answer laid out for the window must not be reused for the whole page)
     def catalog_entry_dialog_link_data
@@ -49,9 +53,12 @@ module GameTables
       fields.reject { |field| field["internal"] }
     end
 
-    # The cells of a section: [classes, fields], each field in its own cell, but boxes that follow each other together
+    # The cells of a section: [classes, fields], each field in its own cell, but boxes that follow each other together,
+    # across the window when the section has nothing else
     def catalog_entry_cells(section_fields)
-      runs = section_fields.slice_when { |before, after| !(boxed_cell?(before) && boxed_cell?(after)) }
+      runs = section_fields.slice_when { |before, after| !(boxed_cell?(before) && boxed_cell?(after)) }.to_a
+      return [[BOX_SECTION_CLASSES, runs.first]] if runs.one? && runs.first.size > 1
+
       runs.map do |fields|
         fields.size > 1 ? [BOX_RUN_CLASSES, fields] : [catalog_entry_cell_classes(fields.first), fields]
       end

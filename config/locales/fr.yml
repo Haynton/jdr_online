@@ -421,6 +421,9 @@ fr:
       count:
         hint: "Combien d'options le joueur peut cocher au plus."
         label: "Nombre de choix"
+      filter:
+        hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
+        label: "Filtre de la recherche"
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
@@ -659,7 +662,7 @@ fr:
         place_result_on: "Attribuer un résultat à %{label}"
         proficient: "(maîtrise)"
         reroll: "Relancer les dés"
-        resource_hint: "Valeur maximale : votre personnage commence au maximum."
+        resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
         roll_method: "%{dice}d%{sides} par caractéristique, en gardant les %{kept} meilleurs. Attribuez chaque résultat, ou tapez vos propres scores."
         score_column: "Score"
@@ -728,9 +731,9 @@ fr:
           other: "%{count} PNJ et ennemis"
         create: "Créer un PNJ"
         empty: "Aucun PNJ pour l'instant. Ajoutez des créatures du bestiaire, ou créez vos propres personnages."
-        subtitle: "Les personnages que vous jouerez. Chacun a sa propre fiche, que vous pouvez modifier sans toucher au bestiaire."
+        intro: "Toutes les créatures du bestiaire de votre modèle restent disponibles : vous pourrez aussi les ajouter pendant la partie."
+        purpose: "Cette étape sert surtout à préparer vos propres PNJ, et les ennemis que vous modifiez ou ajoutez pour cette table."
         title: "PNJ et ennemis"
-        visible: "Montrer %{name} aux joueurs"
       update:
         saved: "PNJ et ennemis enregistrés."
     catalog_entries:
@@ -749,6 +752,8 @@ fr:
         new:
           item: "Nouvel objet"
           spell: "Nouveau sort"
+    catalog_search:
+      filter: "Filtrer par %{label}"
     catalog_pickers:
       show:
         back: "Retour"
@@ -769,11 +774,11 @@ fr:
           spell: "Créer un sort"
         all_offered:
           item:
-            one: "%{count} objet du modèle est proposé à vos joueurs. Personnalisez ici ceux que vous voulez modifier ou retirer."
-            other: "Les %{count} objets proposés à vos joueurs viennent du modèle. Personnalisez ici ceux que vous voulez modifier ou retirer."
+            one: "%{count} objet proposé, d'après le modèle."
+            other: "%{count} objets proposés, d'après le modèle."
           spell:
-            one: "%{count} sort du modèle est proposé à vos joueurs. Personnalisez ici ceux que vous voulez modifier ou retirer."
-            other: "Les %{count} sorts proposés à vos joueurs viennent du modèle. Personnalisez ici ceux que vous voulez modifier ou retirer."
+            one: "%{count} sort proposé, d'après le modèle."
+            other: "%{count} sorts proposés, d'après le modèle."
         back: "Retour"
         cantrips: "Sorts mineurs"
         change: "Modifier %{name}"
@@ -799,7 +804,8 @@ fr:
         starting_equipment:
           in: "Dans l'équipement de départ"
           out: "Retiré de l'équipement de départ"
-        subtitle: "Les sorts et les objets que vos joueurs pourront choisir, d'après le modèle de fiche."
+        intro: "Tous les sorts et objets de votre modèle sont déjà proposés à vos joueurs, sans rien faire de plus."
+        purpose: "Cette étape sert surtout à modifier ou retirer ceux qui ne conviennent pas à votre partie, et à créer les vôtres."
         tab:
           item: "Objets"
           spell: "Sorts"

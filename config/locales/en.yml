@@ -450,6 +450,9 @@ en:
       count:
         hint: "How many options the player may tick at most."
         label: "Number of choices"
+      filter:
+        hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
+        label: "Search filter"
       from:
         hint: "The list whose option picked gives this field (the background, the class)."
         label: "Source list"
@@ -688,7 +691,7 @@ en:
         place_result_on: "Assign a result to %{label}"
         proficient: "(proficient)"
         reroll: "Roll again"
-        resource_hint: "Maximum value: your character starts full."
+        resource_hint: "Maximum value: the character starts full."
         roll: "Roll the dice"
         roll_method: "%{dice}d%{sides} per ability, keeping the %{kept} best. Assign each result, or type your own scores."
         score_column: "Score"
@@ -757,9 +760,9 @@ en:
           other: "%{count} NPCs and enemies"
         create: "Create an NPC"
         empty: "No NPC yet. Add creatures from the bestiary, or create your own characters."
-        subtitle: "The characters you will play. Each one has its own sheet, which you can change without touching the bestiary."
+        intro: "Every creature of the bestiary of your template stays available: you will also be able to add them during the game."
+        purpose: "This step is mostly for preparing your own NPCs, and the enemies you change or add for this table."
         title: "NPCs and enemies"
-        visible: "Show %{name} to the players"
       update:
         saved: "NPCs and enemies saved."
     catalog_entries:
@@ -778,6 +781,8 @@ en:
         new:
           item: "New item"
           spell: "New spell"
+    catalog_search:
+      filter: "Filter by %{label}"
     catalog_pickers:
       show:
         back: "Back"
@@ -798,11 +803,11 @@ en:
           spell: "Create a spell"
         all_offered:
           item:
-            one: "%{count} item of the template is offered to your players. Customize here those you want to change or take out."
-            other: "The %{count} items offered to your players come from the template. Customize here those you want to change or take out."
+            one: "%{count} item offered, from the template."
+            other: "%{count} items offered, from the template."
           spell:
-            one: "%{count} spell of the template is offered to your players. Customize here those you want to change or take out."
-            other: "The %{count} spells offered to your players come from the template. Customize here those you want to change or take out."
+            one: "%{count} spell offered, from the template."
+            other: "%{count} spells offered, from the template."
         back: "Back"
         cantrips: "Cantrips"
         change: "Change %{name}"
@@ -828,7 +833,8 @@ en:
         starting_equipment:
           in: "In the starting equipment"
           out: "Taken out of the starting equipment"
-        subtitle: "The spells and items your players may choose, from the sheet template."
+        intro: "Every spell and item of your template is already offered to your players, with nothing more to do."
+        purpose: "This step is mostly for changing or taking out those that don't suit your game, and for creating your own."
         tab:
           item: "Items"
           spell: "Spells"

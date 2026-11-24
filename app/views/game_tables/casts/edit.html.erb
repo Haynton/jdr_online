@@ -1,11 +1,11 @@
 <%# The fourth step of a table: its NPCs and enemies (decision: an empty list at first). "Add from the bestiary" opens
     the creatures of the catalog the table offers, each added in one click (copied, numbered when added again);
-    "Create an NPC" an empty window. Each line opens its window (its whole sheet) and has its switch "Shown to the
-    players". Everything is saved as it is done: the buttons only go to the step before or after. Saved in a window or
-    by a switch, the page is refreshed by morphing, keeping its scroll %>
+    "Create an NPC" an empty window. Each line opens its window (its whole sheet). Everything is saved as it is done:
+    the buttons only go to the step before or after. Saved in a window, the page is refreshed by morphing, keeping its
+    scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "npcs", game_table: @game_table) do %>
-  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
   <div class="flex flex-wrap gap-3">
     <%= link_to game_table_bestiary_path(@game_table), class: "#{button_classes(:primary)} gap-2",
                                                       data: bestiary_dialog_link_data do %>

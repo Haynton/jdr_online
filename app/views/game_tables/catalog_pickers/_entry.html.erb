@@ -1,7 +1,8 @@
 <%# One entry of the whole catalog: its name, what it is, and "Customize" (named "Customize Fireball" for screen
     readers), which lists it on the step; "Listed" once it is (id picker-entry-<key>: replaced when it is picked) %>
 <li id="picker-entry-<%= entry.key %>" class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
-    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(entry) %>">
+    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(entry) %>"
+    data-filter-values="<%= catalog_filter_values(entry, filter_keys) %>">
   <div class="min-w-0">
     <p class="truncate text-sm font-semibold text-ink" title="<%= entry.name %>"><%= entry.name %></p>
     <p class="truncate text-xs text-muted"><%= catalog_entry_detail(entry) %></p>

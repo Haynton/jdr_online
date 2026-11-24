@@ -6,7 +6,7 @@
     chose: said under the tabs. Saved in a window or by a switch, the page is refreshed by morphing, keeping its scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "catalog", game_table: @game_table) do %>
-  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
   <nav class="inline-flex gap-1 self-start rounded-lg bg-field p-1" aria-label="<%= t(".tabs") %>">
     <% GameTables::CatalogsController::KINDS.each do |kind| %>
       <%= link_to t(".tab.#{kind}"), edit_game_table_catalog_path(@game_table, kind: kind),

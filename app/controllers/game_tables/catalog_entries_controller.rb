@@ -86,8 +86,13 @@ module GameTables
       [turbo_stream.replace("catalog-customizations", partial: "game_tables/catalogs/customizations",
                                                       locals: { customizations: customizations }),
        turbo_stream.replace("picker-entry-#{original.key}", partial: "game_tables/catalog_pickers/entry",
-                                                            locals: { entry: original, listed: true }),
+                                                            locals: { entry: original, listed: true,
+                                                                      filter_keys: picker_filter_keys }),
        turbo_stream.update("catalog-picker-status", t(".listed", name: original.name))]
+    end
+
+    def picker_filter_keys
+      helpers.catalog_filter_keys(catalog_entry_shown_fields(@game_table, @catalog_kind))
     end
 
     def save_entry(form_action)

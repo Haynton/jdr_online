@@ -1,7 +1,8 @@
 <%# One creature of the bestiary: its name, the values the template lists ("CR 1/4 · AC 15 · HP 10"), and "Add",
     named "Add Goblin Warrior" for screen readers, which copies it into the table %>
 <li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
-    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(creature) %>">
+    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(creature) %>"
+    data-filter-values="<%= catalog_filter_values(creature, filter_keys) %>">
   <div class="min-w-0">
     <p class="truncate text-sm font-semibold text-ink" title="<%= creature.name %>"><%= creature.name %></p>
     <p class="truncate text-xs text-muted"><%= creature_facts(@game_table, creature) %></p>

@@ -1,0 +1,21 @@
+<%# The search of the window of a catalog or of the bestiary and its filters, lists beside it (decision: lists, not
+    pills; CatalogFiltersHelper): always above the list, which scrolls alone. Rendered hidden, shown by
+    catalog_search_controller.js: without JavaScript, every entry stays shown. Each list is named by its field and
+    starts on "all" (its own label, "Level", "School") %>
+<div class="shrink-0 <%= in_dialog ? "border-b border-line px-6 py-4" : "pb-4" %>" hidden data-catalog-search-target="tools">
+  <div class="flex flex-wrap items-center gap-3">
+    <label for="<%= input_id %>" class="sr-only"><%= placeholder %></label>
+    <input id="<%= input_id %>" type="search" autocomplete="off" placeholder="<%= placeholder %>"
+           class="<%= SimpleFormFieldClasses::INPUT %> max-w-sm min-w-48 flex-1"
+           data-catalog-search-target="search" data-action="input->catalog-search#filter">
+    <% filters.each do |filter| %>
+      <div class="relative w-44">
+        <%= select_tag nil, options_for_select(filter.choices), include_blank: filter.label,
+                       id: "#{input_id}-#{filter.key}", aria: { label: t("game_tables.catalog_search.filter", label: filter.label) },
+                       class: CharacterSheets::FieldsHelper::SELECT_CLASSES,
+                       data: { catalog_search_target: "filter", filter_key: filter.key, action: "change->catalog-search#filter" } %>
+        <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+      </div>
+    <% end %>
+  </div>
+</div>

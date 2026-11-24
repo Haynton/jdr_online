@@ -101,15 +101,14 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
     assert_empty @game_table.npcs
   end
 
-  test "the list shows each NPC with its values, a switch shows it to the players, its window deletes it" do
+  test "the list shows each NPC with its values, hidden from the players, and its window deletes it" do
     goblin = Catalogs::CreatureCopier.new(@game_table).call("goblin-warrior")
     get edit_game_table_cast_path(@game_table)
 
     assert_select "li", text: /Guerrier gobelin\s*Ennemi · FP 1\/4 · CA 15 · PV 10/
+    assert_select "#cast-list input[role=switch]", count: 0
     patch game_table_npc_path(@game_table, goblin), params: { npc: { visible_to_players: "1" } }
-    assert_redirected_to edit_game_table_cast_path(@game_table)
-    assert goblin.reload.visible_to_players
-    assert_equal "Guerrier gobelin", goblin.name
+    assert_not goblin.reload.visible_to_players
 
     delete game_table_npc_path(@game_table, goblin), headers: NPC_HEADERS
     assert_empty @game_table.npcs
@@ -126,6 +125,19 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
     sign_in player
     get edit_game_table_cast_path(@game_table)
     assert_response :not_found
+  end
+
+  test "the sheet of an NPC follows the template as it is now, the copy once the template is deleted" do
+    fields = NPC_FIELDS + [{ "key" => "alignment", "label" => "Alignement", "type" => "choice",
+                             "options" => ["Neutre", "Sans alignement"], "section" => "Identité" }]
+    @game_table.sheet_template.update!(npc_fields: { "fields" => fields })
+    get new_game_table_npc_path(@game_table), headers: NPC_HEADERS
+
+    assert_select "select[name='npc[sheet][alignment]'] option", text: "Sans alignement"
+    assert_equal 4, @game_table.reload.template_snapshot.dig("npc_fields", "fields").size
+
+    @game_table.update!(sheet_template: nil)
+    assert_equal 4, @game_table.npc_sheet_fields.size
   end
 
   test "continue reaches the step and opens the summary" do

@@ -7,12 +7,8 @@
   <div class="flex min-h-0 flex-1 flex-col" data-controller="catalog-search">
     <p id="bestiary-status" class="sr-only" role="status"></p>
     <% if @creatures.any? %>
-      <div class="shrink-0 <%= bestiary_in_dialog? ? "border-b border-line px-6 py-4" : "pb-4" %>" hidden data-catalog-search-target="tools">
-        <label for="bestiary-search" class="sr-only"><%= t(".search") %></label>
-        <input id="bestiary-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
-               class="<%= SimpleFormFieldClasses::INPUT %> max-w-sm"
-               data-catalog-search-target="search" data-action="input->catalog-search#filter">
-      </div>
+      <%= render "game_tables/catalog_search_tools", input_id: "bestiary-search", placeholder: t(".search"), filters: @filters,
+                                                     in_dialog: bestiary_in_dialog? %>
     <% end %>
     <div class="@container min-h-0 flex-1 overflow-y-auto <%= "px-6 pb-6" if bestiary_in_dialog? %>">
       <% if @creatures.empty? %>
@@ -26,7 +22,7 @@
             <% end %>
             <ul class="mt-2 grid gap-x-10 border-t border-line @2xl:grid-cols-2">
               <% creatures.each do |creature| %>
-                <%= render "game_tables/bestiaries/creature", creature: creature %>
+                <%= render "game_tables/bestiaries/creature", creature: creature, filter_keys: @filter_keys %>
               <% end %>
             </ul>
           </section>
