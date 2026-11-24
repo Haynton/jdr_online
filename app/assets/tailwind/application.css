@@ -146,6 +146,8 @@
   /* Background of the pages under a cover (home, "My tables"). The same as page in light, deeper in dark */
   --color-page-deep: #faf6ee;
   --color-surface: #fffdf9;
+  /* Behind the board of the map editor, a little deeper than the page, so that the map stands out (no text on it) */
+  --color-well: #efe7d8;
   /* Fields show by their background, darker than the page in light (decision): ink 12.38 on it.
      muted falls to 3.88 here: no muted text inside a field (the theme selector sits on page) */
   --color-field: #ebe2d1;
@@ -213,6 +215,7 @@
     /* The green-black night stays under the covers (home, "My tables"): ink 16.49, muted 11.84 on it */
     --color-page-deep: #030605;
     --color-surface: #222222;
+    --color-well: #111111;
     /* Lighter than the page and the panels in dark: ink 10.24, muted 7.35 on it */
     --color-field: #333333;
     --color-line: #363636;

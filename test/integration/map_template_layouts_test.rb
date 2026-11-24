@@ -9,20 +9,34 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     sign_in @game_master
   end
 
-  test "the page of a map holds the editor, hidden until its controller shows it, with the drawing and the tools" do
+  test "the page of a map is the editor: the bar, the board and the panel, hidden until their controllers show them" do
     @map_template.update!(layout: layout_with(floors: { "1,1" => "room" }))
     get edit_map_template_path(@map_template)
 
-    assert_select "#map-editor[data-turbo-permanent][data-controller=map-editor]" \
-                  "[data-map-editor-url-value=?][data-map-editor-columns-value='10']",
+    assert_select "main[data-controller=map-editor][data-map-editor-url-value=?][data-map-editor-columns-value='10']",
                   map_template_layout_path(@map_template)
-    assert_includes css_select("#map-editor").first["data-map-editor-layout-value"], '"1,1":"room"'
-    assert_select "#map-editor [data-map-editor-target=editor][hidden]"
-    assert_select "button[data-map-editor-target=tool][data-tool-kind=floor]", count: MapFloors.keys.size
-    assert_select "button[data-map-editor-target=tool][data-tool-kind=edge]", count: MapEdges.keys.size
-    assert_select "button[data-tool-kind=floor][data-tool-key=room]", text: "Salle"
-    assert_select "button[data-tool-kind=edge][data-tool-key=door]", text: "Porte"
-    assert_select "button[data-tool-kind=eraser]", text: "Gomme"
+    assert_includes css_select("main[data-controller=map-editor]").first["data-map-editor-layout-value"], '"1,1":"room"'
+    assert_select "header h1", text: "La taverne"
+    assert_select "header [role=toolbar][hidden] button[data-tool-kind=eraser]", text: "Gomme"
+    assert_select "header [role=toolbar] button[data-action='map-editor#undo'][disabled]", text: "Annuler"
+    assert_select "header [role=toolbar] button[data-action='map-editor#redo'][disabled]", text: "Rétablir"
+    assert_select "header [role=toolbar] button[data-action='map-editor#clearEverything']", text: "Tout effacer"
+    assert_select "header [role=toolbar] [role=group] button[data-action='map-editor#showWholeMap'][aria-label=?]",
+                  "Afficher toute la carte"
+    assert_select "svg[data-map-editor-target=board][hidden]"
+    assert_select "aside a[href=?]", map_templates_path, text: "Mes cartes"
+    assert_select "aside [role=tablist][hidden] button[role=tab]", count: 2
+    assert_select "#map-editor-panel-floors[role=tabpanel] button[data-tool-kind=floor]", count: MapFloors.keys.size
+    assert_select "#map-editor-panel-floors button[data-tool-kind=edge]", count: MapEdges.keys.size
+    assert_select "#map-editor-panel-floors button[data-tool-key=room]", text: "Salle"
+    assert_select "#map-editor-panel-map input[name='map_template[name]'][value=?]", "La taverne"
+  end
+
+  test "the figures of the drawing are given in the words of the page, by count" do
+    get edit_map_template_path(@map_template)
+
+    labels = JSON.parse(css_select("main[data-controller=map-editor]").first["data-map-editor-figure-labels-value"])
+    assert_equal I18n.t("map_templates.editor.figures.cells", locale: :fr).stringify_keys, labels["cells"]
   end
 
   test "a drawing sent by the editor is saved, and the answer says nothing" do

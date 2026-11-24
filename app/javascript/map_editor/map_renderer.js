@@ -24,7 +24,8 @@ export function renderMap(group, { grid, floors, edges }) {
   const map = { grid, edges, floorView, floorAt: (column, row) => floorOf(floorView.get(cellKey(column, row))) }
   const { borders, insides } = collectSides(map)
 
-  createSvgElement("rect", { x: -60, y: -60, width: grid.width + 120, height: grid.height + 120,
+  // The ground goes on far around the grid: the board may be zoomed out, or wider than the map
+  createSvgElement("rect", { x: -grid.width * 4, y: -grid.height * 4, width: grid.width * 9, height: grid.height * 9,
                              fill: palette.voidGround }, group)
   drawGridDots(group, grid)
   drawMarksOutside(group, map, borders)

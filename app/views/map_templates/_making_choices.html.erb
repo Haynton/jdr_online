@@ -1,0 +1,13 @@
+<%# How the map is made, like the two choices on top of the panel of the prototype: draw it (this editor), or use
+    a picture (later: the board drawn over an image of one's own, its grid set on it). Drawing is the only way for now:
+    the other choice shows « Bientôt » and does nothing %>
+<div class="grid grid-cols-2 gap-1.5" role="group" aria-label="<%= t(".label") %>">
+  <div class="grid gap-0.5 rounded-xl bg-primary-soft px-3 py-2 ring-1 ring-brass ring-inset">
+    <span class="text-[13px] font-bold text-primary-soft-ink"><%= t(".draw") %></span>
+    <span class="text-[11px] text-primary-soft-ink"><%= t(".draw_hint") %></span>
+  </div>
+  <div class="grid gap-0.5 rounded-xl border border-dashed border-field-line px-3 py-2">
+    <span class="text-[13px] font-bold text-ink"><%= t(".picture") %></span>
+    <span class="text-[11px] text-muted"><%= t(".coming_soon") %></span>
+  </div>
+</div>
