@@ -134,7 +134,8 @@ module CharacterSheets
     def sheet_select(character, field)
       tag.div(class: "relative") do
         select_tag(sheet_field_name(field),
-                   options_for_select(FieldTypes.of(field).list_choices(field), sheet_field_value(character, field)),
+                   options_for_select(FieldTypes.of(field).sheet_list_choices(field, character.sheet),
+                                      sheet_field_value(character, field)),
                    sheet_control_options(character, field).merge(class: SELECT_CLASSES, include_blank: true,
                                                                  data: sheet_choice_effects_data(field))) +
           render("shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES)

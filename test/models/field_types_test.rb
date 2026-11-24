@@ -32,6 +32,34 @@ class FieldTypesTest < ActiveSupport::TestCase
     assert_equal "character_sheets/fields/stat", type.partial_for(level.except("labels"))
   end
 
+  test "a list that depends on another offers the options of the option picked there, from its level" do
+    subclass = { "key" => "subclass", "type" => "choice", "options" => %w[Champion Voleur], "options_from" => "class",
+                 "options_by" => { "Guerrier" => ["Champion"], "Roublard" => ["Voleur"] }, "from_level" => 3,
+                 "level_from" => "level" }
+    type = FieldTypes.of(subclass)
+    warrior = { "class" => "Guerrier", "level" => 3 }
+
+    assert_equal [%w[Champion Champion]], type.sheet_list_choices(subclass, warrior)
+    assert type.asked_on?(subclass, warrior)
+    assert_not type.asked_on?(subclass, warrior.merge("level" => 2))
+    assert_not type.asked_on?(subclass, { "level" => 3 })
+    assert type.kept_on?("Champion", subclass, warrior)
+    assert_not type.kept_on?("Voleur", subclass, warrior)
+    assert_not type.kept_on?("Champion", subclass, warrior.merge("level" => 1))
+    assert_nil type.error_for("Champion", subclass, character: Character.new(sheet: warrior))
+    assert_equal [:inclusion], type.error_for("Voleur", subclass, character: Character.new(sheet: warrior))
+    assert_nil type.error_for("Voleur", subclass)
+  end
+
+  test "a list that depends on nothing is asked on every sheet and keeps any value" do
+    class_field = { "key" => "class", "type" => "choice", "options" => %w[Guerrier Roublard] }
+    type = FieldTypes.of(class_field)
+
+    assert type.asked_on?(class_field, {})
+    assert type.kept_on?("Barde", class_field, {})
+    assert_equal [:inclusion], type.error_for("Barde", class_field, character: Character.new(sheet: {}))
+  end
+
   test "every partial a type declares exists" do
     FieldTypes.all.filter_map(&:partial).uniq.each do |partial|
       directory, name = File.split(partial)

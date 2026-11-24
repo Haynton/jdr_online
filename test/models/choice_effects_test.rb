@@ -9,8 +9,9 @@ class ChoiceEffectsTest < ActiveSupport::TestCase
   }.freeze
 
   test "the registry lists every effect, once, in the order of the summary of the choices" do
-    assert_equal %w[hit_die proficient skill_choices spellcasting ability_bonus_choices origin_feat set
-                    unarmored_defense training tools features_by_level traits starting_equipment], ChoiceEffects.keys
+    assert_equal %w[hit_die hit_points_per_level proficient skill_choices spellcasting always_prepared_spells
+                    ability_bonus_choices origin_feat set unarmored_defense training tools features_by_level traits
+                    starting_equipment], ChoiceEffects.keys
     assert_equal ChoiceEffects.keys, SheetTemplate::CHOICE_EFFECTS
     assert_nil ChoiceEffects.find("flight")
   end
@@ -33,6 +34,30 @@ class ChoiceEffectsTest < ActiveSupport::TestCase
       assert_equal [["Caractéristiques augmentées", "Sagesse et Intelligence"]],
                    facts("ability_bonus_choices", %w[wisdom intelligence])
     end
+  end
+
+  test "the hit points per level and the named features of a subclass are said, each feature with its level" do
+    I18n.with_locale(:fr) do
+      assert_equal [["Points de vie", "+1 par niveau"]], facts("hit_points_per_level", 1)
+      features = { "6" => [{ "key" => "rage", "name" => "Rage aveugle" }],
+                   "3" => [{ "key" => "frenzy", "name" => "Frénésie" }, { "key" => "fury", "name" => "Fureur" }] }
+      assert_equal [["Niveau 3", "Frénésie et Fureur", 3], ["Niveau 6", "Rage aveugle", 6]],
+                   facts("features_by_level", features)
+      assert_empty facts("features_by_level", { "3" => ["cleric-subclass"] })
+    end
+  end
+
+  test "the effects given level by level are checked: levels 1 to 20, lists of keys" do
+    always_prepared = ChoiceEffects.find("always_prepared_spells")
+
+    assert_empty always_prepared.value_errors({ "3" => %w[aid bless], "5" => ["revivify"] })
+    assert_equal %w[aid bless revivify], always_prepared.spell_keys({ "5" => ["revivify"], "3" => %w[aid bless] }, 5)
+    assert_equal %w[aid bless], always_prepared.spell_keys({ "5" => ["revivify"], "3" => %w[aid bless] }, 4)
+    assert_equal [:invalid_level_entries], always_prepared.value_errors({ "21" => ["aid"] }).map(&:first)
+    assert_equal [:invalid_level_entries], always_prepared.value_errors(["aid"]).map(&:first)
+    assert_equal [:invalid_level_entries],
+                 ChoiceEffects.find("features_by_level").value_errors({ "3" => [{ "key" => "frenzy" }] }).map(&:first)
+    assert_equal [:unknown_effect_value], ChoiceEffects.find("hit_points_per_level").value_errors("1").map(&:first)
   end
 
   test "the abilities a background raises are said with the rule of the game, the help of the bonus field" do

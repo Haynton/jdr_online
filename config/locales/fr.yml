@@ -154,6 +154,7 @@ fr:
           invalid_equipment_line: "%{part} › %{field} › %{option} : une ligne de l'option %{letter} doit être un objet ou un choix, pas les deux ni aucun"
           invalid_key: "%{part} : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_label: "%{part} › %{field} : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_level_entries: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit donner une liste pour chaque niveau, de 1 à 20"
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
           invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -176,6 +177,7 @@ fr:
           unknown_option: "%{part} › %{field} : « %{setting} » décrit une option qui n'existe pas (%{option})"
           unknown_parameter: "%{part} › %{field} : le réglage « %{parameter} » est inconnu pour ce type de champ"
           unknown_parameter_value: "%{part} › %{field} : la valeur « %{value} » du réglage « %{parameter} » est inconnue"
+          unknown_parent_option: "%{part} › %{field} : « options_by » cite une option qui n'existe pas dans « %{parent} » (%{option})"
           unknown_rule: "%{part} › %{field} : la règle de calcul « %{rule} » est inconnue"
           unknown_section: "L'étape « %{step} » cite une section qui n'existe pas : %{section}"
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
@@ -733,6 +735,9 @@ fr:
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
+      from_level:
+        hint: "Le niveau du personnage à partir duquel la liste est demandée (la sous-classe, au niveau 3)."
+        label: "À partir du niveau"
       from_table:
         hint: "Rempli par un réglage de la table, jamais demandé au joueur."
         label: "Donné par la table"
@@ -786,6 +791,9 @@ fr:
       options:
         hint: "Une option par ligne, dans l'ordre de la liste."
         label: "Options"
+      options_from:
+        hint: "La liste dont l'option choisie donne les options de celle-ci (la classe, pour la sous-classe)."
+        label: "Dépend de"
       proficiency:
         hint: "Le champ calculé qui donne le bonus de maîtrise."
         label: "Bonus de maîtrise"
@@ -974,6 +982,8 @@ fr:
         submit: "Créer mon personnage"
         subtitle: "Votre personnage pour la table « %{name} »."
       spell_choices:
+        always_prepared: "Sorts toujours préparés"
+        always_prepared_hint: "Donnés par %{sources} : ils ne comptent pas dans les sorts à choisir."
         casting_time: "Incantation : %{text}"
         changes:
           level_up_one: "Vous pourrez en remplacer un à chaque niveau gagné."
@@ -1051,10 +1061,13 @@ fr:
       facts:
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
+        hit_points_per_level: "Points de vie"
         origin_feat: "Don d'origine"
         proficient: "Maîtrises"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+      features_level: "Niveau %{level}"
+      hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"
       nothing_picked: "Rien de choisi pour l'instant."
       skill_choices_value:

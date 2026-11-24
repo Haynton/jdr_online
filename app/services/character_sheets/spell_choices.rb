@@ -4,6 +4,8 @@
 # the class at the level of the character. The tables are read in the spellcasting effect of the option picked (the
 # class), one number per level from 1 to 20 (heroic fantasy: cantrips, prepared, max_spell_level). The spells come
 # from the catalog of the table (Catalogs::TableCatalog: its template's, changed by its game master).
+# Beside the groups, the spells an option always prepares from a level (always_prepared_spells: the domain spells of
+# the Life domain), which count in no group and cannot be chosen there.
 # Known limit: the spellbook of the wizard (6 spells, some of them prepared) comes later; here every class prepares
 # its spells from the list of its class
 module CharacterSheets
@@ -49,28 +51,47 @@ module CharacterSheets
       groups.find { |group| group.keys.include?(spell_key) }
     end
 
+    # The spells its options always prepare at its level (the domain spells of the subclass)
+    def always_prepared
+      @always_prepared ||= CharacterSheets::AlwaysPreparedSpells.new(
+        options: picked_options_with(ChoiceEffects::AlwaysPreparedSpells::KEY), level: level, spells: table_spells
+      )
+    end
+
     # The copies of the spells chosen that are still offered, at most as many per group as allowed: the spells kept
-    # when the class changes (a spell of the class before goes)
+    # when the class changes (a spell of the class before goes). Those always prepared are copied again, from the
+    # options picked now
     def keep_offered(chosen_spells)
-      chosen_spells.select { |spell| group_of(spell["key"]) }
+      chosen_spells.reject { |spell| spell["always_prepared"] }
+                   .select { |spell| group_of(spell["key"]) }
                    .group_by { |spell| group_of(spell["key"]) }
-                   .flat_map { |group, spells_of_group| spells_of_group.first(group.allowed_count) }
+                   .flat_map { |group, spells_of_group| spells_of_group.first(group.allowed_count) } +
+        always_prepared.copies
     end
 
     # What a character keeps of a spell: a copy, which the catalog changing never changes (decision)
     def copy_of(spell_key)
       entry = groups.flat_map(&:spells).find { |spell| spell.key == spell_key }
-      entry && { "key" => entry.key, "name" => entry.name, "level" => entry.level,
-                 "description" => entry.description, "properties" => entry.properties }
+      entry && self.class.copy_of_entry(entry)
+    end
+
+    def self.copy_of_entry(entry)
+      { "key" => entry.key, "name" => entry.name, "level" => entry.level, "description" => entry.description,
+        "properties" => entry.properties }
     end
 
     private
 
     # The spells of the catalog of the table (its template's, changed by its game master: Catalogs::TableCatalog)
+    def table_spells
+      Catalogs::TableCatalog.new(@game_table).entries("spell")
+    end
+
+    # Those of the class, without those always prepared
     def catalog_spells
       return CatalogEntry.none unless class_option
 
-      Catalogs::TableCatalog.new(@game_table).entries("spell").for_class(class_option).by_level_and_name
+      table_spells.for_class(class_option).where.not(key: always_prepared.keys).by_level_and_name
     end
 
     def build_group(declared_group)
@@ -109,11 +130,16 @@ module CharacterSheets
     end
 
     def picked_spellcasting
-      @picked_spellcasting ||= @game_table.character_sheet_fields.filter_map do |field|
+      @picked_spellcasting ||= picked_options_with(ChoiceEffects::Spellcasting::KEY).first
+    end
+
+    # [option, value of the effect] for each option picked that has this effect
+    def picked_options_with(effect_key)
+      @game_table.character_sheet_fields.filter_map do |field|
         option = @character.sheet[field["key"]]
-        spellcasting = field.dig("effects", option.to_s, "spellcasting")
-        [option, spellcasting] if spellcasting
-      end.first
+        value = field.dig("effects", option.to_s, effect_key)
+        [option, value] if value
+      end
     end
   end
 end
