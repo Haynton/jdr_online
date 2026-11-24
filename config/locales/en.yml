@@ -46,6 +46,7 @@ en:
         columns: "Columns"
         layout: "Map drawing"
         name: "Name"
+        owner: "Owner"
         rows: "Rows"
       game_map:
         grid_cell_size: "Cell size (px)"
@@ -93,6 +94,10 @@ en:
       models:
         map_template:
           attributes:
+            columns:
+              in: "must be from %{minimum} to %{maximum}"
+            rows:
+              in: "must be from %{minimum} to %{maximum}"
             layout:
               invalid_format: "does not have the expected form"
               cell_outside_grid: "holds the cell %{cell}, outside the grid"
@@ -340,6 +345,7 @@ en:
       label: "Main navigation"
       my_tables: "My tables"
       my_templates: "My templates"
+      my_maps: "My maps"
       pending_invitations:
         one: "1 invitation waiting"
         other: "%{count} invitations waiting"
@@ -352,6 +358,34 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+  map_templates:
+    create:
+      created: "Map “%{name}” created."
+    destroy:
+      deleted: "Map “%{name}” deleted."
+    edit:
+      back: "My maps"
+      delete: "Delete the map"
+      delete_button: "Delete"
+      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
+      delete_description: "The map leaves “My maps”. This cannot be undone."
+      presentation_title: "Presentation"
+      save: "Save"
+    index:
+      new: "Create a map"
+      new_hint: "Draw a room, a dungeon, a village"
+      own_title: "Your maps"
+      subtitle: "Draw your maps, then use them in your games."
+      title: "My maps"
+    new:
+      cancel: "Cancel"
+      create: "Create the map"
+      size_hint: "From 10 to 60 cells. It cannot be changed afterwards."
+      subtitle: "Its name and the size of its grid, in cells."
+      title: "New map"
+    size: "%{columns} × %{rows} cells"
+    update:
+      renamed: "Map renamed."
   sheet_templates:
     banner_colors:
       arcane: "Arcane"

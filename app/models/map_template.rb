@@ -14,6 +14,8 @@ class MapTemplate < ApplicationRecord
   attribute :layout, default: -> { BLANK_LAYOUT.deep_dup }
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
-  validates :columns, :rows, numericality: { only_integer: true, in: GRID_SIZES }
+  # The bounds given to the message: Rails would write the range as is (« 10..60 »)
+  validates :columns, :rows, numericality: { only_integer: true, in: GRID_SIZES,
+                                             minimum: GRID_SIZES.min, maximum: GRID_SIZES.max }
   validates_with MapLayoutValidator
 end

@@ -24,6 +24,11 @@ class MapTemplateTest < ActiveSupport::TestCase
     assert MapTemplate.new(name: "Petite", owner: @owner, columns: 9).tap(&:validate).errors.of_kind?(:columns, :in)
     assert MapTemplate.new(name: "Grande", owner: @owner, rows: 61).tap(&:validate).errors.of_kind?(:rows, :in)
     assert MapTemplate.new(name: "Juste", owner: @owner, columns: 10, rows: 60).valid?
+
+    I18n.with_locale(:fr) do
+      too_small = MapTemplate.new(name: "Petite", owner: @owner, columns: 9).tap(&:validate)
+      assert_equal ["doit être de 10 à 60"], too_small.errors[:columns]
+    end
   end
 
   test "the maps of a game master go with their account" do

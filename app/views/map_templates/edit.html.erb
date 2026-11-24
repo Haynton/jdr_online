@@ -1,0 +1,37 @@
+<%# The page of a map: its name (saved when the field is left, like the page of a template: auto_submit_controller.js,
+    and the page refreshes by morphing, keeping its scroll), then its deletion, asked first. The map editor comes here.
+    "My maps" at the bottom right, like the pages of a creation %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%= map_template_page do %>
+  <%= page_header(title: @map_template.name_in_database, subtitle: map_template_size(@map_template)) %>
+
+  <div class="grid gap-x-10 gap-y-8 lg:grid-cols-2">
+    <%= simple_form_for @map_template, html: { id: "map-template-form",
+                                               data: { controller: "auto-submit", action: "change->auto-submit#submit" } },
+                                       defaults: { wrapper_html: { class: "max-w-md" } } do |form| %>
+      <%= form_error_notification(form) %>
+      <section aria-labelledby="map-presentation-title">
+        <h2 id="map-presentation-title" class="mb-3 text-base font-semibold text-ink"><%= t(".presentation_title") %></h2>
+        <%= form.input :name, required: true, input_html: { autocomplete: "off", maxlength: MapTemplate::NAME_MAX_LENGTH } %>
+      </section>
+      <%# Without JavaScript, nothing saves by itself %>
+      <noscript>
+        <%= form.button :submit, t(".save"), class: button_classes(:primary) %>
+      </noscript>
+    <% end %>
+
+    <section class="min-w-0" aria-labelledby="map-delete-title">
+      <h2 id="map-delete-title" class="text-base font-semibold text-ink"><%= t(".delete") %></h2>
+      <p class="mt-1 text-sm text-muted"><%= t(".delete_description") %></p>
+      <%# Asked first (shared/_confirm_dialog), with a red confirm button %>
+      <%= button_to t(".delete_button"), map_template_path(@map_template), method: :delete,
+                    form_class: "mt-3", class: button_classes(:danger),
+                    data: { turbo_confirm: t(".delete_confirmation", name: @map_template.name_in_database),
+                            confirm_button: t(".delete_button"), confirm_variant: "danger" } %>
+    </section>
+  </div>
+
+  <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+    <%= link_to t(".back"), map_templates_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>

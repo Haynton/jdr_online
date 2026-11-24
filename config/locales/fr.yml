@@ -17,6 +17,7 @@ fr:
         columns: "Colonnes"
         layout: "Dessin de la carte"
         name: "Nom"
+        owner: "Propriétaire"
         rows: "Lignes"
       game_map:
         grid_cell_size: "Taille d'une case (px)"
@@ -64,6 +65,10 @@ fr:
       models:
         map_template:
           attributes:
+            columns:
+              in: "doit être de %{minimum} à %{maximum}"
+            rows:
+              in: "doit être de %{minimum} à %{maximum}"
             layout:
               invalid_format: "n'a pas la forme attendue"
               cell_outside_grid: "contient la case %{cell}, hors de la grille"
@@ -311,6 +316,7 @@ fr:
       label: "Navigation principale"
       my_tables: "Mes tables"
       my_templates: "Mes modèles"
+      my_maps: "Mes cartes"
       pending_invitations:
         one: "1 invitation en attente"
         other: "%{count} invitations en attente"
@@ -323,6 +329,34 @@ fr:
     confirm_dialog:
       cancel: "Annuler"
       confirm: "Confirmer"
+  map_templates:
+    create:
+      created: "Carte « %{name} » créée."
+    destroy:
+      deleted: "Carte « %{name} » supprimée."
+    edit:
+      back: "Mes cartes"
+      delete: "Supprimer la carte"
+      delete_button: "Supprimer"
+      delete_confirmation: "Supprimer la carte « %{name} » ? Les tables qui l'utilisent gardent leur copie."
+      delete_description: "La carte quitte « Mes cartes ». On ne peut pas revenir en arrière."
+      presentation_title: "Présentation"
+      save: "Enregistrer"
+    index:
+      new: "Créer une carte"
+      new_hint: "Dessinez une salle, un donjon, un village"
+      own_title: "Vos cartes"
+      subtitle: "Dessinez vos cartes, puis utilisez-les dans vos parties."
+      title: "Mes cartes"
+    new:
+      cancel: "Annuler"
+      create: "Créer la carte"
+      size_hint: "De 10 à 60 cases. Elle ne se change plus ensuite."
+      subtitle: "Son nom et la taille de sa grille, en cases."
+      title: "Nouvelle carte"
+    size: "%{columns} × %{rows} cases"
+    update:
+      renamed: "Carte renommée."
   sheet_templates:
     banner_colors:
       arcane: "Arcane"

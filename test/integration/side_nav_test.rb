@@ -19,7 +19,7 @@ class SideNavTest < ActionDispatch::IntegrationTest
     assert_select "body > div.pb-20.md\\:pl-16.md\\:nav-expanded\\:pl-60"
   end
 
-  test "the navigation holds the logo, my tables, my templates, settings and log out" do
+  test "the navigation holds the logo, my tables, my templates, my maps, settings and log out" do
     get game_tables_path
 
     assert_select "#side-nav" do
@@ -28,6 +28,7 @@ class SideNavTest < ActionDispatch::IntegrationTest
         assert_select "svg[aria-hidden=true] + span#{fading_text_selector}", text: "Mes tables"
       end
       assert_select "a[href=?][title=?]:not([aria-current])", sheet_templates_path, "Mes modèles"
+      assert_select "a[href=?][title=?]:not([aria-current])", map_templates_path, "Mes cartes"
       assert_select "#{account_entries_selector} a[href=?][title=?]", settings_display_path, "Paramètres"
       assert_select "#{account_entries_selector} form[action=?][data-turbo-confirm=?] button[title=?]",
                     destroy_user_session_path, "Se déconnecter ?", "Se déconnecter"
@@ -40,7 +41,8 @@ class SideNavTest < ActionDispatch::IntegrationTest
     assert_select "#side-nav > a[href=?] + div > button[data-action='side-nav#toggle']", game_tables_path
     assert_select "#side-nav > div:has(> button[data-action='side-nav#toggle']) + div.md\\:mt-auto > a[href=?]",
                   game_tables_path, text: "Mes tables"
-    assert_select "#side-nav > div.md\\:mt-auto > a[href=?] + a[href=?]", game_tables_path, sheet_templates_path
+    assert_select "#side-nav > div.md\\:mt-auto > a[href=?] + a[href=?] + a[href=?]", game_tables_path,
+                  sheet_templates_path, map_templates_path
     assert_select "#side-nav > div.md\\:mt-auto + div.md\\:hidden + div.hidden.md\\:flex"
   end
 
