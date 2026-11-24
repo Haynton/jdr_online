@@ -13,10 +13,15 @@ module GameTables
       lists: "@xl:col-span-2", boxes: "@xl:col-span-2", switches: "@xl:col-span-3", texts: "@xl:col-span-6",
       attacks: "@xl:col-span-6"
     }.freeze
-    SHORT_PICKS_CELL_CLASSES = "@xl:col-span-2".freeze
+    # A short group of boxes (V, S, M) on one line beside the lists, as high as a field, its boxes 24 px apart
+    SHORT_PICKS_CELL_CLASSES = "@xl:col-span-2 [&_fieldset>div]:flex [&_fieldset>div]:min-h-10 " \
+                               "[&_fieldset>div]:items-center [&_fieldset>div]:gap-x-6".freeze
     PICKS_CELL_CLASSES = "@xl:col-span-6".freeze
     SHORT_PICKS_COUNT = 4
 
+    # Boxes that follow each other share one cell, side by side 12 px apart (decision: the weight and the value of an
+    # item on one line, beside its category), two thirds of the grid
+    BOX_RUN_CLASSES = "flex flex-wrap items-start gap-3 @xl:col-span-4".freeze
     # Into the window, never prefetched (an answer laid out for the window must not be reused for the whole page)
     def catalog_entry_dialog_link_data
       { turbo_frame: FRAME, turbo_prefetch: false }
@@ -38,13 +43,26 @@ module GameTables
       group = sheet_flow_group(field)
       return CELL_CLASSES.fetch(group, PICKS_CELL_CLASSES) unless group == :picks
 
-      field["options"].to_a.size <= SHORT_PICKS_COUNT ? SHORT_PICKS_CELL_CLASSES : PICKS_CELL_CLASSES
+      short_picks?(field) ? SHORT_PICKS_CELL_CLASSES : PICKS_CELL_CLASSES
     end
 
     # The fields by the section the template gives them ("Level and school", "Casting"...), in the order they first
     # come: [section, fields]; a field without a section in a group without a title. In a section, the fields by kind
     # of input (the lists and short texts, the boxes, the check boxes, the long texts, then the switches together), in
-    # the order of the template within each kind: the switches side by side, wherever the template puts them
+    # The cells of a section: [classes, fields], each field in its own cell, but boxes that follow each other together
+    def catalog_entry_cells(section_fields)
+      runs = section_fields.slice_when { |before, after| !(boxed_cell?(before) && boxed_cell?(after)) }
+      runs.map do |fields|
+        fields.size > 1 ? [BOX_RUN_CLASSES, fields] : [catalog_entry_cell_classes(fields.first), fields]
+      end
+    end
+
+    def boxed_cell?(field)
+      sheet_flow_group(field) == :boxes
+    end
+
+    # the order of the template within each kind: the switches side by side, wherever the template puts them. A short
+    # group of boxes goes with the lists, in the order of the template (the components, then their material)
     def catalog_entry_sections(fields)
       fields.group_by { |field| field["section"] }.map do |section, section_fields|
         [section, section_fields.sort_by.with_index { |field, index| [catalog_group_rank(field), index] }]
@@ -53,7 +71,12 @@ module GameTables
 
     def catalog_group_rank(field)
       groups = CharacterSheets::LayoutHelper::FLOW_GROUPS
-      groups.index(sheet_flow_group(field)) || groups.size
+      group = short_picks?(field) ? :lists : sheet_flow_group(field)
+      groups.index(group) || groups.size
+    end
+
+    def short_picks?(field)
+      sheet_flow_group(field) == :picks && field["options"].to_a.size <= SHORT_PICKS_COUNT
     end
 
     # The table's own entry changes the original of its template (same key): "Changed"; one of its own: "Added"
