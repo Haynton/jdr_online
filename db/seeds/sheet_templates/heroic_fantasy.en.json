@@ -177,7 +177,7 @@
 "fields": [
   { "key": "size", "label": "Size", "type": "choice", "options": ["Tiny", "Small", "Small or Medium", "Medium", "Large", "Huge", "Gargantuan"], "section": "Identity" },
   { "key": "creature_type", "filter": true, "label": "Type", "type": "choice", "options": ["Aberration", "Beast", "Celestial", "Construct", "Dragon", "Elemental", "Fey", "Fiend", "Giant", "Humanoid", "Monstrosity", "Ooze", "Plant", "Swarm of beasts", "Undead"], "section": "Identity" },
-  { "key": "alignment", "label": "Alignment", "type": "text", "short": true, "section": "Identity" },
+  { "key": "alignment", "label": "Alignment", "type": "choice", "options": ["Lawful good", "Neutral good", "Chaotic good", "Lawful neutral", "Neutral", "Chaotic neutral", "Lawful evil", "Neutral evil", "Chaotic evil", "Unaligned"], "section": "Identity" },
   { "key": "challenge", "filter": true, "label": "Challenge rating", "abbreviation": "CR", "listed": true, "type": "choice", "options": ["0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"], "section": "Identity",
     "help": "How hard the creature is: a party of four characters of this level beats it with some effort." },
   { "key": "armor_class", "label": "Armor class", "abbreviation": "AC", "listed": true, "type": "number", "min": 0, "max": 30, "section": "Combat" },

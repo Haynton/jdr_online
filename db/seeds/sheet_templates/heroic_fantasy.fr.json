@@ -177,7 +177,7 @@
 "fields": [
   { "key": "size", "label": "Taille", "type": "choice", "options": ["Très petite", "Petite", "Petite ou moyenne", "Moyenne", "Grande", "Très grande", "Gigantesque"], "section": "Identité" },
   { "key": "creature_type", "filter": true, "label": "Type", "type": "choice", "options": ["Aberration", "Bête", "Céleste", "Créature artificielle", "Créature monstrueuse", "Dragon", "Élémentaire", "Fée", "Fiélon", "Géant", "Humanoïde", "Mort-vivant", "Nuée de bêtes", "Plante", "Vase"], "section": "Identité" },
-  { "key": "alignment", "label": "Alignement", "type": "text", "short": true, "section": "Identité" },
+  { "key": "alignment", "label": "Alignement", "type": "choice", "options": ["Loyal bon", "Neutre bon", "Chaotique bon", "Loyal neutre", "Neutre", "Chaotique neutre", "Loyal mauvais", "Neutre mauvais", "Chaotique mauvais", "Sans alignement"], "section": "Identité" },
   { "key": "challenge", "filter": true, "label": "Facteur de puissance", "abbreviation": "FP", "listed": true, "type": "choice", "options": ["0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"], "section": "Identité",
     "help": "La difficulté de la créature : un groupe de quatre personnages de ce niveau en vient à bout avec effort." },
   { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "listed": true, "type": "number", "min": 0, "max": 30, "section": "Combat" },
