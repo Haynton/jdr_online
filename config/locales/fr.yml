@@ -21,10 +21,14 @@ fr:
         owner: "Propriétaire"
         rows: "Lignes"
       game_map:
+        columns: "Colonnes"
         grid_cell_size: "Taille d'une case (px)"
         grid_visible: "Afficher la grille"
         image: "Image"
+        layout: "Dessin de la carte"
+        map_template: "Carte d'origine"
         name: "Nom"
+        rows: "Lignes"
       catalog_entry:
         description: "Description"
         name: "Nom"
@@ -66,14 +70,14 @@ fr:
       models:
         map_template:
           attributes:
-            columns:
+            columns: &map_grid_size_errors
               in: "doit être de %{minimum} à %{maximum}"
             picture:
               content_type: "doit être une image PNG, JPEG ou WebP"
               too_big: "ne doit pas dépasser %{count} Mo"
             rows:
               in: "doit être de %{minimum} à %{maximum}"
-            layout:
+            layout: &map_layout_errors
               invalid_format: "n'a pas la forme attendue"
               cell_outside_grid: "contient la case %{cell}, hors de la grille"
               unknown_floor: "contient un sol inconnu : %{floor}"
@@ -88,6 +92,9 @@ fr:
               invalid_picture: "contient un calage de l'image qui n'a pas la forme attendue"
         game_map:
           attributes:
+            columns: *map_grid_size_errors
+            layout: *map_layout_errors
+            rows: *map_grid_size_errors
             image:
               content_type: "doit être une image PNG, JPEG ou WebP"
               too_big: "ne doit pas dépasser %{count} Mo"

@@ -50,10 +50,14 @@ en:
         owner: "Owner"
         rows: "Rows"
       game_map:
+        columns: "Columns"
         grid_cell_size: "Cell size (px)"
         grid_visible: "Show the grid"
         image: "Image"
+        layout: "Map drawing"
+        map_template: "Original map"
         name: "Name"
+        rows: "Rows"
       catalog_entry:
         description: "Description"
         name: "Name"
@@ -95,14 +99,14 @@ en:
       models:
         map_template:
           attributes:
-            columns:
+            columns: &map_grid_size_errors
               in: "must be from %{minimum} to %{maximum}"
             picture:
               content_type: "must be a PNG, JPEG or WebP image"
               too_big: "must not be over %{count} MB"
             rows:
               in: "must be from %{minimum} to %{maximum}"
-            layout:
+            layout: &map_layout_errors
               invalid_format: "does not have the expected form"
               cell_outside_grid: "holds the cell %{cell}, outside the grid"
               unknown_floor: "holds an unknown floor: %{floor}"
@@ -117,6 +121,9 @@ en:
               invalid_picture: "holds settings of the picture in an unexpected form"
         game_map:
           attributes:
+            columns: *map_grid_size_errors
+            layout: *map_layout_errors
+            rows: *map_grid_size_errors
             image:
               content_type: "must be a PNG, JPEG or WebP image"
               too_big: "must not be over %{count} MB"
