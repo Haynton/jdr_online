@@ -35,11 +35,12 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
-  test "the heroic fantasy has the spells of levels 0 to 2 of the SRD 5.2" do
+  test "the heroic fantasy has every spell of the SRD 5.2, cantrips to level 9" do
     spells = read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.en.json"))["entries"]
     spells_by_level = spells.group_by { |spell| spell.dig("properties", "level") }.transform_values(&:size)
 
-    assert_equal({ 0 => 27, 1 => 57, 2 => 57 }, spells_by_level)
+    assert_equal({ 0 => 27, 1 => 57, 2 => 57, 3 => 42, 4 => 34, 5 => 38, 6 => 31, 7 => 20, 8 => 17, 9 => 16 },
+                 spells_by_level)
   end
 
   test "the heroic fantasy has the creatures of challenge 0 to 2 of the SRD 5.2, the same in both languages" do
@@ -91,7 +92,7 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     Catalogs::Loader.new(catalog_file).call
     Catalogs::Loader.new(catalog_file).call
 
-    assert_equal 141, sheet_template.catalog_entries.spells.count
+    assert_equal 339, sheet_template.catalog_entries.spells.count
     assert_equal "Projectile magique", sheet_template.catalog_entries.find_by(key: "magic-missile").name
   end
 
