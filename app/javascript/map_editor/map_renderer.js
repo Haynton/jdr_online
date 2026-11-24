@@ -12,7 +12,7 @@ import { noise } from "map_editor/noise"
 import { drawHatching } from "map_editor/hatching"
 import { drawBoulder } from "map_editor/boulder"
 import { drawInkWall } from "map_editor/wall_drawing"
-import { waterLoops, offsetLoop, loopPath } from "map_editor/water_outline"
+import { regionLoops, offsetLoop, loopPath } from "map_editor/region_outline"
 import { waterPattern, glowGradient, objectShadowFilter } from "map_editor/patterns"
 import { markDensity, markDepth } from "map_editor/drawing_settings"
 import * as palette from "map_editor/palette"
@@ -146,18 +146,47 @@ function pointOutside({ start, end, normalX, normalY }, ratio, distance) {
           start[1] + (end[1] - start[1]) * ratio + normalY * distance]
 }
 
-// Each texture filled in one path. Under the water, the floor of a neighbour, or deep water
+// Each texture filled in one path. Under the water, the floor of a neighbour, or nothing (water alone in the empty
+// ground is only its rounded pond, drawn with its banks). A floor with a soft edge
+// (open air) is filled first, along its soft outline: a meadow alone ends in an irregular, rounded edge, not in squares
+// (Anthony's request), and the other floors, drawn over it, cover its straight sides
 function drawFloors(group, map) {
   const floorGroup = createSvgElement("g", {}, group)
+  drawSoftEdgedFloors(floorGroup, map)
   const pathsByFill = new Map()
   map.floorView.forEach((floorKey, key) => {
+    const floor = floorOf(floorKey)
+    if (floor?.softEdge) return
+
     const [column, row] = cellPosition(key)
-    const fill = fillUnder(map, floorOf(floorKey), column, row)
+    const fill = fillUnder(map, floor, column, row)
+    if (!fill) return
+
     pathsByFill.set(fill, (pathsByFill.get(fill) || "") + polygonPath(map.grid.corners(column, row)))
   })
   pathsByFill.forEach((path, fill) => createSvgElement("path", { d: path, fill, stroke: fill, "stroke-width": 0.8 },
                                                        floorGroup))
   map.floorView.forEach((floorKey, key) => drawSpeckles(floorGroup, map.grid, floorOf(floorKey), cellPosition(key)))
+}
+
+// Rough only on the sides that face the empty ground
+function drawSoftEdgedFloors(group, map) {
+  const cellsByFloor = new Map()
+  map.floorView.forEach((floorKey, key) => {
+    if (!floorOf(floorKey)?.softEdge) return
+
+    if (!cellsByFloor.has(floorKey)) cellsByFloor.set(floorKey, [])
+    cellsByFloor.get(floorKey).push(cellPosition(key))
+  })
+  cellsByFloor.forEach((cells, floorKey) => {
+    const loops = regionLoops(cells, map.grid, {
+      isInRegion: (column, row) => map.floorView.get(cellKey(column, row)) === floorKey,
+      isRoughSide: (column, row) => !map.floorAt(column, row),
+      bulge: 6
+    })
+    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: floorOf(floorKey).pattern, "fill-rule": "evenodd" },
+                     group)
+  })
 }
 
 function fillUnder(map, floor, column, row) {
@@ -166,7 +195,7 @@ function fillUnder(map, floor, column, row) {
 
   const neighbour = map.grid.neighbours(column, row).map((position) => map.floorAt(...position))
     .find((candidate) => candidate && !candidate.liquid)
-  return neighbour ? neighbour.pattern : waterPattern
+  return neighbour ? neighbour.pattern : null
 }
 
 // A few specks of dirt or grass on a cell, and sometimes a tuft
@@ -191,15 +220,30 @@ function drawSpeckles(group, grid, floor, [column, row]) {
 }
 
 // The water over its cells, the faint lines between the cells of a floor, then the ripples and the banks
+// The water never goes over the empty ground (Anthony: « l'eau déborde »): its sides that face it stay on their line,
+// and the water and its banks are cut to the cells that have a floor. On a floor, its banks round off
 function drawWater(group, map, insides) {
   const waterCells = [...map.floorView].filter(([, floorKey]) => floorOf(floorKey)?.liquid)
     .map(([key]) => cellPosition(key))
-  const loops = waterLoops(waterCells, map.grid, (column, row) => Boolean(map.floorAt(column, row)?.liquid))
+  const loops = regionLoops(waterCells, map.grid, {
+    isInRegion: (column, row) => Boolean(map.floorAt(column, row)?.liquid),
+    isRoughSide: (column, row) => Boolean(map.floorAt(column, row))
+  })
+  const clipPath = clipToFloorCells(group, map)
   if (loops.length) {
-    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd" }, group)
+    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd",
+                               "clip-path": clipPath }, group)
   }
   drawCellLines(group, insides.filter((side) => !side.edge && !side.shore))
-  drawBanks(group, map.grid, waterCells, loops)
+  drawBanks(group, map.grid, waterCells, loops, clipPath)
+}
+
+// The cells that have a floor, as a clip path of the drawing
+function clipToFloorCells(group, map) {
+  const clip = createSvgElement("clipPath", { id: "map-floor-cells" }, group)
+  const path = [...map.floorView.keys()].map((key) => polygonPath(map.grid.corners(...cellPosition(key)))).join("")
+  createSvgElement("path", { d: path || "M0 0Z" }, clip)
+  return "url(#map-floor-cells)"
 }
 
 function drawCellLines(group, sides) {
@@ -209,8 +253,9 @@ function drawCellLines(group, sides) {
   }, lines))
 }
 
-function drawBanks(group, grid, waterCells, loops) {
-  const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, group)
+function drawBanks(group, grid, waterCells, loops, clipPath) {
+  const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round",
+                                        "clip-path": clipPath }, group)
   waterCells.forEach(([column, row]) => {
     const seed = column * 733 + row * 19
     if (noise(seed, 0, 70) >= 0.55) return
