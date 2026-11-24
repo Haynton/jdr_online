@@ -1,7 +1,9 @@
 module MapLayouts
   # Checks the tokens put on a map of a table (the list "tokens" of its layout): each one { "character_id", "column",
-  # "row" }, a non-player character or an enemy of the table (step "PNJ et ennemis"), on a cell of the grid, never
-  # two on the same cell. The same character may have several tokens (Anthony's decision: a band of goblins) and
+  # "row" }, a non-player character or an enemy of the table (step "PNJ et ennemis", or copied from the bestiary in the
+  # editor), on a cell of the grid, never two on the same cell, never on a blocked zone painted by the game master
+  # (the empty ground is refused by the editor only: a map switched from its picture to its drawing could otherwise
+  # never be saved again). The same character may have several tokens (Anthony's decision: a band of goblins) and
   # tokens on other maps. A map of « Mes cartes » has none: it belongs to no table. Gives the first error,
   # [type, options], or nil
   class TokensCheck
@@ -26,8 +28,13 @@ module MapLayouts
     def placement_error
       cells = @tokens.map { |token| token.values_at("column", "row") }
       return [:token_outside_grid, {}] unless cells.all? { |column, row| column < @map.columns && row < @map.rows }
+      return [:tokens_overlap, {}] unless cells.uniq.size == cells.size
 
-      [:tokens_overlap, {}] unless cells.uniq.size == cells.size
+      [:token_on_blocked_cell, {}] if cells.map { |column, row| "#{column},#{row}" }.intersect?(painted_cells)
+    end
+
+    def painted_cells
+      Array(@map.layout["blocked"])
     end
 
     def well_formed?(token)

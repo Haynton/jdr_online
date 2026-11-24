@@ -34,6 +34,13 @@ class MapTokensTest < ActiveSupport::TestCase
     end
   end
 
+  test "a token never stands on a blocked zone painted by the game master" do
+    game_map = map_with(tokens: [token(@goblin, 1, 1)])
+    game_map.layout["blocked"] = ["1,1"]
+
+    assert game_map.tap(&:validate).errors.of_kind?(:layout, :token_on_blocked_cell)
+  end
+
   test "a map of « Mes cartes » has no token" do
     map_template = MapTemplate.new(name: "Carte", owner: User.first, columns: 10, rows: 10,
                                    layout: MapTemplate::BLANK_LAYOUT.merge("tokens" => [token(@goblin, 1, 1)]))

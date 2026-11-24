@@ -126,9 +126,16 @@ export default class MapLayout {
     return this.tokens.find((token) => token.column === column && token.row === row)
   }
 
+  // Free, not painted blocked and, on a drawn map, on a floor (Anthony's request: never where a token cannot stand)
+  mayHoldToken(column, row) {
+    if (!this.grid.inside(column, row) || this.tokenAt(column, row) || this.isBlocked(column, row)) return false
+
+    return this.isPicture() || this.floors.has(cellKey(column, row))
+  }
+
   // One token a cell; the same character as many times as wanted (a band). true when it was put
   placeToken(characterId, column, row) {
-    if (this.tokenAt(column, row)) return false
+    if (!this.mayHoldToken(column, row)) return false
 
     this.tokens.push({ character_id: characterId, column, row })
     return true
@@ -146,9 +153,9 @@ export default class MapLayout {
     return this.blocked.has(cellKey(column, row))
   }
 
-  // true when the cell changed
+  // true when the cell changed. Not under a token: it would stand where no token stands
   block(column, row) {
-    if (this.isBlocked(column, row)) return false
+    if (this.isBlocked(column, row) || this.tokenAt(column, row)) return false
 
     this.blocked.add(cellKey(column, row))
     return true
