@@ -1,6 +1,6 @@
 require "test_helper"
 
-# « Mes cartes » (MapTemplatesController): a game master creates a map (its name and the size of its grid), renames
+# « Mes cartes » (MapTemplatesController): a game master creates a map in one click (nothing sent is taken), renames
 # it, deletes it. Every permission is checked by the server: only their own maps
 class MapTemplatesTest < ActionDispatch::IntegrationTest
   setup do
@@ -26,45 +26,13 @@ class MapTemplatesTest < ActionDispatch::IntegrationTest
 
   test "« Créer une carte » makes a map named « Nouvelle carte », of the default size, and opens its editor" do
     assert_difference -> { @game_master.map_templates.count }, 1 do
-      post map_templates_path
+      post map_templates_path, params: { map_template: { name: "Ignoré", columns: "5", layout: "{}" } }
     end
 
     map_template = MapTemplate.last
     assert_redirected_to edit_map_template_path(map_template)
     assert_equal ["Nouvelle carte", 28, 21], [map_template.name, map_template.columns, map_template.rows]
-  end
-
-  test "creating a map opens its page, with the size chosen" do
-    get new_map_template_path
-    assert_select "input[name='map_template[columns]'][value='28'][min='10'][max='60']"
-
-    assert_difference -> { @game_master.map_templates.count }, 1 do
-      post map_templates_path, params: { map_template: { name: "La crypte", columns: "30", rows: "12" } }
-    end
-
-    map_template = MapTemplate.last
-    assert_redirected_to edit_map_template_path(map_template)
-    assert_equal [30, 12], [map_template.columns, map_template.rows]
     assert_equal MapTemplate::BLANK_LAYOUT, map_template.layout
-    follow_redirect!
-    assert_select "main h1", text: "La crypte"
-    assert_select "#side-nav a[href=?][aria-current=page]", map_templates_path
-  end
-
-  test "a map without a name or with a grid too small is not created, the form says why" do
-    assert_no_difference -> { MapTemplate.count } do
-      post map_templates_path, params: { map_template: { name: "", columns: "5", rows: "21" } }
-    end
-
-    assert_response :unprocessable_content
-    assert_select "input[name='map_template[name]'][aria-invalid=true]"
-    assert_select "input[name='map_template[columns]'][aria-invalid=true][value='5']"
-  end
-
-  test "a drawing cannot be sent at the creation: only the name and the size" do
-    post map_templates_path, params: { map_template: { name: "La crypte", layout: { "floors" => "x" } } }
-
-    assert_equal MapTemplate::BLANK_LAYOUT, MapTemplate.last.layout
   end
 
   test "renaming keeps the grid and the drawing; a blank name is refused" do

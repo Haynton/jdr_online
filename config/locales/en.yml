@@ -519,12 +519,6 @@ en:
       label: "Name of the map"
       save: "Save"
       rename: "Rename the map"
-    new:
-      cancel: "Cancel"
-      create: "Create the map"
-      size_hint: "From 10 to 60 cells. It cannot be changed afterwards."
-      subtitle: "Its name and the size of its grid, in cells."
-      title: "New map"
     settings:
       delete: "Delete the map"
       delete_button: "Delete"

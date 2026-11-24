@@ -490,12 +490,6 @@ fr:
       label: "Nom de la carte"
       save: "Enregistrer"
       rename: "Renommer la carte"
-    new:
-      cancel: "Annuler"
-      create: "Créer la carte"
-      size_hint: "De 10 à 60 cases. Elle ne se change plus ensuite."
-      subtitle: "Son nom et la taille de sa grille, en cases."
-      title: "Nouvelle carte"
     settings:
       delete: "Supprimer la carte"
       delete_button: "Supprimer"
