@@ -394,6 +394,8 @@ fr:
       zoom_in: "Zoomer"
       zoom_label: "Zoom"
       zoom_out: "Dézoomer"
+    grid_size:
+      title: "Grille"
     help:
       close: "Fermer l'aide"
       open: "Aide"

@@ -423,6 +423,8 @@ en:
       zoom_in: "Zoom in"
       zoom_label: "Zoom"
       zoom_out: "Zoom out"
+    grid_size:
+      title: "Grid"
     help:
       close: "Close the help"
       open: "Help"

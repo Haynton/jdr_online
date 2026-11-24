@@ -45,7 +45,7 @@ export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
-                     "drawingTools", "pictureWidth", "pictureSlider"]
+                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
                     shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String }
@@ -105,6 +105,7 @@ export default class extends Controller {
     this.boardTarget.removeAttribute("hidden")
     this.toolbarTarget.hidden = false
     this.zoomButtonsTarget.hidden = false
+    this.gridSizeTarget.hidden = false
     this.resizeView()
   }
 

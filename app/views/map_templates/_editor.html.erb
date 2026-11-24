@@ -8,29 +8,11 @@
 <main class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh lg:h-dvh" <%= tag.attributes(data: map_editor_data(map_template)) %>>
   <%= render "shared/flashes" %>
   <header class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:min-h-16 lg:flex-nowrap lg:py-2">
-    <%# The name, changed right here (it looks like a title until it is pointed at), then the size of the grid: the
-        columns typed, the rows following (map_editor_controller.js#resizeGrid). One beside the other, so that the bar
-        stays low (Anthony's request); the size goes under the name when there is no room (a phone) %>
+    <%# The name, changed right here (it looks like a title until it is pointed at). The size of the grid floats over
+        the board (map_templates/_grid_size) %>
     <div class="flex min-w-0 basis-full flex-wrap items-center gap-x-3 gap-y-2 lg:basis-auto lg:flex-none">
       <h1 class="sr-only"><%= map_template.name_in_database %></h1>
       <%= render "map_templates/name_form", map_template: map_template %>
-      <%# The columns between « − » and « + » (Anthony's request: clearer than the arrows of a number field), still typed
-          if one wants; the rows follow %>
-      <p class="flex shrink-0 items-center gap-2 text-xs text-muted">
-        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#removeColumn"
-                aria-label="<%= t(".fewer_columns") %>" title="<%= t(".fewer_columns") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
-        <label for="map-columns" class="sr-only"><%= t(".columns_label") %></label>
-        <input type="number" id="map-columns" value="<%= map_template.columns_in_database %>"
-               min="<%= MapTemplate::GRID_SIZES.min %>" max="<%= MapTemplate::GRID_SIZES.max %>"
-               class="<%= MapTemplatesHelper::MAP_COLUMNS_FIELD_CLASSES %>"
-               data-map-editor-target="columnsInput" data-action="change->map-editor#resizeGrid"
-               data-confirm-button="<%= t(".shrink_button") %>" data-confirm-variant="danger">
-        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#addColumn"
-                aria-label="<%= t(".more_columns") %>" title="<%= t(".more_columns") %>"><%= render "shared/icons/plus", css_class: "size-3.5" %></button>
-        <span class="ml-0.5" aria-hidden="true">×</span>
-        <span data-map-editor-target="rowsCount"><%= map_template.rows_in_database %></span>
-        <span><%= t(".cells") %></span>
-      </p>
     </div>
     <%# How the map is made, in the bar (Anthony's request): Draw, or a picture (later) %>
     <%= render "map_templates/making_choices", map_template: map_template %>
@@ -80,6 +62,7 @@
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
+      <%= render "map_templates/grid_size", map_template: map_template %>
       <%# Floating at the bottom left of the board, across from the zoom (the bar had no room left for it once the way
           of making the map joined it): when the drawing was saved (a failed save in red, said to screen readers),
           then its figures %>

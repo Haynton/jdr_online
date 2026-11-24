@@ -24,7 +24,9 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_select "header button[data-action='map-editor#showWholeMap']", count: 0
     assert_select "[data-map-editor-target=zoomButtons][hidden] button[aria-label=?]", "Afficher toute la carte"
     assert_select "[data-map-editor-target=zoomButtons] button[aria-label=?]", "Zoomer"
-    assert_select "header button[data-action='map-editor#addColumn'][aria-label=?]", "Une colonne de plus"
+    # The size of the grid floats over the board, shown by the editor
+    assert_select "[data-map-editor-target=gridSize][hidden] button[data-action='map-editor#addColumn'][aria-label=?]",
+                  "Une colonne de plus"
     assert_select "svg[data-map-editor-target=board][hidden]"
     # « Mes cartes » is in the navigation: not again in the panel (Anthony's request)
     assert_select "aside a[href=?]", map_templates_path, count: 0
@@ -38,8 +40,8 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     # This map has a cell drawn: its tab Terrain first
     assert_select "[data-map-editor-target=drawingPanel][data-tabs-selected-index-value=?]", "1"
     assert_select "header input[name='map_template[name]'][value=?][aria-label=?]", "La taverne", "Nom de la carte"
-    assert_select "header input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
-    assert_select "header [data-map-editor-target=rowsCount]", text: "10"
+    assert_select "[data-map-editor-target=gridSize] input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
+    assert_select "[data-map-editor-target=gridSize] [data-map-editor-target=rowsCount]", text: "10"
     # Deleted from « Mes cartes », not here (Anthony's request)
     assert_select "form[action=?] input[name=_method][value=delete]", map_template_path(@map_template), count: 0
   end
