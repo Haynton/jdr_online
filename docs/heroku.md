@@ -99,7 +99,7 @@ Si `config/master.key` a été vue par quelqu'un d'autre (affichée, envoyée pa
 3. Déployer : `git push heroku main`
 4. Poser la nouvelle clé : `heroku config:set RAILS_MASTER_KEY="$(cat config/master.key)" -a fumble-quest > /dev/null`
 5. Retirer le secret provisoire (sinon il passe avant celui des credentials) : `heroku config:unset SECRET_KEY_BASE -a fumble-quest`
-6. Envoyer la nouvelle `config/master.key` aux autres membres de l'équipe par un canal privé.
+6. Garder la nouvelle `config/master.key` pour soi : elle ne quitte pas la machine d'Anthony. L'application ne lit aucun secret chiffré en développement (`.env` suffit), les autres membres de l'équipe n'en ont pas besoin, et chaque copie est une occasion de plus de la voir fuiter.
 
 Chacun devra se reconnecter une fois (nouveau `secret_key_base`).
 
