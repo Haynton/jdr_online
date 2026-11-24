@@ -1,0 +1,14 @@
+<%# A tool of the map editor (map_templates/_editor): a button pressed while it is the tool in use, its swatch drawn
+    by its JavaScript twin (map_floors, map_edges) beside its name. icon (optional): an icon instead, rendered already
+    (the eraser) %>
+<button type="button" class="<%= MapTemplatesHelper::MAP_TOOL_CLASSES %>" aria-pressed="false"
+        data-map-editor-target="tool" data-action="map-editor#chooseTool"
+        data-tool-kind="<%= kind %>" data-tool-key="<%= key %>">
+  <% if local_assigns[:icon] %>
+    <span class="flex size-8 shrink-0 items-center justify-center text-ink" aria-hidden="true"><%= icon %></span>
+  <% else %>
+    <svg viewBox="0 0 32 32" class="size-8 shrink-0" aria-hidden="true"
+         data-map-editor-target="swatch" data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"></svg>
+  <% end %>
+  <span class="min-w-0 truncate"><%= label %></span>
+</button>

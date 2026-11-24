@@ -1,0 +1,21 @@
+// The colors of a drawn map, from the prototype (docs/prototypes/map-editor.html). They are those of the drawing itself,
+// like the colors of a picture: the same in the light and the dark theme, not named colors of the app
+export const ink = "#2a1f16"
+export const paper = "#f7f4ee"
+export const rock = "#d2ccbf"
+export const stone = "#d6d0c3"
+export const voidGround = "#f1e9d8"
+export const timber = "#a07e5c"
+export const slate = "#6f6352"
+export const shoreWave = "#7fa3a0"
+export const lowWallMortar = "#7d776b"
+export const doorWood = "#d8bf9c"
+export const gridDot = "#a8966f"
+export const grassSpeck = "#a8b285"
+export const grassBlade = "#a3ad7e"
+export const dirtSpeck = "#bba886"
+export const water = "#e1e9e9"
+export const shadow = "#000000"
+// The marks of the pointer over the map: what will be painted, in the gold of the light theme, or refused, in red
+export const allowedMark = "#6b4d10"
+export const refusedMark = "#b91c1c"

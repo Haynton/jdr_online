@@ -1,11 +1,12 @@
-<%# The page of a map: its name (saved when the field is left, like the page of a template: auto_submit_controller.js,
-    and the page refreshes by morphing, keeping its scroll), then its deletion, asked first. The map editor comes here.
-    "My maps" at the bottom right, like the pages of a creation %>
+<%# The page of a map: the map editor (map_templates/_editor), then its name (saved when the field is left, like the
+    page of a template: auto_submit_controller.js, and the page refreshes by morphing, keeping its scroll) and its
+    deletion, asked first. "My maps" at the bottom right, like the pages of a creation %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= map_template_page do %>
   <%= page_header(title: @map_template.name_in_database, subtitle: map_template_size(@map_template)) %>
+  <%= render "map_templates/editor", map_template: @map_template %>
 
-  <div class="grid gap-x-10 gap-y-8 lg:grid-cols-2">
+  <div class="mt-10 grid gap-x-10 gap-y-8 lg:grid-cols-2">
     <%= simple_form_for @map_template, html: { id: "map-template-form",
                                                data: { controller: "auto-submit", action: "change->auto-submit#submit" } },
                                        defaults: { wrapper_html: { class: "max-w-md" } } do |form| %>

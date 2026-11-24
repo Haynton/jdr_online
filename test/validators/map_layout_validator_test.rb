@@ -55,6 +55,23 @@ class MapLayoutValidatorTest < ActiveSupport::TestCase
     assert_nil MapFloors.find("lava")
   end
 
+  test "every floor and every edge has its JavaScript twin, listed in the index" do
+    { "map_floors" => MapFloors, "map_edges" => MapEdges }.each do |folder, registry|
+      index = Rails.root.join("app/javascript/#{folder}/index.js").read
+      registry.all.map(&:key).each do |key|
+        assert_predicate Rails.root.join("app/javascript/#{folder}/#{key}.js"), :exist?, key
+        assert_includes index, "#{key}:", key
+      end
+    end
+  end
+
+  test "every floor and every edge has its name in both languages" do
+    %i[fr en].each do |locale|
+      MapFloors.all.each { |floor| assert I18n.exists?("map_templates.floors.#{floor.key}", locale), floor.key }
+      MapEdges.all.each { |edge| assert I18n.exists?("map_templates.edges.#{edge.key}", locale), edge.key }
+    end
+  end
+
   private
 
   def map_with(floors: {}, edges: {})

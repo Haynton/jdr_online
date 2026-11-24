@@ -1,0 +1,50 @@
+<%# The map editor (map_editor_controller.js): the board, as large as the room allows, the tools beside it from
+    1024 px (under it before). The board stays the same in the light and the dark theme, like a picture. Kept as it is
+    when the page refreshes by morphing (renaming): the drawing lives in the page (data-turbo-permanent, with its id).
+    Rendered hidden, shown by the controller: without JavaScript there is nothing to draw with %>
+<div id="map-editor" data-turbo-permanent <%= tag.attributes(data: map_editor_data(map_template)) %>>
+  <div hidden class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-8" data-map-editor-target="editor">
+    <div class="min-w-0">
+      <div class="overflow-hidden rounded-xl ring-1 ring-line">
+        <%# touch-none: on a phone, a finger draws instead of scrolling the page %>
+        <svg role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
+             class="block h-auto w-full cursor-crosshair touch-none select-none" data-map-editor-target="board"
+             data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerleave->map-editor#hidePointer">
+          <g data-map-editor-target="drawing"></g>
+          <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
+        </svg>
+      </div>
+      <p class="mt-2 min-h-5 text-sm text-error-ink" role="status" data-map-editor-target="status"></p>
+    </div>
+
+    <div class="flex flex-col gap-6" role="group" aria-label="<%= t(".tools_label") %>">
+      <section aria-labelledby="map-floors-title">
+        <h2 id="map-floors-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".floors_title") %></h2>
+        <p class="mt-1 text-sm text-muted"><%= t(".floors_hint") %></p>
+        <ul class="mt-3 grid grid-cols-2 gap-2">
+          <% map_floor_tools.each do |key, label| %>
+            <li><%= render "map_templates/tool", kind: "floor", key: key, label: label %></li>
+          <% end %>
+        </ul>
+      </section>
+      <section aria-labelledby="map-edges-title">
+        <h2 id="map-edges-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".edges_title") %></h2>
+        <p class="mt-1 text-sm text-muted"><%= t(".edges_hint") %></p>
+        <ul class="mt-3 grid grid-cols-2 gap-2">
+          <% map_edge_tools.each do |key, label| %>
+            <li><%= render "map_templates/tool", kind: "edge", key: key, label: label %></li>
+          <% end %>
+        </ul>
+      </section>
+      <section aria-labelledby="map-eraser-title">
+        <h2 id="map-eraser-title" class="text-xs font-semibold tracking-widest text-brass uppercase"><%= t(".eraser_title") %></h2>
+        <p class="mt-1 text-sm text-muted"><%= t(".eraser_hint") %></p>
+        <div class="mt-3 grid grid-cols-2 gap-2">
+          <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"),
+                                            icon: render("shared/icons/eraser", css_class: "size-5") %>
+        </div>
+      </section>
+    </div>
+  </div>
+  <noscript><p class="text-sm text-muted"><%= t(".needs_javascript") %></p></noscript>
+</div>
