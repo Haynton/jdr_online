@@ -20,7 +20,8 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "ol[aria-label] > li[aria-current=step]", text: /Sorts et objets/
     assert_select "a[aria-current=page]", text: "Sorts"
-    assert_select "p", text: /Les 7 sorts proposés à vos joueurs viennent du modèle/
+    assert_select "p", text: "7 sorts proposés, d'après le modèle."
+    assert_select "p", text: /Tous les sorts et objets de votre modèle sont déjà proposés/
     assert_select "#catalog-customizations", text: /Aucun sort personnalisé/
     assert_select "a[href=?][data-turbo-frame=catalog_picker_dialog]",
                   game_table_catalog_picker_path(@game_table, kind: "spell"), text: /Personnaliser un sort/

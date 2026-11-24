@@ -5,7 +5,7 @@
     scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "npcs", game_table: @game_table) do %>
-  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
   <div class="flex flex-wrap gap-3">
     <%= link_to game_table_bestiary_path(@game_table), class: "#{button_classes(:primary)} gap-2",
                                                       data: bestiary_dialog_link_data do %>
