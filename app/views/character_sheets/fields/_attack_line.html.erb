@@ -1,0 +1,21 @@
+<%# One attack of an NPC or a monster (character_sheets/fields/_attacks): four fields under small labels, side by side
+    once the line has room (container query), two by two on a phone, then "Remove". index: its position in the form,
+    or the placeholder of the template that repeated_lines_controller.js replaces %>
+<% line_name = "#{sheet_field_name(field)}[#{index}]" %>
+<% line_id = "#{sheet_field_id(field)}_#{index}" %>
+<div class="@container rounded-lg border border-line p-3" data-repeated-lines-target="line">
+  <div class="grid grid-cols-2 items-end gap-x-3 gap-y-2 @2xl:grid-cols-[minmax(0,2fr)_5rem_minmax(0,2fr)_minmax(0,2fr)_auto]">
+    <% FieldTypes::Attacks::PARTS.each do |part| %>
+      <div class="min-w-0 <%= attack_part_classes(part) %>">
+        <%= label_tag "#{line_id}_#{part}", t("character_sheets.fields.attacks.#{part}"), class: "mb-1 block text-xs font-medium text-muted" %>
+        <%= text_field_tag "#{line_name}[#{part}]", attack[part], id: "#{line_id}_#{part}", class: SimpleFormFieldClasses::INPUT,
+                           autocomplete: "off" %>
+      </div>
+    <% end %>
+    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %> col-span-2 justify-self-end @2xl:col-span-1"
+            aria-label="<%= t("character_sheets.fields.attacks.remove") %>" title="<%= t("character_sheets.fields.attacks.remove") %>"
+            data-repeated-lines-target="removeButton" data-action="repeated-lines#remove">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </div>
+</div>

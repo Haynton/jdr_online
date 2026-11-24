@@ -69,6 +69,9 @@ en:
         username: "Username"
     errors:
       messages:
+        attack_bonus_not_integer: "the bonus to hit of an attack must be a whole number, from -20 to +100"
+        attack_without_name: "each attack needs a name"
+        too_many_attacks: "%{count} attacks at most"
         ability_bonus_too_high: "goes past %{count} with the bonus"
         too_many_picks: "%{count} at most"
       models:
@@ -143,6 +146,15 @@ en:
     passwords:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
+  character_sheets:
+    fields:
+      attacks:
+        add: "Add an attack"
+        damage: "Damage"
+        name: "Name"
+        range: "Reach or range"
+        remove: "Remove the attack"
+        to_hit: "To hit"
   devise:
     passwords:
       edit:

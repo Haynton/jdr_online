@@ -95,6 +95,19 @@ class FieldTypesTest < ActiveSupport::TestCase
     end
   end
 
+  test "attacks are lines of name, bonus to hit, damage and range, the blank lines left out" do
+    attacks = FieldTypes.find("attacks")
+    typed = { "0" => { "name" => " Cimeterre ", "to_hit" => "+4", "damage" => "1d6+2 tranchants", "range" => "" },
+              "1" => { "name" => "", "to_hit" => "", "damage" => "", "range" => "" } }
+
+    assert_equal [{ "name" => "Cimeterre", "to_hit" => 4, "damage" => "1d6+2 tranchants" }], attacks.convert(typed, {})
+    assert_equal [], attacks.convert(nil, {})
+    assert_nil attacks.error_for([{ "name" => "Morsure", "to_hit" => -1 }], {})
+    assert_equal [:attack_without_name], attacks.error_for([{ "to_hit" => 4 }], {})
+    assert_equal [:attack_bonus_not_integer], attacks.error_for(attacks.convert({ "0" => { "name" => "Arc", "to_hit" => "quatre" } }, {}), {})
+    assert_equal [:too_many_attacks, { count: 20 }], attacks.error_for(Array.new(21) { { "name" => "Griffe" } }, {})
+  end
+
   test "a text is checked by its length, and a short one reads with the facts" do
     text = FieldTypes.find("text")
 

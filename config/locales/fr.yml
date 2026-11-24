@@ -40,6 +40,9 @@ fr:
         username: "Pseudo"
     errors:
       messages:
+        attack_bonus_not_integer: "le toucher d'une attaque doit être un nombre entier, de -20 à +100"
+        attack_without_name: "chaque attaque doit avoir un nom"
+        too_many_attacks: "%{count} attaques au plus"
         ability_bonus_too_high: "dépasse %{count} avec le bonus"
         too_many_picks: "%{count} au plus"
       models:
@@ -114,6 +117,15 @@ fr:
     passwords:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
+  character_sheets:
+    fields:
+      attacks:
+        add: "Ajouter une attaque"
+        damage: "Dégâts"
+        name: "Nom"
+        range: "Allonge ou portée"
+        remove: "Retirer l'attaque"
+        to_hit: "Toucher"
   devise:
     passwords:
       edit:

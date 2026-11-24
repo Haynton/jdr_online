@@ -1,0 +1,38 @@
+<%# The attacks of an NPC or a monster (type attacks): a group named by its label, one line per attack (its name, its
+    bonus to hit, its damage, its reach or range), each with "Remove", then "Add an attack". Each line is sent under its
+    position (character[sheet][attacks][0][name]); a blank line is left out by the server (FieldTypes::Attacks).
+    repeated_lines_controller.js adds a line from the template and removes one; its buttons are rendered hidden and shown
+    by it. Without JavaScript, one blank line at the end adds an attack at each save: the controller removes it (not a
+    noscript: a window loaded by Turbo shows what a noscript holds) %>
+<% error = sheet_field_error(character, field) %>
+<% hint = sheet_field_hint(field) %>
+<% attacks = Array(character.sheet[field["key"]]).select { |attack| attack.is_a?(Hash) } %>
+<% described_by = [("#{sheet_field_id(field)}_hint" if hint), ("#{sheet_field_id(field)}_error" if error)].compact %>
+<%= tag.fieldset class: "#{SimpleFormFieldClasses::FIELD_BLOCK} min-w-0",
+                 aria: { describedby: described_by.join(" ").presence, invalid: (true if error) },
+                 data: { controller: "repeated-lines" } do %>
+  <legend class="<%= SimpleFormFieldClasses::LABEL %>"><%= field["label"] %></legend>
+  <% if hint %>
+    <p id="<%= sheet_field_id(field) %>_hint" class="-mt-0.5 mb-2.5 text-xs text-muted"><%= hint %></p>
+  <% end %>
+  <div class="flex flex-col gap-3" data-repeated-lines-target="list">
+    <% attacks.each_with_index do |attack, index| %>
+      <%= render "character_sheets/fields/attack_line", field: field, attack: attack, index: index %>
+    <% end %>
+    <div data-repeated-lines-target="blankLine">
+      <%= render "character_sheets/fields/attack_line", field: field, attack: {}, index: attacks.size %>
+    </div>
+  </div>
+  <template data-repeated-lines-target="template">
+    <%= render "character_sheets/fields/attack_line", field: field, attack: {},
+                                                      index: CharacterSheets::AttacksHelper::NEW_LINE_INDEX %>
+  </template>
+  <button type="button" hidden class="<%= button_classes(:secondary) %> mt-3 gap-2"
+          data-repeated-lines-target="addButton" data-action="repeated-lines#add">
+    <%= render "shared/icons/plus" %>
+    <%= t("character_sheets.fields.attacks.add") %>
+  </button>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+<% end %>
