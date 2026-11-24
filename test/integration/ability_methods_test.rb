@@ -37,6 +37,20 @@ class AbilityMethodsIntegrationTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test "the starting equipment has no player's choice: its first way already lets the player pick" do
+    @game_table.template_snapshot["character_fields"]["starting_equipment_methods"] =
+      [{ "type" => "either", "label" => "Objets ou or" }, { "type" => "gold_only", "label" => "Or seulement" }]
+    @game_table.save!
+    sign_in @game_master
+
+    patch game_table_settings_path(@game_table), params: { game_table: { starting_equipment_method_choice: "gold_only" } }
+    assert_equal "gold_only", @game_table.reload.starting_equipment_method_choice
+
+    patch game_table_settings_path(@game_table),
+          params: { game_table: { starting_equipment_method_choice: "player_choice" } }
+    assert_response :unprocessable_content
+  end
+
   test "nothing picked, the first way of the template is played" do
     assert_equal "roll", @game_table.ability_method_choice
   end

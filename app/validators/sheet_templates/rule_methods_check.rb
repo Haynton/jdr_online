@@ -1,11 +1,13 @@
 module SheetTemplates
   # The ways the template offers to play a rule of the table (TableRules): the scores of the abilities
   # (character_fields.ability_methods, AbilityMethods), the hit points of the levels after the first
-  # (character_fields.hit_point_methods, HitPointMethods). For each rule the template declares: each way of a type its
-  # registry knows, used once, with a label, only the settings its type knows and those it needs, then the checks of
-  # its type (the dice, the values, the points of the scores)
+  # (character_fields.hit_point_methods, HitPointMethods), the starting equipment
+  # (character_fields.starting_equipment_methods, StartingEquipmentMethods). For each rule the template declares:
+  # each way of a type its registry knows, used once, with a label, only the settings its type knows and those it
+  # needs, then the checks of its type (the dice, the values, the points of the scores)
   class RuleMethodsCheck < Check
-    RULES = { "ability_methods" => AbilityMethods, "hit_point_methods" => HitPointMethods }.freeze
+    RULES = { "ability_methods" => AbilityMethods, "hit_point_methods" => HitPointMethods,
+              "starting_equipment_methods" => StartingEquipmentMethods }.freeze
 
     def call
       RULES.flat_map do |rule, registry|

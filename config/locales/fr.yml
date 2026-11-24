@@ -26,6 +26,7 @@ fr:
         sheet_template: "Modèle de fiche"
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
+        starting_equipment_method_choice: "Équipement de départ"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -562,6 +563,7 @@ fr:
       rules:
         ability_methods: "des caractéristiques"
         hit_point_methods: "des points de vie"
+        starting_equipment_methods: "de l'équipement de départ"
       field_types:
         ability: "caractéristique"
         ability_bonuses: "bonus de caractéristiques"
@@ -897,6 +899,7 @@ fr:
         game: "Partie"
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
+        starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."
@@ -919,13 +922,6 @@ fr:
             - "Normal (1 h et 8 h)"
             - "Héroïque (5 min et 1 h)"
             - "Réaliste (8 h et 7 jours)"
-        starting_equipment:
-          hint: "Ce que les joueurs reçoivent en créant leur personnage."
-          label: "Équipement de départ"
-          options:
-            - "Objets ou or, au choix"
-            - "Objets seulement"
-            - "Or seulement"
       update:
         saved: "Réglages enregistrés."
     details:

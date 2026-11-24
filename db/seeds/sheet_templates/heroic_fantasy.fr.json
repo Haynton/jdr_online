@@ -15,6 +15,11 @@
       { "type": "average", "label": "Moyenne du dé de vie", "help": "À chaque niveau après le premier, la moyenne du dé de vie (5 pour un d8), plus le modificateur de Constitution." },
       { "type": "roll", "label": "Lancer du dé de vie", "help": "À chaque niveau après le premier, un lancer du dé de vie, plus le modificateur de Constitution (au moins 1 point par niveau). Un seul lancer, gardé." }
     ],
+    "starting_equipment_methods": [
+      { "type": "either", "label": "Objets ou or, au choix", "help": "Pour la classe et l'historique, chaque joueur prend les objets proposés ou des pièces d'or." },
+      { "type": "items_only", "label": "Objets seulement", "help": "Chaque joueur prend les objets proposés par sa classe et son historique." },
+      { "type": "gold_only", "label": "Or seulement", "help": "Chaque joueur reçoit des pièces d'or et achète son équipement lui-même." }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },

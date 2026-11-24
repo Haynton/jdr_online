@@ -47,12 +47,10 @@
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "ability_method_choice",
                                                               methods: @game_table.ability_methods %>
             <% end %>
-            <% if @game_table.rule_methods("hit_point_method").any? %>
-              <%= render "game_tables/settings/rule_choice", form: form, attribute: "hit_point_method_choice",
-                                                              methods: @game_table.rule_methods("hit_point_method") %>
-            <% end %>
-            <% character_rules_coming_soon.each do |setting| %>
-              <%= render "game_tables/settings/coming_soon_choice", scope: "rules", setting: setting %>
+            <% %w[hit_point_method starting_equipment_method].each do |rule| %>
+              <% next if @game_table.rule_methods(rule).empty? %>
+              <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
+                                                              methods: @game_table.rule_methods(rule) %>
             <% end %>
           </div>
         </section>

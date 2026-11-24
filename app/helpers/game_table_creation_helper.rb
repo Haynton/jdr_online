@@ -53,22 +53,20 @@ module GameTableCreationHelper
   end
 
   # Rules of the game announced on the step Settings, not working yet, with their ways to play them (in their texts):
-  # the ones of the creation of a character, then the ones of the game. The encumbrance, a yes or no, follows them
-  CHARACTER_RULES_COMING_SOON = %w[starting_equipment].freeze
+  # they wait for the game room. The encumbrance, a yes or no, follows them
   GAME_RULES_COMING_SOON = %w[progression rest].freeze
-
-  def character_rules_coming_soon
-    CHARACTER_RULES_COMING_SOON
-  end
 
   def game_rules_coming_soon
     GAME_RULES_COMING_SOON
   end
 
-  # The ways the template offers to play a rule (the scores, the hit points), by their label, then the player's choice
-  def rule_method_options(methods)
-    methods.map { |method| [method["label"], method["type"]] } +
-      [[t("game_tables.settings.edit.player_choice"), TableRules::PLAYER_CHOICE]]
+  # The ways the template offers to play a rule (the scores, the hit points, the equipment), by their label, then the
+  # player's choice where the rule has one
+  def rule_method_options(rule, methods)
+    options = methods.map { |method| [method["label"], method["type"]] }
+    return options unless TableRules::RULES_WITH_PLAYER_CHOICE.include?(rule)
+
+    options + [[t("game_tables.settings.edit.player_choice"), TableRules::PLAYER_CHOICE]]
   end
 
   # A list of the look of the fields, disabled, its chevron drawn beside it (CollectionSelectInput)

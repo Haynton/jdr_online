@@ -54,12 +54,12 @@ module CharacterSheets
       choice.chosen_key == option["key"]
     end
 
-    # The option saved, or before any choice the first one with items (decision: the items by default); it is saved
-    # with the step
+    # The option saved, or before any choice the first one with items (decision: the items by default), the first one
+    # when the table keeps only gold; it is saved with the step
     def equipment_option_checked?(choice, option)
       return equipment_option_chosen?(choice, option) if choice.chosen_key
 
-      option == choice.options.find { |candidate| candidate["items"].present? }
+      option == (choice.options.find { |candidate| candidate["items"].present? } || choice.options.first)
     end
 
     def equipment_option_panel_classes(option)

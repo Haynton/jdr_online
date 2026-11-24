@@ -2,7 +2,8 @@
 # background) offers options, A (items and some gold) or B (gold), sometimes C; the player picks one per field of type
 # equipment_option, stored as { "option" => "a", "picks" => { "2" => "lute" } }. A line of an option may be an item
 # "of your choice" (choose: groups of the catalog, the musical instruments...): its pick is kept under the position
-# of the line. The items come from the catalog of the table (Catalogs::TableCatalog, kind item)
+# of the line. The items come from the catalog of the table (Catalogs::TableCatalog, kind item). The table keeps the
+# options its rule allows (StartingEquipmentMethods: items or gold, items only, gold only)
 module CharacterSheets
   class CharacterSheets::StartingEquipment
     # One equipment_option field: the option picked in its list (the class "Magicien"), the options it offers, the
@@ -27,6 +28,7 @@ module CharacterSheets
         options = list_effects(field["from"], source_option).dig("starting_equipment", "options")
         next unless options
 
+        options = table_method.offered_options(options)
         value = @character.sheet[field["key"]].to_h
         Choice.new(field: field, source_option: source_option, options: options,
                    chosen_key: value["option"], picks: value["picks"].to_h)
@@ -97,6 +99,11 @@ module CharacterSheets
     def pick_allowed?(option, position, key)
       line = option["items"].to_a[position.to_i]
       line&.dig("choose") && items_in_groups(line["choose"]).any? { |entry| entry.key == key }
+    end
+
+    # The way of the table, the options as they are when it picked none the registry knows
+    def table_method
+      StartingEquipmentMethods.find(@game_table.starting_equipment_method_choice) || StartingEquipmentMethods.all.first
     end
 
     def equipment_fields
