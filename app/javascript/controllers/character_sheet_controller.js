@@ -70,13 +70,30 @@ export default class extends Controller {
     paragraph.hidden = offers.length === 0
     if (paragraph.hidden) return
 
-    const tickedCount = [...offeredKeys].filter((fieldKey) => {
-      return this.element.querySelector(`#character_sheet_${fieldKey}`)?.checked
-    }).length
+    const tickedCount = [...offeredKeys].filter((fieldKey) => this.isTicked(fieldKey)).length
+    const allowedCount = offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0)
     paragraph.textContent = paragraph.dataset.template
       .replace("%{option}", offers.map(({ option }) => option).join(", "))
-      .replaceAll("%{count}", offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0))
+      .replaceAll("%{count}", allowedCount)
       .replace("%{chosen}", tickedCount)
+    const isPastLimit = tickedCount > allowedCount || this.notOfferedTicked(offeredKeys)
+    paragraph.toggleAttribute("data-invalid", paragraph.hasAttribute("data-limited") && isPastLimit)
+  }
+
+  // A skill some option of the template may offer, ticked, that the options picked neither offer nor give: refused
+  // by the server when the table limits the skills (CharacterSheets::SkillChoices#not_offered_keys)
+  notOfferedTicked(offeredKeys) {
+    const grantedKeys = new Set(this.pickedEffects().flatMap(({ effects }) => effects.proficient ?? []))
+    const skillKeys = Object.values(this.effectsValue).flatMap((effectsByOption) => {
+      return Object.values(effectsByOption).flatMap((effects) => effects.skill_choices?.from ?? [])
+    })
+    return skillKeys.some((fieldKey) => {
+      return !offeredKeys.has(fieldKey) && !grantedKeys.has(fieldKey) && this.isTicked(fieldKey)
+    })
+  }
+
+  isTicked(fieldKey) {
+    return this.element.querySelector(`#character_sheet_${fieldKey}`)?.checked ?? false
   }
 
   // [{ option: "Magicien", effects: { ... } }] for each list with effects, once an option is picked

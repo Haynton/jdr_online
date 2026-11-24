@@ -84,6 +84,16 @@ module CharacterSheets
       fields.any? { |field| offered_keys.include?(field["key"]) }
     end
 
+    # Whether the table of the character limits the skills to what its class offers (step Settings)
+    def skill_choices_limited?(character)
+      character.try(:game_table)&.limit_skill_choices
+    end
+
+    # The messages the server gave about these rows (CharacterSkillChoicesValidator), each said once
+    def sheet_rows_errors(character, fields)
+      fields.flat_map { |field| character.errors[:"sheet.#{field['key']}"] }.uniq
+    end
+
     # The fields of a flow section by group (FLOW_GROUPS), each group in the order of the template, empty groups left
     # out: [[:lists, [class, species, alignment]], [:boxes, [level]]]
     def sheet_flow_groups(fields)

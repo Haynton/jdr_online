@@ -4,6 +4,7 @@
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
   include CharacterAbilityMethod
+  include CharacterSkillChoices
   include CharacterHitPoints
   include PlacedOnMaps
 
@@ -66,6 +67,7 @@ class Character < ApplicationRecord
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
     self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }
+    self.checks_skill_choices = step.field_keys.intersect?(skill_choices.skill_keys)
     fill_behaviors(step, spell_keys: spell_keys)
   end
 
