@@ -1,7 +1,7 @@
-# A character of a table. For now only the player characters (pc): one per player, made before they join the game.
-# The NPCs and monsters of the game master (npc, monster) come with their milestone (P4).
-# The values of the sheet are JSONB, keyed by the fields of the template copied into the table (template_snapshot):
-# CharacterSheetValidator checks them, since the database cannot
+# A character of a table: a player character (pc), one per player, made before they join the game; or an NPC or a
+# monster of the game master (npc, monster), added at the step "NPCs and enemies", from the bestiary or from nothing.
+# The values of the sheet are JSONB, keyed by the fields of the template copied into the table (template_snapshot: the
+# player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
@@ -25,6 +25,11 @@ class Character < ApplicationRecord
     complete: "complete"
   }
 
+  # The kinds of the characters of the game master (step "NPCs and enemies")
+  GAME_MASTER_KINDS = %w[npc monster].freeze
+
+  scope :of_game_master, -> { where(kind: GAME_MASTER_KINDS) }
+
   # The name is asked at the last step: a draft may have none yet
   validates :name, presence: true, unless: :draft?
   validates :name, length: { maximum: NAME_MAX_LENGTH }
@@ -37,9 +42,9 @@ class Character < ApplicationRecord
   # checked by CharacterSheetValidator
   attr_accessor :required_sheet_fields
 
-  # The fields of a player character sheet: those of the template copied into the table
+  # The fields of its sheet in the template copied into the table: the player sheet, or the sheet of an NPC
   def sheet_fields
-    game_table.character_sheet_fields
+    pc? ? game_table.character_sheet_fields : game_table.npc_sheet_fields
   end
 
   def creation_steps

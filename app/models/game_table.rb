@@ -1,4 +1,6 @@
 class GameTable < ApplicationRecord
+  include TemplateCopy
+
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
   # The images of app/assets/images/covers (WebP, 1600 px wide), each with its theme, which filters them when a game
@@ -38,6 +40,8 @@ class GameTable < ApplicationRecord
   has_many :participations, dependent: :destroy
   has_many :users, through: :participations
   has_many :characters, dependent: :destroy
+  # The NPCs and monsters of the game master, in the order they were added
+  has_many :npcs, -> { of_game_master.order(:id) }, class_name: "Character", inverse_of: :game_table
   # Its own catalog entries: copies of entries of its template changed for it, entries added (Catalogs::TableCatalog)
   has_many :catalog_entries, dependent: :destroy
 
@@ -59,11 +63,6 @@ class GameTable < ApplicationRecord
     character_sheet_fields.any? { |field| field["from_table"] == "starting_level" }
   end
 
-  # The fields of a player character sheet, from the template copied into the table (none without a template)
-  def character_sheet_fields
-    template_snapshot.to_h.dig("character_fields", "fields") || []
-  end
-
   # The fields asked when a player makes their character: all but the states of the game (at_creation: false,
   # decision: the inspiration or the temporary hit points only change during the game) and the values given by the
   # table (from_table: the level, set by the game master)
@@ -71,26 +70,10 @@ class GameTable < ApplicationRecord
     character_sheet_fields.reject { |field| field["at_creation"] == false || field["from_table"] }
   end
 
-  # The steps declared by the template to make a character (CharacterCreationSteps), none for a single page
-  def character_creation_steps
-    template_snapshot.to_h.dig("character_fields", "creation_steps") || []
-  end
-
-  # The groups of spells a character chooses from (character_fields.spell_groups: cantrips, prepared spells),
-  # declared once by the template; the tables of each class say how many (CharacterSheets::SpellChoices)
-  def spell_groups
-    template_snapshot.to_h.dig("character_fields", "spell_groups") || []
-  end
-
   # What a new character starts with, given by the table: the level of the field marked from_table
   def character_values_from_table
     character_sheet_fields.select { |field| field["from_table"] == "starting_level" }
                           .to_h { |field| [field["key"], starting_level] }
-  end
-
-  # The levels of the template copied into the table, with the experience and the proficiency bonus of each
-  def level_thresholds
-    template_snapshot.to_h["level_thresholds"] || []
   end
 
   # The abilities of the character sheet (fields of the ability type), the ones the dice can roll

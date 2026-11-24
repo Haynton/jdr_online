@@ -174,20 +174,36 @@
     ]
   },
   "npc_fields": {
-    "fields": [
-      { "key": "challenge", "label": "Facteur de puissance", "abbreviation": "FP", "type": "text", "section": "Identité" },
-      { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "type": "number", "min": 0, "max": 30, "section": "Combat" },
-      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "Combat" },
-      { "key": "speed", "label": "Vitesse (m)", "type": "number", "min": 0, "max": 36, "section": "Combat" },
-      { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "wisdom", "label": "Sagesse", "abbreviation": "SAG", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
-      { "key": "attacks", "label": "Attaques", "type": "attacks", "section": "Combat" },
-      { "key": "traits", "label": "Capacités", "type": "text", "section": "Notes" }
-    ]
+"fields": [
+  { "key": "size", "label": "Taille", "type": "choice", "options": ["Très petite", "Petite", "Petite ou moyenne", "Moyenne", "Grande", "Très grande", "Gigantesque"], "section": "Identité" },
+  { "key": "creature_type", "label": "Type", "type": "choice", "options": ["Aberration", "Bête", "Céleste", "Créature artificielle", "Créature monstrueuse", "Dragon", "Élémentaire", "Fée", "Fiélon", "Géant", "Humanoïde", "Mort-vivant", "Nuée de bêtes", "Plante", "Vase"], "section": "Identité" },
+  { "key": "alignment", "label": "Alignement", "type": "text", "short": true, "section": "Identité" },
+  { "key": "challenge", "label": "Facteur de puissance", "abbreviation": "FP", "listed": true, "type": "choice", "options": ["0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"], "section": "Identité",
+    "help": "La difficulté de la créature : un groupe de quatre personnages de ce niveau en vient à bout avec effort." },
+  { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "listed": true, "type": "number", "min": 0, "max": 30, "section": "Combat" },
+  { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "listed": true, "type": "resource", "receives_damage": true, "section": "Combat" },
+  { "key": "speed", "label": "Vitesse (m)", "type": "number", "min": 0, "max": 36, "step": 0.5, "section": "Combat" },
+  { "key": "hit_dice", "label": "Dés de vie", "type": "text", "short": true, "section": "Combat" },
+  { "key": "other_speeds", "label": "Autres déplacements", "type": "text", "short": true, "section": "Combat",
+    "help": "Vol, nage, escalade, creusement : « Vol 18 m, nage 9 m »." },
+  { "key": "attacks", "label": "Attaques", "type": "attacks", "section": "Combat",
+    "help": "Une ligne par attaque : le toucher s'ajoute au d20, les dégâts se lancent sur un coup." },
+  { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "constitution", "label": "Constitution", "abbreviation": "CON", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "intelligence", "label": "Intelligence", "abbreviation": "INT", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "wisdom", "label": "Sagesse", "abbreviation": "SAG", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "charisma", "label": "Charisme", "abbreviation": "CHA", "type": "ability", "min": 1, "max": 30, "modifier": "half_above_ten", "section": "Caractéristiques" },
+  { "key": "skills", "label": "Compétences", "type": "text", "short": true, "section": "Compétences et sens" },
+  { "key": "senses", "label": "Sens", "type": "text", "short": true, "section": "Compétences et sens" },
+  { "key": "languages", "label": "Langues", "type": "text", "short": true, "section": "Compétences et sens" },
+  { "key": "defenses", "label": "Résistances et immunités", "type": "text", "short": true, "section": "Compétences et sens" },
+  { "key": "traits", "label": "Traits", "type": "text", "section": "Capacités" },
+  { "key": "actions", "label": "Autres actions", "type": "text", "section": "Capacités",
+    "help": "Les actions qui ne sont pas une simple attaque : attaques multiples, souffle, et l'effet complet d'une attaque qui fait plus que des dégâts." },
+  { "key": "bonus_actions", "label": "Actions bonus", "type": "text", "section": "Capacités" },
+  { "key": "reactions", "label": "Réactions", "type": "text", "section": "Capacités" }
+]
   },
   "item_fields": {
     "fields": [
@@ -227,63 +243,6 @@
     { "level": 13, "experience": 120000, "proficiency_bonus": 5 }, { "level": 14, "experience": 140000, "proficiency_bonus": 5 }, { "level": 15, "experience": 165000, "proficiency_bonus": 5 },
     { "level": 16, "experience": 195000, "proficiency_bonus": 5 }, { "level": 17, "experience": 225000, "proficiency_bonus": 6 }, { "level": 18, "experience": 265000, "proficiency_bonus": 6 },
     { "level": 19, "experience": 305000, "proficiency_bonus": 6 }, { "level": 20, "experience": 355000, "proficiency_bonus": 6 }
-  ],
-  "preset_characters": [
-    {
-      "name": "Gobelin", "kind": "monster",
-      "sheet": {
-        "challenge": "1/4", "armor_class": { "value": 15 }, "hp": { "current": 7, "max": 7 }, "speed": { "value": 9 },
-        "strength": { "value": 8, "modifier": -1 }, "dexterity": { "value": 14, "modifier": 2 },
-        "constitution": { "value": 10, "modifier": 0 }, "intelligence": { "value": 10, "modifier": 0 },
-        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 8, "modifier": -1 },
-        "attacks": [
-          { "name": "Cimeterre", "to_hit": 4, "damage": "1d6+2 tranchants", "range": "Corps à corps, 1,50 m" },
-          { "name": "Arc court", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Distance, 24/96 m" }
-        ],
-        "traits": "Fuite agile : peut se désengager ou se cacher en action bonus à chacun de ses tours."
-      }
-    },
-    {
-      "name": "Loup", "kind": "monster",
-      "sheet": {
-        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 12 },
-        "strength": { "value": 12, "modifier": 1 }, "dexterity": { "value": 15, "modifier": 2 },
-        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 3, "modifier": -4 },
-        "wisdom": { "value": 12, "modifier": 1 }, "charisma": { "value": 6, "modifier": -2 },
-        "attacks": [
-          { "name": "Morsure", "to_hit": 4, "damage": "2d4+2 perforants", "range": "Corps à corps, 1,50 m" }
-        ],
-        "traits": "Ouïe et odorat aiguisés. Tactique de meute : avantage à l'attaque quand un allié se tient près de la cible. Une créature mordue réussit une sauvegarde de Force DD 11 ou tombe à terre."
-      }
-    },
-    {
-      "name": "Squelette", "kind": "monster",
-      "sheet": {
-        "challenge": "1/4", "armor_class": { "value": 13 }, "hp": { "current": 13, "max": 13 }, "speed": { "value": 9 },
-        "strength": { "value": 10, "modifier": 0 }, "dexterity": { "value": 14, "modifier": 2 },
-        "constitution": { "value": 15, "modifier": 2 }, "intelligence": { "value": 6, "modifier": -2 },
-        "wisdom": { "value": 8, "modifier": -1 }, "charisma": { "value": 5, "modifier": -3 },
-        "attacks": [
-          { "name": "Épée courte", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Corps à corps, 1,50 m" },
-          { "name": "Arc court", "to_hit": 4, "damage": "1d6+2 perforants", "range": "Distance, 24/96 m" }
-        ],
-        "traits": "Vulnérable aux dégâts contondants. Insensible au poison et à l'épuisement."
-      }
-    },
-    {
-      "name": "Bandit", "kind": "npc",
-      "sheet": {
-        "challenge": "1/8", "armor_class": { "value": 12 }, "hp": { "current": 11, "max": 11 }, "speed": { "value": 9 },
-        "strength": { "value": 11, "modifier": 0 }, "dexterity": { "value": 12, "modifier": 1 },
-        "constitution": { "value": 12, "modifier": 1 }, "intelligence": { "value": 10, "modifier": 0 },
-        "wisdom": { "value": 10, "modifier": 0 }, "charisma": { "value": 10, "modifier": 0 },
-        "attacks": [
-          { "name": "Cimeterre", "to_hit": 3, "damage": "1d6+1 tranchants", "range": "Corps à corps, 1,50 m" },
-          { "name": "Arbalète légère", "to_hit": 3, "damage": "1d8+1 perforants", "range": "Distance, 24/96 m" }
-        ],
-        "traits": "Un brigand de grand chemin, prêt à négocier quand le combat tourne mal."
-      }
-    }
   ],
   "preset_items": [
     { "name": "Potion de soins", "description": "Un liquide rouge qui scintille quand on l'agite.",

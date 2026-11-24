@@ -9,8 +9,11 @@ class CatalogEntry < ApplicationRecord
   KINDS = %w[spell item npc monster feature].freeze
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
-  # The column of the template that declares the properties of each kind (the other kinds: later)
-  PROPERTY_FIELDS_COLUMNS = { "spell" => "spell_fields", "item" => "item_fields" }.freeze
+  # The column of the template that declares the properties of each kind (the features: later). A creature of the
+  # bestiary has the fields of an NPC of the table it is copied into
+  PROPERTY_FIELDS_COLUMNS = {
+    "spell" => "spell_fields", "item" => "item_fields", "npc" => "npc_fields", "monster" => "npc_fields"
+  }.freeze
 
   belongs_to :sheet_template, optional: true
   belongs_to :game_table, optional: true
@@ -22,6 +25,7 @@ class CatalogEntry < ApplicationRecord
   validates_with CatalogPropertiesValidator
 
   scope :spells, -> { where(kind: "spell") }
+  scope :monsters, -> { where(kind: "monster") }
   # The spells a class can learn: its option of the class list is among their classes ("Magicien")
   scope :for_class, ->(class_option) { where("properties -> 'classes' ? :class_option", class_option: class_option) }
   scope :of_level, ->(levels) { where("(properties ->> 'level')::integer IN (?)", Array(levels)) }

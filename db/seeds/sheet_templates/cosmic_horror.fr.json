@@ -60,8 +60,8 @@
       { "key": "size", "label": "Taille", "abbreviation": "TAI", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
       { "key": "power", "label": "Pouvoir", "abbreviation": "POU", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
       { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "number", "min": 1, "max": 60, "section": "Caractéristiques" },
-      { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "État" },
-      { "key": "armor", "label": "Protection", "type": "number", "min": 0, "max": 20, "section": "État" },
+      { "key": "hp", "listed": true, "label": "Points de vie", "abbreviation": "PV", "type": "resource", "receives_damage": true, "section": "État" },
+      { "key": "armor", "listed": true, "label": "Protection", "type": "number", "min": 0, "max": 20, "section": "État" },
       { "key": "dread", "label": "Effroi", "type": "text", "section": "État",
         "help": "Santé mentale que perd celui qui voit la créature, à fixer par le MJ." },
       { "key": "attacks", "label": "Attaques", "type": "attacks", "section": "Combat",
@@ -81,63 +81,6 @@
     { "key": "rest", "label": "Nuit de repos" }
   ],
   "level_thresholds": [],
-  "preset_characters": [
-    {
-      "name": "Goule", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 16 }, "constitution": { "value": 13 }, "size": { "value": 13 },
-        "power": { "value": 10 }, "dexterity": { "value": 13 },
-        "hp": { "current": 13, "max": 13 }, "armor": { "value": 0 },
-        "dread": "Une petite perte au premier regard, davantage si on la voit se nourrir.",
-        "attacks": [
-          { "name": "Griffes", "to_hit": 40, "damage": "1d6", "range": "Corps à corps" },
-          { "name": "Morsure", "to_hit": 30, "damage": "1d6, puis tient sa proie", "range": "Corps à corps" }
-        ],
-        "traits": "Créature voûtée à face de chien qui hante les cimetières et les tunnels sous la ville. Sent la terre humide ; se déplace sans bruit dans l'obscurité."
-      }
-    },
-    {
-      "name": "Profond", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 15 }, "constitution": { "value": 12 }, "size": { "value": 15 },
-        "power": { "value": 11 }, "dexterity": { "value": 10 },
-        "hp": { "current": 14, "max": 14 }, "armor": { "value": 1 },
-        "dread": "Une perte modérée : sa démarche rappelle trop celle d'un homme.",
-        "attacks": [
-          { "name": "Griffes palmées", "to_hit": 35, "damage": "1d6+1", "range": "Corps à corps" },
-          { "name": "Trident", "to_hit": 30, "damage": "1d8", "range": "Corps à corps" }
-        ],
-        "traits": "Être des profondeurs aux écailles grises, venu d'une cité engloutie au large de la côte. Respire sous l'eau ; peau épaisse."
-      }
-    },
-    {
-      "name": "Mi-Go", "kind": "monster",
-      "sheet": {
-        "strength": { "value": 10 }, "constitution": { "value": 10 }, "size": { "value": 10 },
-        "power": { "value": 13 }, "dexterity": { "value": 14 },
-        "hp": { "current": 10, "max": 10 }, "armor": { "value": 0 },
-        "dread": "Une perte modérée, plus forte si on découvre ce qu'elle transporte.",
-        "attacks": [
-          { "name": "Pinces", "to_hit": 30, "damage": "1d6", "range": "Corps à corps" }
-        ],
-        "traits": "Créature fongique ailée venue d'au-delà des étoiles, qui mène d'étranges travaux dans les collines isolées. Vole lentement ; les photographies ne montrent qu'une tache floue."
-      }
-    },
-    {
-      "name": "Cultiste", "kind": "npc",
-      "sheet": {
-        "strength": { "value": 11 }, "constitution": { "value": 11 }, "size": { "value": 12 },
-        "power": { "value": 12 }, "dexterity": { "value": 11 },
-        "hp": { "current": 12, "max": 12 }, "armor": { "value": 0 },
-        "dread": "Aucune.",
-        "attacks": [
-          { "name": "Couteau rituel", "to_hit": 35, "damage": "1d4+1", "range": "Corps à corps" },
-          { "name": "Revolver", "to_hit": 25, "damage": "1d10", "range": "Distance, 15 m" }
-        ],
-        "traits": "Fidèle d'un culte secret. Se croit protégé par ce qu'il vénère, et peut connaître une incantation."
-      }
-    }
-  ],
   "preset_items": [
     { "name": "Lampe torche", "description": "Une lampe électrique à piles, au faisceau tremblant.",
       "properties": { "category": "Outil", "effect": "Éclaire droit devant sur une dizaine de mètres.", "uses": 3 } },

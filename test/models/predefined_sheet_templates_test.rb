@@ -69,22 +69,6 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal [3, 4, 1], wizard["spellcasting"].values_at("cantrips", "prepared", "max_spell_level").map(&:first)
   end
 
-  test "the ready-made characters only fill fields of the NPC sheet, in the shape of their type" do
-    each_template do |template_file, template|
-      field_types = template.dig("npc_fields", "fields").to_h { |field| [field["key"], field["type"]] }
-
-      template["preset_characters"].each do |preset_character|
-        assert_includes %w[npc monster], preset_character["kind"]
-        preset_character["sheet"].each do |key, value|
-          context = "#{template_file.basename}: #{preset_character['name']}, #{key}"
-
-          assert field_types.key?(key), context
-          assert value_matches_type?(value, field_types[key]), context
-        end
-      end
-    end
-  end
-
   private
 
   def each_template
@@ -98,16 +82,5 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   # Sorted: each language lists the skills in the alphabetical order of their own labels
   def field_keys_of(template)
     FIELD_DEFINITIONS.to_h { |definition| [definition, template.dig(definition, "fields").to_a.pluck("key").sort] }
-  end
-
-  # One shape per type (design notes, "Valeurs d'une fiche")
-  def value_matches_type?(value, type)
-    case type
-    when "number", "ability" then value.is_a?(Hash) && value["value"].is_a?(Numeric)
-    when "resource" then value.is_a?(Hash) && value.keys.sort == %w[current max]
-    when "attacks" then value.is_a?(Array)
-    when "boolean" then [true, false].include?(value)
-    else value.is_a?(String)
-    end
   end
 end

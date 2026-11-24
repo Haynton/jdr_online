@@ -479,6 +479,9 @@ en:
       level_from:
         hint: "The field that gives the level of the character."
         label: "Level field"
+      listed:
+        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP)."
+        label: "Shown in the NPC list"
       max:
         hint: "The highest value allowed. Optional."
         label: "Maximum"

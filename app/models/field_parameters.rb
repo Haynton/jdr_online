@@ -9,6 +9,8 @@ module FieldParameters
     "label" => :text, "abbreviation" => :text, "help" => :long_text, "section" => :section,
     "required" => :boolean, "visible_to_others" => :boolean, "summary_only" => :boolean, "internal" => :boolean,
     "short" => :boolean, "receives_damage" => :boolean,
+    # Shown beside the name of an NPC in the list of the table (its challenge, its armour class, its hit points)
+    "listed" => :boolean,
     # A field is asked at creation unless it says false: the box is ticked by default
     "at_creation" => :asked_at_creation,
     "min" => :integer, "max" => :integer, "count" => :integer, "total" => :integer, "max_per_ability" => :integer,

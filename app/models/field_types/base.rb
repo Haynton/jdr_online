@@ -6,6 +6,7 @@ module FieldTypes
     # the validator of the template refuses any other (SheetTemplateValidator: a typo like maxx never passes)
     COMMON_PARAMETERS = %w[
       key label type section help required at_creation visible_to_others abbreviation summary_only internal column
+      listed
     ].freeze
     OWN_PARAMETERS = [].freeze
     # The settings without which the type does not work

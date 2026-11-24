@@ -450,6 +450,9 @@ fr:
       level_from:
         hint: "Le champ qui donne le niveau du personnage."
         label: "Champ du niveau"
+      listed:
+        hint: "La valeur s'affiche à côté du nom, dans la liste des PNJ et ennemis d'une table (FP, CA, PV)."
+        label: "Montré dans la liste des PNJ"
       max:
         hint: "La plus grande valeur permise. Facultatif."
         label: "Maximum"
