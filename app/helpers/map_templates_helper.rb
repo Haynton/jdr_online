@@ -47,16 +47,16 @@ module MapTemplatesHelper
     rounded border border-transparent bg-transparent px-1 text-ink hover:border-field-line focus:border-ink
     focus:bg-field focus:outline-none aria-invalid:border-error-ink aria-invalid:bg-error-bg
   ].join(" ").freeze
-  # « − » and « + » around the number of columns (and the width of a picture), 32 px
+  # « − » and « + » around the number of columns (and the width of a picture), 28 px
   MAP_SIZE_BUTTON_CLASSES = %w[
-    flex size-8 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors
+    flex size-7 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors
     hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
   # The number of columns (and the width of a picture), a field without the arrows of a number field (the buttons
   # around it do that)
   MAP_COLUMNS_FIELD_CLASSES = [
-    "h-8 w-14 rounded-md border border-transparent bg-field text-center text-sm font-semibold text-ink tabular-nums",
-    "hover:border-field-line focus:border-ink focus:outline-none", *CharacterSheets::FieldsHelper::NO_ARROWS_CLASSES
+    "h-7 w-11 rounded-md border border-transparent bg-field text-center text-[13px] font-semibold text-ink",
+    "tabular-nums hover:border-field-line focus:border-ink focus:outline-none", *CharacterSheets::FieldsHelper::NO_ARROWS_CLASSES
   ].join(" ").freeze
   # A button floating over the board (help, zoom), square with rounded corners (Anthony's request, rather than round):
   # the surface of the panels, a shadow to stand out of the map

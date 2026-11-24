@@ -7,45 +7,50 @@
     is nothing to draw with %>
 <main class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh lg:h-dvh" <%= tag.attributes(data: map_editor_data(map_template)) %>>
   <%= render "shared/flashes" %>
-  <header class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:min-h-16 lg:flex-nowrap lg:py-2">
+  <%# From 1024 px, three columns: the name on the left, the way of making the map and the tools in the middle of the
+      bar (Anthony's request), an empty column on the right to keep them there. The left one is at least as wide as the
+      name: on a narrow screen the middle moves right rather than over the name %>
+  <header class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:grid lg:min-h-16 lg:grid-cols-[minmax(max-content,1fr)_auto_1fr] lg:py-2">
     <%# The name, changed right here (it looks like a title until it is pointed at). The size of the grid floats over
         the board (map_templates/_grid_size) %>
     <div class="flex min-w-0 basis-full flex-wrap items-center gap-x-3 gap-y-2 lg:basis-auto lg:flex-none">
       <h1 class="sr-only"><%= map_template.name_in_database %></h1>
       <%= render "map_templates/name_form", map_template: map_template %>
     </div>
-    <%# How the map is made, in the bar (Anthony's request): Draw, or a picture (later) %>
-    <%= render "map_templates/making_choices", map_template: map_template %>
-    <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
-      <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
-      <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".undo_keys") %>"
-              data-map-editor-target="undoButton" data-action="map-editor#undo">
-        <%= render "shared/icons/undo_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".undo") %></span>
-      </button>
-      <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".redo_keys") %>"
-              data-map-editor-target="redoButton" data-action="map-editor#redo">
-        <%= render "shared/icons/redo_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".redo") %></span>
-      </button>
-      <%# The tools of the drawing: not for a map played on a picture (the editor hides them) %>
-      <div class="contents" data-map-editor-target="drawingTools">
-        <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
-        <%# The direction of the next object put: its degrees only in its tooltip, written by the controller (Anthony's
-            request: in its label, they changed the width of the button) %>
-        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#rotatePlacement"
-                title="<%= t(".rotate", degrees: 0) %>" data-map-editor-target="rotationLabel">
-          <%= render "shared/icons/rotate_cw", css_class: "size-4" %>
-          <span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".rotate_short") %></span>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 lg:flex-nowrap">
+      <%# How the map is made, in the bar (Anthony's request): Draw, or a picture %>
+      <%= render "map_templates/making_choices", map_template: map_template %>
+      <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
+        <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
+        <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".undo_keys") %>"
+                data-map-editor-target="undoButton" data-action="map-editor#undo">
+          <%= render "shared/icons/undo_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".undo") %></span>
         </button>
-        <%= render "map_templates/tool", kind: "remover", key: "remover", label: t(".remove_object"), in_bar: true,
-                                         icon: render("shared/icons/package_x", css_class: "size-4") %>
-        <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"), in_bar: true,
-                                         icon: render("shared/icons/eraser", css_class: "size-4") %>
-        <%# Asked first in the window of confirmation (Anthony's request) %>
-        <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".clear_hint") %>"
-                data-map-editor-target="clearButton" data-action="map-editor#clearEverything"
-                data-confirm-button="<%= t(".clear_button") %>" data-confirm-variant="danger">
-          <%= render "shared/icons/brush_cleaning", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".clear") %></span>
+        <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".redo_keys") %>"
+                data-map-editor-target="redoButton" data-action="map-editor#redo">
+          <%= render "shared/icons/redo_2", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".redo") %></span>
         </button>
+        <%# The tools of the drawing: not for a map played on a picture (the editor hides them) %>
+        <div class="contents" data-map-editor-target="drawingTools">
+          <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
+          <%# The direction of the next object put: its degrees only in its tooltip, written by the controller (Anthony's
+              request: in its label, they changed the width of the button) %>
+          <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#rotatePlacement"
+                  title="<%= t(".rotate", degrees: 0) %>" data-map-editor-target="rotationLabel">
+            <%= render "shared/icons/rotate_cw", css_class: "size-4" %>
+            <span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".rotate_short") %></span>
+          </button>
+          <%= render "map_templates/tool", kind: "remover", key: "remover", label: t(".remove_object"), in_bar: true,
+                                           icon: render("shared/icons/package_x", css_class: "size-4") %>
+          <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"), in_bar: true,
+                                           icon: render("shared/icons/eraser", css_class: "size-4") %>
+          <%# Asked first in the window of confirmation (Anthony's request) %>
+          <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".clear_hint") %>"
+                  data-map-editor-target="clearButton" data-action="map-editor#clearEverything"
+                  data-confirm-button="<%= t(".clear_button") %>" data-confirm-variant="danger">
+            <%= render "shared/icons/brush_cleaning", css_class: "size-4" %><span class="<%= MapTemplatesHelper::MAP_BAR_LABEL_CLASSES %>"><%= t(".clear") %></span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
