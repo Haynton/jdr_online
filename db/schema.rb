@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_061351) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_091025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_061351) do
     t.string "status", default: "complete", null: false
     t.string "creation_step"
     t.jsonb "spells", default: [], null: false
+    t.string "ability_method"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
@@ -69,6 +70,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_061351) do
     t.integer "starting_level", default: 1, null: false
     t.boolean "players_choose_level", default: false, null: false
     t.jsonb "disabled_catalog_keys", default: {}, null: false
+    t.jsonb "rules", default: {}, null: false
     t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
     t.check_constraint "starting_level >= 1 AND starting_level <= 20", name: "game_tables_starting_level_check"
