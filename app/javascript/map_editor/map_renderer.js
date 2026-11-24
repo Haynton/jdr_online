@@ -181,7 +181,7 @@ function drawSoftEdgedFloors(group, map) {
   cellsByFloor.forEach((cells, floorKey) => {
     const loops = regionLoops(cells, map.grid, {
       isInRegion: (column, row) => map.floorView.get(cellKey(column, row)) === floorKey,
-      isRoughSide: (column, row) => !map.floorAt(column, row),
+      sideStyleOf: (column, row) => (map.floorAt(column, row) ? "straight" : "free"),
       bulge: 6
     })
     createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: floorOf(floorKey).pattern, "fill-rule": "evenodd" },
@@ -220,30 +220,20 @@ function drawSpeckles(group, grid, floor, [column, row]) {
 }
 
 // The water over its cells, the faint lines between the cells of a floor, then the ripples and the banks
-// The water never goes over the empty ground (Anthony: « l'eau déborde »): its sides that face it stay on their line,
-// and the water and its banks are cut to the cells that have a floor. On a floor, its banks round off
+// Organic banks that never go over the empty ground (Anthony: « l'eau déborde », then « c'est sensé être organique »):
+// against it, they only round off inwards; against another floor, freely. The water and its line follow the same loop
 function drawWater(group, map, insides) {
   const waterCells = [...map.floorView].filter(([, floorKey]) => floorOf(floorKey)?.liquid)
     .map(([key]) => cellPosition(key))
   const loops = regionLoops(waterCells, map.grid, {
     isInRegion: (column, row) => Boolean(map.floorAt(column, row)?.liquid),
-    isRoughSide: (column, row) => Boolean(map.floorAt(column, row))
+    sideStyleOf: (column, row) => (map.floorAt(column, row) ? "free" : "inward")
   })
-  const clipPath = clipToFloorCells(group, map)
   if (loops.length) {
-    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd",
-                               "clip-path": clipPath }, group)
+    createSvgElement("path", { d: loops.map(loopPath).join(" "), fill: waterPattern, "fill-rule": "evenodd" }, group)
   }
   drawCellLines(group, insides.filter((side) => !side.edge && !side.shore))
-  drawBanks(group, map.grid, waterCells, loops, clipPath)
-}
-
-// The cells that have a floor, as a clip path of the drawing
-function clipToFloorCells(group, map) {
-  const clip = createSvgElement("clipPath", { id: "map-floor-cells" }, group)
-  const path = [...map.floorView.keys()].map((key) => polygonPath(map.grid.corners(...cellPosition(key)))).join("")
-  createSvgElement("path", { d: path || "M0 0Z" }, clip)
-  return "url(#map-floor-cells)"
+  drawBanks(group, map.grid, waterCells, loops)
 }
 
 function drawCellLines(group, sides) {
@@ -253,12 +243,15 @@ function drawCellLines(group, sides) {
   }, lines))
 }
 
-function drawBanks(group, grid, waterCells, loops, clipPath) {
-  const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round",
-                                        "clip-path": clipPath }, group)
+// Ripples in the water cells, then along each bank two lines inside it and the ink of the bank. Not in a cell of
+// water almost alone, nor inside a loop too small to hold them: they would go over its bank
+function drawBanks(group, grid, waterCells, loops) {
+  const banks = createSvgElement("g", { fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }, group)
+  const isWaterCell = new Set(waterCells.map(([column, row]) => cellKey(column, row)))
   waterCells.forEach(([column, row]) => {
     const seed = column * 733 + row * 19
-    if (noise(seed, 0, 70) >= 0.55) return
+    const waterNeighbours = grid.neighbours(column, row).filter((position) => isWaterCell.has(cellKey(...position)))
+    if (noise(seed, 0, 70) >= 0.55 || waterNeighbours.length < 2) return
 
     const [x, y] = grid.center(column, row)
     const waveX = x + (noise(seed, 1, 71) - 0.5) * 8
@@ -267,12 +260,21 @@ function drawBanks(group, grid, waterCells, loops, clipPath) {
                                "stroke-width": 0.8, "stroke-opacity": 0.6 }, banks)
   })
   loops.forEach((points) => {
-    createSvgElement("path", { d: loopPath(offsetLoop(points, 7)), stroke: palette.shoreWave, "stroke-width": 0.7,
-                               "stroke-opacity": 0.55, "stroke-dasharray": "2.5 3" }, banks)
-    createSvgElement("path", { d: loopPath(offsetLoop(points, 3.4)), stroke: palette.shoreWave, "stroke-width": 1.1,
-                               "stroke-opacity": 0.8 }, banks)
+    if (isLargeEnoughForRipples(points)) {
+      createSvgElement("path", { d: loopPath(offsetLoop(points, 7)), stroke: palette.shoreWave, "stroke-width": 0.7,
+                                 "stroke-opacity": 0.55, "stroke-dasharray": "2.5 3" }, banks)
+      createSvgElement("path", { d: loopPath(offsetLoop(points, 3.4)), stroke: palette.shoreWave, "stroke-width": 1.1,
+                                 "stroke-opacity": 0.8 }, banks)
+    }
     createSvgElement("path", { d: loopPath(points), stroke: palette.ink, "stroke-width": 1.7 }, banks)
   })
+}
+
+// Wider and higher than the two lines inside it, on each side
+function isLargeEnoughForRipples(points) {
+  const xs = points.map(([x]) => x)
+  const ys = points.map(([, y]) => y)
+  return Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) > cellSize * 0.75
 }
 
 // A soft shadow along the walls, inside the walled floors and under the walls drawn by the game master
