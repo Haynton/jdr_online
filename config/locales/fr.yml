@@ -90,6 +90,7 @@ fr:
               objects_overlap: "contient deux objets sur les mêmes cases : %{object_name}"
               unknown_mode: "contient une façon de faire la carte inconnue : %{mode}"
               invalid_picture: "contient un calage de l'image qui n'a pas la forme attendue"
+              invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -355,6 +356,7 @@ fr:
       deleted: "Carte « %{name} » supprimée."
     editor:
       actions_label: "Actions sur la carte"
+      blocked_zones: "Zones bloquantes"
       board_label: "Dessin de la carte « %{name} »"
       cells: "cases"
       columns_label: "Nombre de colonnes (les lignes suivent, pour garder les proportions)"

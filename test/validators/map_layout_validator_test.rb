@@ -29,6 +29,19 @@ class MapLayoutValidatorTest < ActiveSupport::TestCase
     end
   end
 
+  test "the blocked zones are cells of the grid, each one once" do
+    accepted = MapTemplate.new(name: "Carte", owner: @owner, columns: 10, rows: 10,
+                               layout: MapTemplate::BLANK_LAYOUT.merge("blocked" => ["0,0", "9,9"]))
+    assert accepted.valid?
+
+    refused = { ["0,10"] => :cell_outside_grid, ["1,1", "1,1"] => :invalid_blocked, "1,1" => :invalid_blocked }
+    refused.each do |blocked, error|
+      map = MapTemplate.new(name: "Carte", owner: @owner, columns: 10, rows: 10,
+                            layout: MapTemplate::BLANK_LAYOUT.merge("blocked" => blocked))
+      assert map.tap(&:validate).errors.of_kind?(:layout, error), blocked.inspect
+    end
+  end
+
   test "a floor the registry does not know is refused" do
     map = map_with(floors: { "0,0" => "lava" })
 

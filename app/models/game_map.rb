@@ -46,6 +46,12 @@ class GameMap < ApplicationRecord
     drawn? && layout["mode"] == "picture"
   end
 
+  # For the board: the cells no token stands on, the sides no token crosses (MapPassage). Nothing on a map sent as an
+  # image before the editor
+  def passage
+    MapPassage.new(self) if drawn?
+  end
+
   private
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet

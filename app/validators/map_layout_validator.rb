@@ -6,15 +6,17 @@
 #     "edges" => { "3,4|4,4" => "wall" },         # two neighbouring cells, in sorted order, and their edge (MapEdges)
 #     "objects" => [{ "key" => "table", "column" => 3, "row" => 4, "rotation" => 1 }],    # MapLayouts::ObjectsCheck
 #     "mode" => "picture",                                     # drawn (draw) or played on a picture: PictureCheck
-#     "picture" => { "cells_wide" => 28, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 } }
+#     "picture" => { "cells_wide" => 28, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 },
+#     "blocked" => ["3,4"] }        # cells painted with the brush « Zones bloquantes » (a map of a table: MapPassage)
 #
-# "objects" may be missing (a drawing saved before the objects), "mode" and "picture" too (a map drawn).
+# "objects" may be missing (a drawing saved before the objects), "mode" and "picture" too (a map drawn), "blocked" too
+# (nothing painted, and every map of « Mes cartes »).
 #
 # The errors go on :layout. Only the first wrong cell and the first wrong edge are told: a broken layout could hold
 # hundreds of them
 class MapLayoutValidator < ActiveModel::Validator
   CURRENT_VERSION = 1
-  LAYOUT_KEYS = %w[version floors edges objects mode picture].freeze
+  LAYOUT_KEYS = %w[version floors edges objects mode picture blocked].freeze
   CELL_FORMAT = /\A(\d+),(\d+)\z/
 
   def validate(map)
@@ -25,6 +27,7 @@ class MapLayoutValidator < ActiveModel::Validator
     validate_edges(map, layout["edges"])
     validate_objects(map, layout.fetch("objects", []))
     validate_picture(map, layout)
+    validate_blocked(map, layout.fetch("blocked", []))
   end
 
   private
@@ -48,6 +51,16 @@ class MapLayoutValidator < ActiveModel::Validator
     return map.errors.add(:layout, :invalid_edge_side, side:) unless valid_side?(map, side)
 
     map.errors.add(:layout, :unknown_edge, edge:)
+  end
+
+  # A list of cells of the grid, each one once
+  def validate_blocked(map, blocked_cells)
+    unless blocked_cells.is_a?(Array) && blocked_cells.uniq == blocked_cells
+      return map.errors.add(:layout, :invalid_blocked)
+    end
+
+    cell = blocked_cells.find { |cell_key| !inside?(map, cell_key) }
+    map.errors.add(:layout, :cell_outside_grid, cell:) if cell
   end
 
   def validate_picture(map, layout)

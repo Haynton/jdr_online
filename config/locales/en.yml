@@ -119,6 +119,7 @@ en:
               objects_overlap: "holds two objects on the same cells: %{object_name}"
               unknown_mode: "holds an unknown way of making the map: %{mode}"
               invalid_picture: "holds settings of the picture in an unexpected form"
+              invalid_blocked: "holds blocked zones in an unexpected form"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -384,6 +385,7 @@ en:
       deleted: "Map “%{name}” deleted."
     editor:
       actions_label: "Actions on the map"
+      blocked_zones: "Blocked zones"
       board_label: "Drawing of the map “%{name}”"
       cells: "cells"
       columns_label: "Number of columns (the rows follow, to keep the proportions)"
