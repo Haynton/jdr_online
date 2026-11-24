@@ -10,7 +10,7 @@ class MapTemplatePicturesTest < ActionDispatch::IntegrationTest
   end
 
   test "a picture sent is kept, the map is played on it, laid as wide as the grid" do
-    post map_template_picture_path(@map_template), params: { map_template: { picture: picture_file } }
+    post map_template_picture_path(@map_template), params: { picture: picture_file }
 
     assert_redirected_to edit_map_template_path(@map_template)
     @map_template.reload
@@ -34,7 +34,7 @@ class MapTemplatePicturesTest < ActionDispatch::IntegrationTest
 
   test "a file that is not a picture is refused, said in a bubble" do
     post map_template_picture_path(@map_template),
-         params: { map_template: { picture: fixture_file_upload("notes.txt", "text/plain") } }
+         params: { picture: fixture_file_upload("notes.txt", "text/plain") }
 
     assert_redirected_to edit_map_template_path(@map_template)
     assert_match "PNG, JPEG ou WebP", flash[:alert]
@@ -57,7 +57,7 @@ class MapTemplatePicturesTest < ActionDispatch::IntegrationTest
     map_of_another = User.create!(email: "autre@example.com", username: "Basile", password: TEST_PASSWORD)
                          .map_templates.create!(name: "Le donjon de Basile")
 
-    post map_template_picture_path(map_of_another), params: { map_template: { picture: picture_file } }
+    post map_template_picture_path(map_of_another), params: { picture: picture_file }
 
     assert_response :not_found
     assert_not map_of_another.reload.picture.attached?

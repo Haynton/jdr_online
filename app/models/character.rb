@@ -5,6 +5,7 @@
 class Character < ApplicationRecord
   include CharacterAbilityMethod
   include CharacterHitPoints
+  include PlacedOnMaps
 
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60

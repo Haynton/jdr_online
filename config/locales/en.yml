@@ -50,10 +50,14 @@ en:
         owner: "Owner"
         rows: "Rows"
       game_map:
+        columns: "Columns"
         grid_cell_size: "Cell size (px)"
         grid_visible: "Show the grid"
         image: "Image"
+        layout: "Map drawing"
+        map_template: "Original map"
         name: "Name"
+        rows: "Rows"
       catalog_entry:
         description: "Description"
         name: "Name"
@@ -95,14 +99,14 @@ en:
       models:
         map_template:
           attributes:
-            columns:
+            columns: &map_grid_size_errors
               in: "must be from %{minimum} to %{maximum}"
             picture:
               content_type: "must be a PNG, JPEG or WebP image"
               too_big: "must not be over %{count} MB"
             rows:
               in: "must be from %{minimum} to %{maximum}"
-            layout:
+            layout: &map_layout_errors
               invalid_format: "does not have the expected form"
               cell_outside_grid: "holds the cell %{cell}, outside the grid"
               unknown_floor: "holds an unknown floor: %{floor}"
@@ -115,8 +119,18 @@ en:
               objects_overlap: "holds two objects on the same cells: %{object_name}"
               unknown_mode: "holds an unknown way of making the map: %{mode}"
               invalid_picture: "holds settings of the picture in an unexpected form"
+              invalid_blocked: "holds blocked zones in an unexpected form"
+              tokens_without_table: "holds tokens, though it belongs to no table"
+              invalid_token: "holds a token in an unexpected form"
+              unknown_token_character: "holds the token of a character who is not a non-player character or an enemy of the table"
+              token_outside_grid: "holds a token outside the grid"
+              tokens_overlap: "holds two tokens on the same cell"
+              token_on_blocked_cell: "holds a token on a blocked zone"
         game_map:
           attributes:
+            columns: *map_grid_size_errors
+            layout: *map_layout_errors
+            rows: *map_grid_size_errors
             image:
               content_type: "must be a PNG, JPEG or WebP image"
               too_big: "must not be over %{count} MB"
@@ -377,6 +391,7 @@ en:
       deleted: "Map “%{name}” deleted."
     editor:
       actions_label: "Actions on the map"
+      blocked_zones: "Blocked zones"
       board_label: "Drawing of the map “%{name}”"
       cells: "cells"
       columns_label: "Number of columns (the rows follow, to keep the proportions)"
@@ -417,7 +432,10 @@ en:
       shrink_button: "Shrink"
       shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away."
       tabs_label: "Tools"
+      copy_failed: "The creature could not be added. Try again."
+      table_help_html: "<b>Map of your table</b>: prepare the beginning of the game here. <b>Tokens</b>: in the tab Tokens, choose a non-player character or an enemy, then click the cells where it stands (as many times as you want for a band).<br><b>Blocked zones</b>: the ⊘ button of the bar paints the cells no token crosses; the walls of rooms and stones, and the empty ground, block already: they show in red while you paint."
       terrain_tab: "Terrain"
+      tokens_tab: "Tokens"
       undo: "Undo"
       undo_keys: "Ctrl or Cmd + Z"
       whole_map: "Show the whole map"
@@ -582,6 +600,14 @@ en:
       save: "Save"
       rename: "Rename the map"
     size: "%{columns} × %{rows} cells"
+    token_tools:
+      bestiary_hint: "A creature is copied into your table when you put its first token."
+      bestiary_title: "Bestiary"
+      empty: "None yet."
+      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
+      no_match: "No character or creature matches this search."
+      search: "Search a character or a creature"
+      table_title: "Non-player characters and enemies of the table"
     update:
       renamed: "Map renamed."
   sheet_templates:
@@ -891,19 +917,25 @@ en:
   game_tables:
     map_lists:
       edit:
-        add: "Add a map"
         back: "Back"
         change: "Change %{name}"
         count:
           one: "%{count} map"
           other: "%{count} maps"
-        empty: "No map yet. Add the plans of your places: one image per map."
-        intro: "The maps of your game: one image per place, with its grid."
-        purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
+        create: "Create a map"
+        delete: "Delete %{name}"
+        empty: "No map yet. Draw one, or import the ones of “My maps”."
+        import: "Import from “My maps”"
+        intro: "The maps of your game, drawn for it or copied from “My maps”: the table keeps its own copy, cell by cell."
+        purpose: "Open a map to put the tokens of your non-player characters and enemies and paint the zones no token crosses: the game will begin so."
         title: "Maps"
       update:
         saved: "Maps saved."
     game_maps:
+      create:
+        default_name: "New map"
+      editor:
+        back: "Maps of the table"
       form:
         confirm_delete: "Delete the map “%{name}”?"
         delete: "Delete the map"
@@ -911,13 +943,27 @@ en:
         grid_cell_size_hint: "The size of a cell, in pixels of the image: the width of a square drawn on the map."
         grid_visible_hint: "The lines of the grid show on the board."
         image_change_hint: "Pick an image to replace this one: PNG, JPEG or WebP, %{size} MB at most."
-        image_hint: "PNG, JPEG or WebP, %{size} MB at most."
       grid:
+        cells: "%{columns} × %{rows} cells"
         hidden: "Grid of %{size} px, hidden"
         shown: "Grid of %{size} px, shown"
+      setup:
+        blocked:
+          one: "%{count} blocked zone"
+          other: "%{count} blocked zones"
+        open: "Place the tokens and the blocked zones"
+        open_named: "Place the tokens and the blocked zones of %{name}"
+        tokens:
+          one: "%{count} token"
+          other: "%{count} tokens"
+      picker:
+        add_label: "Add the map “%{name}”"
+        empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."
+        intro: "Choose a map of “My maps”: the table keeps its own copy, which you can change without touching the original."
+        my_maps: "Go to “My maps”"
       window:
         close: "Close the map"
-        new: "New map"
+        new: "Import from “My maps”"
     hit_dice_rolls:
       create:
         rolled: "Hit dice rolled: %{results}."

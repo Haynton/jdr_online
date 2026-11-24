@@ -1,0 +1,9 @@
+<%# A map of the table copied from « Mes cartes » changes in the map editor, like the original (Anthony's decision: the
+    table changes its copy, « Mes cartes » never changes): its drawing, its grid, its picture, every cell kept for the
+    board of the table. Back to the step Maps from the bar %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% content_for :full_width_page do %>
+  <%= render "map_templates/editor", map_template: @game_map,
+                                     back_path: edit_game_table_map_list_path(@game_table),
+                                     back_label: t(".back") %>
+<% end %>

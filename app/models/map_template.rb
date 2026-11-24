@@ -12,6 +12,8 @@ class MapTemplate < ApplicationRecord
     "version" => MapLayoutValidator::CURRENT_VERSION, "floors" => {}, "edges" => {}, "objects" => []
   }.freeze
 
+  include PlayedOnPicture
+
   belongs_to :owner, class_name: "User", inverse_of: :map_templates
   has_one_attached :picture
 
@@ -27,14 +29,6 @@ class MapTemplate < ApplicationRecord
   # The picture laid under the grid: as wide as the grid, from its top left corner, fully seen
   def self.picture_settings_for(columns)
     { "cells_wide" => columns, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 }
-  end
-
-  # Played on its picture: the layout switched to the mode "picture", the picture laid as wide as the grid the first
-  # time (its settings are kept when it is replaced)
-  def use_picture(file)
-    self.picture = file
-    self.layout = layout.merge("mode" => "picture",
-                               "picture" => layout["picture"] || self.class.picture_settings_for(columns))
   end
 
   private

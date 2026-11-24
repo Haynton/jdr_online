@@ -5,6 +5,9 @@ import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
 import { renderPicture } from "map_editor/picture_renderer"
+import { renderBlockedCells, renderNaturalBlocks } from "map_editor/blocked_renderer"
+import { naturalBlocks } from "map_editor/passage"
+import { renderTokens, drawToken } from "map_editor/token_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
@@ -24,18 +27,33 @@ import { confirmWithDialog } from "confirm_dialog"
 // chosen by Turn (R); a click on an object put turns it; Take object away, a right click or Delete takes it (or a wall)
 // away. The number of columns of the bar resizes the grid, the rows following to keep its proportions (Anthony's
 // request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
-// undone like a stroke. The bar says when the drawing was saved. The board and the tools are rendered hidden and
-// shown here: without JavaScript there is nothing to draw with
+// undone like a stroke. The bar says when the drawing was saved. On a map of a table, the brush « Zones bloquantes »
+// paints the cells no token stands on, drawn or on a picture (the first cell of the stroke says whether it paints or
+// takes the paint away), and the tab Jetons puts the tokens of its non-player characters and enemies (one a cell, never
+// on a cell blocked or without floor, the same character as many times as wanted; a token clicked again goes), or of
+// any creature of the bestiary, copied into the table when its first token is put (the server copies it; its band then
+// shares the copy). The board and the tools are rendered hidden and shown here: without JavaScript there is nothing
+// to draw with
 const toolSwatches = {
   floor: (swatch, key) => drawFloorSample(swatch, key),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
-  object: (swatch, key) => drawObjectSwatch(swatch, key)
+  object: (swatch, key) => drawObjectSwatch(swatch, key),
+  token: (swatch, key, characters) => {
+    swatch.setAttribute("viewBox", "0 0 24 24")
+    drawToken(swatch, 12, 12, characters[key] ?? { name: swatch.dataset.toolName, kind: "monster" })
+  },
+  creature: (swatch) => {
+    swatch.setAttribute("viewBox", "0 0 24 24")
+    drawToken(swatch, 12, 12, { name: swatch.dataset.toolName, kind: "monster" })
+  }
 }
+// The tools that act on a map played on a picture: elsewhere, dragging on it moves the map
+const toolsOnPicture = ["blocker", "token", "creature"]
 // How close to a side a right click must be to take its wall away
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
 // The tools of the bar left by clicking them again: the tool used before comes back
-const toolsLeftByClickingAgain = ["eraser", "remover", "hand"]
+const toolsLeftByClickingAgain = ["eraser", "remover", "hand", "blocker"]
 // The bounds of a grid, the same as MapTemplate::GRID_SIZES
 const smallestGridSize = 10
 const largestGridSize = 60
@@ -50,10 +68,12 @@ export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
-                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize"]
+                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
+                     "tokenTemplate"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
-                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String }
+                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String,
+                    tokenCharacters: Object, creatureUrl: String, copyFailedMessage: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -97,7 +117,7 @@ export default class extends Controller {
     addMapPatterns(this.boardTarget)
     this.swatchTargets.forEach((swatch) => {
       swatch.replaceChildren()
-      toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey)
+      toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey, this.tokenCharactersValue)
     })
     this.drawPresetPreviews()
     this.showRotation()
@@ -218,6 +238,10 @@ export default class extends Controller {
     }
     this.pressCurrentTool()
     this.hidePointer()
+    this.showBoardCursor()
+    // What blocks by itself shows while the blocked zones are painted
+    if (chosenTool.kind === "blocker" || this.wasPaintingBlocked) this.render()
+    this.wasPaintingBlocked = this.tool.kind === "blocker"
   }
 
   // H chooses the hand, or leaves it (Anthony's request: with a mouse, holding space was a chore). Not while typing
@@ -239,17 +263,22 @@ export default class extends Controller {
     this.showBoardCursor()
   }
 
-  // The middle button, the space bar held, the hand, or the main button on a map played on a picture (nothing to draw)
+  // The middle button, the space bar held, the hand, or the main button on a map played on a picture (nothing to draw
+  // there but the blocked zones)
   movesTheMap(event) {
     if (event.button === 1 || this.isSpaceHeld) return true
 
-    return event.button === 0 && (this.tool.kind === "hand" || this.layout.isPicture())
+    return event.button === 0 && (this.tool.kind === "hand" || this.picturePansTheMap())
+  }
+
+  picturePansTheMap() {
+    return this.layout.isPicture() && !toolsOnPicture.includes(this.tool.kind)
   }
 
   // A hand over the map while it can be moved (the hand, the space bar held, a map played on a picture), a closed
   // hand while it moves, the cross of drawing otherwise
   showBoardCursor() {
-    const movesTheMap = this.tool.kind === "hand" || this.isSpaceHeld || this.layout.isPicture()
+    const movesTheMap = this.tool.kind === "hand" || this.isSpaceHeld || this.picturePansTheMap()
     this.boardTarget.style.cursor = this.panningFrom ? "grabbing" : (movesTheMap ? "grab" : "")
   }
 
@@ -546,6 +575,12 @@ export default class extends Controller {
       renderMap(this.drawingTarget, { grid: this.grid, floors: this.layout.floors, edges: this.layout.edges,
                                       objects: this.layout.objects })
     }
+    if (this.tool.kind === "blocker" && !this.layout.isPicture()) {
+      renderNaturalBlocks(this.drawingTarget, this.grid, naturalBlocks({ grid: this.grid, floors: this.layout.floors,
+                                                                          edges: this.layout.edges }))
+    }
+    renderBlockedCells(this.drawingTarget, this.layout.blocked)
+    renderTokens(this.drawingTarget, this.layout.tokens, this.tokenCharactersValue)
     this.showMaking()
     this.showFigures()
   }
@@ -566,7 +601,7 @@ export default class extends Controller {
     this.rotationLabelTarget.title = this.rotationLabelValue.replace("__degrees__", this.placementRotation * 90)
   }
 
-  // A right click takes away the object under the pointer, or the wall of a side close to it
+  // A right click takes away the token or the object under the pointer, or the wall of a side close to it
   deleteWithRightClick(event) {
     event.preventDefault()
     this.deleteAt(this.boardPoint(event))
@@ -584,7 +619,8 @@ export default class extends Controller {
   deleteAt(point) {
     const side = this.grid.nearestSide(point)
     const before = this.layout.snapshot()
-    const isDeleted = this.layout.removeObjectAt(side.column, side.row) ||
+    const isDeleted = this.layout.removeTokenAt(side.column, side.row) ||
+      this.layout.removeObjectAt(side.column, side.row) ||
       (side.distance < deletingReach && this.layout.removeEdge(side))
     if (!isDeleted) return
 
@@ -622,6 +658,9 @@ export default class extends Controller {
   // whether the stroke puts that wall, or takes it away from the sides that hold it already
   changeLayout(side, isFirstCell) {
     if (this.tool.kind === "floor") return this.layout.paintFloor(side.column, side.row, this.tool.key)
+    if (this.tool.kind === "blocker") return this.paintBlocked(side)
+    if (this.tool.kind === "token") return this.putToken(side)
+    if (this.tool.kind === "creature") return this.putCreature(side, isFirstCell)
     if (this.tool.kind === "eraser") return this.layout.erase(side)
     if (this.tool.kind === "remover") return this.layout.removeObjectAt(side.column, side.row)
     if (this.tool.kind === "object") return this.putObject(side, isFirstCell)
@@ -629,6 +668,72 @@ export default class extends Controller {
 
     this.stroke.removing ??= this.layout.hasEdge(side, this.tool.key)
     return this.stroke.removing ? this.layout.removeEdge(side) : this.layout.putEdge(side, this.tool.key)
+  }
+
+  // The first cell of the stroke says whether it paints the blocked zones, or takes them away
+  paintBlocked({ column, row }) {
+    this.stroke.removing ??= this.layout.isBlocked(column, row)
+    return this.stroke.removing ? this.layout.unblock(column, row) : this.layout.block(column, row)
+  }
+
+  // Like the blocked zones: a stroke that starts on a token takes tokens away, otherwise it puts one on each free cell
+  putToken({ column, row }) {
+    this.stroke.removing ??= Boolean(this.layout.tokenAt(column, row))
+    if (this.stroke.removing) return this.layout.removeTokenAt(column, row)
+
+    return this.layout.placeToken(Number(this.tool.key), column, row)
+  }
+
+  // A creature of the bestiary: copied into the table by the server on the first cell of the stroke, then its token is
+  // put (a stroke that starts on a token takes it away, like any token). Nothing changes until the copy comes back
+  putCreature({ column, row }, isFirstCell) {
+    if (!isFirstCell) return false
+    if (this.layout.tokenAt(column, row)) return this.layout.removeTokenAt(column, row)
+    if (!this.layout.mayHoldToken(column, row)) return false
+
+    this.copyCreature(this.tool.key, column, row)
+    return false
+  }
+
+  // One copy at a time. The copy joins the list of the table, and becomes the tool: the next tokens of its band share it
+  async copyCreature(creatureKey, column, row) {
+    if (this.isCopying) return
+
+    this.isCopying = true
+    const body = new FormData()
+    body.append("key", creatureKey)
+    const response = await fetch(this.creatureUrlValue, { method: "POST", body, headers: jsonHeaders() })
+      .catch(() => null)
+    this.isCopying = false
+    if (!response?.ok) {
+      this.statusTarget.textContent = this.copyFailedMessageValue
+      return
+    }
+    const character = await response.json()
+    this.tokenCharactersValue = { ...this.tokenCharactersValue, [character.id]: { name: character.name, kind: character.kind } }
+    this.addTableToken(character)
+    this.tool = { kind: "token", key: String(character.id) }
+    this.pressCurrentTool()
+    const before = this.layout.snapshot()
+    if (!this.layout.placeToken(character.id, column, row)) return
+
+    this.render()
+    this.keepChange(before)
+  }
+
+  // Its line in the list of the table, in both panels, made from the template of the page
+  addTableToken({ id, name }) {
+    this.tableTokensTargets.forEach((list, index) => {
+      const line = this.tokenTemplateTargets[index].content.firstElementChild.cloneNode(true)
+      line.dataset.searchName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+      line.querySelectorAll("[data-tool-key]").forEach((element) => { element.dataset.toolKey = id })
+      line.querySelector("[data-token-name]").textContent = name
+      const swatch = line.querySelector("svg")
+      swatch.dataset.toolName = name
+      toolSwatches.token(swatch, String(id), this.tokenCharactersValue)
+      list.append(line)
+    })
+    this.tableTokensEmptyTargets.forEach((empty) => { empty.hidden = true })
   }
 
   // On an object put, the first cell of the stroke turns it. A small object is put on every cell of the stroke, a large
@@ -652,7 +757,7 @@ export default class extends Controller {
   // Where the tool would act: the cell, or the side for a wall, in red where a wall cannot stand
   markPointer(event) {
     this.hidePointer()
-    if (this.layout.isPicture() || this.tool.kind === "hand") return
+    if (this.picturePansTheMap() || this.tool.kind === "hand") return
 
     this.isPointerOverBoard = true
     this.lastPoint = this.boardPoint(event)
@@ -661,7 +766,14 @@ export default class extends Controller {
 
     if (this.tool.kind === "edge") return this.markSide(side)
     if (this.tool.kind === "object" || this.tool.kind === "remover") return this.markObject(side)
+    if (this.tool.kind === "token" || this.tool.kind === "creature") return this.markToken(side)
     this.markCells([[side.column, side.row]], allowedMark)
+  }
+
+  // Red where a token cannot stand; a token there is taken away
+  markToken({ column, row }) {
+    const isAllowed = Boolean(this.layout.tokenAt(column, row)) || this.layout.mayHoldToken(column, row)
+    this.markCells([[column, row]], isAllowed ? allowedMark : refusedMark)
   }
 
   // On an object put: its cells (in red for Take object away). Elsewhere, the object to put, faded, on its cells
@@ -738,7 +850,7 @@ export default class extends Controller {
       method: "PATCH",
       body,
       keepalive: true,
-      headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
+      headers: jsonHeaders()
     })
   }
 }
@@ -762,6 +874,10 @@ function wheelPixels(event) {
 // The size of the grid and the drawing of a map ready to use, carried by its item (map_templates/_preset_tools)
 function presetOf(element) {
   return JSON.parse(element.closest("[data-map-preset]").dataset.mapPreset)
+}
+
+function jsonHeaders() {
+  return { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
 }
 
 function isTyping(event) {

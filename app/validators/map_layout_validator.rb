@@ -6,15 +6,18 @@
 #     "edges" => { "3,4|4,4" => "wall" },         # two neighbouring cells, in sorted order, and their edge (MapEdges)
 #     "objects" => [{ "key" => "table", "column" => 3, "row" => 4, "rotation" => 1 }],    # MapLayouts::ObjectsCheck
 #     "mode" => "picture",                                     # drawn (draw) or played on a picture: PictureCheck
-#     "picture" => { "cells_wide" => 28, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 } }
+#     "picture" => { "cells_wide" => 28, "offset_x" => 0, "offset_y" => 0, "opacity" => 1 },
+#     "blocked" => ["3,4"],         # cells painted with the brush « Zones bloquantes » (a map of a table: MapPassage)
+#     "tokens" => [{ "character_id" => 12, "column" => 3, "row" => 4 }] }    # a map of a table: TokensCheck
 #
-# "objects" may be missing (a drawing saved before the objects), "mode" and "picture" too (a map drawn).
+# "objects" may be missing (a drawing saved before the objects), "mode" and "picture" too (a map drawn), "blocked" and
+# "tokens" too (nothing painted or put, and every map of « Mes cartes »).
 #
 # The errors go on :layout. Only the first wrong cell and the first wrong edge are told: a broken layout could hold
 # hundreds of them
 class MapLayoutValidator < ActiveModel::Validator
   CURRENT_VERSION = 1
-  LAYOUT_KEYS = %w[version floors edges objects mode picture].freeze
+  LAYOUT_KEYS = %w[version floors edges objects mode picture blocked tokens].freeze
   CELL_FORMAT = /\A(\d+),(\d+)\z/
 
   def validate(map)
@@ -25,13 +28,16 @@ class MapLayoutValidator < ActiveModel::Validator
     validate_edges(map, layout["edges"])
     validate_objects(map, layout.fetch("objects", []))
     validate_picture(map, layout)
+    validate_blocked(map, layout.fetch("blocked", []))
+    validate_tokens(map, layout.fetch("tokens", []))
   end
 
   private
 
   def well_formed?(layout)
     layout.is_a?(Hash) && (layout.keys - LAYOUT_KEYS).empty? && layout["version"] == CURRENT_VERSION &&
-      layout["floors"].is_a?(Hash) && layout["edges"].is_a?(Hash) && layout.fetch("objects", []).is_a?(Array)
+      layout["floors"].is_a?(Hash) && layout["edges"].is_a?(Hash) && layout.fetch("objects", []).is_a?(Array) &&
+      layout.fetch("tokens", []).is_a?(Array)
   end
 
   def validate_floors(map, floors)
@@ -50,8 +56,23 @@ class MapLayoutValidator < ActiveModel::Validator
     map.errors.add(:layout, :unknown_edge, edge:)
   end
 
+  # A list of cells of the grid, each one once
+  def validate_blocked(map, blocked_cells)
+    unless blocked_cells.is_a?(Array) && blocked_cells.uniq == blocked_cells
+      return map.errors.add(:layout, :invalid_blocked)
+    end
+
+    cell = blocked_cells.find { |cell_key| !inside?(map, cell_key) }
+    map.errors.add(:layout, :cell_outside_grid, cell:) if cell
+  end
+
   def validate_picture(map, layout)
     error_type, error_options = MapLayouts::PictureCheck.new(layout).call
+    map.errors.add(:layout, error_type, **error_options) if error_type
+  end
+
+  def validate_tokens(map, tokens)
+    error_type, error_options = MapLayouts::TokensCheck.new(map, tokens).call
     map.errors.add(:layout, error_type, **error_options) if error_type
   end
 

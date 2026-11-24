@@ -10,7 +10,8 @@ class LocaleFilesTest < ActiveSupport::TestCase
   private
 
   def translation_keys(locale)
-    translations = YAML.load_file(Rails.root.join("config/locales/#{locale}.yml")).fetch(locale)
+    # aliases: the messages of a drawn map are shared by the maps of « Mes cartes » and of a table (an anchor)
+    translations = YAML.load_file(Rails.root.join("config/locales/#{locale}.yml"), aliases: true).fetch(locale)
     flatten_keys(translations).sort
   end
 

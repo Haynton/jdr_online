@@ -1,18 +1,57 @@
-<%# One map of the table: its image (cut to 16:9, the whole map shows in its window), its name, its grid, and
-    "Change", which opens its window %>
-<li class="flex min-w-0 flex-col overflow-hidden rounded-xl border border-line bg-surface">
-  <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
-  <div class="flex items-center justify-between gap-4 px-4 py-3">
-    <div class="min-w-0">
-      <p class="truncate text-sm font-semibold text-ink" title="<%= game_map.name %>"><%= game_map.name %></p>
-      <p class="truncate text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
+<%# One map of the table, a card of the row drawn like those of « Mes cartes » (same classes, same width): a link as a
+    whole, its preview (a map copied or drawn for the table, the whole map in the frame, its tokens and blocked zones
+    drawn on it; the map icon while nothing is drawn) or its image (a map sent as an image, cut to 16:9), then its name
+    and its grid. What is put for the game shows on the preview itself (Anthony's request: no long text in the card):
+    two small pills at its foot, the number of tokens and of blocked zones (said in full to screen readers). A map
+    drawn opens in the map editor: a pencil over the corner of its preview says so (title « Placer les jetons… »),
+    beside its bin (asked first, like in « Mes cartes »; both beside the link, not in it: a button in a link is not
+    allowed). A map sent as an image opens its window, where it is deleted. Full keys: rendered inside a row %>
+<% counts = game_map_setup_counts(game_map) %>
+<li class="relative w-[62%] shrink-0 sm:w-56">
+  <%= link_to edit_game_table_game_map_path(@game_table, game_map), class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES,
+              data: (map_dialog_link_data unless game_map.drawn?) do %>
+    <span class="relative block">
+      <% if game_map.drawn? && map_preview?(game_map) %>
+        <svg viewBox="<%= game_map_view_box(game_map) %>" class="block aspect-video w-full" aria-hidden="true"
+             <%= tag.attributes(data: game_map_preview_data(game_map)) %>></svg>
+      <% elsif game_map.drawn? %>
+        <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+          <%= render "shared/icons/map", css_class: "size-10" %>
+        </span>
+      <% else %>
+        <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+      <% end %>
+      <% if counts.any? %>
+        <span class="absolute bottom-2 left-2 flex gap-1.5">
+          <% counts.each do |figure, count| %>
+            <span class="inline-flex h-6 items-center gap-1 rounded-full bg-surface/90 px-2 text-xs font-semibold text-ink shadow-sm">
+              <%= render GameTables::MapDialogHelper::SETUP_ICON_PARTIALS.fetch(figure), css_class: "size-3.5" %>
+              <span aria-hidden="true"><%= count %></span>
+              <span class="sr-only"><%= t("game_tables.game_maps.setup.#{figure}", count:) %></span>
+            </span>
+          <% end %>
+        </span>
+      <% end %>
+    </span>
+    <span class="flex flex-col gap-1 px-4 pt-3 pb-4">
+      <span class="truncate font-semibold text-ink"><%= game_map.name %></span>
+      <span class="text-sm text-muted"><%= game_map_grid_text(game_map) %></span>
+    </span>
+  <% end %>
+  <% if game_map.drawn? %>
+    <div class="absolute top-2 right-2 flex gap-1.5">
+      <%= link_to edit_game_table_game_map_path(@game_table, game_map), class: button_classes(:secondary, size: :compact_icon),
+                  title: t("game_tables.game_maps.setup.open"), aria: { label: t("game_tables.game_maps.setup.open_named", name: game_map.name) } do %>
+        <%= render "shared/icons/pencil" %>
+      <% end %>
+      <%= button_to game_table_game_map_path(@game_table, game_map), method: :delete,
+                    class: button_classes(:secondary, size: :compact_icon),
+                    title: t("game_tables.map_lists.edit.delete", name: game_map.name),
+                    aria: { label: t("game_tables.map_lists.edit.delete", name: game_map.name) },
+                    data: { turbo_confirm: t("game_tables.game_maps.form.confirm_delete", name: game_map.name),
+                            confirm_button: t("game_tables.game_maps.form.delete"), confirm_variant: "danger" } do %>
+        <%= render "shared/icons/trash_2" %>
+      <% end %>
     </div>
-    <%= link_to edit_game_table_game_map_path(@game_table, game_map),
-                class: "#{button_classes(:secondary, size: :compact)} shrink-0",
-                title: t("game_tables.map_lists.edit.change", name: game_map.name), data: map_dialog_link_data do %>
-      <%= render "shared/icons/pencil" %>
-      <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
-      <span class="sr-only"><%= game_map.name %></span>
-    <% end %>
-  </div>
+  <% end %>
 </li>

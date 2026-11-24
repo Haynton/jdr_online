@@ -21,10 +21,14 @@ fr:
         owner: "Propriétaire"
         rows: "Lignes"
       game_map:
+        columns: "Colonnes"
         grid_cell_size: "Taille d'une case (px)"
         grid_visible: "Afficher la grille"
         image: "Image"
+        layout: "Dessin de la carte"
+        map_template: "Carte d'origine"
         name: "Nom"
+        rows: "Lignes"
       catalog_entry:
         description: "Description"
         name: "Nom"
@@ -66,14 +70,14 @@ fr:
       models:
         map_template:
           attributes:
-            columns:
+            columns: &map_grid_size_errors
               in: "doit être de %{minimum} à %{maximum}"
             picture:
               content_type: "doit être une image PNG, JPEG ou WebP"
               too_big: "ne doit pas dépasser %{count} Mo"
             rows:
               in: "doit être de %{minimum} à %{maximum}"
-            layout:
+            layout: &map_layout_errors
               invalid_format: "n'a pas la forme attendue"
               cell_outside_grid: "contient la case %{cell}, hors de la grille"
               unknown_floor: "contient un sol inconnu : %{floor}"
@@ -86,8 +90,18 @@ fr:
               objects_overlap: "contient deux objets sur les mêmes cases : %{object_name}"
               unknown_mode: "contient une façon de faire la carte inconnue : %{mode}"
               invalid_picture: "contient un calage de l'image qui n'a pas la forme attendue"
+              invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
+              tokens_without_table: "contient des jetons, alors qu'elle n'appartient à aucune table"
+              invalid_token: "contient un jeton qui n'a pas la forme attendue"
+              unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
+              token_outside_grid: "contient un jeton hors de la grille"
+              tokens_overlap: "contient deux jetons sur la même case"
+              token_on_blocked_cell: "contient un jeton sur une zone bloquante"
         game_map:
           attributes:
+            columns: *map_grid_size_errors
+            layout: *map_layout_errors
+            rows: *map_grid_size_errors
             image:
               content_type: "doit être une image PNG, JPEG ou WebP"
               too_big: "ne doit pas dépasser %{count} Mo"
@@ -348,6 +362,7 @@ fr:
       deleted: "Carte « %{name} » supprimée."
     editor:
       actions_label: "Actions sur la carte"
+      blocked_zones: "Zones bloquantes"
       board_label: "Dessin de la carte « %{name} »"
       cells: "cases"
       columns_label: "Nombre de colonnes (les lignes suivent, pour garder les proportions)"
@@ -388,7 +403,10 @@ fr:
       shrink_button: "Réduire"
       shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré."
       tabs_label: "Outils"
+      copy_failed: "La créature n'a pas pu être ajoutée. Réessayez."
+      table_help_html: "<b>Carte de votre table</b> : préparez ici le début de la partie. <b>Jetons</b> : dans l'onglet Jetons, choisissez un PNJ ou un ennemi, puis cliquez sur les cases où il se tient (autant de fois que vous voulez pour une bande).<br><b>Zones bloquantes</b> : le bouton ⊘ de la barre peint les cases que les pions ne traversent pas ; les murs des salles et des pierres, et le vide, bloquent déjà : ils s'affichent en rouge pendant que vous peignez."
       terrain_tab: "Terrain"
+      tokens_tab: "Jetons"
       undo: "Annuler"
       undo_keys: "Ctrl ou Cmd + Z"
       whole_map: "Afficher toute la carte"
@@ -553,6 +571,14 @@ fr:
       save: "Enregistrer"
       rename: "Renommer la carte"
     size: "%{columns} × %{rows} cases"
+    token_tools:
+      bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
+      bestiary_title: "Bestiaire"
+      empty: "Aucun pour l'instant."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
+      no_match: "Aucun personnage ni créature ne correspond à cette recherche."
+      search: "Rechercher un personnage ou une créature"
+      table_title: "PNJ et ennemis de la table"
     update:
       renamed: "Carte renommée."
   sheet_templates:
@@ -862,19 +888,25 @@ fr:
   game_tables:
     map_lists:
       edit:
-        add: "Ajouter une carte"
         back: "Retour"
         change: "Modifier %{name}"
         count:
           one: "%{count} carte"
           other: "%{count} cartes"
-        empty: "Aucune carte pour l'instant. Ajoutez les plans de vos lieux : une image par carte."
-        intro: "Les cartes de votre partie : une image par lieu, avec sa grille."
-        purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
+        create: "Créer une carte"
+        delete: "Supprimer %{name}"
+        empty: "Aucune carte pour l'instant. Dessinez-en une, ou importez celles de « Mes cartes »."
+        import: "Importer depuis « Mes cartes »"
+        intro: "Les cartes de votre partie, dessinées pour elle ou copiées de « Mes cartes » : la table garde sa propre copie, case par case."
+        purpose: "Ouvrez une carte pour y poser les jetons de vos PNJ et ennemis et peindre les zones que les pions ne traversent pas : la partie commencera ainsi."
         title: "Cartes"
       update:
         saved: "Cartes enregistrées."
     game_maps:
+      create:
+        default_name: "Nouvelle carte"
+      editor:
+        back: "Cartes de la table"
       form:
         confirm_delete: "Supprimer la carte « %{name} » ?"
         delete: "Supprimer la carte"
@@ -882,13 +914,27 @@ fr:
         grid_cell_size_hint: "La taille d'une case, en pixels de l'image : la largeur d'un carré dessiné sur la carte."
         grid_visible_hint: "Les lignes de la grille se voient sur le plateau."
         image_change_hint: "Choisissez une image pour remplacer celle-ci : PNG, JPEG ou WebP, %{size} Mo au plus."
-        image_hint: "PNG, JPEG ou WebP, %{size} Mo au plus."
       grid:
+        cells: "%{columns} × %{rows} cases"
         hidden: "Grille de %{size} px, masquée"
         shown: "Grille de %{size} px, affichée"
+      setup:
+        blocked:
+          one: "%{count} zone bloquante"
+          other: "%{count} zones bloquantes"
+        open: "Placer les jetons et les zones bloquantes"
+        open_named: "Placer les jetons et les zones bloquantes de %{name}"
+        tokens:
+          one: "%{count} jeton"
+          other: "%{count} jetons"
+      picker:
+        add_label: "Ajouter la carte « %{name} »"
+        empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."
+        intro: "Choisissez une carte de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
+        my_maps: "Aller à « Mes cartes »"
       window:
         close: "Fermer la carte"
-        new: "Nouvelle carte"
+        new: "Importer depuis « Mes cartes »"
     hit_dice_rolls:
       create:
         rolled: "Dés de vie lancés : %{results}."

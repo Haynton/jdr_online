@@ -1,5 +1,7 @@
 <%# A map of the table: in the window of the step Maps (its title bar: its name, the close cross), or, opened directly
-    or without JavaScript, a page of the step. title: its name, or "New map" %>
+    or without JavaScript, a page of the step. title: its name, or "Add a map". content: what it shows, the form of
+    the map (by default) or the maps of « Mes cartes » to add (game_tables/game_maps/_picker) %>
+<% content = local_assigns.fetch(:content, "game_tables/game_maps/form") %>
 <% if map_in_dialog? %>
   <%= turbo_frame_tag GameTables::MapDialogHelper::MAP_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
     <header class="flex shrink-0 items-center justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
@@ -10,11 +12,11 @@
         <%= render "shared/icons/x", css_class: "size-5" %>
       </button>
     </header>
-    <%= render "game_tables/game_maps/form", game_map: @game_map, in_dialog: true %>
+    <%= render content, game_map: @game_map, in_dialog: true %>
   <% end %>
 <% else %>
   <%= creation_page(current_step: "maps", game_table: @game_table) do %>
     <%= page_header(title: title) %>
-    <%= render "game_tables/game_maps/form", game_map: @game_map, in_dialog: false %>
+    <%= render content, game_map: @game_map, in_dialog: false %>
   <% end %>
 <% end %>

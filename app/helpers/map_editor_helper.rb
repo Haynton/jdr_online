@@ -30,14 +30,52 @@ module MapEditorHelper
     map_template.layout_in_database.values_at("floors", "edges", "objects").all?(&:blank?) ? 0 : 1
   end
 
+  # The editor works on a map of « Mes cartes » or on its copy in a table (GameMap): the same drawing, the same
+  # picture, at their own addresses (a map of a table under its table)
+  def map_editor_record(map)
+    map.is_a?(GameMap) ? [map.game_table, map] : [map]
+  end
+
+  # The tabs of the panel of the drawing: the maps ready to use, the terrain, the objects, and for a map of a table its
+  # tokens
+  def map_editor_tabs(map)
+    tabs = [["presets", t("map_templates.editor.presets_tab")], ["floors", t("map_templates.editor.terrain_tab")],
+            ["objects", t("map_templates.editor.objects_tab")]]
+    map_editor_blocking?(map) ? tabs + [["tokens", t("map_templates.editor.tokens_tab")]] : tabs
+  end
+
+  # The brush « Zones bloquantes »: a map of a table only, where tokens will move (MapPassage)
+  def map_editor_blocking?(map)
+    map.is_a?(GameMap)
+  end
+
   # What the map editor needs (map_editor_controller.js): the drawing, the grid, where to save it, its texts
   def map_editor_data(map_template)
     { controller: "map-editor", action: "turbo:morph@document->map-editor#drawEverything",
       map_editor_layout_value: map_template.layout_in_database.to_json,
       map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
-      map_editor_url_value: map_template_layout_path(map_template),
+      map_editor_url_value: polymorphic_path([*map_editor_record(map_template), :layout]),
       map_editor_figure_labels_value: map_editor_figure_labels.to_json,
-      map_editor_picture_url_value: map_picture_url(map_template), **map_editor_texts }
+      map_editor_picture_url_value: map_picture_url(map_template),
+      map_editor_token_characters_value: map_token_characters(map_template).to_json,
+      **map_editor_creature_data(map_template), **map_editor_texts }
+  end
+
+  # Where a creature of the bestiary is copied when its first token is put, and what is said when it fails: a map of a
+  # table only
+  def map_editor_creature_data(map)
+    return {} unless map_editor_blocking?(map)
+
+    { map_editor_creature_url_value: game_table_game_map_creatures_path(map.game_table, map),
+      map_editor_copy_failed_message_value: t("map_templates.editor.copy_failed") }
+  end
+
+  # What the editor draws of each non-player character and enemy of the table on its tokens: { id => { name, kind } }.
+  # None on a map of « Mes cartes »
+  def map_token_characters(map)
+    return {} unless map_editor_blocking?(map)
+
+    map.game_table.npcs.to_h { |character| [character.id, { name: character.name, kind: character.kind }] }
   end
 
   # A preview on its card of « Mes cartes »: something drawn, or its picture; a map still empty keeps its icon

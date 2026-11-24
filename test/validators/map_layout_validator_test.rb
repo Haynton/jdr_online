@@ -13,7 +13,7 @@ class MapLayoutValidatorTest < ActiveSupport::TestCase
   end
 
   test "a layout without its version, or with something else, is refused" do
-    refused = [nil, [], { "floors" => {}, "edges" => {} }, MapTemplate::BLANK_LAYOUT.merge("tokens" => []),
+    refused = [nil, [], { "floors" => {}, "edges" => {} }, MapTemplate::BLANK_LAYOUT.merge("pawns" => []),
                MapTemplate::BLANK_LAYOUT.merge("floors" => [])]
 
     refused.each do |layout|
@@ -26,6 +26,19 @@ class MapLayoutValidatorTest < ActiveSupport::TestCase
     ["10,0", "0,10", "-1,0", "a,b", "1,2,3"].each do |cell|
       map = map_with(floors: { cell => "room" })
       assert map.tap(&:validate).errors.of_kind?(:layout, :cell_outside_grid), cell
+    end
+  end
+
+  test "the blocked zones are cells of the grid, each one once" do
+    accepted = MapTemplate.new(name: "Carte", owner: @owner, columns: 10, rows: 10,
+                               layout: MapTemplate::BLANK_LAYOUT.merge("blocked" => ["0,0", "9,9"]))
+    assert accepted.valid?
+
+    refused = { ["0,10"] => :cell_outside_grid, ["1,1", "1,1"] => :invalid_blocked, "1,1" => :invalid_blocked }
+    refused.each do |blocked, error|
+      map = MapTemplate.new(name: "Carte", owner: @owner, columns: 10, rows: 10,
+                            layout: MapTemplate::BLANK_LAYOUT.merge("blocked" => blocked))
+      assert map.tap(&:validate).errors.of_kind?(:layout, error), blocked.inspect
     end
   end
 

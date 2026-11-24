@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_120058) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_201259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,8 +90,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_120058) do
     t.boolean "grid_visible", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "map_template_id"
+    t.integer "columns"
+    t.integer "rows"
+    t.jsonb "layout"
     t.index ["game_table_id"], name: "index_game_maps_on_game_table_id"
+    t.index ["map_template_id"], name: "index_game_maps_on_map_template_id"
+    t.check_constraint "columns IS NULL OR columns >= 10 AND columns <= 60", name: "game_maps_columns_check"
     t.check_constraint "grid_cell_size >= 10 AND grid_cell_size <= 500", name: "game_maps_grid_cell_size_check"
+    t.check_constraint "rows IS NULL OR rows >= 10 AND rows <= 60", name: "game_maps_rows_check"
   end
 
   create_table "game_tables", force: :cascade do |t|
@@ -371,6 +378,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_120058) do
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
   add_foreign_key "game_maps", "game_tables"
+  add_foreign_key "game_maps", "map_templates", on_delete: :nullify
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
   add_foreign_key "inventory_items", "characters"
   add_foreign_key "map_templates", "users", column: "owner_id"

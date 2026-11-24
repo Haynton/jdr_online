@@ -1,0 +1,50 @@
+<%# The tab Jetons of a map of a table: first its non-player characters and enemies (step « PNJ et ennemis »), then the
+    whole bestiary the table offers (Anthony's decision: any creature, copied into the table when its first token is
+    put), both searched by name without accents (catalog_search_controller.js; rendered hidden, shown by it: without
+    JavaScript every line stays). A line: its token drawn by the editor, its name, its role or its facts. Chosen, a
+    click on the board puts its token (a band: as many as wanted, the copy of a creature shared by its band), a click
+    on a token takes it away. A creature copied joins the list of the table (map_editor_controller.js, from the
+    template). Rendered in both panels (drawn, on a picture): prefix keeps their ids apart. Full keys %>
+<% scope = "map_templates.token_tools" %>
+<% game_table = map_template.game_table %>
+<% characters = game_table.npcs %>
+<% creatures = Catalogs::TableCatalog.new(game_table).entries("monster").to_a %>
+<div data-controller="catalog-search">
+  <p class="mb-3 text-xs leading-normal text-muted"><%= t("#{scope}.intro") %></p>
+  <div hidden class="mb-3" data-catalog-search-target="tools">
+    <label for="<%= prefix %>-token-search" class="sr-only"><%= t("#{scope}.search") %></label>
+    <input id="<%= prefix %>-token-search" type="search" autocomplete="off" placeholder="<%= t("#{scope}.search") %>"
+           class="<%= SimpleFormFieldClasses::INPUT %>"
+           data-catalog-search-target="search" data-action="input->catalog-search#filter">
+  </div>
+
+  <section data-catalog-search-target="group" aria-labelledby="<%= prefix %>-table-tokens-title">
+    <h3 id="<%= prefix %>-table-tokens-title" class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t("#{scope}.table_title") %></h3>
+    <p <%= "hidden" if characters.any? %> class="mb-4 text-xs text-muted" data-map-editor-target="tableTokensEmpty"><%= t("#{scope}.empty") %></p>
+    <ul class="mb-4 flex flex-col gap-1.5 empty:hidden" data-map-editor-target="tableTokens">
+      <% characters.each do |character| %>
+        <%= render "map_templates/token_tool", kind: "token", key: character.id, name: character.name,
+                                                detail: t("game_tables.npcs.kinds.#{character.kind}") %>
+      <% end %>
+    </ul>
+  </section>
+
+  <% if creatures.any? %>
+    <section data-catalog-search-target="group" aria-labelledby="<%= prefix %>-bestiary-title">
+      <h3 id="<%= prefix %>-bestiary-title" class="mb-1 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t("#{scope}.bestiary_title") %></h3>
+      <p class="mb-2 text-xs text-muted"><%= t("#{scope}.bestiary_hint") %></p>
+      <ul class="flex flex-col gap-1.5">
+        <% creatures.each do |creature| %>
+          <%= render "map_templates/token_tool", kind: "creature", key: creature.key, name: creature.name,
+                                                  detail: creature_facts(game_table, creature) %>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+  <p hidden class="text-xs text-muted" data-catalog-search-target="noMatch"><%= t("#{scope}.no_match") %></p>
+
+  <%# A creature copied joins the table: its line, made by the editor from this model %>
+  <template data-map-editor-target="tokenTemplate">
+    <%= render "map_templates/token_tool", kind: "token", key: "", name: "", detail: t("game_tables.npcs.kinds.monster") %>
+  </template>
+</div>

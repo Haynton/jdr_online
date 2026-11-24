@@ -1,7 +1,10 @@
 // The drawing of a map while it is edited: its floors ("column,row" → floor key), its edges ("cell|cell" → edge key)
 // and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Also how the map is
 // made (mode: "draw", or "picture" for a picture of one's own) and how its picture sits under the grid (picture:
-// { cells_wide, offset_x, offset_y, opacity }). Sent to the server as the layout that MapLayoutValidator checks
+// { cells_wide, offset_x, offset_y, opacity }). On a map of a table, the cells painted with the brush « Zones
+// bloquantes » (blocked: no token stands on them, MapPassage) and the tokens of its non-player characters and enemies
+// ({ character_id, column, row }, where the game begins). Sent to the server as the layout that MapLayoutValidator
+// checks
 import { cellKey, cellPosition, cellSize, sideKey } from "map_editor/square_grid"
 import { doorKey } from "map_edges"
 import { objectOf, footprintSize } from "map_objects"
@@ -11,19 +14,26 @@ export const layoutVersion = 1
 const eraserReach = 5
 
 export default class MapLayout {
-  constructor({ floors = {}, edges = {}, objects = [], mode = "draw", picture = null } = {}, grid) {
+  constructor({ floors = {}, edges = {}, objects = [], mode = "draw", picture = null, blocked = [], tokens = [] } = {},
+              grid) {
     this.grid = grid
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
     this.objects = objects.map((placedObject) => ({ ...placedObject }))
     this.mode = mode
     this.picture = picture && { ...picture }
+    this.blocked = new Set(blocked)
+    this.tokens = tokens.map((token) => ({ ...token }))
   }
 
+  // The blocked cells and the tokens only once there are some: a map of « Mes cartes » never has any
   toJSON() {
     const drawing = { version: layoutVersion, floors: Object.fromEntries(this.floors),
                       edges: Object.fromEntries(this.edges), objects: this.objects, mode: this.mode }
-    return this.picture ? { ...drawing, picture: this.picture } : drawing
+    if (this.picture) drawing.picture = this.picture
+    if (this.blocked.size > 0) drawing.blocked = [...this.blocked]
+    if (this.tokens.length > 0) drawing.tokens = this.tokens
+    return drawing
   }
 
   isPicture() {
@@ -37,12 +47,15 @@ export default class MapLayout {
 
   // Gives back the size of the grid of the copy: the editor makes its grid again when it changed
   restore(snapshot) {
-    const { layout: { floors, edges, objects, mode = "draw", picture = null }, columns, rows } = JSON.parse(snapshot)
+    const { layout: { floors, edges, objects, mode = "draw", picture = null, blocked = [], tokens = [] }, columns, rows } =
+      JSON.parse(snapshot)
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
     this.objects = objects
     this.mode = mode
     this.picture = picture
+    this.blocked = new Set(blocked)
+    this.tokens = tokens
     return { columns, rows }
   }
 
@@ -54,7 +67,9 @@ export default class MapLayout {
     }
     return [...this.floors.keys()].some((key) => isOutside(cellPosition(key))) ||
       [...this.edges.keys()].some((key) => key.split("|").some((cell) => isOutside(cellPosition(cell)))) ||
-      this.objects.some((placedObject) => this.cellsOf(placedObject).some(isOutside))
+      this.objects.some((placedObject) => this.cellsOf(placedObject).some(isOutside)) ||
+      [...this.blocked].some((key) => isOutside(cellPosition(key))) ||
+      this.tokens.some((token) => isOutside([token.column, token.row]))
   }
 
   // How far the drawing moves when the grid takes that size, so that it stays in the middle (Anthony's request: the
@@ -75,6 +90,8 @@ export default class MapLayout {
     this.edges = new Map([...this.edges].map(([key, edgeKey]) => [sideKey(...key.split("|").map(moved)), edgeKey]))
     this.objects = this.objects.map((placedObject) => ({ ...placedObject, column: placedObject.column + columnShift,
                                                           row: placedObject.row + rowShift }))
+    this.blocked = new Set([...this.blocked].map((key) => cellKey(...moved(key))))
+    this.tokens = this.tokens.map((token) => ({ ...token, column: token.column + columnShift, row: token.row + rowShift }))
     if (this.picture) {
       this.picture = { ...this.picture, offset_x: this.picture.offset_x + columnShift * cellSize,
                        offset_y: this.picture.offset_y + rowShift * cellSize }
@@ -87,17 +104,65 @@ export default class MapLayout {
     this.floors = new Map([...this.floors].filter(([key]) => !isOutside(cellPosition(key))))
     this.edges = new Map([...this.edges].filter(([key]) => !key.split("|").some((cell) => isOutside(cellPosition(cell)))))
     this.objects = this.objects.filter((placedObject) => !this.cellsOf(placedObject).some(isOutside))
+    this.blocked = new Set([...this.blocked].filter((key) => !isOutside(cellPosition(key))))
+    this.tokens = this.tokens.filter((token) => !isOutside([token.column, token.row]))
     this.grid = grid
   }
 
   isEmpty() {
-    return this.floors.size === 0 && this.edges.size === 0 && this.objects.length === 0
+    return this.floors.size === 0 && this.edges.size === 0 && this.objects.length === 0 && this.blocked.size === 0 &&
+      this.tokens.length === 0
   }
 
   clear() {
     this.floors.clear()
     this.edges.clear()
     this.objects = []
+    this.blocked.clear()
+    this.tokens = []
+  }
+
+  tokenAt(column, row) {
+    return this.tokens.find((token) => token.column === column && token.row === row)
+  }
+
+  // Free, not painted blocked and, on a drawn map, on a floor (Anthony's request: never where a token cannot stand)
+  mayHoldToken(column, row) {
+    if (!this.grid.inside(column, row) || this.tokenAt(column, row) || this.isBlocked(column, row)) return false
+
+    return this.isPicture() || this.floors.has(cellKey(column, row))
+  }
+
+  // One token a cell; the same character as many times as wanted (a band). true when it was put
+  placeToken(characterId, column, row) {
+    if (!this.mayHoldToken(column, row)) return false
+
+    this.tokens.push({ character_id: characterId, column, row })
+    return true
+  }
+
+  removeTokenAt(column, row) {
+    const token = this.tokenAt(column, row)
+    if (!token) return false
+
+    this.tokens = this.tokens.filter((candidate) => candidate !== token)
+    return true
+  }
+
+  isBlocked(column, row) {
+    return this.blocked.has(cellKey(column, row))
+  }
+
+  // true when the cell changed. Not under a token: it would stand where no token stands
+  block(column, row) {
+    if (this.isBlocked(column, row) || this.tokenAt(column, row)) return false
+
+    this.blocked.add(cellKey(column, row))
+    return true
+  }
+
+  unblock(column, row) {
+    return this.blocked.delete(cellKey(column, row))
   }
 
   // true when the cell changed
@@ -133,8 +198,10 @@ export default class MapLayout {
     return this.edges.delete(keyOfSide(side))
   }
 
-  // An object on the cell first, then the wall of a side close to the pointer, then the floor. true when something went
+  // A token on the cell first, then an object, then the wall of a side close to the pointer, then the floor. true when
+  // something went
   erase(side) {
+    if (this.removeTokenAt(side.column, side.row)) return true
     if (this.removeObjectAt(side.column, side.row)) return true
     if (side.distance < eraserReach && this.removeEdge(side)) return true
 

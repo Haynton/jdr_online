@@ -1,14 +1,21 @@
-<%# The fifth step of a table: its maps (decision: an empty list at first). "Add a map" opens an empty window; each
-    card opens its window (its name, its image, its grid). Everything is saved as it is done: the buttons only go to
-    the step before or after. Saved in a window, the page is refreshed by morphing, keeping its scroll %>
+<%# The fifth step of a table: its maps (decision: an empty list at first). Two buttons (Anthony's request): « Créer
+    une carte » draws a new map for the table alone and opens the map editor; « Importer depuis Mes cartes » opens a
+    window with the maps of « Mes cartes », one of which is copied into the table. Each card opens the editor (a map
+    sent as an image before the editor: its window). Everything is saved as it is done: the buttons only go to the
+    step before or after. Saved in a window, the page is refreshed by morphing, keeping its scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "maps", game_table: @game_table) do %>
   <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
   <div class="flex flex-wrap gap-3">
-    <%= link_to new_game_table_game_map_path(@game_table), class: "#{button_classes(:primary)} gap-2",
-                                                           data: map_dialog_link_data do %>
+    <%# A form: it adds a map, then opens its editor %>
+    <%= button_to game_table_game_maps_path(@game_table), class: "#{button_classes(:primary)} gap-2" do %>
       <%= render "shared/icons/plus" %>
-      <%= t(".add") %>
+      <%= t(".create") %>
+    <% end %>
+    <%= link_to new_game_table_game_map_path(@game_table), class: "#{button_classes(:secondary)} gap-2",
+                                                           data: map_dialog_link_data do %>
+      <%= render "shared/icons/map" %>
+      <%= t(".import") %>
     <% end %>
   </div>
 

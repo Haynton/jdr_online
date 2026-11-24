@@ -1,8 +1,13 @@
 <%# The help of the editor (map_help_controller.js): a round button like those of the zoom, above them, and its bubble
     on its left, over the board. Open by itself the first time the editor is opened in this browser. Its words in bold
-    and its keys drawn like those of the prototype (the text comes from the translations). Rendered hidden: without
+    and its keys drawn like those of the prototype (the text comes from the translations). A map of a table (table:)
+    begins with what is done there, its tokens and its blocked zones (Anthony's request), and opens by itself the
+    first time a map of a table is opened, apart from the help seen in « Mes cartes ». Rendered hidden: without
     JavaScript there is nothing to draw with %>
+<% table = local_assigns[:table] %>
+<% help_classes = "text-[12.5px] leading-relaxed text-muted [&_b]:font-semibold [&_b]:text-ink [&_kbd]:rounded [&_kbd]:border [&_kbd]:border-b-2 [&_kbd]:border-field-line [&_kbd]:bg-page [&_kbd]:px-1 [&_kbd]:text-[11px] [&_kbd]:font-semibold [&_kbd]:text-ink" %>
 <div hidden class="relative" data-controller="map-help"
+     data-map-help-storage-key-value="<%= table ? "map_editor_table_help" : "map_editor_help" %>"
      data-action="keydown@window->map-help#closeWithEscape pointerdown@window->map-help#closeFromOutside turbo:morph@document->map-help#reveal">
   <section hidden id="map-editor-help" aria-labelledby="map-editor-help-title" data-map-help-target="bubble"
            class="absolute right-full bottom-0 mr-3 w-80 max-w-[calc(100vw-6rem)] rounded-xl border border-line bg-surface p-4 shadow-lg">
@@ -13,7 +18,10 @@
         <%= render "shared/icons/x", css_class: "size-4" %>
       </button>
     </div>
-    <p class="text-[12.5px] leading-relaxed text-muted [&_b]:font-semibold [&_b]:text-ink [&_kbd]:rounded [&_kbd]:border [&_kbd]:border-b-2 [&_kbd]:border-field-line [&_kbd]:bg-page [&_kbd]:px-1 [&_kbd]:text-[11px] [&_kbd]:font-semibold [&_kbd]:text-ink"><%= t("map_templates.editor.help_html") %></p>
+    <% if table %>
+      <p class="<%= help_classes %> mb-3 border-b border-line pb-3"><%= t("map_templates.editor.table_help_html") %></p>
+    <% end %>
+    <p class="<%= help_classes %>"><%= t("map_templates.editor.help_html") %></p>
   </section>
   <button type="button" class="<%= MapTemplatesHelper::MAP_FLOATING_BUTTON_CLASSES %>" aria-expanded="false"
           aria-controls="map-editor-help" aria-label="<%= t(".open") %>" title="<%= t(".open") %>"
