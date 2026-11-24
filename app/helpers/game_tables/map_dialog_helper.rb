@@ -22,12 +22,24 @@ module GameTables
       t("game_tables.game_maps.grid.#{state}", size: game_map.grid_cell_size)
     end
 
+    # The icon of each pill of a card (game_tables/map_lists/_game_map), written in full
+    SETUP_ICON_PARTIALS = { tokens: "shared/icons/user_round", blocked: "shared/icons/ban" }.freeze
+
+    # What is put for the game on a map of the table, shown in pills on its preview: { tokens: 4, blocked: 6 }, only
+    # what there is
+    def game_map_setup_counts(game_map)
+      layout = game_map.layout.to_h
+      counts = { tokens: layout.fetch("tokens", []).size, blocked: layout.fetch("blocked", []).size }
+      counts.select { |_, count| count.positive? }
+    end
+
     # What the preview of a map copied from « Mes cartes » draws (map_preview_controller.js), like a card of « Mes
     # cartes »: its drawing, its grid, its picture
     def game_map_preview_data(game_map)
       { controller: "map-preview", map_preview_layout_value: game_map.layout.to_json,
         map_preview_columns_value: game_map.columns, map_preview_rows_value: game_map.rows,
-        map_preview_picture_url_value: (url_for(game_map.image) if game_map.image.attached?) }
+        map_preview_picture_url_value: (url_for(game_map.image) if game_map.image.attached?),
+        map_preview_token_characters_value: map_token_characters(game_map).to_json }
     end
 
     # Its whole grid in its preview

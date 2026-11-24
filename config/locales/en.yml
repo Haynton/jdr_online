@@ -948,7 +948,14 @@ en:
         hidden: "Grid of %{size} px, hidden"
         shown: "Grid of %{size} px, shown"
       setup:
+        blocked:
+          one: "%{count} blocked zone"
+          other: "%{count} blocked zones"
         open: "Place the tokens and the blocked zones"
+        open_named: "Place the tokens and the blocked zones of %{name}"
+        tokens:
+          one: "%{count} token"
+          other: "%{count} tokens"
       picker:
         add_label: "Add the map “%{name}”"
         empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."

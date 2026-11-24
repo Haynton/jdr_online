@@ -62,8 +62,8 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     game_map = MapTemplates::TableCopier.new(tavern, @game_table).call
 
     get edit_game_table_map_list_path(@game_table)
-    assert_select "#map-list a[href=?]:not([data-turbo-frame])", edit_game_table_game_map_path(@game_table, game_map),
-                  text: /Placer les jetons et les zones bloquantes/
+    assert_select "#map-list a[href=?][aria-label=?]", edit_game_table_game_map_path(@game_table, game_map),
+                  "Placer les jetons et les zones bloquantes de Taverne"
 
     get edit_game_table_game_map_path(@game_table, game_map)
     assert_select "main[data-controller=map-editor][data-map-editor-url-value=?]",
@@ -97,6 +97,9 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     placed = game_map.reload.placed_tokens.map { |token| token.values_at(:character, :number) }
     assert_equal [[goblin, 1]], placed
+
+    get edit_game_table_map_list_path(@game_table)
+    assert_select "#map-list li span.sr-only", text: "1 jeton"
   end
 
   test "a creature of the bestiary is listed and copied into the table when its first token is put" do

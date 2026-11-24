@@ -919,7 +919,14 @@ fr:
         hidden: "Grille de %{size} px, masquée"
         shown: "Grille de %{size} px, affichée"
       setup:
+        blocked:
+          one: "%{count} zone bloquante"
+          other: "%{count} zones bloquantes"
         open: "Placer les jetons et les zones bloquantes"
+        open_named: "Placer les jetons et les zones bloquantes de %{name}"
+        tokens:
+          one: "%{count} jeton"
+          other: "%{count} jetons"
       picker:
         add_label: "Ajouter la carte « %{name} »"
         empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."
