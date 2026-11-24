@@ -18,6 +18,10 @@
     </div>
   <% end %>
   <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
+  <%# The spell slots first (decision): they say how far the prepared spells will go %>
+  <% if (slots = character_spell_slots(character)) %>
+    <%= render "character_sheets/summary/spell_slots", slots: slots, title_classes: "text-lg leading-7 font-bold text-ink" %>
+  <% end %>
 
   <% if groups.empty? %>
     <p class="text-sm text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.none") %></p>

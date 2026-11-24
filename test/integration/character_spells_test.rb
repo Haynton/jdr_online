@@ -29,6 +29,8 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
     assert_select "details summary", text: "Détails"
     assert_select "p", text: /Vous pourrez en remplacer un à chaque niveau gagné\./
     assert_select "p", text: /Vous pourrez changer toute la liste après chaque repos long\./
+    assert_select "#spell-slots-title", text: "Emplacements de sorts"
+    assert_select "section[aria-labelledby=spell-slots-title] dt", text: "Niveau 1", count: 1
   end
 
   test "the filters offer the levels of the spells, concentration and ritual when some have them, and the choice" do
@@ -57,6 +59,9 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
     assert_select "h3", text: "Sorts mineurs"
     assert_select "h3", text: "Sorts préparés de niveau 1"
     assert_select "li", text: /Projectile magique/
+    assert_select "h3#spell-slots-title", text: "Emplacements de sorts"
+    assert_select "section[aria-labelledby=spell-slots-title] dd", text: "2"
+    assert_select "p", text: "Rendus après un repos long."
   end
 
   test "a spell not offered, or more spells than allowed, are refused" do
