@@ -13,6 +13,11 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      map_template:
+        columns: "Colonnes"
+        layout: "Dessin de la carte"
+        name: "Nom"
+        rows: "Lignes"
       game_map:
         grid_cell_size: "Taille d'une case (px)"
         grid_visible: "Afficher la grille"
@@ -57,6 +62,14 @@ fr:
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
       models:
+        map_template:
+          attributes:
+            layout:
+              invalid_format: "n'a pas la forme attendue"
+              cell_outside_grid: "contient la case %{cell}, hors de la grille"
+              unknown_floor: "contient un sol inconnu : %{floor}"
+              invalid_edge_side: "contient un bord qui n'est pas entre deux cases voisines : %{side}"
+              unknown_edge: "contient un mur inconnu : %{edge}"
         game_map:
           attributes:
             image:

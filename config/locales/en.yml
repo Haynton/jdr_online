@@ -42,6 +42,11 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      map_template:
+        columns: "Columns"
+        layout: "Map drawing"
+        name: "Name"
+        rows: "Rows"
       game_map:
         grid_cell_size: "Cell size (px)"
         grid_visible: "Show the grid"
@@ -86,6 +91,14 @@ en:
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
       models:
+        map_template:
+          attributes:
+            layout:
+              invalid_format: "does not have the expected form"
+              cell_outside_grid: "holds the cell %{cell}, outside the grid"
+              unknown_floor: "holds an unknown floor: %{floor}"
+              invalid_edge_side: "holds an edge that is not between two neighbouring cells: %{side}"
+              unknown_edge: "holds an unknown wall: %{edge}"
         game_map:
           attributes:
             image:
