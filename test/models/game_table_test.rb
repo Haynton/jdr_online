@@ -123,15 +123,16 @@ class GameTableTest < ActiveSupport::TestCase
     assert_not_equal first_table.invite_token, second_table.invite_token
   end
 
-  test "the step after another skips the steps of a later milestone" do
+  test "the steps follow each other, to the summary" do
     assert_equal "settings", GameTable.next_creation_step("details")
     assert_equal "catalog", GameTable.next_creation_step("settings")
     assert_equal "npcs", GameTable.next_creation_step("catalog")
-    assert_equal "summary", GameTable.next_creation_step("npcs")
+    assert_equal "maps", GameTable.next_creation_step("npcs")
+    assert_equal "summary", GameTable.next_creation_step("maps")
     assert_nil GameTable.next_creation_step("summary")
   end
 
-  test "the creation is taken up at the step reached, never at a step that does not exist yet" do
+  test "the creation is taken up at the step reached" do
     game_table = GameTable.create!(name: "Les Marches du Nord")
     assert_equal "details", game_table.resume_creation_step
 
@@ -139,7 +140,7 @@ class GameTableTest < ActiveSupport::TestCase
     assert_equal "summary", game_table.resume_creation_step
 
     game_table.update!(creation_step: 5)
-    assert_equal "npcs", game_table.resume_creation_step
+    assert_equal "maps", game_table.resume_creation_step
   end
 
   test "a draft saved past the last step is taken up at the summary" do

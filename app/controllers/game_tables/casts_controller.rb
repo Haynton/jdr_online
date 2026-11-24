@@ -13,7 +13,7 @@ module GameTables
     def update
       @game_table.reach_creation_step(GameTable.next_creation_step("npcs"))
       # For screen readers only: the next step shows
-      redirect_to game_table_summary_path(@game_table), flash: { screen_reader_notice: t(".saved") }
+      redirect_to edit_game_table_map_list_path(@game_table), flash: { screen_reader_notice: t(".saved") }
     end
   end
 end

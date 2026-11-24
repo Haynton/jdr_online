@@ -1,0 +1,23 @@
+<%# The fifth step of a table: its maps (decision: an empty list at first). "Add a map" opens an empty window; each
+    card opens its window (its name, its image, its grid). Everything is saved as it is done: the buttons only go to
+    the step before or after. Saved in a window, the page is refreshed by morphing, keeping its scroll %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%= creation_page(current_step: "maps", game_table: @game_table) do %>
+  <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
+  <div class="flex flex-wrap gap-3">
+    <%= link_to new_game_table_game_map_path(@game_table), class: "#{button_classes(:primary)} gap-2",
+                                                           data: map_dialog_link_data do %>
+      <%= render "shared/icons/plus" %>
+      <%= t(".add") %>
+    <% end %>
+  </div>
+
+  <%= render "game_tables/map_lists/list", game_maps: @game_maps %>
+
+  <%= form_with url: game_table_map_list_path(@game_table), method: :patch, class: "mt-auto flex flex-wrap justify-end gap-3 pt-10" do %>
+    <%= link_to t(".back"), edit_game_table_cast_path(@game_table), class: button_classes(:secondary) %>
+    <%= button_tag t("game_tables.creation_actions.continue"), type: "submit", class: button_classes(:primary) %>
+  <% end %>
+  <%# Outside the list: the window holds forms of its own %>
+  <%= render "game_tables/game_maps/dialog" %>
+<% end %>

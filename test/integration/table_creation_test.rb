@@ -18,7 +18,7 @@ class TableCreationTest < ActionDispatch::IntegrationTest
     # The lines that join the steps are list items too, hidden from screen readers
     assert_select "ol[aria-label=?] > li:not([aria-hidden])", "Étapes de la création", count: 6
     assert_select "ol > li[aria-current=step]", text: /Informations/
-    assert_select "ol > li", text: /Bientôt/, count: 1
+    assert_select "ol > li", text: /Bientôt/, count: 0
     assert_select "input[type=radio][name='game_table[cover_image]']", count: GameTable::COVER_IMAGES.size
     assert_select "input[type=radio][name='game_table[sheet_template_id]']", count: 2
     assert_select "input[type=radio][name='game_table[sheet_template_id]'][checked]", count: 0

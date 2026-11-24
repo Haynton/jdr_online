@@ -37,7 +37,7 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the steps reached lead back to their page from the band, never the current one nor a later milestone" do
+  test "the steps reached lead back to their page from the band, never the current one" do
     get game_table_summary_path(@game_table)
 
     assert_select "ol[aria-label] a[href=?]", edit_game_table_details_path(@game_table), text: /Informations\s*Modifier/
@@ -45,7 +45,8 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "ol[aria-label] li[aria-current=step] a", count: 0
     assert_select "ol[aria-label] a[href=?]", edit_game_table_catalog_path(@game_table), text: /Sorts et objets\s*Modifier/
     assert_select "ol[aria-label] a[href=?]", edit_game_table_cast_path(@game_table), text: /PNJ et ennemis\s*Modifier/
-    assert_select "ol[aria-label] a", count: 4
+    assert_select "ol[aria-label] a[href=?]", edit_game_table_map_list_path(@game_table), text: /Cartes\s*Modifier/
+    assert_select "ol[aria-label] a", count: 5
 
     get edit_game_table_details_path(@game_table)
 

@@ -140,11 +140,11 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
     assert_equal 4, @game_table.npc_sheet_fields.size
   end
 
-  test "continue reaches the step and opens the summary" do
+  test "continue reaches the step and opens the maps" do
     patch game_table_cast_path(@game_table)
 
-    assert_redirected_to game_table_summary_path(@game_table)
-    assert_equal "summary", @game_table.reload.resume_creation_step
+    assert_redirected_to edit_game_table_map_list_path(@game_table)
+    assert_equal "maps", @game_table.reload.resume_creation_step
   end
 
   private

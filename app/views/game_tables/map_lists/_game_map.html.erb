@@ -1,0 +1,18 @@
+<%# One map of the table: its image (cut to 16:9, the whole map shows in its window), its name, its grid, and
+    "Change", which opens its window %>
+<li class="flex min-w-0 flex-col overflow-hidden rounded-xl border border-line bg-surface">
+  <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+  <div class="flex items-center justify-between gap-4 px-4 py-3">
+    <div class="min-w-0">
+      <p class="truncate text-sm font-semibold text-ink" title="<%= game_map.name %>"><%= game_map.name %></p>
+      <p class="truncate text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
+    </div>
+    <%= link_to edit_game_table_game_map_path(@game_table, game_map),
+                class: "#{button_classes(:secondary, size: :compact)} shrink-0",
+                title: t("game_tables.map_lists.edit.change", name: game_map.name), data: map_dialog_link_data do %>
+      <%= render "shared/icons/pencil" %>
+      <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
+      <span class="sr-only"><%= game_map.name %></span>
+    <% end %>
+  </div>
+</li>
