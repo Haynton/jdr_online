@@ -337,6 +337,8 @@ fr:
     editor:
       actions_label: "Actions sur la carte"
       board_label: "Dessin de la carte « %{name} »"
+      clear: "Tout effacer"
+      clear_hint: "Efface toute la carte (Annuler la ramène)"
       eraser: "Gomme"
       figures:
         cells:
@@ -348,14 +350,18 @@ fr:
         walls:
           one: "%{count} mur"
           other: "%{count} murs"
-      help_html: "<b>Sols</b> : glissez pour peindre. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : <kbd>Espace</kbd> enfoncée et glisser, clic du milieu, ou deux doigts."
+      help_html: "<b>Sols</b> : glissez pour peindre. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : <kbd>Espace</kbd> enfoncée et glisser, clic du milieu, ou deux doigts. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler."
       map_tab: "Carte"
       my_maps: "Mes cartes"
       needs_javascript: "L'éditeur de carte a besoin de JavaScript pour dessiner."
       panel_label: "Outils de l'éditeur"
+      redo: "Rétablir"
+      redo_keys: "Ctrl ou Cmd + Maj + Z"
       save_failed: "Le dessin n'a pas pu être enregistré. Il le sera au prochain trait."
       tabs_label: "Outils"
       terrain_tab: "Terrain"
+      undo: "Annuler"
+      undo_keys: "Ctrl ou Cmd + Z"
       whole_map: "Afficher toute la carte"
       zoom_in: "Zoomer"
       zoom_label: "Zoom"

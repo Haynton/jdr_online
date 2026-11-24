@@ -11,9 +11,18 @@
       <h1 class="truncate text-[15px] leading-tight font-extrabold text-ink"><%= map_template.name_in_database %></h1>
       <p class="truncate text-xs text-muted"><%= map_template_size(map_template) %></p>
     </div>
-    <div hidden class="flex items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
+    <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
+      <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
+      <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".undo_keys") %>"
+              data-map-editor-target="undoButton" data-action="map-editor#undo"><%= t(".undo") %></button>
+      <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".redo_keys") %>"
+              data-map-editor-target="redoButton" data-action="map-editor#redo"><%= t(".redo") %></button>
+      <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
       <%= render "map_templates/tool", kind: "eraser", key: "eraser", label: t(".eraser"), in_bar: true,
                                        icon: render("shared/icons/eraser", css_class: "size-4") %>
+      <%# Not asked first, like the prototype: Undo brings it all back %>
+      <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".clear_hint") %>"
+              data-map-editor-target="clearButton" data-action="map-editor#clearEverything"><%= t(".clear") %></button>
       <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
       <%# Zoom: out, the whole map (its label says the zoom), in %>
       <div class="flex items-center gap-0.5" role="group" aria-label="<%= t(".zoom_label") %>">
@@ -39,7 +48,7 @@
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
            data-map-editor-target="board"
-           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace">
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys">
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>

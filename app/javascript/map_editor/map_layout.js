@@ -17,6 +17,26 @@ export default class MapLayout {
     return { version: layoutVersion, floors: Object.fromEntries(this.floors), edges: Object.fromEntries(this.edges) }
   }
 
+  // A copy of the drawing as it is, to come back to it (undo, redo)
+  snapshot() {
+    return JSON.stringify(this.toJSON())
+  }
+
+  restore(snapshot) {
+    const { floors, edges } = JSON.parse(snapshot)
+    this.floors = new Map(Object.entries(floors))
+    this.edges = new Map(Object.entries(edges))
+  }
+
+  isEmpty() {
+    return this.floors.size === 0 && this.edges.size === 0
+  }
+
+  clear() {
+    this.floors.clear()
+    this.edges.clear()
+  }
+
   // true when the cell changed
   paintFloor(column, row, floorKey) {
     const key = cellKey(column, row)

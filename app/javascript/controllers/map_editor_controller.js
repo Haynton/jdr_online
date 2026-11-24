@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import SquareGrid, { cellSize } from "map_editor/square_grid"
 import BoardView from "map_editor/board_view"
+import DrawingHistory from "map_editor/drawing_history"
 import MapLayout from "map_editor/map_layout"
 import { renderMap } from "map_editor/map_renderer"
 import { addMapPatterns } from "map_editor/patterns"
@@ -14,19 +15,22 @@ import { edgeOf, doorKey } from "map_edges"
 // stroke is saved in the background once the pointer is released (MapTemplates::LayoutsController), one save at a
 // time; only a failure is said, on the bar. The board fills its room and shows the whole map at first; the wheel (or
 // a pinch of the touchpad, or of two fingers) zooms around the pointer, the space bar held or the middle button (or
-// two fingers) moves the map, the buttons of the bar zoom too. The board and the tools are rendered hidden and shown
-// here: without JavaScript there is nothing to draw with
+// two fingers) moves the map, the buttons of the bar zoom too. Undo and Redo (and their keys) go back through the
+// strokes, Clear everything empties the board (undone like a stroke). The board and the tools are rendered hidden and
+// shown here: without JavaScript there is nothing to draw with
 const toolDrawings = { floor: floorOf, edge: edgeOf }
 const zoomStep = 1.25
 
 export default class extends Controller {
-  static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures", "zoomLabel"]
+  static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures", "zoomLabel",
+                     "undoButton", "redoButton", "clearButton"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
     this.layout = new MapLayout(this.layoutValue)
+    this.history = new DrawingHistory()
     // The first floor: the eraser comes first in the page, on the bar
     this.tool = toolOf(this.toolTargets.find((button) => button.dataset.toolKind === "floor"))
     this.view = new BoardView(this.grid, cellSize)
@@ -52,6 +56,7 @@ export default class extends Controller {
     })
     this.pressCurrentTool()
     this.render()
+    this.showHistory()
     // An <svg> has no hidden property (only HTML elements do): the attribute itself is taken away
     this.boardTarget.removeAttribute("hidden")
     this.toolbarTarget.hidden = false
@@ -141,7 +146,7 @@ export default class extends Controller {
     }
     if (event.button !== 0) return
 
-    this.stroke = { changed: false, removing: null }
+    this.stroke = { changed: false, removing: null, before: this.layout.snapshot() }
     this.applyTool(event)
   }
 
@@ -161,8 +166,59 @@ export default class extends Controller {
   }
 
   finishStroke() {
-    if (this.stroke?.changed) this.save()
+    if (this.stroke?.changed) this.keepChange(this.stroke.before)
     this.stroke = null
+  }
+
+  // A change made: it can be undone, and it is saved
+  keepChange(before) {
+    this.history.record(before)
+    this.showHistory()
+    this.save()
+  }
+
+  undo() {
+    this.goBackTo(this.history.undo(this.layout.snapshot()))
+  }
+
+  redo() {
+    this.goBackTo(this.history.redo(this.layout.snapshot()))
+  }
+
+  goBackTo(snapshot) {
+    if (!snapshot) return
+
+    this.layout.restore(snapshot)
+    this.render()
+    this.showHistory()
+    this.save()
+  }
+
+  clearEverything() {
+    if (this.layout.isEmpty()) return
+
+    const before = this.layout.snapshot()
+    this.layout.clear()
+    this.render()
+    this.keepChange(before)
+  }
+
+  // Ctrl or Cmd + Z undoes, with Shift (or Ctrl + Y) redoes. Not while typing: a field undoes its own text
+  undoWithKeys(event) {
+    if (!(event.ctrlKey || event.metaKey) || isTyping(event)) return
+
+    const key = event.key.toLowerCase()
+    if (key !== "z" && key !== "y") return
+
+    event.preventDefault()
+    if (key === "y" || event.shiftKey) this.redo()
+    else this.undo()
+  }
+
+  showHistory() {
+    this.undoButtonTarget.disabled = !this.history.canUndo()
+    this.redoButtonTarget.disabled = !this.history.canRedo()
+    this.clearButtonTarget.disabled = this.layout.isEmpty()
   }
 
   hidePointer() {

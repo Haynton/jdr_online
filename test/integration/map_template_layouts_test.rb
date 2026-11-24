@@ -18,6 +18,9 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_includes css_select("main[data-controller=map-editor]").first["data-map-editor-layout-value"], '"1,1":"room"'
     assert_select "header h1", text: "La taverne"
     assert_select "header [role=toolbar][hidden] button[data-tool-kind=eraser]", text: "Gomme"
+    assert_select "header [role=toolbar] button[data-action='map-editor#undo'][disabled]", text: "Annuler"
+    assert_select "header [role=toolbar] button[data-action='map-editor#redo'][disabled]", text: "Rétablir"
+    assert_select "header [role=toolbar] button[data-action='map-editor#clearEverything']", text: "Tout effacer"
     assert_select "header [role=toolbar] [role=group] button[data-action='map-editor#showWholeMap'][aria-label=?]",
                   "Afficher toute la carte"
     assert_select "svg[data-map-editor-target=board][hidden]"

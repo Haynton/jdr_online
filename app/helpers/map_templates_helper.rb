@@ -8,12 +8,13 @@ module MapTemplatesHelper
     aria-pressed:font-semibold aria-pressed:text-primary-soft-ink aria-pressed:ring-1 aria-pressed:ring-brass
     aria-pressed:ring-inset focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
-  # A tool of the bar on top of the editor (the eraser): 36 px high like the buttons of the bar of the prototype
+  # A button of the bar on top of the editor (undo, the eraser, zoom): 36 px high like the buttons of the bar of the
+  # prototype, faded while it can do nothing
   MAP_BAR_TOOL_CLASSES = %w[
     inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-[13px] font-semibold
     text-ink transition-colors hover:bg-surface-raised aria-pressed:border-brass aria-pressed:bg-primary-soft
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
-    focus-visible:outline-focus-ring
+    focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
   ].join(" ").freeze
   # A tab of the panel of the editor: its name in muted, ink and a line of brass under it once chosen
   MAP_TAB_CLASSES = %w[
