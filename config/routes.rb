@@ -16,6 +16,8 @@ Rails.application.routes.draw do
       resource :catalog, only: %i[edit update]
       # The whole catalog of its template, in a window: an entry picked is listed (copied for the table)
       resource :catalog_picker, only: :show
+      # Its changes applied to the characters already made (their copies of the spells and items)
+      resource :catalog_application, only: :create
       # One spell or item of that catalog, in a window: seen and changed for the table (its copy, same key), or added;
       # its switch offers it to the players or turns it off (offer)
       resources :catalog_entries, only: %i[new create edit update destroy], param: :key do

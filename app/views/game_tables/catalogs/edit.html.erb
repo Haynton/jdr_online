@@ -3,7 +3,8 @@
     added or turned off is listed (Catalogs::TableCustomizations). "Customize a spell" opens the whole catalog in a
     window (picked: listed, copied for the table); "Create a spell" an empty window. Each line saves as it changes:
     its switch (offered or turned off), its window (its values). Characters already made keep their copy of what they
-    chose: said under the tabs. Saved in a window or by a switch, the page is refreshed by morphing, keeping its scroll %>
+    chose, said under the tabs, until the game master applies the changes to them (the button shows only when one is
+    outdated). Saved in a window or by a switch, the page is refreshed by morphing, keeping its scroll %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <%= creation_page(current_step: "catalog", game_table: @game_table) do %>
   <%= page_header(title: t(".title"), subtitle: subtitle_lines(t(".intro"), t(".purpose"))) %>
@@ -16,6 +17,15 @@
   </nav>
   <p class="mt-5 max-w-2xl text-sm text-ink"><%= t(".all_offered.#{@catalog_kind}", count: @offered_count) %></p>
   <p class="mt-1 max-w-2xl text-sm text-muted"><%= t(".characters_keep_their_copy") %></p>
+  <% if @characters_to_update_count.positive? %>
+    <div class="mt-4 flex max-w-2xl flex-wrap items-center gap-x-4 gap-y-3">
+      <p class="text-sm text-ink"><%= t(".apply_to_characters.outdated", count: @characters_to_update_count) %></p>
+      <%= button_to t(".apply_to_characters.button"), game_table_catalog_application_path(@game_table, kind: @catalog_kind),
+                    class: button_classes(:secondary),
+                    form: { data: { turbo_confirm: t(".apply_to_characters.confirm", count: @characters_to_update_count),
+                                    confirm_button: t(".apply_to_characters.confirm_button") } } %>
+    </div>
+  <% end %>
 
   <div class="mt-6 flex flex-wrap gap-3">
     <%= link_to game_table_catalog_picker_path(@game_table, kind: @catalog_kind),

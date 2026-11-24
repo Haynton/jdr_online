@@ -765,6 +765,12 @@ en:
         title: "NPCs and enemies"
       update:
         saved: "NPCs and enemies saved."
+    catalog_applications:
+      create:
+        already_applied: "The characters already have the table's version."
+        applied:
+          one: "Changes applied to 1 character."
+          other: "Changes applied to %{count} characters."
     catalog_entries:
       create:
         listed: "Listed: %{name}."
@@ -812,7 +818,16 @@ en:
         cantrips: "Cantrips"
         change: "Change %{name}"
         change_short: "Change"
-        characters_keep_their_copy: "A character already made does not change: it keeps the spells and equipment it chose. Your changes apply to the characters made afterwards."
+        apply_to_characters:
+          button: "Apply to the characters already made"
+          confirm:
+            one: "Apply your changes to the character already made? Its spells and items take the table's version. A spell or item removed from the game stays on its sheet."
+            other: "Apply your changes to the %{count} characters already made? Their spells and items take the table's version. A spell or item removed from the game stays on their sheet."
+          confirm_button: "Apply"
+          outdated:
+            one: "1 character has an older version of a spell or item you changed."
+            other: "%{count} characters have an older version of a spell or item you changed."
+        characters_keep_their_copy: "A character already made keeps the spells and equipment it chose, as they were then. Your changes apply to the characters made afterwards, or to all of them if you apply them."
         customize:
           item: "Customize an item"
           spell: "Customize a spell"

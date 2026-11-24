@@ -736,6 +736,12 @@ fr:
         title: "PNJ et ennemis"
       update:
         saved: "PNJ et ennemis enregistrés."
+    catalog_applications:
+      create:
+        already_applied: "Les personnages ont déjà la version de la table."
+        applied:
+          one: "Changements appliqués à 1 personnage."
+          other: "Changements appliqués à %{count} personnages."
     catalog_entries:
       create:
         listed: "Dans la liste : %{name}."
@@ -783,7 +789,16 @@ fr:
         cantrips: "Sorts mineurs"
         change: "Modifier %{name}"
         change_short: "Modifier"
-        characters_keep_their_copy: "Un personnage déjà créé ne change pas : il garde les sorts et l'équipement qu'il avait choisis. Vos changements valent pour les personnages créés ensuite."
+        apply_to_characters:
+          button: "Appliquer aux personnages déjà créés"
+          confirm:
+            one: "Appliquer vos changements au personnage déjà créé ? Ses sorts et ses objets prennent la version de la table. Un sort ou un objet retiré de la partie reste sur sa fiche."
+            other: "Appliquer vos changements aux %{count} personnages déjà créés ? Leurs sorts et leurs objets prennent la version de la table. Un sort ou un objet retiré de la partie reste sur leur fiche."
+          confirm_button: "Appliquer"
+          outdated:
+            one: "1 personnage a une ancienne version d'un sort ou d'un objet que vous avez modifié."
+            other: "%{count} personnages ont une ancienne version d'un sort ou d'un objet que vous avez modifié."
+        characters_keep_their_copy: "Un personnage déjà créé garde les sorts et l'équipement qu'il avait choisis, dans leur version d'alors. Vos changements valent pour les personnages créés ensuite, ou pour tous si vous les appliquez."
         customize:
           item: "Personnaliser un objet"
           spell: "Personnaliser un sort"

@@ -2,7 +2,8 @@
 # of its template is offered at first, and the step lists only what the game master changed, added or turned off
 # (Catalogs::TableCustomizations), one tab per kind (?kind=spell, ?kind=item). "Customize a spell" opens the whole
 # catalog in a window (GameTables::CatalogPickersController); each line saves as it changes (its switch, its window).
-# Continue opens the next step, and reaches it on a draft. Characters already made keep their copy of what they chose
+# Continue opens the next step, and reaches it on a draft. Characters already made keep their copy of what they chose,
+# until the game master applies the changes to them (GameTables::CatalogApplicationsController)
 module GameTables
   class CatalogsController < ApplicationController
     include TableOfGameMaster
@@ -19,6 +20,7 @@ module GameTables
     def edit
       @customizations = Catalogs::TableCustomizations.new(@game_table).list(@catalog_kind)
       @offered_count = Catalogs::TableCatalog.new(@game_table).entries(@catalog_kind).count
+      @characters_to_update_count = Catalogs::CharacterCopiesUpdater.new(@game_table).characters_to_update.size
     end
 
     def update
