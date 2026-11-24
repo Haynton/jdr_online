@@ -57,7 +57,17 @@ module MapEditorHelper
       map_editor_url_value: polymorphic_path([*map_editor_record(map_template), :layout]),
       map_editor_figure_labels_value: map_editor_figure_labels.to_json,
       map_editor_picture_url_value: map_picture_url(map_template),
-      map_editor_token_characters_value: map_token_characters(map_template).to_json, **map_editor_texts }
+      map_editor_token_characters_value: map_token_characters(map_template).to_json,
+      **map_editor_creature_data(map_template), **map_editor_texts }
+  end
+
+  # Where a creature of the bestiary is copied when its first token is put, and what is said when it fails: a map of a
+  # table only
+  def map_editor_creature_data(map)
+    return {} unless map_editor_blocking?(map)
+
+    { map_editor_creature_url_value: game_table_game_map_creatures_path(map.game_table, map),
+      map_editor_copy_failed_message_value: t("map_templates.editor.copy_failed") }
   end
 
   # What the editor draws of each non-player character and enemy of the table on its tokens: { id => { name, kind } }.

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       resources :game_maps, only: %i[new create edit update destroy], path: "maps" do
         resource :layout, only: :update, module: :game_maps
         resource :picture, only: %i[create destroy], module: :game_maps
+        resources :creatures, only: :create, module: :game_maps
       end
       # The summary holds the invitation link, and a new link replaces it from there
       resource :summary, only: %i[show update]

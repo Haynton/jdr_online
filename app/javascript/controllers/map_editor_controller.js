@@ -29,20 +29,26 @@ import { confirmWithDialog } from "confirm_dialog"
 // request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
 // undone like a stroke. The bar says when the drawing was saved. On a map of a table, the brush « Zones bloquantes »
 // paints the cells no token stands on, drawn or on a picture (the first cell of the stroke says whether it paints or
-// takes the paint away), and the tab Jetons puts the tokens of its non-player characters and enemies (one a cell, the
-// same character as many times as wanted; a token clicked again goes). The board and the tools are rendered hidden
-// and shown here: without JavaScript there is nothing to draw with
+// takes the paint away), and the tab Jetons puts the tokens of its non-player characters and enemies (one a cell, never
+// on a cell blocked or without floor, the same character as many times as wanted; a token clicked again goes), or of
+// any creature of the bestiary, copied into the table when its first token is put (the server copies it; its band then
+// shares the copy). The board and the tools are rendered hidden and shown here: without JavaScript there is nothing
+// to draw with
 const toolSwatches = {
   floor: (swatch, key) => drawFloorSample(swatch, key),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
   object: (swatch, key) => drawObjectSwatch(swatch, key),
   token: (swatch, key, characters) => {
     swatch.setAttribute("viewBox", "0 0 24 24")
-    drawToken(swatch, 12, 12, characters[key])
+    drawToken(swatch, 12, 12, characters[key] ?? { name: swatch.dataset.toolName, kind: "monster" })
+  },
+  creature: (swatch) => {
+    swatch.setAttribute("viewBox", "0 0 24 24")
+    drawToken(swatch, 12, 12, { name: swatch.dataset.toolName, kind: "monster" })
   }
 }
 // The tools that act on a map played on a picture: elsewhere, dragging on it moves the map
-const toolsOnPicture = ["blocker", "token"]
+const toolsOnPicture = ["blocker", "token", "creature"]
 // How close to a side a right click must be to take its wall away
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
@@ -62,11 +68,12 @@ export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
-                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize"]
+                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
+                     "tokenTemplate"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
                     shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String,
-                    tokenCharacters: Object }
+                    tokenCharacters: Object, creatureUrl: String, copyFailedMessage: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -653,6 +660,7 @@ export default class extends Controller {
     if (this.tool.kind === "floor") return this.layout.paintFloor(side.column, side.row, this.tool.key)
     if (this.tool.kind === "blocker") return this.paintBlocked(side)
     if (this.tool.kind === "token") return this.putToken(side)
+    if (this.tool.kind === "creature") return this.putCreature(side, isFirstCell)
     if (this.tool.kind === "eraser") return this.layout.erase(side)
     if (this.tool.kind === "remover") return this.layout.removeObjectAt(side.column, side.row)
     if (this.tool.kind === "object") return this.putObject(side, isFirstCell)
@@ -674,6 +682,58 @@ export default class extends Controller {
     if (this.stroke.removing) return this.layout.removeTokenAt(column, row)
 
     return this.layout.placeToken(Number(this.tool.key), column, row)
+  }
+
+  // A creature of the bestiary: copied into the table by the server on the first cell of the stroke, then its token is
+  // put (a stroke that starts on a token takes it away, like any token). Nothing changes until the copy comes back
+  putCreature({ column, row }, isFirstCell) {
+    if (!isFirstCell) return false
+    if (this.layout.tokenAt(column, row)) return this.layout.removeTokenAt(column, row)
+    if (!this.layout.mayHoldToken(column, row)) return false
+
+    this.copyCreature(this.tool.key, column, row)
+    return false
+  }
+
+  // One copy at a time. The copy joins the list of the table, and becomes the tool: the next tokens of its band share it
+  async copyCreature(creatureKey, column, row) {
+    if (this.isCopying) return
+
+    this.isCopying = true
+    const body = new FormData()
+    body.append("key", creatureKey)
+    const response = await fetch(this.creatureUrlValue, { method: "POST", body, headers: jsonHeaders() })
+      .catch(() => null)
+    this.isCopying = false
+    if (!response?.ok) {
+      this.statusTarget.textContent = this.copyFailedMessageValue
+      return
+    }
+    const character = await response.json()
+    this.tokenCharactersValue = { ...this.tokenCharactersValue, [character.id]: { name: character.name, kind: character.kind } }
+    this.addTableToken(character)
+    this.tool = { kind: "token", key: String(character.id) }
+    this.pressCurrentTool()
+    const before = this.layout.snapshot()
+    if (!this.layout.placeToken(character.id, column, row)) return
+
+    this.render()
+    this.keepChange(before)
+  }
+
+  // Its line in the list of the table, in both panels, made from the template of the page
+  addTableToken({ id, name }) {
+    this.tableTokensTargets.forEach((list, index) => {
+      const line = this.tokenTemplateTargets[index].content.firstElementChild.cloneNode(true)
+      line.dataset.searchName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+      line.querySelectorAll("[data-tool-key]").forEach((element) => { element.dataset.toolKey = id })
+      line.querySelector("[data-token-name]").textContent = name
+      const swatch = line.querySelector("svg")
+      swatch.dataset.toolName = name
+      toolSwatches.token(swatch, String(id), this.tokenCharactersValue)
+      list.append(line)
+    })
+    this.tableTokensEmptyTargets.forEach((empty) => { empty.hidden = true })
   }
 
   // On an object put, the first cell of the stroke turns it. A small object is put on every cell of the stroke, a large
@@ -706,7 +766,14 @@ export default class extends Controller {
 
     if (this.tool.kind === "edge") return this.markSide(side)
     if (this.tool.kind === "object" || this.tool.kind === "remover") return this.markObject(side)
+    if (this.tool.kind === "token" || this.tool.kind === "creature") return this.markToken(side)
     this.markCells([[side.column, side.row]], allowedMark)
+  }
+
+  // Red where a token cannot stand; a token there is taken away
+  markToken({ column, row }) {
+    const isAllowed = Boolean(this.layout.tokenAt(column, row)) || this.layout.mayHoldToken(column, row)
+    this.markCells([[column, row]], isAllowed ? allowedMark : refusedMark)
   }
 
   // On an object put: its cells (in red for Take object away). Elsewhere, the object to put, faded, on its cells
@@ -783,7 +850,7 @@ export default class extends Controller {
       method: "PATCH",
       body,
       keepalive: true,
-      headers: { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
+      headers: jsonHeaders()
     })
   }
 }
@@ -807,6 +874,10 @@ function wheelPixels(event) {
 // The size of the grid and the drawing of a map ready to use, carried by its item (map_templates/_preset_tools)
 function presetOf(element) {
   return JSON.parse(element.closest("[data-map-preset]").dataset.mapPreset)
+}
+
+function jsonHeaders() {
+  return { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
 }
 
 function isTyping(event) {

@@ -97,9 +97,25 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     placed = game_map.reload.placed_tokens.map { |token| token.values_at(:character, :number) }
     assert_equal [[goblin, 1]], placed
+  end
 
-    get edit_game_table_map_list_path(@game_table)
-    assert_select "#map-list li", text: /1 jeton/
+  test "a creature of the bestiary is listed and copied into the table when its first token is put" do
+    @game_table.sheet_template.catalog_entries.create!(kind: "monster", key: "goblin", name: "Gobelin éclaireur")
+    game_map = MapTemplates::TableCopier.new(@game_master.map_templates.create!(name: "Taverne"), @game_table).call
+
+    get edit_game_table_game_map_path(@game_table, game_map)
+    assert_select "button[data-tool-kind=creature][data-tool-key=goblin]", text: /Gobelin éclaireur/
+    assert_select "main[data-map-editor-creature-url-value=?]", game_table_game_map_creatures_path(@game_table, game_map)
+    assert_select "[data-search-name='gobelin eclaireur']"
+
+    2.times { post game_table_game_map_creatures_path(@game_table, game_map), params: { key: "goblin" } }
+    assert_response :created
+    assert_equal ["Gobelin éclaireur", "Gobelin éclaireur 2"], @game_table.npcs.pluck(:name)
+    assert_equal({ "id" => @game_table.npcs.last.id, "name" => "Gobelin éclaireur 2", "kind" => "monster" },
+                 response.parsed_body)
+
+    post game_table_game_map_creatures_path(@game_table, game_map), params: { key: "dragon" }
+    assert_response :not_found
   end
 
   test "a map copied is renamed in its editor; its grid stays" do

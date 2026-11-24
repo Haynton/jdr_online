@@ -1,0 +1,14 @@
+<%# A line of the tab Jetons (map_templates/_token_tools): a character of the table (kind token, its id) or a creature
+    of the bestiary (kind creature, its key), its token drawn by the editor (its name read from data-tool-name), its
+    name, then its role or its facts. Pressed like a tool %>
+<li data-catalog-search-target="entry" data-search-name="<%= I18n.transliterate(name).downcase %>">
+  <button type="button" aria-pressed="false" data-map-editor-target="tool" data-action="map-editor#chooseTool"
+          data-tool-kind="<%= kind %>" data-tool-key="<%= key %>" class="<%= MapTemplatesHelper::MAP_TOKEN_TOOL_CLASSES %>">
+    <svg viewBox="0 0 24 24" class="size-8 shrink-0" aria-hidden="true" data-map-editor-target="swatch"
+         data-tool-kind="<%= kind %>" data-tool-key="<%= key %>" data-tool-name="<%= name %>"></svg>
+    <span class="flex min-w-0 flex-1 flex-col text-left">
+      <span class="truncate text-[13px] font-semibold" data-token-name><%= name %></span>
+      <span class="truncate text-[11px] text-muted"><%= detail %></span>
+    </span>
+  </button>
+</li>

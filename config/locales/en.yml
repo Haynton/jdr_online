@@ -125,6 +125,7 @@ en:
               unknown_token_character: "holds the token of a character who is not a non-player character or an enemy of the table"
               token_outside_grid: "holds a token outside the grid"
               tokens_overlap: "holds two tokens on the same cell"
+              token_on_blocked_cell: "holds a token on a blocked zone"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -431,6 +432,7 @@ en:
       shrink_button: "Shrink"
       shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away."
       tabs_label: "Tools"
+      copy_failed: "The creature could not be added. Try again."
       table_help_html: "<b>Map of your table</b>: prepare the beginning of the game here. <b>Tokens</b>: in the tab Tokens, choose a non-player character or an enemy, then click the cells where it stands (as many times as you want for a band).<br><b>Blocked zones</b>: the ⊘ button of the bar paints the cells no token crosses; the walls of rooms and stones, and the empty ground, block already: they show in red while you paint."
       terrain_tab: "Terrain"
       tokens_tab: "Tokens"
@@ -599,9 +601,13 @@ en:
       rename: "Rename the map"
     size: "%{columns} × %{rows} cells"
     token_tools:
-      add: "Add non-player characters and enemies"
-      empty: "This table has no non-player character or enemy yet."
-      intro: "Choose a character, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
+      bestiary_hint: "A creature is copied into your table when you put its first token."
+      bestiary_title: "Bestiary"
+      empty: "None yet."
+      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
+      no_match: "No character or creature matches this search."
+      search: "Search a character or a creature"
+      table_title: "Non-player characters and enemies of the table"
     update:
       renamed: "Map renamed."
   sheet_templates:
@@ -942,13 +948,7 @@ en:
         hidden: "Grid of %{size} px, hidden"
         shown: "Grid of %{size} px, shown"
       setup:
-        blocked:
-          one: "%{count} blocked zone"
-          other: "%{count} blocked zones"
         open: "Place the tokens and the blocked zones"
-        tokens:
-          one: "%{count} token"
-          other: "%{count} tokens"
       picker:
         add_label: "Add the map “%{name}”"
         empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."

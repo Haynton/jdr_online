@@ -96,6 +96,7 @@ fr:
               unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
               token_outside_grid: "contient un jeton hors de la grille"
               tokens_overlap: "contient deux jetons sur la même case"
+              token_on_blocked_cell: "contient un jeton sur une zone bloquante"
         game_map:
           attributes:
             columns: *map_grid_size_errors
@@ -402,6 +403,7 @@ fr:
       shrink_button: "Réduire"
       shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré."
       tabs_label: "Outils"
+      copy_failed: "La créature n'a pas pu être ajoutée. Réessayez."
       table_help_html: "<b>Carte de votre table</b> : préparez ici le début de la partie. <b>Jetons</b> : dans l'onglet Jetons, choisissez un PNJ ou un ennemi, puis cliquez sur les cases où il se tient (autant de fois que vous voulez pour une bande).<br><b>Zones bloquantes</b> : le bouton ⊘ de la barre peint les cases que les pions ne traversent pas ; les murs des salles et des pierres, et le vide, bloquent déjà : ils s'affichent en rouge pendant que vous peignez."
       terrain_tab: "Terrain"
       tokens_tab: "Jetons"
@@ -570,9 +572,13 @@ fr:
       rename: "Renommer la carte"
     size: "%{columns} × %{rows} cases"
     token_tools:
-      add: "Ajouter des PNJ et ennemis"
-      empty: "Cette table n'a pas encore de PNJ ni d'ennemi."
-      intro: "Choisissez un personnage, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
+      bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
+      bestiary_title: "Bestiaire"
+      empty: "Aucun pour l'instant."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
+      no_match: "Aucun personnage ni créature ne correspond à cette recherche."
+      search: "Rechercher un personnage ou une créature"
+      table_title: "PNJ et ennemis de la table"
     update:
       renamed: "Carte renommée."
   sheet_templates:
@@ -913,13 +919,7 @@ fr:
         hidden: "Grille de %{size} px, masquée"
         shown: "Grille de %{size} px, affichée"
       setup:
-        blocked:
-          one: "%{count} zone bloquante"
-          other: "%{count} zones bloquantes"
         open: "Placer les jetons et les zones bloquantes"
-        tokens:
-          one: "%{count} jeton"
-          other: "%{count} jetons"
       picker:
         add_label: "Ajouter la carte « %{name} »"
         empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."

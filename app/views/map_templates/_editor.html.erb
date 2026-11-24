@@ -141,7 +141,7 @@
           </section>
           <% if map_editor_blocking?(map_template) %>
             <section id="map-editor-panel-tokens" role="tabpanel" aria-labelledby="map-editor-tab-tokens" data-tabs-target="panel">
-              <%= render "map_templates/token_tools", map_template: map_template %>
+              <%= render "map_templates/token_tools", map_template: map_template, prefix: "drawing" %>
             </section>
           <% end %>
         </div>
@@ -154,7 +154,7 @@
         <% if map_editor_blocking?(map_template) %>
           <section class="mt-6" aria-labelledby="map-picture-tokens-title">
             <h2 id="map-picture-tokens-title" class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".tokens_tab") %></h2>
-            <%= render "map_templates/token_tools", map_template: map_template %>
+            <%= render "map_templates/token_tools", map_template: map_template, prefix: "picture" %>
           </section>
         <% end %>
       </div>
