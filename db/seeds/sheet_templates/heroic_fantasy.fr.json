@@ -5,7 +5,12 @@
   "banner_color": "gold",
   "description": "Des héros, des sorts et des monstres : classes, historiques et espèces, caractéristiques, sorts et équipement de départ, d'après le SRD 5.2.",
   "character_fields": {
-    "ability_roll": { "dice": 4, "sides": 6, "keep_highest": 3 },
+    "ability_methods": [
+      { "type": "roll", "label": "Lancer de dés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
+      { "type": "standard_array", "label": "Tableau standard", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },
+      { "type": "point_buy", "label": "Achat de points", "help": "Dépensez 27 points : chaque score commence à 8 et monte jusqu'à 15. Un score de 14 coûte 7 points, un score de 15 en coûte 9.", "points": 27,
+        "costs": { "8": 0, "9": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 7, "15": 9 } }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },
