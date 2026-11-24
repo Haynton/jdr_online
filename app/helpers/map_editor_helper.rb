@@ -40,6 +40,25 @@ module MapEditorHelper
       map_editor_picture_url_value: map_picture_url(map_template), **map_editor_texts }
   end
 
+  # A preview on its card of « Mes cartes »: something drawn, or its picture; a map still empty keeps its icon
+  def map_preview?(map_template)
+    return map_template.picture.attached? if map_picture_mode?(map_template)
+
+    map_template.layout_in_database.values_at("floors", "edges", "objects").any?(&:present?)
+  end
+
+  # What the preview draws (map_preview_controller.js): the drawing, the grid, the picture
+  def map_preview_data(map_template)
+    { controller: "map-preview", map_preview_layout_value: map_template.layout_in_database.to_json,
+      map_preview_columns_value: map_template.columns, map_preview_rows_value: map_template.rows,
+      map_preview_picture_url_value: map_picture_url(map_template) }
+  end
+
+  # Its whole grid in its preview
+  def map_template_view_box(map_template)
+    "0 0 #{map_template.columns * MAP_CELL_SIZE} #{map_template.rows * MAP_CELL_SIZE}"
+  end
+
   # The picture of a map played on a picture of one's own, nothing when it has none yet
   def map_picture_url(map_template)
     url_for(map_template.picture) if map_template.picture.attached?

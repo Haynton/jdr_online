@@ -24,6 +24,17 @@ class MapTemplatesTest < ActionDispatch::IntegrationTest
     assert_select "#side-nav a[href=?][aria-current=page]", map_templates_path, text: /Mes cartes/
   end
 
+  test "a card shows the preview of its map once something is drawn, the map icon before" do
+    drawn = @game_master.map_templates.create!(name: "La taverne")
+    drawn.update!(layout: MapTemplate::BLANK_LAYOUT.merge("floors" => { "1,1" => "room" }))
+    @game_master.map_templates.create!(name: "Vide")
+    get map_templates_path
+
+    assert_select "li a[href=?] svg[data-controller=map-preview][data-map-preview-columns-value='28']",
+                  edit_map_template_path(drawn)
+    assert_select "li a[href=?] svg[data-controller=map-preview]", edit_map_template_path(MapTemplate.last), count: 0
+  end
+
   test "« Créer une carte » makes a map named « Nouvelle carte », of the default size, and opens its editor" do
     assert_difference -> { @game_master.map_templates.count }, 1 do
       post map_templates_path, params: { map_template: { name: "Ignoré", columns: "5", layout: "{}" } }
