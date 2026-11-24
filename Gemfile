@@ -34,6 +34,8 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
+# The images of the maps of the tables, stored by Cloudinary in production (Active Storage service cloudinary)
+gem "cloudinary", "~> 2.4"
 
 gem "sprockets-rails"
 gem "tailwindcss-rails", "~> 4.7"
