@@ -77,7 +77,8 @@ class MapTemplatesTest < ActionDispatch::IntegrationTest
     patch map_template_path(map_template), params: { map_template: { name: "" } }
     assert_response :unprocessable_content
     assert_select "main h1", text: "L'auberge"
-    assert_select "aside[data-tabs-selected-index-value='2'] input[name='map_template[name]'][aria-invalid=true]"
+    assert_select "header input[name='map_template[name]'][aria-invalid=true][aria-describedby=map-name-error]"
+    assert_select "header #map-name-error", text: /doit être rempli/
   end
 
   test "deleting a map, after a question, takes it out of my maps" do

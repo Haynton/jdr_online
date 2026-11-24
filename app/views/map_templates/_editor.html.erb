@@ -7,9 +7,29 @@
 <main class="flex min-h-[calc(100dvh-5rem)] flex-col md:min-h-dvh lg:h-dvh" <%= tag.attributes(data: map_editor_data(map_template)) %>>
   <%= render "shared/flashes" %>
   <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-surface px-4 py-3 sm:px-6 lg:h-16 lg:flex-nowrap lg:py-0">
-    <div class="min-w-0 flex-1 lg:w-60 lg:flex-none">
-      <h1 class="truncate text-[15px] leading-tight font-extrabold text-ink"><%= map_template.name_in_database %></h1>
-      <p class="truncate text-xs text-muted"><%= map_template_size(map_template) %></p>
+    <%# The name, changed right here (it looks like a title until it is pointed at), then the size of the grid: the
+        columns typed, the rows following (map_editor_controller.js#resizeGrid), and when the drawing was saved %>
+    <div class="min-w-0 flex-1 lg:w-64 lg:flex-none">
+      <h1 class="sr-only"><%= map_template.name_in_database %></h1>
+      <%= render "map_templates/name_form", map_template: map_template %>
+      <%# The columns between « − » and « + » (Anthony's request: clearer than the arrows of a number field), still typed
+          if one wants; the rows follow %>
+      <p class="mt-1.5 flex items-center gap-1 text-xs text-muted">
+        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#removeColumn"
+                aria-label="<%= t(".fewer_columns") %>" title="<%= t(".fewer_columns") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
+        <label for="map-columns" class="sr-only"><%= t(".columns_label") %></label>
+        <input type="number" id="map-columns" value="<%= map_template.columns_in_database %>"
+               min="<%= MapTemplate::GRID_SIZES.min %>" max="<%= MapTemplate::GRID_SIZES.max %>"
+               class="<%= MapTemplatesHelper::MAP_COLUMNS_FIELD_CLASSES %>"
+               data-map-editor-target="columnsInput" data-action="change->map-editor#resizeGrid"
+               data-confirm-button="<%= t(".shrink_button") %>" data-confirm-variant="danger">
+        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#addColumn"
+                aria-label="<%= t(".more_columns") %>" title="<%= t(".more_columns") %>"><%= render "shared/icons/plus", css_class: "size-3.5" %></button>
+        <span aria-hidden="true">×</span>
+        <span data-map-editor-target="rowsCount"><%= map_template.rows_in_database %></span>
+        <span><%= t(".cells") %></span>
+        <span class="truncate before:mx-1 before:content-['·'] empty:hidden" data-map-editor-target="saveState"></span>
+      </p>
     </div>
     <div hidden class="flex flex-wrap items-center gap-1" role="toolbar" aria-label="<%= t(".actions_label") %>" data-map-editor-target="toolbar">
       <%# Disabled while there is nothing to undo, to redo, to clear (the controller says so) %>
@@ -27,17 +47,6 @@
       <%# Not asked first, like the prototype: Undo brings it all back %>
       <button type="button" disabled class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" title="<%= t(".clear_hint") %>"
               data-map-editor-target="clearButton" data-action="map-editor#clearEverything"><%= t(".clear") %></button>
-      <span class="mx-1 h-6 w-px bg-line" aria-hidden="true"></span>
-      <%# Zoom: out, the whole map (its label says the zoom), in %>
-      <div class="flex items-center gap-0.5" role="group" aria-label="<%= t(".zoom_label") %>">
-        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#zoomOut"
-                aria-label="<%= t(".zoom_out") %>" title="<%= t(".zoom_out") %>"><%= render "shared/icons/minus" %></button>
-        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %> min-w-16 justify-center tabular-nums"
-                data-action="map-editor#showWholeMap" title="<%= t(".whole_map") %>"
-                aria-label="<%= t(".whole_map") %>" data-map-editor-target="zoomLabel">100 %</button>
-        <button type="button" class="<%= MapTemplatesHelper::MAP_BAR_TOOL_CLASSES %>" data-action="map-editor#zoomIn"
-                aria-label="<%= t(".zoom_in") %>" title="<%= t(".zoom_in") %>"><%= render "shared/icons/plus" %></button>
-      </div>
     </div>
     <%# Only a failed save is said, in its place on the bar %>
     <p class="text-xs text-error-ink empty:hidden" role="status" data-map-editor-target="status"></p>
@@ -47,7 +56,7 @@
   <div class="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_340px]">
     <%# The board fills the room, a thin margin of the deeper background around it, like the prototype: the whole
         map at first, then zoomed and moved (map_editor/board_view.js). 65 % of the height of a phone %>
-    <div class="flex h-[65dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-well p-2 lg:h-auto lg:p-3">
+    <div class="relative flex h-[65dvh] min-h-0 min-w-0 flex-col overflow-hidden bg-well p-2 lg:h-auto lg:p-3">
       <%# touch-none: on a phone, a finger draws instead of scrolling the page %>
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
@@ -56,12 +65,20 @@
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
+      <%# Zoom: round buttons floating at the bottom right of the board (Anthony's request), the whole map at the foot.
+          In the board: on a phone, above the floating bar of the navigation %>
+      <div hidden class="absolute right-5 bottom-5 flex flex-col gap-2 lg:right-6 lg:bottom-6" role="group"
+           aria-label="<%= t(".zoom_label") %>" data-map-editor-target="zoomButtons">
+        <% [["zoomIn", t(".zoom_in"), "plus"], ["zoomOut", t(".zoom_out"), "minus"], ["showWholeMap", t(".whole_map"), "maximize"]].each do |action, label, icon| %>
+          <button type="button" class="<%= MapTemplatesHelper::MAP_FLOATING_BUTTON_CLASSES %>" data-action="map-editor#<%= action %>"
+                  aria-label="<%= label %>" title="<%= label %>"><%= render MapTemplatesHelper::ZOOM_ICON_PARTIALS.fetch(icon), css_class: "size-4" %></button>
+        <% end %>
+      </div>
       <noscript><p class="text-sm text-ink"><%= t(".needs_javascript") %></p></noscript>
     </div>
 
     <aside class="flex min-h-0 flex-col border-t border-line bg-surface lg:border-t-0 lg:border-l" aria-label="<%= t(".panel_label") %>"
-           data-controller="tabs" data-action="turbo:morph@document->tabs#refresh"
-           data-tabs-selected-index-value="<%= map_template.errors.any? ? 2 : 0 %>">
+           data-controller="tabs" data-action="turbo:morph@document->tabs#refresh">
       <div class="grid gap-2 px-3 pt-3">
         <%= render "map_templates/making_choices" %>
         <%= link_to t(".my_maps"), map_templates_path, class: button_classes(:secondary, size: :compact, full_width: true) %>

@@ -1,7 +1,7 @@
 // The drawing of a map while it is edited: its floors ("column,row" → floor key), its edges ("cell|cell" → edge key)
 // and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Sent to the server as
 // the layout that MapLayoutValidator checks
-import { cellKey, sideKey } from "map_editor/square_grid"
+import { cellKey, cellPosition, sideKey } from "map_editor/square_grid"
 import { doorKey } from "map_edges"
 import { objectOf, footprintSize } from "map_objects"
 
@@ -22,16 +22,35 @@ export default class MapLayout {
              objects: this.objects }
   }
 
-  // A copy of the drawing as it is, to come back to it (undo, redo)
+  // A copy of the drawing as it is, with the size of its grid, to come back to it (undo, redo)
   snapshot() {
-    return JSON.stringify(this.toJSON())
+    return JSON.stringify({ layout: this.toJSON(), columns: this.grid.columns, rows: this.grid.rows })
   }
 
+  // Gives back the size of the grid of the copy: the editor makes its grid again when it changed
   restore(snapshot) {
-    const { floors, edges, objects } = JSON.parse(snapshot)
+    const { layout: { floors, edges, objects }, columns, rows } = JSON.parse(snapshot)
     this.floors = new Map(Object.entries(floors))
     this.edges = new Map(Object.entries(edges))
     this.objects = objects
+    return { columns, rows }
+  }
+
+  // Whether something drawn would go out of a grid of that size (its cells kept from the top left)
+  hasSomethingOutside(columns, rows) {
+    const isOutside = ([column, row]) => column >= columns || row >= rows
+    return [...this.floors.keys()].some((key) => isOutside(cellPosition(key))) ||
+      [...this.edges.keys()].some((key) => key.split("|").some((cell) => isOutside(cellPosition(cell)))) ||
+      this.objects.some((placedObject) => this.cellsOf(placedObject).some(isOutside))
+  }
+
+  // What goes out of the new grid is taken out: floors, walls and doors, objects that do not hold in it whole
+  cropTo(grid) {
+    const isOutside = ([column, row]) => !grid.inside(column, row)
+    this.floors = new Map([...this.floors].filter(([key]) => !isOutside(cellPosition(key))))
+    this.edges = new Map([...this.edges].filter(([key]) => !key.split("|").some((cell) => isOutside(cellPosition(cell)))))
+    this.objects = this.objects.filter((placedObject) => !this.cellsOf(placedObject).some(isOutside))
+    this.grid = grid
   }
 
   isEmpty() {

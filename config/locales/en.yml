@@ -372,9 +372,12 @@ en:
     editor:
       actions_label: "Actions on the map"
       board_label: "Drawing of the map “%{name}”"
+      cells: "cells"
+      columns_label: "Number of columns (the rows follow, to keep the proportions)"
       clear: "Clear everything"
       clear_hint: "Clears the whole map (Undo brings it back)"
       eraser: "Eraser"
+      fewer_columns: "One column less"
       figures:
         cells:
           one: "%{count} cell"
@@ -390,6 +393,7 @@ en:
           other: "%{count} walls"
       help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: hold <kbd>Space</kbd> and drag, middle click, or two fingers. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: right click or <kbd>Delete</kbd> on an object or a wall."
       map_tab: "Map"
+      more_columns: "One column more"
       my_maps: "My maps"
       objects_tab: "Objects"
       remove_object: "Take object away"
@@ -399,6 +403,10 @@ en:
       redo: "Redo"
       redo_keys: "Ctrl or Cmd + Shift + Z"
       save_failed: "The drawing could not be saved. It will be with the next stroke."
+      saved: "Saved at %{time}"
+      saving: "Saving…"
+      shrink_button: "Shrink"
+      shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away (Undo brings it back)."
       tabs_label: "Tools"
       terrain_tab: "Terrain"
       undo: "Undo"
@@ -507,6 +515,10 @@ en:
       well: "Well"
       wide_bridge: "Wide bridge"
       workbench: "Workbench"
+    name_form:
+      label: "Name of the map"
+      save: "Save"
+      rename: "Rename the map"
     new:
       cancel: "Cancel"
       create: "Create the map"
@@ -518,7 +530,6 @@ en:
       delete_button: "Delete"
       delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
       delete_description: "The map leaves “My maps”. This cannot be undone."
-      save: "Save"
       title: "Map"
     size: "%{columns} × %{rows} cells"
     update:

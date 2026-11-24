@@ -10,6 +10,7 @@ import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
 import { floorOf } from "map_floors"
 import { edgeOf, doorKey } from "map_edges"
 import { objectOf, drawObjectSwatch } from "map_objects"
+import { confirmWithDialog } from "confirm_dialog"
 
 // The map editor (the page of a map in « Mes cartes », laid out like the prototype): the game master picks a tool
 // (a floor, a wall or a door, the eraser), then paints the cells or the sides of the board with the pointer. Each
@@ -19,7 +20,10 @@ import { objectOf, drawObjectSwatch } from "map_objects"
 // two fingers) moves the map, the buttons of the bar zoom too. Undo and Redo (and their keys) go back through the
 // strokes, Clear everything empties the board (undone like a stroke). An object is put with a click, in the direction
 // chosen by Turn (R); a click on an object put turns it; Take object away, a right click or Delete takes it (or a wall)
-// away. The board and the tools are rendered hidden and shown here: without JavaScript there is nothing to draw with
+// away. The number of columns of the bar resizes the grid, the rows following to keep its proportions (Anthony's
+// request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
+// undone like a stroke. The bar says when the drawing was saved. The board and the tools are rendered hidden and
+// shown here: without JavaScript there is nothing to draw with
 const toolSwatches = {
   floor: (swatch, key) => floorOf(key).drawSwatch(swatch),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
@@ -29,18 +33,25 @@ const toolSwatches = {
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
 const takingAwayKinds = ["eraser", "remover"]
+// The bounds of a grid, the same as MapTemplate::GRID_SIZES
+const smallestGridSize = 10
+const largestGridSize = 60
 const zoomStep = 1.25
 
 export default class extends Controller {
-  static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures", "zoomLabel",
-                     "undoButton", "redoButton", "clearButton", "rotationLabel"]
+  static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
+                     "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
+                     "saveState", "zoomButtons"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
-                    figureLabels: Object, rotationLabel: String }
+                    figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
+                    shrinkQuestion: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
     this.layout = new MapLayout(this.layoutValue, this.grid)
     this.placementRotation = 0
+    // The proportions of the grid as it was opened: a resize keeps them, without drifting from rounding to rounding
+    this.gridRatio = this.rowsValue / this.columnsValue
     this.history = new DrawingHistory()
     // The first floor: the eraser comes first in the page, on the bar
     this.tool = this.firstFloorTool()
@@ -66,12 +77,15 @@ export default class extends Controller {
       toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey)
     })
     this.showRotation()
+    this.showSize()
+    this.saveStateTarget.textContent = this.lastSaveState ?? ""
     this.pressCurrentTool()
     this.render()
     this.showHistory()
     // An <svg> has no hidden property (only HTML elements do): the attribute itself is taken away
     this.boardTarget.removeAttribute("hidden")
     this.toolbarTarget.hidden = false
+    this.zoomButtonsTarget.hidden = false
     this.resizeView()
   }
 
@@ -84,7 +98,6 @@ export default class extends Controller {
 
   showView() {
     this.boardTarget.setAttribute("viewBox", this.view.viewBox())
-    this.zoomLabelTarget.textContent = `${this.view.zoomPercent()} %`
   }
 
   zoomIn() {
@@ -213,7 +226,7 @@ export default class extends Controller {
   goBackTo(snapshot) {
     if (!snapshot) return
 
-    this.layout.restore(snapshot)
+    this.useGridSize(this.layout.restore(snapshot))
     this.render()
     this.showHistory()
     this.save()
@@ -226,6 +239,55 @@ export default class extends Controller {
     this.layout.clear()
     this.render()
     this.keepChange(before)
+  }
+
+  addColumn() {
+    this.columnsInputTarget.value = this.grid.columns + 1
+    this.resizeGrid()
+  }
+
+  removeColumn() {
+    this.columnsInputTarget.value = this.grid.columns - 1
+    this.resizeGrid()
+  }
+
+  // The columns typed, the rows following the proportions, both within the bounds of a grid
+  async resizeGrid() {
+    const { columns, rows } = this.sizeFor(Number.parseInt(this.columnsInputTarget.value, 10))
+    if (columns === this.grid.columns && rows === this.grid.rows) return this.showSize()
+
+    const losesSomething = this.layout.hasSomethingOutside(columns, rows)
+    if (losesSomething && !(await confirmWithDialog(this.shrinkQuestionValue, this.columnsInputTarget))) {
+      return this.showSize()
+    }
+    const before = this.layout.snapshot()
+    this.layout.cropTo(new SquareGrid(columns, rows))
+    this.useGridSize({ columns, rows })
+    this.render()
+    this.keepChange(before)
+  }
+
+  sizeFor(typedColumns) {
+    const fewestColumns = Math.max(smallestGridSize, Math.ceil(smallestGridSize / this.gridRatio))
+    const mostColumns = Math.min(largestGridSize, Math.floor(largestGridSize / this.gridRatio))
+    const columns = Math.min(mostColumns, Math.max(fewestColumns, typedColumns || this.grid.columns))
+    return { columns, rows: Math.round(columns * this.gridRatio) }
+  }
+
+  // A new grid (resized, or given back by undo): the whole map shown again
+  useGridSize({ columns, rows }) {
+    if (columns !== this.grid.columns || rows !== this.grid.rows) {
+      this.grid = new SquareGrid(columns, rows)
+      this.layout.grid = this.grid
+      this.view = new BoardView(this.grid, cellSize)
+      this.resizeView()
+    }
+    this.showSize()
+  }
+
+  showSize() {
+    this.columnsInputTarget.value = this.grid.columns
+    this.rowsCountTarget.textContent = this.grid.rows
   }
 
   // Ctrl or Cmd + Z undoes, with Shift (or Ctrl + Y) redoes. Not while typing: a field undoes its own text
@@ -444,16 +506,26 @@ export default class extends Controller {
     }
     this.isSaving = true
     this.hasUnsavedStroke = false
+    this.showSaveState(this.savingLabelValue)
     const isSaved = await this.request().then((response) => response.ok, () => false)
     this.isSaving = false
     this.statusTarget.textContent = isSaved ? "" : this.saveFailedMessageValue
+    this.showSaveState(isSaved ? this.savedLabelValue.replace("__time__", currentTime()) : "")
     if (this.hasUnsavedStroke) this.save()
+  }
+
+  // « Enregistrement… », then « Enregistré à 14:32 », kept through a refresh by morphing (renaming)
+  showSaveState(text) {
+    this.lastSaveState = text
+    this.saveStateTarget.textContent = text
   }
 
   // keepalive: the last stroke is still saved when the page is left right after it
   request() {
     const body = new FormData()
     body.append("layout", JSON.stringify(this.layout.toJSON()))
+    body.append("columns", this.grid.columns)
+    body.append("rows", this.grid.rows)
     return fetch(this.urlValue, {
       method: "PATCH",
       body,
@@ -465,6 +537,12 @@ export default class extends Controller {
 
 function isTyping(event) {
   return Boolean(event.target.closest?.("input, textarea, select, [contenteditable]"))
+}
+
+// Hours and minutes in the language of the page
+function currentTime() {
+  return new Intl.DateTimeFormat(document.documentElement.lang || "en", { hour: "2-digit", minute: "2-digit" })
+    .format(new Date())
 }
 
 function isSameTool(first, second) {

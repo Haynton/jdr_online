@@ -1,0 +1,22 @@
+<%# The name of the map, changed in the bar of the editor (Anthony's requests: right here, and plainly): a field drawn
+    like the title, underlined with dots and followed by a pencil (a label: a click on it starts typing), its frame
+    shown when it is pointed at or typed in, saved when it is left (auto_submit_controller.js; the page refreshes by
+    morphing). Refused (empty), it turns red and says why under it %>
+<%= form_with model: map_template, id: "map-template-form",
+              data: { controller: "auto-submit", action: "change->auto-submit#submit" } do |form| %>
+  <% error = map_template.errors[:name].first %>
+  <div class="flex items-center gap-1">
+    <%= form.text_field :name, required: true, maxlength: MapTemplate::NAME_MAX_LENGTH, autocomplete: "off",
+                               class: "#{MapTemplatesHelper::MAP_NAME_FIELD_CLASSES} -ml-1 h-7 min-w-0 flex-1 text-[15px] font-extrabold",
+                               aria: { label: t(".label"), invalid: error.present?, describedby: ("map-name-error" if error) } %>
+    <%= form.label :name, title: t(".rename"), class: "flex size-7 shrink-0 cursor-pointer items-center justify-center rounded text-muted hover:bg-surface-raised hover:text-ink" do %>
+      <%= render "shared/icons/pencil", css_class: "size-3.5" %>
+      <span class="sr-only"><%= t(".rename") %></span>
+    <% end %>
+  </div>
+  <% if error %>
+    <p id="map-name-error" class="text-xs text-error-ink first-letter:uppercase"><%= error %></p>
+  <% end %>
+  <%# Without JavaScript, nothing saves by itself %>
+  <noscript><%= form.submit t(".save"), class: button_classes(:secondary, size: :compact) %></noscript>
+<% end %>

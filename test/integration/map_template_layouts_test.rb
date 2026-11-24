@@ -21,12 +21,17 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_select "header [role=toolbar] button[data-action='map-editor#undo'][disabled]", text: "Annuler"
     assert_select "header [role=toolbar] button[data-action='map-editor#redo'][disabled]", text: "Rétablir"
     assert_select "header [role=toolbar] button[data-action='map-editor#clearEverything']", text: "Tout effacer"
-    assert_select "header [role=toolbar] [role=group] button[data-action='map-editor#showWholeMap'][aria-label=?]",
-                  "Afficher toute la carte"
+    assert_select "header button[data-action='map-editor#showWholeMap']", count: 0
+    assert_select "[data-map-editor-target=zoomButtons][hidden] button[aria-label=?]", "Afficher toute la carte"
+    assert_select "[data-map-editor-target=zoomButtons] button[aria-label=?]", "Zoomer"
+    assert_select "header button[data-action='map-editor#addColumn'][aria-label=?]", "Une colonne de plus"
     assert_select "svg[data-map-editor-target=board][hidden]"
     assert_select "aside a[href=?]", map_templates_path, text: "Mes cartes"
     assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 3
-    assert_select "#map-editor-panel-map input[name='map_template[name]'][value=?]", "La taverne"
+    assert_select "header input[name='map_template[name]'][value=?][aria-label=?]", "La taverne", "Nom de la carte"
+    assert_select "header input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
+    assert_select "header [data-map-editor-target=rowsCount]", text: "10"
+    assert_select "#map-editor-panel-map form[action=?] button[data-turbo-confirm]", map_template_path(@map_template)
   end
 
   test "the tab Objects shows one family at a time; the bar turns and takes objects away" do
@@ -74,6 +79,17 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     drawing["objects"] = [{ "key" => "bed", "column" => 1, "row" => 0, "rotation" => 0 }]
     patch map_template_layout_path(@map_template), params: { layout: drawing.to_json }
     assert_response :unprocessable_content
+  end
+
+  test "the size of the grid is saved with the drawing; a drawing outside the new grid is refused" do
+    drawing = layout_with(floors: { "11,0" => "room" })
+    patch map_template_layout_path(@map_template), params: { layout: drawing.to_json, columns: "12", rows: "12" }
+    assert_response :no_content
+    assert_equal [12, 12, drawing], [@map_template.reload.columns, @map_template.rows, @map_template.layout]
+
+    patch map_template_layout_path(@map_template), params: { layout: drawing.to_json, columns: "10", rows: "10" }
+    assert_response :unprocessable_content
+    assert_equal 12, @map_template.reload.columns
   end
 
   test "a wrong drawing is refused with its message, and the saved one stays" do

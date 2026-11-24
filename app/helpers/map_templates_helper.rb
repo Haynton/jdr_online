@@ -23,6 +23,34 @@ module MapTemplatesHelper
     aria-selected:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring
   ].join(" ").freeze
+  # A field of the bar of the editor (the name, the columns): it looks like the text around it, its frame shown only
+  # when pointed at or typed in, red when refused (aria-invalid). Not a field of Simple Form: it is part of the title
+  MAP_INLINE_FIELD_CLASSES = %w[
+    rounded border border-transparent bg-transparent px-1 text-ink hover:border-field-line focus:border-ink
+    focus:bg-field focus:outline-none aria-invalid:border-error-ink aria-invalid:bg-error-bg
+  ].join(" ").freeze
+  # « − » and « + » around the number of columns: small, in the size of the line of text
+  MAP_SIZE_BUTTON_CLASSES = %w[
+    flex size-6 shrink-0 items-center justify-center rounded border border-line bg-surface text-ink transition-colors
+    hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+  ].join(" ").freeze
+  # The number of columns, without the arrows of a number field (the buttons around it do that)
+  MAP_COLUMNS_FIELD_CLASSES = [
+    MAP_INLINE_FIELD_CLASSES, "h-6 w-10 text-center text-xs tabular-nums", *CharacterSheets::FieldsHelper::NO_ARROWS_CLASSES
+  ].join(" ").freeze
+  # A round button floating over the board (zoom): the surface of the panels, a shadow to stand out of the map
+  MAP_FLOATING_BUTTON_CLASSES = %w[
+    flex size-10 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-md
+    transition-colors hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2
+    focus-visible:outline-focus-ring
+  ].join(" ").freeze
+  # The icons of the zoom buttons, written in full: a search for a partial finds them
+  ZOOM_ICON_PARTIALS = {
+    "plus" => "shared/icons/plus", "minus" => "shared/icons/minus", "maximize" => "shared/icons/maximize"
+  }.freeze
+  # The name in the bar: a field like the others of the bar, underlined with dots while it is not typed in, so that it
+  # reads as a text one can change
+  MAP_NAME_FIELD_CLASSES = "#{MAP_INLINE_FIELD_CLASSES} border-b-field-line border-dashed focus:border-solid".freeze
   # A tab of the panel of the editor: its name in muted, ink and a line of brass under it once chosen
   MAP_TAB_CLASSES = %w[
     flex-1 border-b-2 border-transparent px-0.5 py-2 text-[12.5px] font-semibold text-muted transition-colors
@@ -50,8 +78,11 @@ module MapTemplatesHelper
       map_editor_url_value: map_template_layout_path(map_template),
       map_editor_save_failed_message_value: t("map_templates.editor.save_failed"),
       map_editor_figure_labels_value: map_editor_figure_labels.to_json,
-      # The number of degrees is written by the page, in the place of this mark
-      map_editor_rotation_label_value: t("map_templates.editor.rotate", degrees: "__degrees__") }
+      # The number of degrees and the time are written by the page, in the place of these marks
+      map_editor_rotation_label_value: t("map_templates.editor.rotate", degrees: "__degrees__"),
+      map_editor_saving_label_value: t("map_templates.editor.saving"),
+      map_editor_saved_label_value: t("map_templates.editor.saved", time: "__time__"),
+      map_editor_shrink_question_value: t("map_templates.editor.shrink_question") }
   end
 
   # The words of the figures of the drawing, by count (« 1 case », « 12 cases »), for the plural rules of the page
