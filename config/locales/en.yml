@@ -941,10 +941,17 @@ en:
         title: "Create a table"
       update:
         saved: "Details saved."
+    destroy:
+      deleted: "Table “%{name}” deleted."
     details_form:
       cover: "Cover"
       cover_hint: "The picture of your table: it shows it in “My tables” and at the top of its page."
       create_template: "Create a template"
+      delete:
+        button: "Delete the table"
+        confirmation: "Delete the table “%{name}”? Its characters and NPCs will be deleted for all its players."
+        description: "The table disappears for all its players, with their characters, your NPCs and your customized spells and items. This cannot be undone."
+        title: "Delete the table"
       description_hint: "Optional. A few lines to introduce the setting to your players."
       no_matching_cover: "No cover for this theme."
       sheet_template: "Sheet template"

@@ -912,10 +912,17 @@ fr:
         title: "Créer une table"
       update:
         saved: "Informations enregistrées."
+    destroy:
+      deleted: "Table « %{name} » supprimée."
     details_form:
       cover: "Couverture"
       cover_hint: "L'image de votre table : elle l'illustre dans « Mes tables » et en haut de sa page."
       create_template: "Créer un modèle"
+      delete:
+        button: "Supprimer la table"
+        confirmation: "Supprimer la table « %{name} » ? Ses personnages et ses PNJ seront supprimés pour tous ses joueurs."
+        description: "La table disparaît pour tous ses joueurs, avec leurs personnages, vos PNJ et vos sorts et objets personnalisés. Impossible de revenir en arrière."
+        title: "Supprimer la table"
       description_hint: "Facultative. Quelques lignes pour présenter l'univers à vos joueurs."
       no_matching_cover: "Aucune couverture pour ce thème."
       sheet_template: "Modèle de fiche"

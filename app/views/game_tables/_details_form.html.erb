@@ -67,9 +67,25 @@
     <%= render "game_tables/frozen_sheet_template", game_table: game_table %>
   <% end %>
 
+  <%# A table made can be deleted by its game master, a draft too (decision). Its button sends the form
+      delete-game-table, outside this one (a form cannot hold another), after the question of shared/_confirm_dialog %>
+  <% if game_table.persisted? %>
+    <section class="mt-12 max-w-xl" aria-labelledby="table-delete-title">
+      <h2 id="table-delete-title" class="text-base font-semibold text-ink"><%= t("game_tables.details_form.delete.title") %></h2>
+      <p class="mt-1 text-sm text-muted"><%= t("game_tables.details_form.delete.description") %></p>
+      <%= button_tag t("game_tables.details_form.delete.button"), type: :submit, form: "delete-game-table",
+                     class: "mt-3 #{button_classes(:danger)}",
+                     data: { turbo_confirm: t("game_tables.details_form.delete.confirmation", name: game_table.name_in_database),
+                             confirm_button: t("game_tables.details_form.delete.button"), confirm_variant: "danger" } %>
+    </section>
+  <% end %>
+
   <%# At the end of the form, on the right: where the eye ends up once everything is filled in. At the bottom of the
       screen when the step is short (mt-auto), with at least 40 px above them, as on the steps of a character %>
   <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
     <%= creation_actions(cancel_path: cancel_path, saving: !game_table.draft?) %>
   </div>
+<% end %>
+<% if game_table.persisted? %>
+  <%= form_with url: game_table_path(game_table), method: :delete, id: "delete-game-table", class: "hidden" do %><% end %>
 <% end %>
