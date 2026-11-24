@@ -17,11 +17,21 @@ class MapTemplatesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main h1", text: "Mes cartes"
     assert_select "section[aria-labelledby=own-maps-title]" do
-      assert_select "li:first-child a[href=?]", new_map_template_path, text: /Créer une carte/
+      assert_select "li:first-child form[action=?][method=post] button", map_templates_path, text: /Créer une carte/
       assert_select "li a[href=?]", edit_map_template_path(tavern), text: /La taverne.*20 × 15 cases/m
     end
     assert_select "li", text: /Basile/, count: 0
     assert_select "#side-nav a[href=?][aria-current=page]", map_templates_path, text: /Mes cartes/
+  end
+
+  test "« Créer une carte » makes a map named « Nouvelle carte », of the default size, and opens its editor" do
+    assert_difference -> { @game_master.map_templates.count }, 1 do
+      post map_templates_path
+    end
+
+    map_template = MapTemplate.last
+    assert_redirected_to edit_map_template_path(map_template)
+    assert_equal ["Nouvelle carte", 28, 21], [map_template.name, map_template.columns, map_template.rows]
   end
 
   test "creating a map opens its page, with the size chosen" do

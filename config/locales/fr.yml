@@ -336,6 +336,7 @@ fr:
       confirm: "Confirmer"
   map_templates:
     create:
+      default_name: "Nouvelle carte"
       created: "Carte « %{name} » créée."
     destroy:
       deleted: "Carte « %{name} » supprimée."

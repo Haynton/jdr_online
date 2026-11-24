@@ -13,9 +13,11 @@ class MapTemplatesController < ApplicationController
     @map_template = MapTemplate.new
   end
 
+  # « Créer une carte » opens the editor at once (Anthony's request): a map named « Nouvelle carte », of the default
+  # size, renamed and resized in the bar of the editor. A name or a size sent (the form of the page new) are taken.
   # The page of the new map shows it: the message is for screen readers only
   def create
-    @map_template = current_user.map_templates.new(creation_params)
+    @map_template = current_user.map_templates.new(name: t(".default_name"), **creation_params)
     return render(:new, status: :unprocessable_content) unless @map_template.save
 
     redirect_to edit_map_template_path(@map_template),
@@ -47,7 +49,7 @@ class MapTemplatesController < ApplicationController
   end
 
   def creation_params
-    params.expect(map_template: %i[name columns rows])
+    params.fetch(:map_template, {}).permit(:name, :columns, :rows).to_h.symbolize_keys
   end
 
   def name_params

@@ -365,6 +365,7 @@ en:
       confirm: "Confirm"
   map_templates:
     create:
+      default_name: "New map"
       created: "Map “%{name}” created."
     destroy:
       deleted: "Map “%{name}” deleted."

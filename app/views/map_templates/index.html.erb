@@ -1,6 +1,6 @@
 <%# The maps of the game master, laid out like « Mes modèles »: across the whole width, a row of cards. The first one
-    creates a map (always there: it says how to start while there is none), then one card per map, each a link to
-    its page %>
+    creates a map and opens its editor (always there: it says how to start while there is none), then one card per
+    map, each a link to its page %>
 <%# The main landmark of the page: a page across the whole width carries its own (layouts/application does not) %>
 <% content_for :full_width_page do %>
   <main class="px-4 pt-8 pb-12 sm:px-8">
@@ -10,7 +10,9 @@
 
     <%= render layout: "game_tables/choice_row", locals: { legend: t(".own_title"), heading_id: "own-maps-title" } do %>
       <li class="w-[62%] shrink-0 sm:w-56">
-        <%= link_to new_map_template_path, class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES do %>
+        <%# Creates the map at once and opens its editor (a form: it adds something), like « Dupliquer » %>
+        <%= button_to map_templates_path, form_class: "h-full",
+                      class: "#{SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES} w-full text-left" do %>
           <span class="flex aspect-video w-full items-center justify-center border-b border-dashed border-field-line bg-surface text-brass" aria-hidden="true">
             <%= render "shared/icons/plus", css_class: "size-10" %>
           </span>
