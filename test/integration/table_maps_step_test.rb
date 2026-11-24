@@ -79,10 +79,29 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_includes game_map.passage.blocked_cells, [5, 5]
   end
 
+  test "the editor of a map of the table lists its non-player characters and enemies for their tokens" do
+    goblin = @game_table.characters.create!(kind: :monster, name: "Gobelin")
+    game_map = MapTemplates::TableCopier.new(@game_master.map_templates.create!(name: "Taverne"), @game_table).call
+
+    get edit_game_table_game_map_path(@game_table, game_map)
+    assert_select "[role=tab]#map-editor-tab-tokens", text: "Jetons"
+    assert_select "button[data-tool-kind=token][data-tool-key=?]", goblin.id.to_s, text: /Gobelin\s+Ennemi/
+    editor = css_select("main[data-controller=map-editor]").first
+    token_characters = JSON.parse(editor["data-map-editor-token-characters-value"])
+    assert_equal({ goblin.id.to_s => { "name" => "Gobelin", "kind" => "monster" } }, token_characters)
+
+    patch game_table_game_map_layout_path(@game_table, game_map),
+          params: { layout: drawing.merge("tokens" => [{ character_id: goblin.id, column: 1, row: 1 }]).to_json }
+    assert_response :no_content
+    placed = game_map.reload.placed_tokens.map { |token| token.values_at(:character, :number) }
+    assert_equal [[goblin, 1]], placed
+  end
+
   test "a map copied is renamed in its editor; its grid stays" do
     game_map = MapTemplates::TableCopier.new(@game_master.map_templates.create!(name: "Taverne"), @game_table).call
 
-    patch game_table_game_map_path(@game_table, game_map), params: { game_map: { name: "Taverne basse", columns: "40" } }
+    patch game_table_game_map_path(@game_table, game_map),
+          params: { game_map: { name: "Taverne basse", columns: "40" } }
     assert_redirected_to edit_game_table_game_map_path(@game_table, game_map)
     assert_equal ["Taverne basse", 28], game_map.reload.slice(:name, :columns).values
 

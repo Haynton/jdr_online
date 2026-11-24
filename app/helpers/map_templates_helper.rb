@@ -73,6 +73,13 @@ module MapTemplatesHelper
   # reads as a text one can change
   MAP_NAME_FIELD_CLASSES = "#{MAP_INLINE_FIELD_CLASSES} border-b-field-line border-dashed focus:border-solid".freeze
   # A tab of the panel of the editor: its name in muted, ink and a line of brass under it once chosen
+  # A line of the tab Jetons (map_templates/_token_tools): the token, the name, the role, pressed like a tool
+  MAP_TOKEN_TOOL_CLASSES = %w[
+    flex w-full items-center gap-2.5 rounded-[10px] border border-line bg-surface px-2 py-1.5 text-ink
+    transition-colors hover:bg-surface-raised aria-pressed:border-brass aria-pressed:bg-primary-soft
+    aria-pressed:text-primary-soft-ink aria-pressed:ring-1 aria-pressed:ring-brass aria-pressed:ring-inset
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+  ].join(" ").freeze
   MAP_TAB_CLASSES = %w[
     flex-1 border-b-2 border-transparent px-0.5 py-2 text-[12.5px] font-semibold text-muted transition-colors
     hover:text-ink aria-selected:border-brass aria-selected:text-ink focus-visible:outline-2

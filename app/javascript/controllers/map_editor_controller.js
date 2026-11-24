@@ -6,6 +6,7 @@ import MapLayout from "map_editor/map_layout"
 import { renderMap, objectCenter, drawPlacedObject } from "map_editor/map_renderer"
 import { renderPicture } from "map_editor/picture_renderer"
 import { renderBlockedCells } from "map_editor/blocked_renderer"
+import { renderTokens, drawToken } from "map_editor/token_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
@@ -27,13 +28,20 @@ import { confirmWithDialog } from "confirm_dialog"
 // request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
 // undone like a stroke. The bar says when the drawing was saved. On a map of a table, the brush « Zones bloquantes »
 // paints the cells no token stands on, drawn or on a picture (the first cell of the stroke says whether it paints or
-// takes the paint away). The board and the tools are rendered hidden and shown here: without JavaScript there is
-// nothing to draw with
+// takes the paint away), and the tab Jetons puts the tokens of its non-player characters and enemies (one a cell, the
+// same character as many times as wanted; a token clicked again goes). The board and the tools are rendered hidden
+// and shown here: without JavaScript there is nothing to draw with
 const toolSwatches = {
   floor: (swatch, key) => drawFloorSample(swatch, key),
   edge: (swatch, key) => edgeOf(key).drawSwatch(swatch),
-  object: (swatch, key) => drawObjectSwatch(swatch, key)
+  object: (swatch, key) => drawObjectSwatch(swatch, key),
+  token: (swatch, key, characters) => {
+    swatch.setAttribute("viewBox", "0 0 24 24")
+    drawToken(swatch, 12, 12, characters[key])
+  }
 }
+// The tools that act on a map played on a picture: elsewhere, dragging on it moves the map
+const toolsOnPicture = ["blocker", "token"]
 // How close to a side a right click must be to take its wall away
 const deletingReach = 6
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
@@ -56,7 +64,8 @@ export default class extends Controller {
                      "drawingTools", "pictureWidth", "pictureSlider", "gridSize"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
-                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String }
+                    shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String,
+                    tokenCharacters: Object }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -100,7 +109,7 @@ export default class extends Controller {
     addMapPatterns(this.boardTarget)
     this.swatchTargets.forEach((swatch) => {
       swatch.replaceChildren()
-      toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey)
+      toolSwatches[swatch.dataset.toolKind](swatch, swatch.dataset.toolKey, this.tokenCharactersValue)
     })
     this.drawPresetPreviews()
     this.showRotation()
@@ -252,7 +261,7 @@ export default class extends Controller {
   }
 
   picturePansTheMap() {
-    return this.layout.isPicture() && this.tool.kind !== "blocker"
+    return this.layout.isPicture() && !toolsOnPicture.includes(this.tool.kind)
   }
 
   // A hand over the map while it can be moved (the hand, the space bar held, a map played on a picture), a closed
@@ -556,6 +565,7 @@ export default class extends Controller {
                                       objects: this.layout.objects })
     }
     renderBlockedCells(this.drawingTarget, this.layout.blocked)
+    renderTokens(this.drawingTarget, this.layout.tokens, this.tokenCharactersValue)
     this.showMaking()
     this.showFigures()
   }
@@ -576,7 +586,7 @@ export default class extends Controller {
     this.rotationLabelTarget.title = this.rotationLabelValue.replace("__degrees__", this.placementRotation * 90)
   }
 
-  // A right click takes away the object under the pointer, or the wall of a side close to it
+  // A right click takes away the token or the object under the pointer, or the wall of a side close to it
   deleteWithRightClick(event) {
     event.preventDefault()
     this.deleteAt(this.boardPoint(event))
@@ -594,7 +604,8 @@ export default class extends Controller {
   deleteAt(point) {
     const side = this.grid.nearestSide(point)
     const before = this.layout.snapshot()
-    const isDeleted = this.layout.removeObjectAt(side.column, side.row) ||
+    const isDeleted = this.layout.removeTokenAt(side.column, side.row) ||
+      this.layout.removeObjectAt(side.column, side.row) ||
       (side.distance < deletingReach && this.layout.removeEdge(side))
     if (!isDeleted) return
 
@@ -633,6 +644,7 @@ export default class extends Controller {
   changeLayout(side, isFirstCell) {
     if (this.tool.kind === "floor") return this.layout.paintFloor(side.column, side.row, this.tool.key)
     if (this.tool.kind === "blocker") return this.paintBlocked(side)
+    if (this.tool.kind === "token") return this.putToken(side)
     if (this.tool.kind === "eraser") return this.layout.erase(side)
     if (this.tool.kind === "remover") return this.layout.removeObjectAt(side.column, side.row)
     if (this.tool.kind === "object") return this.putObject(side, isFirstCell)
@@ -646,6 +658,14 @@ export default class extends Controller {
   paintBlocked({ column, row }) {
     this.stroke.removing ??= this.layout.isBlocked(column, row)
     return this.stroke.removing ? this.layout.unblock(column, row) : this.layout.block(column, row)
+  }
+
+  // Like the blocked zones: a stroke that starts on a token takes tokens away, otherwise it puts one on each free cell
+  putToken({ column, row }) {
+    this.stroke.removing ??= Boolean(this.layout.tokenAt(column, row))
+    if (this.stroke.removing) return this.layout.removeTokenAt(column, row)
+
+    return this.layout.placeToken(Number(this.tool.key), column, row)
   }
 
   // On an object put, the first cell of the stroke turns it. A small object is put on every cell of the stroke, a large

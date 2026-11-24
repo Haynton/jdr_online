@@ -1,0 +1,27 @@
+<%# The tab Jetons of a map of a table: its non-player characters and enemies (step « PNJ et ennemis »), one line each,
+    its token drawn by the editor, its name and its role. Chosen, a click on the board puts its token (a band: as
+    many as wanted), a click on a token takes it away. Without one, the way to the step that adds them. Full keys:
+    rendered in both panels (drawn, on a picture) %>
+<% scope = "map_templates.token_tools" %>
+<% characters = map_template.game_table.npcs %>
+<p class="mb-3 text-xs leading-normal text-muted"><%= t("#{scope}.intro") %></p>
+<% if characters.empty? %>
+  <p class="rounded-lg border border-dashed border-line px-3 py-4 text-xs text-muted"><%= t("#{scope}.empty") %></p>
+  <%= link_to t("#{scope}.add"), edit_game_table_cast_path(map_template.game_table),
+              class: "#{button_classes(:secondary, size: :compact, full_width: true)} mt-3" %>
+<% else %>
+  <ul class="flex flex-col gap-1.5">
+    <% characters.each do |character| %>
+      <li>
+        <button type="button" aria-pressed="false" data-map-editor-target="tool" data-action="map-editor#chooseTool"
+                data-tool-kind="token" data-tool-key="<%= character.id %>"
+                class="<%= MapTemplatesHelper::MAP_TOKEN_TOOL_CLASSES %>">
+          <svg viewBox="0 0 24 24" class="size-8 shrink-0" aria-hidden="true"
+               data-map-editor-target="swatch" data-tool-kind="token" data-tool-key="<%= character.id %>"></svg>
+          <span class="min-w-0 flex-1 truncate text-left text-[13px] font-semibold"><%= character.name %></span>
+          <span class="shrink-0 text-[11px] text-muted"><%= t("game_tables.npcs.kinds.#{character.kind}") %></span>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

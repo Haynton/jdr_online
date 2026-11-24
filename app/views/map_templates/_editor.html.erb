@@ -122,7 +122,7 @@
            data-controller="tabs" data-action="turbo:morph@document->tabs#refresh"
            data-tabs-selected-index-value="<%= map_editor_first_tab_index(map_template) %>">
         <div hidden role="tablist" aria-label="<%= t(".tabs_label") %>" class="mt-3 flex gap-0.5 border-b border-line px-3" data-tabs-target="list">
-          <% [["presets", t(".presets_tab")], ["floors", t(".terrain_tab")], ["objects", t(".objects_tab")]].each do |panel, label| %>
+          <% map_editor_tabs(map_template).each do |panel, label| %>
             <button type="button" role="tab" id="map-editor-tab-<%= panel %>" aria-controls="map-editor-panel-<%= panel %>"
                     aria-selected="false" class="<%= MapTemplatesHelper::MAP_TAB_CLASSES %>"
                     data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys"><%= label %></button>
@@ -139,12 +139,24 @@
           <section id="map-editor-panel-objects" role="tabpanel" aria-labelledby="map-editor-tab-objects" data-tabs-target="panel">
             <%= render "map_templates/object_tools" %>
           </section>
+          <% if map_editor_blocking?(map_template) %>
+            <section id="map-editor-panel-tokens" role="tabpanel" aria-labelledby="map-editor-tab-tokens" data-tabs-target="panel">
+              <%= render "map_templates/token_tools", map_template: map_template %>
+            </section>
+          <% end %>
         </div>
       </div>
 
       <div <%= "hidden" unless map_picture_mode?(map_template) %> class="min-h-0 flex-1 overflow-y-auto px-3.5 py-4"
            data-map-editor-target="picturePanel">
         <%= render "map_templates/picture_tools", map_template: map_template %>
+        <%# On a picture too, the tokens of a map of a table, under its settings %>
+        <% if map_editor_blocking?(map_template) %>
+          <section class="mt-6" aria-labelledby="map-picture-tokens-title">
+            <h2 id="map-picture-tokens-title" class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".tokens_tab") %></h2>
+            <%= render "map_templates/token_tools", map_template: map_template %>
+          </section>
+        <% end %>
       </div>
     </aside>
   </div>

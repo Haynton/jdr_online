@@ -19,6 +19,11 @@ export const shadow = "#000000"
 // The marks of the pointer over the map: what will be painted, in the gold of the light theme, or refused, in red
 export const allowedMark = "#6b4d10"
 export const refusedMark = "#b91c1c"
+// The tokens of the table, like counters on a board: an enemy in red, a non-player character in green, their letters in
+// white over them
+export const enemyToken = "#9d2b22"
+export const npcToken = "#2f6152"
+export const tokenLetters = "#ffffff"
 // The colors of the objects, from the prototype: wood, stone, iron, gold, the fabrics, the flames
 export const wood = "#ecdcc2"
 export const objectShadow = "#ddd6ca"

@@ -19,6 +19,7 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_select "header h1", text: "La taverne"
     # The brush of the blocked zones is for a map of a table only
     assert_select "button[data-tool-kind=blocker]", count: 0
+    assert_select "#map-editor-tab-tokens", count: 0
     assert_select "header [role=toolbar][hidden] button[data-tool-kind=eraser]", text: "Gomme"
     assert_select "header [role=toolbar] button[data-action='map-editor#undo'][disabled]", text: "Annuler"
     assert_select "header [role=toolbar] button[data-action='map-editor#redo'][disabled]", text: "Rétablir"

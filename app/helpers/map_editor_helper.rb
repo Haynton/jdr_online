@@ -36,6 +36,14 @@ module MapEditorHelper
     map.is_a?(GameMap) ? [map.game_table, map] : [map]
   end
 
+  # The tabs of the panel of the drawing: the maps ready to use, the terrain, the objects, and for a map of a table its
+  # tokens
+  def map_editor_tabs(map)
+    tabs = [["presets", t("map_templates.editor.presets_tab")], ["floors", t("map_templates.editor.terrain_tab")],
+            ["objects", t("map_templates.editor.objects_tab")]]
+    map_editor_blocking?(map) ? tabs + [["tokens", t("map_templates.editor.tokens_tab")]] : tabs
+  end
+
   # The brush « Zones bloquantes »: a map of a table only, where tokens will move (MapPassage)
   def map_editor_blocking?(map)
     map.is_a?(GameMap)
@@ -48,7 +56,16 @@ module MapEditorHelper
       map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
       map_editor_url_value: polymorphic_path([*map_editor_record(map_template), :layout]),
       map_editor_figure_labels_value: map_editor_figure_labels.to_json,
-      map_editor_picture_url_value: map_picture_url(map_template), **map_editor_texts }
+      map_editor_picture_url_value: map_picture_url(map_template),
+      map_editor_token_characters_value: map_token_characters(map_template).to_json, **map_editor_texts }
+  end
+
+  # What the editor draws of each non-player character and enemy of the table on its tokens: { id => { name, kind } }.
+  # None on a map of « Mes cartes »
+  def map_token_characters(map)
+    return {} unless map_editor_blocking?(map)
+
+    map.game_table.npcs.to_h { |character| [character.id, { name: character.name, kind: character.kind }] }
   end
 
   # A preview on its card of « Mes cartes »: something drawn, or its picture; a map still empty keeps its icon
