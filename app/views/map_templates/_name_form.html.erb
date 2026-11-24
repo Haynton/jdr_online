@@ -2,10 +2,10 @@
     like the title, underlined with dots and followed by a pencil (a label: a click on it starts typing), its frame
     shown when it is pointed at or typed in, saved when it is left (auto_submit_controller.js; the page refreshes by
     morphing). Refused (empty), it turns red and says why under it %>
-<%= form_with model: map_template, id: "map-template-form",
+<%= form_with model: map_template, id: "map-template-form", class: "w-56 max-w-full",
               data: { controller: "auto-submit", action: "change->auto-submit#submit" } do |form| %>
   <% error = map_template.errors[:name].first %>
-  <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1.5">
     <%= form.text_field :name, required: true, maxlength: MapTemplate::NAME_MAX_LENGTH, autocomplete: "off",
                                class: "#{MapTemplatesHelper::MAP_NAME_FIELD_CLASSES} -ml-1 h-7 min-w-0 flex-1 text-[15px] font-extrabold",
                                aria: { label: t(".label"), invalid: error.present?, describedby: ("map-name-error" if error) } %>

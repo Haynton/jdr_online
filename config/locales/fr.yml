@@ -346,7 +346,9 @@ fr:
       cells: "cases"
       columns_label: "Nombre de colonnes (les lignes suivent, pour garder les proportions)"
       clear: "Tout effacer"
+      clear_button: "Tout effacer"
       clear_hint: "Efface toute la carte (Annuler la ramène)"
+      clear_question: "Effacer toute la carte ? Annuler la ramène."
       eraser: "Gomme"
       fewer_columns: "Une colonne de moins"
       figures:
@@ -363,12 +365,11 @@ fr:
           one: "%{count} mur"
           other: "%{count} murs"
       help_html: "<b>Sols</b> : glissez pour peindre. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : <kbd>Espace</kbd> enfoncée et glisser, clic du milieu, ou deux doigts. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler.<br><b>Objets</b> : <kbd>R</kbd> choisit le sens, un clic sur un objet posé le tourne. <b>Retirer</b> : clic droit ou <kbd>Suppr</kbd> sur un objet ou un mur."
-      map_tab: "Carte"
       more_columns: "Une colonne de plus"
-      my_maps: "Mes cartes"
       objects_tab: "Objets"
       remove_object: "Retirer objet"
       rotate: "Pivoter (R) · %{degrees}°"
+      rotate_short: "Pivoter (R)"
       needs_javascript: "L'éditeur de carte a besoin de JavaScript pour dessiner."
       panel_label: "Outils de l'éditeur"
       redo: "Rétablir"
@@ -386,6 +387,10 @@ fr:
       zoom_in: "Zoomer"
       zoom_label: "Zoom"
       zoom_out: "Dézoomer"
+    help:
+      close: "Fermer l'aide"
+      open: "Aide"
+      title: "Aide de l'éditeur"
     edges:
       door: "Porte"
       low_wall: "Muret"
@@ -403,6 +408,9 @@ fr:
       floors_title: "Sols"
       walls_note: "Une salle, la pierre et un enclos se murent seuls du côté du vide. Une porte se pose aussi entre un sol et le vide."
     index:
+      delete_button: "Supprimer"
+      delete_confirmation: "Supprimer la carte « %{name} » ? Les tables qui l'utilisent gardent leur copie."
+      delete_label: "Supprimer %{name}"
       new: "Créer une carte"
       new_hint: "Dessinez une salle, un donjon, un village"
       own_title: "Vos cartes"
@@ -410,10 +418,9 @@ fr:
       title: "Mes cartes"
     making_choices:
       coming_soon: "Bientôt"
-      draw: "Dessiner la carte"
-      draw_hint: "Sols, murs et portes"
+      draw: "Dessiner"
       label: "Façon de créer la carte"
-      picture: "Utiliser une image"
+      picture: "Image"
     object_tools:
       families:
         decor: "Décors"
@@ -490,12 +497,6 @@ fr:
       label: "Nom de la carte"
       save: "Enregistrer"
       rename: "Renommer la carte"
-    settings:
-      delete: "Supprimer la carte"
-      delete_button: "Supprimer"
-      delete_confirmation: "Supprimer la carte « %{name} » ? Les tables qui l'utilisent gardent leur copie."
-      delete_description: "La carte quitte « Mes cartes ». On ne peut pas revenir en arrière."
-      title: "Carte"
     size: "%{columns} × %{rows} cases"
     update:
       renamed: "Carte renommée."

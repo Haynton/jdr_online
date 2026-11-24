@@ -44,7 +44,7 @@ export default class extends Controller {
                      "saveState", "zoomButtons"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
-                    shrinkQuestion: String }
+                    shrinkQuestion: String, clearQuestion: String }
 
   connect() {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
@@ -232,8 +232,10 @@ export default class extends Controller {
     this.save()
   }
 
-  clearEverything() {
+  // Asked first in the window of the app (Anthony's request), though Undo brings it all back
+  async clearEverything() {
     if (this.layout.isEmpty()) return
+    if (!(await confirmWithDialog(this.clearQuestionValue, this.clearButtonTarget))) return
 
     const before = this.layout.snapshot()
     this.layout.clear()
@@ -360,7 +362,7 @@ export default class extends Controller {
   }
 
   showRotation() {
-    this.rotationLabelTarget.textContent = this.rotationLabelValue.replace("__degrees__", this.placementRotation * 90)
+    this.rotationLabelTarget.title = this.rotationLabelValue.replace("__degrees__", this.placementRotation * 90)
   }
 
   // A right click takes away the object under the pointer, or the wall of a side close to it

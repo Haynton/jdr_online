@@ -375,7 +375,9 @@ en:
       cells: "cells"
       columns_label: "Number of columns (the rows follow, to keep the proportions)"
       clear: "Clear everything"
+      clear_button: "Clear everything"
       clear_hint: "Clears the whole map (Undo brings it back)"
+      clear_question: "Clear the whole map? Undo brings it back."
       eraser: "Eraser"
       fewer_columns: "One column less"
       figures:
@@ -392,12 +394,11 @@ en:
           one: "%{count} wall"
           other: "%{count} walls"
       help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: hold <kbd>Space</kbd> and drag, middle click, or two fingers. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: right click or <kbd>Delete</kbd> on an object or a wall."
-      map_tab: "Map"
       more_columns: "One column more"
-      my_maps: "My maps"
       objects_tab: "Objects"
       remove_object: "Take object away"
       rotate: "Turn (R) · %{degrees}°"
+      rotate_short: "Turn (R)"
       needs_javascript: "The map editor needs JavaScript to draw."
       panel_label: "Tools of the editor"
       redo: "Redo"
@@ -415,6 +416,10 @@ en:
       zoom_in: "Zoom in"
       zoom_label: "Zoom"
       zoom_out: "Zoom out"
+    help:
+      close: "Close the help"
+      open: "Help"
+      title: "Help of the editor"
     edges:
       door: "Door"
       low_wall: "Low wall"
@@ -432,6 +437,9 @@ en:
       floors_title: "Floors"
       walls_note: "A room, stone and an enclosure wall themselves on the side of the void. A door also goes between a floor and the void."
     index:
+      delete_button: "Delete"
+      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
+      delete_label: "Delete %{name}"
       new: "Create a map"
       new_hint: "Draw a room, a dungeon, a village"
       own_title: "Your maps"
@@ -439,10 +447,9 @@ en:
       title: "My maps"
     making_choices:
       coming_soon: "Coming soon"
-      draw: "Draw the map"
-      draw_hint: "Floors, walls and doors"
+      draw: "Draw"
       label: "Way of making the map"
-      picture: "Use a picture"
+      picture: "Picture"
     object_tools:
       families:
         decor: "Decor"
@@ -519,12 +526,6 @@ en:
       label: "Name of the map"
       save: "Save"
       rename: "Rename the map"
-    settings:
-      delete: "Delete the map"
-      delete_button: "Delete"
-      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
-      delete_description: "The map leaves “My maps”. This cannot be undone."
-      title: "Map"
     size: "%{columns} × %{rows} cells"
     update:
       renamed: "Map renamed."

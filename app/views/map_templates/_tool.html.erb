@@ -4,7 +4,7 @@
     object of more than one cell %>
 <% in_bar = local_assigns[:in_bar] %>
 <button type="button" aria-pressed="false" data-map-editor-target="tool" data-action="map-editor#chooseTool"
-        data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"
+        data-tool-kind="<%= kind %>" data-tool-key="<%= key %>" <%= tag.attributes(title: (label if in_bar)) %>
         class="<%= in_bar ? MapTemplatesHelper::MAP_BAR_TOOL_CLASSES : MapTemplatesHelper::MAP_TOOL_CLASSES %> relative">
   <%# The size of an object of more than one cell, in a corner, like the prototype (said by the name too: decorative) %>
   <% if local_assigns[:size] %>
@@ -18,5 +18,5 @@
     <svg viewBox="0 0 32 32" class="mx-auto mb-1 block size-11 overflow-hidden rounded-lg" aria-hidden="true"
          data-map-editor-target="swatch" data-tool-kind="<%= kind %>" data-tool-key="<%= key %>"></svg>
   <% end %>
-  <span class="<%= in_bar ? "" : "block truncate" %>"><%= label %></span>
+  <span class="<%= in_bar ? MapTemplatesHelper::MAP_BAR_LABEL_CLASSES : "block truncate" %>"><%= label %></span>
 </button>

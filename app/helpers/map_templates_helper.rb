@@ -16,6 +16,15 @@ module MapTemplatesHelper
     aria-pressed:text-primary-soft-ink focus-visible:outline-2 focus-visible:outline-offset-2
     focus-visible:outline-focus-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface
   ].join(" ").freeze
+  # The name of a button of the bar beside its icon, from 1280 px (Anthony's request: the icons alone on a phone and
+  # a small screen, where the bar would take several lines), the name kept for screen readers and in the tooltip
+  MAP_BAR_LABEL_CLASSES = "max-xl:sr-only".freeze
+  # A choice of the switch « Dessiner | Image » of the panel (map_templates/_making_choices), like those of the theme
+  # selector: half of the switch each, ink on the field background
+  MAKING_CHOICE_CLASSES = %w[
+    flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md px-2 text-[13px] text-ink transition-colors
+    has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring
+  ].join(" ").freeze
   # A family of the tab Objects, a pill like the filters of « Mes tables »: tonal gold once chosen
   MAP_FAMILY_TAB_CLASSES = %w[
     h-7 flex-1 rounded-full border border-line bg-surface px-2 text-xs font-semibold text-muted transition-colors
@@ -69,13 +78,18 @@ module MapTemplatesHelper
       map_editor_layout_value: map_template.layout_in_database.to_json,
       map_editor_columns_value: map_template.columns, map_editor_rows_value: map_template.rows,
       map_editor_url_value: map_template_layout_path(map_template),
-      map_editor_save_failed_message_value: t("map_templates.editor.save_failed"),
-      map_editor_figure_labels_value: map_editor_figure_labels.to_json,
-      # The number of degrees and the time are written by the page, in the place of these marks
+      map_editor_figure_labels_value: map_editor_figure_labels.to_json, **map_editor_texts }
+  end
+
+  # The texts the editor writes or asks: the number of degrees and the time are written by the page, in the place of
+  # their marks
+  def map_editor_texts
+    { map_editor_save_failed_message_value: t("map_templates.editor.save_failed"),
       map_editor_rotation_label_value: t("map_templates.editor.rotate", degrees: "__degrees__"),
       map_editor_saving_label_value: t("map_templates.editor.saving"),
       map_editor_saved_label_value: t("map_templates.editor.saved", time: "__time__"),
-      map_editor_shrink_question_value: t("map_templates.editor.shrink_question") }
+      map_editor_shrink_question_value: t("map_templates.editor.shrink_question"),
+      map_editor_clear_question_value: t("map_templates.editor.clear_question") }
   end
 
   # The words of the figures of the drawing, by count (« 1 case », « 12 cases »), for the plural rules of the page

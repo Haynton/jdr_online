@@ -26,12 +26,16 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
     assert_select "[data-map-editor-target=zoomButtons] button[aria-label=?]", "Zoomer"
     assert_select "header button[data-action='map-editor#addColumn'][aria-label=?]", "Une colonne de plus"
     assert_select "svg[data-map-editor-target=board][hidden]"
-    assert_select "aside a[href=?]", map_templates_path, text: "Mes cartes"
-    assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 3
+    # « Mes cartes » is in the navigation: not again in the panel (Anthony's request)
+    assert_select "aside a[href=?]", map_templates_path, count: 0
+    assert_select "[data-controller=map-help][hidden] button[aria-controls=map-editor-help][aria-label=?]", "Aide"
+    assert_select "aside [role=tablist][hidden] button[role=tab][id^=map-editor-tab-]", count: 2
+    assert_select "aside fieldset input[type=radio]:not([name])", count: 2
     assert_select "header input[name='map_template[name]'][value=?][aria-label=?]", "La taverne", "Nom de la carte"
     assert_select "header input#map-columns[value='10'][data-action='change->map-editor#resizeGrid']"
     assert_select "header [data-map-editor-target=rowsCount]", text: "10"
-    assert_select "#map-editor-panel-map form[action=?] button[data-turbo-confirm]", map_template_path(@map_template)
+    # Deleted from « Mes cartes », not here (Anthony's request)
+    assert_select "form[action=?] input[name=_method][value=delete]", map_template_path(@map_template), count: 0
   end
 
   test "the tab Objects shows one family at a time; the bar turns and takes objects away" do
@@ -42,7 +46,9 @@ class MapTemplateLayoutsTest < ActionDispatch::IntegrationTest
                   count: MapObjects.of_family("furniture").size
     assert_select "#map-editor-panel-objects button[data-tool-kind=object]", count: MapObjects::ALL.size
     assert_select "button[data-tool-key=bed] span[aria-hidden=true]", text: "2×1"
-    assert_select "header [role=toolbar] button[data-action='map-editor#rotatePlacement']", text: "Pivoter (R) · 0°"
+    # The degrees only in the tooltip: in the label, they changed the width of the button
+    assert_select "header [role=toolbar] button[data-action='map-editor#rotatePlacement'][title='Pivoter (R) · 0°']",
+                  text: "Pivoter (R)"
     assert_select "header [role=toolbar] button[data-tool-kind=remover]", text: "Retirer objet"
     # Only the tools of the panel have a swatch to draw: a swatch of another kind would stop the editor
     assert_select "header [data-map-editor-target=swatch]", count: 0
