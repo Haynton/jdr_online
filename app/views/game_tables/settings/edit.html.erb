@@ -43,6 +43,9 @@
               </span>
             </div>
 
+            <% if @game_table.ability_methods.any? %>
+              <%= render "game_tables/settings/ability_method_choice", form: form %>
+            <% end %>
             <% character_rules_coming_soon.each do |setting| %>
               <%= render "game_tables/settings/coming_soon_choice", scope: "rules", setting: setting %>
             <% end %>

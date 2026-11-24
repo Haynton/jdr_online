@@ -54,7 +54,7 @@ module GameTableCreationHelper
 
   # Rules of the game announced on the step Settings, not working yet, with their ways to play them (in their texts):
   # the ones of the creation of a character, then the ones of the game. The encumbrance, a yes or no, follows them
-  CHARACTER_RULES_COMING_SOON = %w[ability_method later_hit_points starting_equipment].freeze
+  CHARACTER_RULES_COMING_SOON = %w[later_hit_points starting_equipment].freeze
   GAME_RULES_COMING_SOON = %w[progression rest].freeze
 
   def character_rules_coming_soon
@@ -63,6 +63,12 @@ module GameTableCreationHelper
 
   def game_rules_coming_soon
     GAME_RULES_COMING_SOON
+  end
+
+  # The ways the template offers to get the scores of the abilities, by their label, then the player's choice
+  def ability_method_options(game_table)
+    game_table.ability_methods.map { |method| [method["label"], method["type"]] } +
+      [[t("game_tables.settings.edit.player_choice"), TableRules::PLAYER_CHOICE]]
   end
 
   # A list of the look of the fields, disabled, its chevron drawn beside it (CollectionSelectInput)
