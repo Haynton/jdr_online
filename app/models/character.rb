@@ -4,6 +4,7 @@
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
   include CharacterAbilityMethod
+  include CharacterHitPoints
 
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
@@ -117,7 +118,7 @@ class Character < ApplicationRecord
 
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)
   def computed_sheet_values
-    CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet,
+    CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, hit_point_rolls: hit_point_rolls_for_rules,
                                     level_thresholds: game_table.level_thresholds).call
   end
 

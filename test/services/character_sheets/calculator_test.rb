@@ -83,6 +83,20 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil hit_points.call("strength" => 14)
   end
 
+  test "rolled hit dice replace the average, each with Constitution, at least 1 a level; nothing while due" do
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => { "Magicien" => { "hit_die" => 6 } } },
+                       { "key" => "max_hp", "type" => "computed", "rule" => "hit_points_by_level",
+                         "class_from" => "class", "level_from" => "level", "based_on" => "strength" }]
+    sheet = { "class" => "Magicien", "strength" => 6, "level" => 3 }
+    hit_points = lambda do |rolls|
+      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], hit_point_rolls: rolls)
+                                 .call[:values]["max_hp"]
+    end
+
+    assert_equal "9", hit_points.call([6, 1])
+    assert_nil hit_points.call(HitPointMethods::Roll::NOT_ROLLED)
+  end
+
   test "the armour class without armour is 10 and Dexterity, plus the ability of the unarmored defense" do
     class_effects = { "Moine" => { "hit_die" => 8, "unarmored_defense" => "strength" }, "Magicien" => { "hit_die" => 6 } }
     fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },

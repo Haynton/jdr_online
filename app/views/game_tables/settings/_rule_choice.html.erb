@@ -1,0 +1,16 @@
+<%# A rule of the table with the ways its template offers to play it (TableRules): the scores of the abilities, the hit
+    points of the levels after the first. Its ways by their labels (in the words of the game), then the player's
+    choice, made while making their character. attribute: ability_method_choice or hit_point_method_choice %>
+<% hint_id = "#{attribute.dasherize}-hint" %>
+<div class="<%= setting_line_classes %>">
+  <div class="min-w-0">
+    <%= form.label attribute, class: "text-sm font-semibold text-ink" %>
+    <p id="<%= hint_id %>" class="mt-1 text-sm text-muted"><%= t("game_tables.settings.edit.#{attribute}_hint") %></p>
+    <%= form.error attribute, class: "mt-1 text-sm text-error-ink first-letter:uppercase" %>
+  </div>
+  <span class="relative block w-full shrink-0 sm:w-64">
+    <%= form.select attribute, rule_method_options(methods), {}, aria: { describedby: hint_id },
+                    class: coming_soon_choice_classes %>
+    <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+  </span>
+</div>

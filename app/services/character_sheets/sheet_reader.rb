@@ -6,11 +6,17 @@ module CharacterSheets
   class SheetReader
     attr_reader :fields, :sheet
 
-    def initialize(fields:, sheet:, level_thresholds:, modifiers:)
+    # hit_point_rolls: the hit dice rolled for the levels after the first ([5, 3]), nil for their average,
+    # HitPointMethods::Roll::NOT_ROLLED while a roll the table imposes is still to make
+    # (Character#kept_hit_point_rolls)
+    attr_reader :hit_point_rolls
+
+    def initialize(fields:, sheet:, level_thresholds:, modifiers:, hit_point_rolls: nil)
       @fields = fields
       @sheet = sheet
       @level_thresholds = level_thresholds
       @modifiers = modifiers
+      @hit_point_rolls = hit_point_rolls
     end
 
     # nil while the ability has no score

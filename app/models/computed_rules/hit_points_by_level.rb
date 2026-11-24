@@ -1,7 +1,9 @@
 module ComputedRules
   # At level 1, the highest roll of the hit die of the class (class_from) plus the modifier of based_on
-  # (Constitution); then at each level typed in level_from, the average of the die (half plus one) plus that modifier.
-  # A plain number, kept as a text ("8", not "+8"). Nothing until the class and the ability are known
+  # (Constitution); then at each level typed in level_from, the average of the die (half plus one) plus that modifier,
+  # or, when the hit dice were rolled (HitPointMethods::Roll, reader.hit_point_rolls), each roll plus that modifier,
+  # at least 1 a level; nothing while a roll the table imposes is still to make. A plain number, kept as a text ("8",
+  # not "+8"). Nothing until the class and the ability are known
   class HitPointsByLevel < Base
     KEY = "hit_points_by_level".freeze
     REQUIRED_PARAMETERS = %w[based_on level_from class_from].freeze
@@ -11,9 +13,18 @@ module ComputedRules
       sides = reader.class_effects(field["class_from"])["hit_die"]
       modifier = reader.modifier(field["based_on"])
       return unless sides && modifier
+      return if reader.hit_point_rolls == HitPointMethods::Roll::NOT_ROLLED
 
-      levels_after_the_first = reader.typed_level(field["level_from"]) - 1
-      (sides + modifier + (levels_after_the_first * ((sides / 2) + 1 + modifier))).to_s
+      (sides + modifier + later_levels_points(field, reader, sides, modifier)).to_s
+    end
+
+    private
+
+    def later_levels_points(field, reader, sides, modifier)
+      rolls = reader.hit_point_rolls
+      return rolls.sum { |roll| [roll + modifier, 1].max } if rolls
+
+      (reader.typed_level(field["level_from"]) - 1) * ((sides / 2) + 1 + modifier)
     end
   end
 end
