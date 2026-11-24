@@ -15,6 +15,11 @@
       { "type": "average", "label": "Hit die average", "help": "At each level after the first, the average of the hit die (5 for a d8), plus the Constitution modifier." },
       { "type": "roll", "label": "Hit die roll", "help": "At each level after the first, a roll of the hit die, plus the Constitution modifier (at least 1 point per level). One roll only, kept." }
     ],
+    "starting_equipment_methods": [
+      { "type": "either", "label": "Items or gold, as chosen", "help": "For the class and the background, each player takes the items offered or gold pieces." },
+      { "type": "items_only", "label": "Items only", "help": "Each player takes the items offered by their class and background." },
+      { "type": "gold_only", "label": "Gold only", "help": "Each player gets gold pieces and buys their equipment themselves." }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },
