@@ -21,6 +21,7 @@ Ce qu'il faut savoir pour mettre l'application en ligne et l'entretenir. Toute c
 | `APP_HOST` | L'adresse du site dans les liens des e-mails, sans `https://` : `www.fumblequest.com` | `heroku config:set` |
 | `BREVO_SMTP_LOGIN` | L'identifiant SMTP de Brevo, **complet** : `…@smtp-brevo.com` (Brevo › SMTP & API › SMTP, champ « Connexion »), pas l'adresse du compte | Anthony |
 | `BREVO_SMTP_KEY` | La clé SMTP de Brevo, qui commence par `xsmtpsib-` (une clé API `xkeysib-` ne marche pas en SMTP) | Anthony, sortie jetée |
+| `CLOUDINARY_URL` | Le compte Cloudinary qui stocke les images des cartes : `cloudinary://<API Key>:<API Secret>@<Cloud name>` (voir « Images (Cloudinary) ») | Anthony, sortie jetée |
 | `DATABASE_URL` | L'adresse de la base | Heroku, toute seule |
 
 **Attention : `heroku config:set` réécrit toujours la valeur qu'il vient de poser.** Pour un secret, toujours jeter sa sortie avec `> /dev/null`, sinon le secret s'affiche dans le terminal :
@@ -75,6 +76,18 @@ La tâche crée ou met à jour les modèles fournis et leurs catalogues, sans ri
 - Expéditeur : `noreply@fumblequest.com`.
 - **Blocage des IP inconnues désactivé** dans Brevo (Sécurité › IP autorisées) : les adresses de Heroku changent à chaque redémarrage. Sinon, erreur `525 Unauthorized IP address`.
 - Si « Mot de passe oublié » répond « L'e-mail n'a pas pu être envoyé » : `heroku logs -n 300 -a fumble-quest`, chercher `SMTP`. `535 Authentication failed` : identifiant ou clé faux. `525 Unauthorized IP address` : le blocage des IP.
+
+## Images (Cloudinary)
+
+Les images des cartes vont chez Cloudinary en production (Active Storage, service `cloudinary` de `config/storage.yml`, dossier `fumble_quest_production`) ; en développement et en test, elles restent sur le disque (`storage/`).
+
+- La valeur de `CLOUDINARY_URL` est **une seule adresse** : `cloudinary://<API Key>:<API Secret>@<Cloud name>`. Les trois sont dans Cloudinary › Settings › API Keys (le Cloud name en haut de la page, la clé et le secret dans le tableau, le secret montré par l'œil).
+- **Piège** : la ligne toute prête de cette page (« API environment variable ») cache le secret sous le texte `<your_api_secret>`, et commence par `CLOUDINARY_URL=`. Dans Heroku, la valeur commence par `cloudinary://` (le nom va dans l'autre case), et `<your_api_secret>`, chevrons compris, est remplacé par le vrai secret.
+- **Une valeur mal formée fait planter le site au démarrage** (« Application error ») : la gem `cloudinary` lit la variable dès que Rails démarre. Le 24 novembre, le site est tombé ainsi juste après le déploiement de l'étape Cartes ; il est revenu en corrigeant la valeur dans Settings › Config Vars (Heroku relance l'application seul). Pour vérifier le début de la valeur sans afficher le secret :
+
+```bash
+heroku config:get CLOUDINARY_URL -a fumble-quest | cut -c1-15
+```
 
 ## Changer la clé de Rails
 
