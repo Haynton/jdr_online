@@ -12,13 +12,17 @@ La fiche du personnage suit les règles de 2024 : classes, historiques, espèces
 
 Les sorts du catalogue (`db/seeds/catalogs/heroic_fantasy_spells.*.json`, sorts mineurs et niveaux 1 et 2 pour l'instant) viennent aussi du SRD 5.2, relevés sur la même API. Le texte anglais est celui du SRD, corrigé là où la source était mal extraite (paragraphes, tableau d'Augure, statistiques du destrier) ; le texte français est notre traduction du SRD, jamais celle d'un livre publié, avec les distances en mètres (1,50 mètre pour 5 pieds). Même mention d'attribution que ci-dessus.
 
-Les PNJ, les monstres et les objets prêts à l'emploi viennent encore du System Reference Document 5.1, sous la même licence. Mention d'attribution, telle que demandée par l'éditeur :
+Le bestiaire (`db/seeds/catalogs/heroic_fantasy_monsters.*.json`, les 177 créatures de facteur de puissance 0 à 2 pour l'instant) vient aussi du SRD 5.2, relevé sur la même API. Les attaques simples sont rangées en lignes (nom, toucher, dégâts, allonge ou portée) ; une attaque qui fait plus que des dégâts garde aussi son texte entier dans « Autres actions ». Le texte anglais est celui du SRD ; le texte français est notre traduction du SRD, avec les distances en mètres. Même mention d'attribution que ci-dessus.
+
+Les objets prêts à l'emploi viennent encore du System Reference Document 5.1, sous la même licence. Mention d'attribution, telle que demandée par l'éditeur :
 
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
 Modifications : sélection des règles, traduction en français, textes réécrits.
 
 ## Horreur cosmique (`cosmic_horror.*.json`)
+
+Ses quatre créatures (`db/seeds/catalogs/cosmic_horror_monsters.*.json`) sont écrites par l'équipe.
 
 D'après le moteur Basic Roleplaying de Chaosium, sous licence ORC. Mention, telle que donnée par Chaosium sur https://www.chaosium.com/orclicense/ :
 

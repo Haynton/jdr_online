@@ -1,0 +1,10 @@
+{
+  "template": "Horreur cosmique",
+  "kind": "monster",
+  "entries": [
+    {"key":"cultist","name":"Cultiste","properties":{"strength":11,"constitution":11,"size":12,"power":12,"dexterity":11,"hp":{"current":12,"max":12},"armor":0,"dread":"Aucune.","attacks":[{"name":"Couteau rituel","to_hit":35,"damage":"1d4+1","range":"Corps à corps"},{"name":"Revolver","to_hit":25,"damage":"1d10","range":"Distance, 15 m"}],"traits":"Fidèle d'un culte secret. Se croit protégé par ce qu'il vénère, et peut connaître une incantation."}},
+    {"key":"deep-one","name":"Profond","properties":{"strength":15,"constitution":12,"size":15,"power":11,"dexterity":10,"hp":{"current":14,"max":14},"armor":1,"dread":"Une perte modérée : sa démarche rappelle trop celle d'un homme.","attacks":[{"name":"Griffes palmées","to_hit":35,"damage":"1d6+1","range":"Corps à corps"},{"name":"Trident","to_hit":30,"damage":"1d8","range":"Corps à corps"}],"traits":"Être des profondeurs aux écailles grises, venu d'une cité engloutie au large de la côte. Respire sous l'eau ; peau épaisse."}},
+    {"key":"ghoul","name":"Goule","properties":{"strength":16,"constitution":13,"size":13,"power":10,"dexterity":13,"hp":{"current":13,"max":13},"armor":0,"dread":"Une petite perte au premier regard, davantage si on la voit se nourrir.","attacks":[{"name":"Griffes","to_hit":40,"damage":"1d6","range":"Corps à corps"},{"name":"Morsure","to_hit":30,"damage":"1d6, puis tient sa proie","range":"Corps à corps"}],"traits":"Créature voûtée à face de chien qui hante les cimetières et les tunnels sous la ville. Sent la terre humide ; se déplace sans bruit dans l'obscurité."}},
+    {"key":"mi-go","name":"Mi-Go","properties":{"strength":10,"constitution":10,"size":10,"power":13,"dexterity":14,"hp":{"current":10,"max":10},"armor":0,"dread":"Une perte modérée, plus forte si on découvre ce qu'elle transporte.","attacks":[{"name":"Pinces","to_hit":30,"damage":"1d6","range":"Corps à corps"}],"traits":"Créature fongique ailée venue d'au-delà des étoiles, qui mène d'étranges travaux dans les collines isolées. Vole lentement ; les photographies ne montrent qu'une tache floue."}}
+  ]
+}
