@@ -65,7 +65,7 @@
       <svg hidden role="img" aria-label="<%= t(".board_label", name: map_template.name_in_database) %>"
            class="block min-h-0 w-full flex-1 cursor-crosshair touch-none rounded-lg shadow-lg select-none"
            data-map-editor-target="board"
-           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
+           data-action="pointerdown->map-editor#startStroke pointermove->map-editor#continueStroke pointerup->map-editor#endStroke pointercancel->map-editor#endStroke pointerenter->map-editor#enterBoard pointerleave->map-editor#hidePointer wheel->map-editor#zoomWithWheel:!passive gesturestart->map-editor#startGesture:!passive gesturechange->map-editor#zoomWithGesture:!passive gestureend->map-editor#startGesture:!passive keydown.space@window->map-editor#holdSpace keyup.space@window->map-editor#releaseSpace keydown@window->map-editor#undoWithKeys keydown.r@window->map-editor#rotateWithKey keydown@window->map-editor#deleteWithKey contextmenu->map-editor#deleteWithRightClick">
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>

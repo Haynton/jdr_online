@@ -143,6 +143,20 @@ export default class extends Controller {
     this.showView()
   }
 
+  // Safari sends the pinch of a touchpad as gestures, not as a wheel: without them, it zoomed the whole page instead
+  // of the map. scale is counted from the start of the gesture
+  startGesture(event) {
+    event.preventDefault()
+    this.gestureScale = 1
+  }
+
+  zoomWithGesture(event) {
+    event.preventDefault()
+    this.view.zoomAround(this.boardPoint(event), event.scale / this.gestureScale)
+    this.gestureScale = event.scale
+    this.showView()
+  }
+
   // The space bar held over the board moves the map instead of drawing, as in drawing apps. Not while typing, nor
   // while the pointer is elsewhere: space still presses a focused button
   holdSpace(event) {
@@ -630,12 +644,11 @@ export default class extends Controller {
                      this.pointerMarksTarget)
   }
 
+  // From the view itself rather than getScreenCTM, which some browsers count wrong on a board resized or rounded:
+  // the zoom then went around the wrong point, and the map drifted off the middle
   boardPoint(event) {
-    const point = this.boardTarget.createSVGPoint()
-    point.x = event.clientX
-    point.y = event.clientY
-    const { x, y } = point.matrixTransform(this.boardTarget.getScreenCTM().inverse())
-    return [x, y]
+    const board = this.boardTarget.getBoundingClientRect()
+    return this.view.pointAt(event.clientX - board.left, event.clientY - board.top)
   }
 
   // One save at a time, so that an older drawing never arrives last: a stroke made meanwhile is sent once it is back

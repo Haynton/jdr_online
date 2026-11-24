@@ -59,6 +59,15 @@ export default class BoardView {
     this.centerY = centerWithin(this.centerY, this.boardHeight * this.unitsPerPixel(), this.grid.height)
   }
 
+  // The point of the map under a pixel of the board, counted from its top left corner: the view keeps the
+  // proportions of the board, so one scale serves both directions
+  pointAt(pixelX, pixelY) {
+    const unitsPerPixel = this.unitsPerPixel()
+    const left = this.centerX - (this.boardWidth * unitsPerPixel) / 2
+    const top = this.centerY - (this.boardHeight * unitsPerPixel) / 2
+    return [left + pixelX * unitsPerPixel, top + pixelY * unitsPerPixel]
+  }
+
   viewBox() {
     const width = this.boardWidth * this.unitsPerPixel()
     const height = this.boardHeight * this.unitsPerPixel()
