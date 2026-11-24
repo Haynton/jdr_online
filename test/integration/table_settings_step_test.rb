@@ -49,9 +49,9 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
   test "the rules of the game are announced, disabled, with the rule played today first, and send nothing" do
     get edit_game_table_settings_path(@game_table)
 
-    assert_select "select[disabled]:not([name])", count: 3
-    assert_select "select[aria-labelledby=rules-starting_equipment-label] option:first-child",
-                  text: "Objets ou or, au choix"
+    assert_select "select[disabled]:not([name])", count: 2
+    assert_select "select[aria-labelledby=rules-progression-label] option:first-child",
+                  text: "Points d'expérience"
     assert_select "section[aria-labelledby=game-settings-title]" do
       assert_select "h2", text: "Partie"
       assert_select "input[type=checkbox][role=switch][disabled][aria-labelledby=rules-encumbrance-label]:not([name])"

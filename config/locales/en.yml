@@ -55,6 +55,7 @@ en:
         sheet_template: "Sheet template"
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
+        starting_equipment_method_choice: "Starting equipment"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -591,6 +592,7 @@ en:
       rules:
         ability_methods: "ability scores"
         hit_point_methods: "hit points"
+        starting_equipment_methods: "starting equipment"
       field_types:
         ability: "ability"
         ability_bonuses: "ability bonuses"
@@ -926,6 +928,7 @@ en:
         game: "Game"
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
+        starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."
@@ -948,13 +951,6 @@ en:
             - "Standard (1 h and 8 h)"
             - "Heroic (5 min and 1 h)"
             - "Gritty (8 h and 7 days)"
-        starting_equipment:
-          hint: "What the players get when they make their character."
-          label: "Starting equipment"
-          options:
-            - "Items or gold, their choice"
-            - "Items only"
-            - "Gold only"
       update:
         saved: "Settings saved."
     details:

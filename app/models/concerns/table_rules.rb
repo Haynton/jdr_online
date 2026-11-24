@@ -1,14 +1,19 @@
 # The rules of the game the game master picks for a table (game_tables.rules), among the ways its template offers to
 # play them: the way to get the scores of the abilities (AbilityMethods, character_fields.ability_methods) and the way
-# to get the hit points of the levels after the first (HitPointMethods, character_fields.hit_point_methods). For each
-# one, a way of the template, or the player's choice (decision: the game master may leave it to each player)
+# to get the hit points of the levels after the first (HitPointMethods, character_fields.hit_point_methods), the
+# starting equipment (StartingEquipmentMethods, character_fields.starting_equipment_methods). For each one, a way of
+# the template, or the player's choice (decision: the game master may leave it to each player) where it has one
 module TableRules
   extend ActiveSupport::Concern
 
   # Leaves the way to each player, while making their character
   PLAYER_CHOICE = "player_choice".freeze
   # Each rule (its key in game_tables.rules) and the list of its ways in the template
-  RULE_METHODS = { "ability_method" => "ability_methods", "hit_point_method" => "hit_point_methods" }.freeze
+  RULE_METHODS = { "ability_method" => "ability_methods", "hit_point_method" => "hit_point_methods",
+                   "starting_equipment_method" => "starting_equipment_methods" }.freeze
+  # The rules the game master may leave to the player. Not the starting equipment: its first way already lets the
+  # player pick items or gold
+  RULES_WITH_PLAYER_CHOICE = %w[ability_method hit_point_method].freeze
 
   included do
     validate :rule_methods_offered_by_template
@@ -78,6 +83,15 @@ module TableRules
     pick_rule_method("hit_point_method", type)
   end
 
+  # The starting equipment
+  def starting_equipment_method_choice
+    rule_choice("starting_equipment_method")
+  end
+
+  def starting_equipment_method_choice=(type)
+    pick_rule_method("starting_equipment_method", type)
+  end
+
   private
 
   def former_ability_roll(ability_roll)
@@ -87,12 +101,18 @@ module TableRules
   end
 
   def rule_methods_offered_by_template
-    { "ability_method" => ability_methods, "hit_point_method" => rule_methods("hit_point_method") }
-      .each do |rule, methods|
-        chosen = rules.to_h[rule]
-        next if chosen.blank? || chosen == PLAYER_CHOICE || methods.any? { |method| method["type"] == chosen }
+    RULE_METHODS.each_key do |rule|
+      chosen = rules.to_h[rule]
+      next if chosen.blank? || offered_choice?(rule, chosen)
 
-        errors.add(:"#{rule}_choice", :inclusion)
-      end
+      errors.add(:"#{rule}_choice", :inclusion)
+    end
+  end
+
+  def offered_choice?(rule, chosen)
+    return RULES_WITH_PLAYER_CHOICE.include?(rule) if chosen == PLAYER_CHOICE
+
+    methods = rule == "ability_method" ? ability_methods : rule_methods(rule)
+    methods.any? { |method| method["type"] == chosen }
   end
 end
