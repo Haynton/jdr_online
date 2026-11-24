@@ -46,6 +46,15 @@ class GameTablesController < ApplicationController
     redirect_to edit_game_table_details_path(game_table)
   end
 
+  # Deleted by its game master only, a draft or a table ready (decision), from its page Informations: its players,
+  # their characters, its NPCs and its own catalog entries go with it. Its message is for screen readers only, as for a
+  # template deleted: the table is no longer in "My tables"
+  def destroy
+    game_table = current_user.participations.game_master.find_by!(game_table_id: params[:id]).game_table
+    game_table.destroy!
+    redirect_to game_tables_path, flash: { screen_reader_notice: t(".deleted", name: game_table.name) }
+  end
+
   private
 
   # Only among the tables of the user: the id of another table falls back to the newest one

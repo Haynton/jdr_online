@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
   root to: "pages#home"
-  resources :game_tables, only: %i[index new create show edit] do
+  resources :game_tables, only: %i[index new create show edit destroy] do
     # The steps of the creation of a draft (app/controllers/game_tables/). The first one of a new table is
     # GameTablesController#new; the maps come with their milestone
     scope module: :game_tables do
