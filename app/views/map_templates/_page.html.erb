@@ -1,0 +1,8 @@
+<%# A page of a map (a new map, the page of a map), laid out like the pages of a creation without their band (use the
+    map_template_page helper): across the whole width beside the navigation, at least as high as the screen (less the
+    room kept under the floating bar of a phone), its content a column that fills it, so that the buttons (mt-auto) sit
+    at the bottom of the screen on a short page. The map editor will take that room %>
+<main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
+  <%= render "shared/flashes" %>
+  <%= content %>
+</main>

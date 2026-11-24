@@ -127,6 +127,11 @@ module NavigationHelper
     controller_path.start_with?("sheet_templates")
   end
 
+  # The list of the maps and the page of one of them
+  def map_templates_page?
+    controller_path.start_with?("map_templates")
+  end
+
   # Tells screen readers which link leads to the page being shown
   def current_page_aria(current)
     current ? { current: "page" } : {}

@@ -42,6 +42,12 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      map_template:
+        columns: "Columns"
+        layout: "Map drawing"
+        name: "Name"
+        owner: "Owner"
+        rows: "Rows"
       game_map:
         grid_cell_size: "Cell size (px)"
         grid_visible: "Show the grid"
@@ -86,6 +92,18 @@ en:
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
       models:
+        map_template:
+          attributes:
+            columns:
+              in: "must be from %{minimum} to %{maximum}"
+            rows:
+              in: "must be from %{minimum} to %{maximum}"
+            layout:
+              invalid_format: "does not have the expected form"
+              cell_outside_grid: "holds the cell %{cell}, outside the grid"
+              unknown_floor: "holds an unknown floor: %{floor}"
+              invalid_edge_side: "holds an edge that is not between two neighbouring cells: %{side}"
+              unknown_edge: "holds an unknown wall: %{edge}"
         game_map:
           attributes:
             image:
@@ -327,6 +345,7 @@ en:
       label: "Main navigation"
       my_tables: "My tables"
       my_templates: "My templates"
+      my_maps: "My maps"
       pending_invitations:
         one: "1 invitation waiting"
         other: "%{count} invitations waiting"
@@ -339,6 +358,58 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+  map_templates:
+    create:
+      created: "Map “%{name}” created."
+    destroy:
+      deleted: "Map “%{name}” deleted."
+    edit:
+      back: "My maps"
+      delete: "Delete the map"
+      delete_button: "Delete"
+      delete_confirmation: "Delete the map “%{name}”? The tables that use it keep their copy."
+      delete_description: "The map leaves “My maps”. This cannot be undone."
+      presentation_title: "Presentation"
+      save: "Save"
+    editor:
+      board_label: "Drawing of the map “%{name}”"
+      edges_hint: "Aim at the side between two cells. Go over it again to take it away."
+      edges_title: "Walls and doors"
+      eraser: "Eraser"
+      eraser_hint: "Near a side, takes its wall away; otherwise, the floor of the cell."
+      eraser_title: "Erase"
+      floors_hint: "Drag over the cells to paint them. The walls around a room draw themselves."
+      floors_title: "Floors"
+      needs_javascript: "The map editor needs JavaScript to draw."
+      save_failed: "The drawing could not be saved. It will be with the next stroke."
+      tools_label: "Tools of the editor"
+    edges:
+      door: "Door"
+      low_wall: "Low wall"
+      stone_wall: "Stone wall"
+      wall: "Wall"
+    floors:
+      enclosure: "Enclosure"
+      open_air: "Open air"
+      outdoors: "Outdoors"
+      room: "Room"
+      stone: "Stone"
+      water: "Water"
+    index:
+      new: "Create a map"
+      new_hint: "Draw a room, a dungeon, a village"
+      own_title: "Your maps"
+      subtitle: "Draw your maps, then use them in your games."
+      title: "My maps"
+    new:
+      cancel: "Cancel"
+      create: "Create the map"
+      size_hint: "From 10 to 60 cells. It cannot be changed afterwards."
+      subtitle: "Its name and the size of its grid, in cells."
+      title: "New map"
+    size: "%{columns} × %{rows} cells"
+    update:
+      renamed: "Map renamed."
   sheet_templates:
     banner_colors:
       arcane: "Arcane"

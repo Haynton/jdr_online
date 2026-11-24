@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<script>try { const t = localStorage.getItem("fq-theme"); if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark"); } catch (e) { }</script>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fumble Quest · Éditeur de carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: "InterLocal"; src: local("Inter"); }
+  :root { color-scheme: light;
+    --page: #faf6ee; --well: #efe7d8; --surface: #fffdf9; --field: #ebe2d1; --line: #ebe3d3; --field-line: #8f8270;
+    --ink: #27211a; --muted: #796e60; --primary: #1e231f; --primary-hover: #343b35; --primary-ink: #fbf5e8;
+    --soft: #efe2c0; --soft-ink: #6b4d10; --raised: #ebe3d3; --brass: #6b4d10; --focus: #6b4d10; --tile: #f3ecde;
+    --danger: #b91c1c; --error-ink: #9b2c1f; --logo-bg: #1f1b18; --shadow: rgba(39, 33, 26, 0.14); --veil: rgba(39, 33, 26, 0.38); }
+  .dark { color-scheme: dark;
+    --page: #191919; --well: #111111; --surface: #222222; --field: #333333; --line: #363636; --field-line: #858585;
+    --ink: #ece7db; --muted: #c2c7bf; --primary: #ece7db; --primary-hover: #d6d0c2; --primary-ink: #101513;
+    --soft: #33290f; --soft-ink: #e2c07c; --raised: #2e2e2e; --brass: #e2c07c; --focus: #e2c07c; --tile: #e9e1cf;
+    --danger: #b91c1c; --error-ink: #f87171; --shadow: rgba(0, 0, 0, 0.45); --veil: rgba(0, 0, 0, 0.6); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--page); }
+  body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: var(--ink); }
+  #stage { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; transform-origin: 0 0; background: var(--page); display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 64px minmax(0, 1fr); overflow: hidden; }
+  header { display: flex; align-items: center; gap: 8px; padding: 0 16px; min-width: 0; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: center; gap: 10px; flex: none; width: 236px; min-width: 0; margin-right: 4px; }
+  .brand svg { width: 32px; height: 32px; flex: none; color: #fff; }
+  .brand div { min-width: 0; }
+  .brand b { display: block; font-size: 15px; font-weight: 800; line-height: 1.2; white-space: nowrap; }
+  .brand small, #saveStatus { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .seg { display: inline-flex; align-items: center; gap: 4px; }
+  .seg.pill { background: var(--field); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg.pill button { border: none; background: transparent; color: var(--muted); height: 32px; }
+  .seg.pill button:hover { background: transparent; color: var(--ink); }
+  .seg.pill button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px var(--shadow); }
+  .sep { width: 1px; height: 24px; background: var(--line); margin: 0 2px; }
+  button { font: inherit; font-size: 13px; font-weight: 600; padding: 0 10px; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; white-space: nowrap; transition: background-color 0.15s; }
+  button:hover { background: var(--raised); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; background: var(--surface); }
+  button.on { border-color: color-mix(in srgb, var(--soft-ink) 50%, transparent); background: var(--soft); color: var(--soft-ink); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  button.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+  button.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+  button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  button.icon { width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+  button.icon svg { width: 18px; height: 18px; }
+  #stats { margin-left: auto; font-size: 11px; color: var(--muted); text-align: right; min-width: 0; line-height: 1.35; }
+  .body { display: grid; grid-template-columns: 1fr 340px; min-height: 0; }
+  .board { position: relative; min-width: 0; min-height: 0; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--well); }
+  #b { display: block; flex: none; touch-action: none; cursor: crosshair; border-radius: 8px; box-shadow: 0 6px 24px var(--shadow); }
+  aside { background: var(--surface); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  #tabs { display: flex; gap: 2px; padding: 10px 10px 0; border-bottom: 1px solid var(--line); }
+  .tab { flex: 1 1 0; font-size: 12.5px; height: auto; padding: 8px 2px; border: none; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--muted); }
+  .tab:hover { background: none; color: var(--ink); }
+  .tab.on { color: var(--ink); border-bottom-color: var(--brass); background: none; }
+  #pal { flex: 1 1 auto; overflow-y: auto; padding: 12px 14px; min-height: 0; scrollbar-color: var(--field-line) transparent; }
+  #pal h2 { font-size: 11px; font-weight: 700; color: var(--brass); margin: 4px 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+  .item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 2px; text-align: center; cursor: pointer; font-size: 10.5px; line-height: 1.2; position: relative; color: var(--ink); transition: background-color 0.15s; }
+  .item:hover { background: var(--raised); }
+  .item.on { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass) inset; background: var(--soft); color: var(--soft-ink); font-weight: 600; }
+  .item svg { width: 44px; height: 44px; display: block; margin: 0 auto 4px; border-radius: 8px; background: var(--tile); }
+  .item .blk { position: absolute; top: 4px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: #c0392b; border: 1.5px solid var(--surface); box-sizing: content-box; }
+  .item .sz { position: absolute; top: 3px; left: 4px; font-size: 9px; font-weight: 600; color: #4d473f; background: rgba(255, 253, 249, 0.8); border-radius: 4px; padding: 0 3px; }
+  .legend { font-size: 11.5px; color: var(--muted); display: flex; flex-direction: column; gap: 5px; margin: 0 0 12px; padding: 10px 12px; background: var(--page); border: 1px solid var(--line); border-radius: 10px; line-height: 1.4; }
+  .legend span { display: flex; align-items: center; gap: 8px; }
+  .legend i { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #c0392b; display: inline-block; }
+  .legend i.climb, .item .blk.climb { background: #d68910; }
+  .legend i.free { background: #2f7f74; }
+  .legend i.zone { border-radius: 2px; background: repeating-linear-gradient(45deg, #c0392b 0 2px, transparent 2px 4px); outline: 1px solid #c0392b; }
+  label { font-size: 13px; font-weight: 600; color: var(--ink); display: block; margin-top: 8px; margin-bottom: 4px; }
+  input[type=range] { width: 100%; accent-color: var(--brass); }
+  .note { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 4px 0 10px; }
+  #modal, #nameModal { position: absolute; inset: 0; background: var(--veil); display: flex; align-items: center; justify-content: center; z-index: 10; }
+  #nameModal { z-index: 11; }
+  #modal[hidden], #nameModal[hidden] { display: none; }
+  .dlg.small { width: 440px; display: block; }
+  .dlg.small h2 { margin-bottom: 14px; }
+  #nameInput, #bgCells { font: inherit; font-size: 14px; height: 44px; padding: 0 14px; border: 1px solid var(--field-line); border-radius: 8px; background: var(--field); color: var(--ink); }
+  #nameInput { width: 100%; }
+  #nameInput::placeholder { color: var(--muted); }
+  #bgCells { width: 80px; height: 36px; font-size: 13px; padding: 0 10px; }
+  #nameErr, #jsonErr { font-size: 12px; color: var(--error-ink); min-height: 18px; margin: 6px 0; }
+  .btnlike { font-size: 13px; font-weight: 600; height: 36px; line-height: 36px; padding: 0 14px; border-radius: 8px; background: var(--primary); color: var(--primary-ink); cursor: pointer; display: inline-block; margin: 0; }
+  .btnlike:hover { background: var(--primary-hover); }
+  #tabs[hidden] { display: none; }
+  .ptop { padding: 12px 12px 0; display: grid; gap: 8px; }
+  .mode { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .mode button { text-align: left; height: auto; padding: 9px 11px; display: grid; gap: 2px; white-space: normal; border-radius: 10px; background: var(--surface); }
+  .mode button b { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .mode button span { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .mode button.on { background: var(--soft); border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass) inset; }
+  .mode button.on b, .mode button.on span { color: var(--soft-ink); }
+  .maps { justify-self: stretch; font-size: 13px; }
+  #tabs.dim .tab { color: var(--muted); }
+  .chips { display: flex; gap: 6px; margin: 2px 0 12px; }
+  .chip { flex: 1; font-size: 12px; font-weight: 600; height: 30px; padding: 0 8px; border-radius: 999px; border-color: var(--line); background: var(--surface); color: var(--muted); }
+  .chip.on { background: var(--soft); border-color: color-mix(in srgb, var(--soft-ink) 50%, transparent); color: var(--soft-ink); }
+  .drop { border: 1.5px dashed var(--field-line); border-radius: 12px; padding: 16px; text-align: center; display: grid; gap: 8px; justify-items: center; background: var(--page); margin-bottom: 8px; }
+  .drop.over { border-color: var(--brass); background: var(--soft); }
+  .drop p { margin: 0; font-size: 12.5px; color: var(--muted); }
+  #bgPreview img { max-width: 100%; max-height: 150px; border-radius: 8px; border: 1px solid var(--line); display: block; }
+  .empty { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 6px 0; }
+  .tpl.current { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass); }
+  .dlg { width: 920px; background: var(--surface); border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 16px 40px var(--shadow); padding: 22px 24px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; color: var(--ink); }
+  .dlg h2 { grid-column: 1 / -1; margin: 0; font-size: 18px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+  .dlg h3 { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+  .dlg p { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  #pngImg { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: var(--well); border: 1px solid var(--line); border-radius: 8px; display: block; margin-bottom: 10px; }
+  #jsonBox { width: 100%; height: 250px; font: 11px/1.4 ui-monospace, Menlo, monospace; border: 1px solid var(--field-line); border-radius: 8px; padding: 10px; resize: none; background: var(--field); color: var(--ink); }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  a.btn { font-size: 13px; font-weight: 600; height: 36px; line-height: 36px; padding: 0 14px; border-radius: 8px; background: var(--primary); color: var(--primary-ink); text-decoration: none; display: inline-block; }
+  .tpls { display: grid; gap: 10px; }
+  .tpl { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .thumb { aspect-ratio: 672 / 504; background: #f1e9d8; border-bottom: 1px solid var(--line); }
+  .thumb svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .tpl-body { padding: 10px 12px 12px; display: grid; gap: 4px; }
+  .tpl-body b { font-size: 14px; font-weight: 700; }
+  .tpl-body span { font-size: 12px; color: var(--muted); line-height: 1.45; }
+  .tpl-body button { justify-self: start; margin-top: 6px; }
+  .help { border-top: 1px solid var(--line); padding: 10px 14px 12px; font-size: 11.5px; color: var(--muted); line-height: 1.6; background: var(--page); }
+  .help b { color: var(--ink); font-weight: 600; }
+  kbd { font: inherit; font-size: 10.5px; font-weight: 600; border: 1px solid var(--field-line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--surface); color: var(--ink); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <header>
+    <div class="brand"><svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#1f1b18"></rect><path d="M17 6l9 5.2v10.4L17 27l-9-5.4V11.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M17 6v8l9-2.8M17 14l-9-2.8M17 14l5.6 9.6M17 14l-5.6 9.6M11.4 23.6h11.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" opacity="0.8"></path></svg><div><b>Fumble Quest</b><small id="saveStatus">Éditeur de carte</small></div></div>
+    <div class="seg pill" role="group" aria-label="Type de grille"><button id="gSq" class="on">Carrée</button><button id="gHx">Hexagonale</button></div>
+    <div class="sep"></div>
+    <div class="seg"><button id="bSave" class="primary" title="Ctrl ou Cmd + S">Enregistrer</button><button id="bExport">Exporter</button></div>
+    <div class="sep"></div>
+    <div class="seg"><button id="bUndo" title="Ctrl ou Cmd + Z">Annuler</button><button id="bRedo" title="Ctrl ou Cmd + Maj + Z">Rétablir</button></div>
+    <div class="sep"></div>
+    <div class="seg"><button id="bRot">Pivoter (R)</button><button id="bEraseObj" title="Retire seulement les objets">Retirer objet</button><button id="bErase">Gomme</button><button id="bClear">Tout effacer</button></div>
+    <div class="sep"></div>
+    <div class="seg"><button id="bPass" aria-pressed="false" title="Montre ce qui bloque le déplacement des pions">Blocages</button></div>
+    <div id="stats"></div>
+    <button id="bTheme" class="icon" aria-label="Thème sombre" title="Thème sombre"></button>
+  </header>
+  <div class="body">
+    <div class="board"><svg id="b" role="img" aria-label="Plateau avec pièces, murs, portes et mobilier"></svg></div>
+    <aside>
+      <div class="ptop">
+        <div class="mode" role="group" aria-label="Façon de créer la carte">
+          <button data-mode="dessin"><b>Dessiner la carte</b><span>Modèles, sols, murs</span></button>
+          <button data-mode="image"><b>Utiliser une image</b><span>Ta carte, grille et blocages</span></button>
+        </div>
+        <button id="bMaps" class="maps">Mes cartes</button>
+      </div>
+      <div id="tabs"></div>
+      <div id="pal"></div>
+      <div class="help">
+        <div data-mode="dessin"><b>Sols</b> : glisse pour peindre. <b>Murs et portes</b> : vise le bord entre deux cases.<br>
+        <b>Objets</b> : <kbd>R</kbd> choisit le sens, clic sur un objet posé pour le tourner.<br>
+        <b>Passage</b> : choisis ce qui bloque les pions, objet par objet ou case par case.<br>
+        <b>Retirer</b> : clic droit ou <kbd>Suppr</kbd> sur un objet ou un mur. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler.</div>
+        <div data-mode="image" hidden><b>Image</b> : glisse ou choisis une image, puis indique sa largeur en cases pour caler la grille.<br><b>Passage</b> : peins les cases que les pions ne peuvent pas traverser.<br><kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler un réglage.</div>
+      </div>
+    </aside>
+  </div>
+  <div id="nameModal" hidden>
+    <div class="dlg small" role="dialog" aria-labelledby="nameTitle">
+      <h2 id="nameTitle">Enregistrer la carte</h2>
+      <label for="nameInput">Nom de la carte</label>
+      <input id="nameInput" maxlength="60" autocomplete="off" placeholder="La taverne du Sanglier Rieur">
+      <div id="nameErr" role="status"></div>
+      <div class="row" style="justify-content: flex-end"><button id="nameCancel">Annuler</button><button id="nameOk" class="primary">Enregistrer</button></div>
+    </div>
+  </div>
+  <div id="modal" hidden>
+    <div class="dlg" role="dialog" aria-label="Exporter la carte">
+      <h2>Exporter la carte <button id="mClose">Fermer</button></h2>
+      <div>
+        <h3>Image PNG</h3>
+        <p>Image haute définition de la carte, sans grille de survol. Tu peux aussi faire un clic droit sur l'image puis « Enregistrer l'image ».</p>
+        <img id="pngImg" alt="Aperçu de la carte exportée">
+        <button id="dlPng" class="primary" hidden>Télécharger le PNG</button>
+      </div>
+      <div>
+        <h3>Données de la carte</h3>
+        <p>Cases, murs et objets au format JSON. Colle ici une carte exportée puis « Importer » pour la recharger.</p>
+        <textarea id="jsonBox" spellcheck="false" aria-label="Données de la carte"></textarea>
+        <div id="jsonErr" role="status"></div>
+        <div class="row"><button id="bCopy">Copier</button><button id="dlJson" hidden>Télécharger le JSON</button><button id="bImport" class="primary">Importer</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NS = 'http://www.w3.org/2000/svg', INK = '#2a1f16', PAPER = '#f7f4ee', ROCK = '#d2ccbf', STONE = '#d6d0c3', VOID = '#f1e9d8';
+const svg = document.getElementById('b');
+const hash = (x, y, k) => { let h = (x * 374761393 + y * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ h >>> 13, 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+const el = (n, a, p) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const jit = (s, k, a = 0.8) => (hash(s, k, 77) - 0.5) * a;
+const f1 = v => v.toFixed(1);
+const DECOR = {
+  colonne: { label: 'Colonne', blocks: true, draw: (g, cx, cy, s) => {
+    el('circle', { cx, cy: cy + 1.2, r: 6.5, fill: '#cfc7ba' }, g);
+    el('circle', { cx, cy, r: 6.5, fill: PAPER, stroke: INK, 'stroke-width': 1.8 }, g);
+    el('path', { d: `M${cx - 3.5} ${cy + 2} a4 4 0 0 0 7 0`, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+  } },
+  rocher: { label: 'Rocher', blocks: true, draw: (g, cx, cy, s) => {
+    const j = k => jit(s, k, 2.4);
+    el('path', { d: `M${cx - 8 + j(1)} ${cy + 3} C${cx - 9} ${cy - 5 + j(2)} ${cx - 2} ${cy - 9} ${cx + 4} ${cy - 7 + j(3)} C${cx + 10} ${cy - 5} ${cx + 10} ${cy + 4} ${cx + 6} ${cy + 7} C${cx + 1} ${cy + 9} ${cx - 6} ${cy + 8} ${cx - 8 + j(1)} ${cy + 3}Z`, fill: PAPER, stroke: INK, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: `M${cx - 3} ${cy + 5} l4 -4 M${cx} ${cy + 6} l5 -5 M${cx + 3} ${cy + 6} l4 -4`, stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round' }, g);
+  } },
+  coffre: { label: 'Coffre', blocks: true, draw: (g, cx, cy) => {
+    el('rect', { x: cx - 7, y: cy - 5, width: 14, height: 10, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    el('line', { x1: cx - 7, y1: cy - 1.5, x2: cx + 7, y2: cy - 1.5, stroke: INK, 'stroke-width': 1.2 }, g);
+    el('rect', { x: cx - 1.5, y: cy - 2.8, width: 3, height: 3.5, fill: INK }, g);
+    el('path', { d: `M${cx - 4} ${cy - 5} v10 M${cx + 4} ${cy - 5} v10`, stroke: INK, 'stroke-width': 0.7 }, g);
+  } },
+  tonneau: { label: 'Tonneau', blocks: true, draw: (g, cx, cy) => {
+    el('circle', { cx, cy, r: 7.5, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    el('circle', { cx, cy, r: 5, fill: 'none', stroke: INK, 'stroke-width': 0.8 }, g);
+    el('path', { d: `M${cx - 4.5} ${cy - 2} H${cx + 4.5} M${cx - 4.8} ${cy + 1} H${cx + 4.8}`, stroke: INK, 'stroke-width': 0.7 }, g);
+  } },
+  table: { label: 'Table', blocks: true, draw: (g, cx, cy) => {
+    el('rect', { x: cx - 9, y: cy - 6, width: 18, height: 12, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    el('path', { d: `M${cx - 9} ${cy - 2} H${cx + 9} M${cx - 9} ${cy + 2} H${cx + 9}`, stroke: INK, 'stroke-width': 0.6 }, g);
+    el('circle', { cx: cx + 3, cy: cy - 1, r: 1.6, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+  } },
+  statue: { label: 'Statue', blocks: true, draw: (g, cx, cy) => {
+    el('rect', { x: cx - 8, y: cy - 8, width: 16, height: 16, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    el('circle', { cx, cy, r: 4.5, fill: 'none', stroke: INK, 'stroke-width': 1.3 }, g);
+    el('path', { d: `M${cx - 8} ${cy - 8} l3 3 M${cx + 8} ${cy - 8} l-3 3 M${cx - 8} ${cy + 8} l3 -3 M${cx + 8} ${cy + 8} l-3 -3`, stroke: INK, 'stroke-width': 0.8 }, g);
+  } },
+  escalier: { label: 'Escalier', blocks: false, draw: (g, cx, cy) => {
+    const x = cx - 10, y = cy - 10;
+    el('path', { d: `M${x} ${y} V${y + 20} M${x + 20} ${y} V${y + 20}`, stroke: INK, 'stroke-width': 1.5 }, g);
+    let d = ''; for (let i = 0; i < 6; i++) d += `M${x} ${y + 2 + i * 3.4} H${x + 20} `;
+    el('path', { d, stroke: INK, 'stroke-width': 1.1 }, g);
+    el('path', { d: `M${cx} ${cy + 6} V${cy - 5} M${cx - 3} ${cy - 2} L${cx} ${cy - 5} L${cx + 3} ${cy - 2}`, stroke: INK, 'stroke-width': 1.3, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+  } },
+  piege: { label: 'Piège', blocks: false, draw: (g, cx, cy) => {
+    el('circle', { cx, cy, r: 8, fill: 'none', stroke: INK, 'stroke-width': 1.5 }, g);
+    const p = [0, 1, 2, 3, 4].map(i => { const a = -Math.PI / 2 + i * 4 * Math.PI / 5; return `${(cx + Math.cos(a) * 7).toFixed(1)} ${(cy + Math.sin(a) * 7).toFixed(1)}`; });
+    el('path', { d: 'M' + p.join(' L') + 'Z', fill: 'none', stroke: INK, 'stroke-width': 0.9, 'stroke-linejoin': 'round' }, g);
+  } },
+  crane: { label: 'Ossements', blocks: false, draw: (g, cx, cy) => {
+    el('path', { d: `M${cx - 5} ${cy} a5 5 0 1 1 10 0 v2.5 h-2 v2 h-6 v-2 h-2Z`, fill: PAPER, stroke: INK, 'stroke-width': 1.3, 'stroke-linejoin': 'round' }, g);
+    el('circle', { cx: cx - 2, cy: cy - 0.5, r: 1.3, fill: INK }, g);
+    el('circle', { cx: cx + 2, cy: cy - 0.5, r: 1.3, fill: INK }, g);
+    el('path', { d: `M${cx - 9} ${cy + 8} L${cx - 3} ${cy + 5} M${cx + 4} ${cy + 6} L${cx + 9} ${cy + 9}`, stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, g);
+  } },
+  vegetation: { label: 'Végétation', blocks: false, draw: (g, cx, cy, s) => {
+    let d = '';
+    for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2 + hash(s, i, 3) * 0.5, r = 7 + hash(i, s, 4) * 4; d += `M${cx} ${cy} L${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)} `; }
+    el('path', { d, stroke: INK, 'stroke-width': 1.1, 'stroke-linecap': 'round' }, g);
+    el('circle', { cx, cy, r: 2, fill: INK }, g);
+  } },
+  eau: { label: 'Eau', blocks: true, draw: (g, cx, cy) => {
+    el('circle', { cx, cy, r: 11.5, fill: '#dfe7e6' }, g);
+    let d = '';
+    for (let i = -1; i <= 1; i++) d += `M${cx - 8} ${cy + i * 6} q2 -2 4 0 t4 0 t4 0 t4 0 `;
+    el('path', { d, fill: 'none', stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round' }, g);
+  } },
+  feu: { label: 'Feu de camp', blocks: false, draw: (g, cx, cy) => {
+    for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; el('circle', { cx: (cx + Math.cos(a) * 7.5).toFixed(1), cy: (cy + Math.sin(a) * 7.5).toFixed(1), r: 2, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g); }
+    el('path', { d: `M${cx} ${cy + 3} C${cx - 4} ${cy} ${cx - 1} ${cy - 3} ${cx} ${cy - 5} C${cx + 1} ${cy - 2} ${cx + 4} ${cy} ${cx} ${cy + 3}Z`, fill: 'none', stroke: INK, 'stroke-width': 1.1 }, g);
+  } }
+};
+
+const boulder = (g, x, y, rad, seed) => {
+  const n = 9, pts = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 + hash(seed, i, 30) * 0.3, rr = rad * (0.78 + hash(seed, i, 31) * 0.4); pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr * 0.85]); }
+  let d = '';
+  for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; d += (i ? ' Q' : 'M' + f1((pts[n - 1][0] + p[0]) / 2) + ' ' + f1((pts[n - 1][1] + p[1]) / 2) + ' Q') + f1(p[0]) + ' ' + f1(p[1]) + ' ' + f1(m[0]) + ' ' + f1(m[1]); }
+  el('path', { d: d + 'Z', fill: ROCK, stroke: INK, 'stroke-width': rad > 5 ? 1.6 : 1.2, 'stroke-linejoin': 'round' }, g);
+  const k = Math.max(2, Math.round(rad / 2.5));
+  let s = '';
+  for (let i = 0; i < k; i++) { const a = 0.35 + i * 0.32 + hash(seed, i, 32) * 0.15, r1 = rad * 0.45, r2 = rad * 0.82; s += `M${f1(x + Math.cos(a) * r1)} ${f1(y + Math.sin(a) * r1 * 0.85)} L${f1(x + Math.cos(a) * r2)} ${f1(y + Math.sin(a) * r2 * 0.85)} `; }
+  el('path', { d: s, stroke: INK, 'stroke-width': 0.8, 'stroke-linecap': 'round' }, g);
+  if (rad > 6 && hash(seed, 9, 33) < 0.5) el('path', { d: `M${f1(x - rad * 0.4)} ${f1(y - rad * 0.2)} l${f1(rad * 0.3)} ${f1(rad * 0.15)} l${f1(rad * 0.15)} ${f1(-rad * 0.3)}`, stroke: INK, 'stroke-width': 0.8, fill: 'none', 'stroke-linecap': 'round' }, g);
+};
+
+const BIG = {
+  grande_table: { label: 'Grande table', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+    const n = Math.max(1, Math.round(L / 24));
+    for (let i = 0; i < n; i++) { const x = -L / 2 + (i + 0.5) * L / n - 3; el('rect', { x: f1(x), y: f1(-H / 2 + 1), width: 6, height: 4, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g); el('rect', { x: f1(x), y: f1(H / 2 - 5), width: 6, height: 4, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g); }
+    el('rect', { x: f1(-L / 2 + 3), y: f1(-H / 2 + 5), width: f1(L - 6), height: f1(H - 10), fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+    el('path', { d: `M${f1(-L / 2 + 3)} -1.5 H${f1(L / 2 - 3)} M${f1(-L / 2 + 3)} 1.5 H${f1(L / 2 - 3)}`, stroke: INK, 'stroke-width': 0.6 }, g);
+  } },
+  lit: { label: 'Lit', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+    el('rect', { x: f1(-L / 2 + 3), y: f1(-H / 2 + 3), width: f1(L - 6), height: f1(H - 6), fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+    el('rect', { x: f1(-L / 2 + 5.5), y: f1(-H / 2 + 6), width: 7, height: f1(H - 12), rx: 2, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g);
+    el('path', { d: `M${f1(-L / 2 + 16)} ${f1(-H / 2 + 3)} V${f1(H / 2 - 3)}`, stroke: INK, 'stroke-width': 1.2 }, g);
+    let d = ''; for (let x = -L / 2 + 20; x < L / 2 - 4; x += 5) d += `M${f1(x)} ${f1(-H / 2 + 4)} l4 ${f1(H - 8)} `;
+    el('path', { d, stroke: INK, 'stroke-width': 0.6 }, g);
+  } },
+  bibliotheque: { label: 'Bibliothèque', w: 3, h: 1, blocks: true, draw: (g, L, H, s) => {
+    const y0 = -H / 2 + 2;
+    el('rect', { x: f1(-L / 2 + 2), y: f1(y0), width: f1(L - 4), height: 9, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    let d = '';
+    for (let x = -L / 2 + 4.5, i = 0; x < L / 2 - 3; x += 2.2 + hash(s, i, 70) * 1.4, i++) d += `M${f1(x)} ${f1(y0 + 1.5 + hash(i, s, 71) * 2.5)} V${f1(y0 + 7.5)} `;
+    el('path', { d, stroke: INK, 'stroke-width': 0.9 }, g);
+  } },
+  tapis: { label: 'Tapis', w: 3, h: 2, blocks: false, draw: (g, L, H) => {
+    el('rect', { x: f1(-L / 2 + 5), y: f1(-H / 2 + 4), width: f1(L - 10), height: f1(H - 8), fill: 'none', stroke: INK, 'stroke-width': 1.3 }, g);
+    el('rect', { x: f1(-L / 2 + 8), y: f1(-H / 2 + 7), width: f1(L - 16), height: f1(H - 14), fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+    el('path', { d: `M0 ${f1(-H / 2 + 11)} L${f1(L / 4)} 0 L0 ${f1(H / 2 - 11)} L${f1(-L / 4)} 0Z`, fill: 'none', stroke: INK, 'stroke-width': 0.8 }, g);
+    let d = ''; for (let y = -H / 2 + 5; y <= H / 2 - 5; y += 2.5) d += `M${f1(-L / 2 + 2)} ${f1(y)} h3 M${f1(L / 2 - 5)} ${f1(y)} h3 `;
+    el('path', { d, stroke: INK, 'stroke-width': 0.6 }, g);
+  } },
+  autel: { label: 'Autel', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+    el('rect', { x: f1(-L / 2 + 4), y: f1(-H / 2 + 4), width: f1(L - 8), height: f1(H - 8), fill: STONE, stroke: INK, 'stroke-width': 1.7 }, g);
+    el('rect', { x: f1(-L / 2 + 7), y: f1(-H / 2 + 7), width: f1(L - 14), height: f1(H - 14), fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+    [-L / 4, L / 4].forEach(x => { el('circle', { cx: f1(x), cy: 0, r: 2.2, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g); el('circle', { cx: f1(x), cy: 0, r: 0.7, fill: INK }, g); });
+  } },
+  charrette: { label: 'Charrette', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+    el('path', { d: `M${f1(L / 2 - 14)} -2.5 L${f1(L / 2 - 1)} -1 M${f1(L / 2 - 14)} 2.5 L${f1(L / 2 - 1)} 1`, stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: -3, y: f1(-H / 2 + 1.5), width: 8, height: 3, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g);
+    el('rect', { x: -3, y: f1(H / 2 - 4.5), width: 8, height: 3, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g);
+    el('rect', { x: f1(-L / 2 + 4), y: f1(-H / 2 + 5), width: f1(L - 18), height: f1(H - 10), fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+    let d = ''; for (let y = -H / 2 + 8; y < H / 2 - 5; y += 3) d += `M${f1(-L / 2 + 4)} ${f1(y)} H${f1(L / 2 - 14)} `;
+    el('path', { d, stroke: INK, 'stroke-width': 0.6 }, g);
+  } },
+  arbre: { label: 'Arbre', w: 2, h: 2, blocks: true, draw: (g, L, H, s) => {
+    const R = Math.min(L, H) / 2 - 2, n = 11, pts = [];
+    for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, rr = R * (0.85 + hash(s, i, 80) * 0.15); pts.push([Math.cos(a) * rr, Math.sin(a) * rr]); }
+    let d = 'M' + f1(pts[0][0]) + ' ' + f1(pts[0][1]);
+    for (let i = 1; i <= n; i++) { const q = pts[i % n]; d += ` A${f1(R * 0.32)} ${f1(R * 0.32)} 0 0 1 ${f1(q[0])} ${f1(q[1])}`; }
+    el('path', { d: d + 'Z', fill: PAPER, stroke: INK, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    let t = '';
+    for (let i = 0; i < 9; i++) { const a = hash(s, i, 81) * Math.PI * 2, r1 = R * (0.25 + hash(s, i, 82) * 0.45); t += `M${f1(Math.cos(a) * r1)} ${f1(Math.sin(a) * r1)} q2 -2 4 0 `; }
+    el('path', { d: t, fill: 'none', stroke: INK, 'stroke-width': 0.8, 'stroke-linecap': 'round' }, g);
+    el('circle', { cx: 0, cy: 0, r: 2.5, fill: INK }, g);
+  } },
+  grand_rocher: { label: 'Gros rocher', w: 2, h: 2, blocks: true, draw: (g, L, H, s) => boulder(g, 0, 0, Math.min(L, H) / 2 - 3, s) },
+  bassin: { label: 'Bassin', w: 2, h: 2, blocks: true, draw: (g, L, H, s) => {
+    const R = Math.min(L, H) / 2 - 3, n = 8, pts = [];
+    for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, rr = R * (0.82 + hash(s, i, 90) * 0.2); pts.push([Math.cos(a) * rr * L / Math.min(L, H), Math.sin(a) * rr]); }
+    let d = '';
+    for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; d += (i ? ' Q' : 'M' + f1((pts[n - 1][0] + p[0]) / 2) + ' ' + f1((pts[n - 1][1] + p[1]) / 2) + ' Q') + f1(p[0]) + ' ' + f1(p[1]) + ' ' + f1(m[0]) + ' ' + f1(m[1]); }
+    el('path', { d: d + 'Z', fill: '#e1e9e9', stroke: INK, 'stroke-width': 1.6 }, g);
+    let w = ''; for (let y = -R / 2; y <= R / 2; y += R / 3) w += `M${f1(-R * 0.6)} ${f1(y)} q3 -2 6 0 t6 0 t6 0 `;
+    el('path', { d: w, fill: 'none', stroke: INK, 'stroke-width': 0.8, 'stroke-linecap': 'round' }, g);
+  } }
+};
+const WOOD = '#ecdcc2', SHADOW = '#ddd6ca', LEAF = '#e2ead3', LEAF2 = '#d5e0c3';
+const scallop = (cx, cy, R, n, seed, k = 0) => {
+  const pts = [];
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 + hash(seed, i, 200 + k) * 0.25, rr = R * (0.86 + hash(seed, i, 201 + k) * 0.16); pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); }
+  let d = 'M' + f1(pts[0][0]) + ' ' + f1(pts[0][1]);
+  for (let i = 1; i <= n; i++) { const q = pts[i % n], br = R * (0.2 + hash(seed, i, 202 + k) * 0.12); d += ` A${f1(br)} ${f1(br)} 0 0 1 ${f1(q[0])} ${f1(q[1])}`; }
+  return d + 'Z';
+};
+const bumps = (cx, cy, R, a0, a1, n, seed) => {
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const a = a0 + (a1 - a0) * (i / Math.max(1, n - 1)) + (hash(seed, i, 210) - 0.5) * 0.3, rr = R * (0.85 + hash(seed, i, 211) * 0.25);
+    const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, br = R * 0.22;
+    d += `M${f1(x - Math.sin(a) * br)} ${f1(y + Math.cos(a) * br)} A${f1(br)} ${f1(br)} 0 0 0 ${f1(x + Math.sin(a) * br)} ${f1(y - Math.cos(a) * br)} `;
+  }
+  return d;
+};
+const shadeStrokes = (g, cx, cy, R, seed, from = 0.15, to = 1.5) => {
+  let d = '';
+  for (let i = 0; i < 9; i++) {
+    const a = from + (to - from) * hash(seed, i, 220), r = R * (0.62 + hash(seed, i, 221) * 0.28), x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r, l = 2 + hash(seed, i, 222) * 2;
+    d += `M${f1(x - l * 0.7)} ${f1(y - l * 0.7)} l${f1(l * 1.4)} ${f1(l * 1.4)} `;
+  }
+  el('path', { d, stroke: INK, 'stroke-width': 0.7, 'stroke-linecap': 'round' }, g);
+};
+const leaf = (x, y, a, len, wid) => {
+  const ca = Math.cos(a), sa = Math.sin(a), tx = x + ca * len, ty = y + sa * len, mx = x + ca * len * 0.5, my = y + sa * len * 0.5;
+  return `M${f1(x)} ${f1(y)} Q${f1(mx - sa * wid)} ${f1(my + ca * wid)} ${f1(tx)} ${f1(ty)} Q${f1(mx + sa * wid)} ${f1(my - ca * wid)} ${f1(x)} ${f1(y)}Z`;
+};
+
+DECOR.vegetation = { label: 'Fougère', cat: 'nature', blocks: false, draw: (g, cx, cy, s) => {
+  const n = 7; let d = '', v = '';
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2 + hash(s, i, 230) * 0.4, len = 8 + hash(s, i, 231) * 3.5;
+    d += leaf(cx, cy, a, len, 2.6);
+    const ca = Math.cos(a), sa = Math.sin(a);
+    v += `M${f1(cx)} ${f1(cy)} L${f1(cx + ca * len * 0.9)} ${f1(cy + sa * len * 0.9)} `;
+    for (let t = 0.35; t < 0.9; t += 0.18) { const px = cx + ca * len * t, py = cy + sa * len * t; v += `M${f1(px)} ${f1(py)} l${f1((ca - sa) * 1.5)} ${f1((sa + ca) * 1.5)} M${f1(px)} ${f1(py)} l${f1((ca + sa) * 1.5)} ${f1((sa - ca) * 1.5)} `; }
+  }
+  el('path', { d, fill: LEAF, stroke: INK, 'stroke-width': 1, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: v, stroke: INK, 'stroke-width': 0.55, 'stroke-linecap': 'round' }, g);
+  el('circle', { cx, cy, r: 1.6, fill: INK }, g);
+} };
+DECOR.buisson = { label: 'Buisson', cat: 'nature', blocks: false, draw: (g, cx, cy, s) => {
+  el('path', { d: scallop(cx + 1.5, cy + 1.5, 9, 9, s), fill: SHADOW }, g);
+  el('path', { d: scallop(cx, cy, 9, 9, s), fill: LEAF, stroke: INK, 'stroke-width': 1.3, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: bumps(cx, cy, 4.5, -2.2, 0.6, 3, s), fill: 'none', stroke: INK, 'stroke-width': 0.8 }, g);
+  shadeStrokes(g, cx, cy, 8.5, s);
+} };
+DECOR.souche = { label: 'Souche', cat: 'nature', blocks: true, draw: (g, cx, cy, s) => {
+  let r = '';
+  for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + hash(s, i, 240); r += `M${f1(cx + Math.cos(a) * 5.5)} ${f1(cy + Math.sin(a) * 5.5)} q${f1(Math.cos(a + 0.5) * 3)} ${f1(Math.sin(a + 0.5) * 3)} ${f1(Math.cos(a) * 5)} ${f1(Math.sin(a) * 5)} `; }
+  el('path', { d: r, fill: 'none', stroke: INK, 'stroke-width': 1.3, 'stroke-linecap': 'round' }, g);
+  el('circle', { cx, cy, r: 6.5, fill: PAPER, stroke: INK, 'stroke-width': 1.5 }, g);
+  el('circle', { cx: cx + 0.4, cy: cy - 0.3, r: 4, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('circle', { cx: cx + 0.6, cy: cy - 0.5, r: 1.8, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('path', { d: `M${f1(cx + 2)} ${f1(cy - 6)} l-1.5 4`, stroke: INK, 'stroke-width': 0.7 }, g);
+} };
+DECOR.chaise = { label: 'Chaise', cat: 'mobilier', blocks: false, draw: (g, cx, cy) => {
+  el('rect', { x: cx - 5, y: cy - 3, width: 10, height: 9, fill: PAPER, stroke: INK, 'stroke-width': 1.4 }, g);
+  el('rect', { x: cx - 6, y: cy - 7, width: 12, height: 3.5, fill: PAPER, stroke: INK, 'stroke-width': 1.4 }, g);
+  el('path', { d: `M${cx - 3} ${cy + 1} H${cx + 3}`, stroke: INK, 'stroke-width': 0.6 }, g);
+} };
+DECOR.caisse = { label: 'Caisse', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('rect', { x: cx - 8, y: cy - 8, width: 16, height: 16, fill: PAPER, stroke: INK, 'stroke-width': 1.6 }, g);
+  el('rect', { x: cx - 5.5, y: cy - 5.5, width: 11, height: 11, fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+  el('path', { d: `M${cx - 5.5} ${cy - 5.5} L${cx + 5.5} ${cy + 5.5} M${cx + 5.5} ${cy - 5.5} L${cx - 5.5} ${cy + 5.5}`, stroke: INK, 'stroke-width': 1 }, g);
+} };
+DECOR.trone = { label: 'Trône', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('path', { d: `M${cx - 9} ${cy - 5} L${cx - 7} ${cy - 10} L${cx - 3} ${cy - 7} L${cx} ${cy - 11} L${cx + 3} ${cy - 7} L${cx + 7} ${cy - 10} L${cx + 9} ${cy - 5}Z`, fill: STONE, stroke: INK, 'stroke-width': 1.3, 'stroke-linejoin': 'round' }, g);
+  el('rect', { x: cx - 9, y: cy - 5, width: 3.5, height: 13, fill: PAPER, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('rect', { x: cx + 5.5, y: cy - 5, width: 3.5, height: 13, fill: PAPER, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('rect', { x: cx - 5.5, y: cy - 5, width: 11, height: 12, fill: PAPER, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('rect', { x: cx - 3.5, y: cy - 3, width: 7, height: 8, rx: 1.5, fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+} };
+DECOR.puits = { label: 'Puits', cat: 'nature', blocks: true, draw: (g, cx, cy) => {
+  el('circle', { cx, cy, r: 9.5, fill: STONE, stroke: INK, 'stroke-width': 1.5 }, g);
+  el('circle', { cx, cy, r: 6, fill: '#e1e9e9', stroke: INK, 'stroke-width': 1.2 }, g);
+  let j = ''; for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; j += `M${f1(cx + Math.cos(a) * 6)} ${f1(cy + Math.sin(a) * 6)} L${f1(cx + Math.cos(a) * 9.5)} ${f1(cy + Math.sin(a) * 9.5)} `; }
+  el('path', { d: j, stroke: INK, 'stroke-width': 0.7 }, g);
+  el('path', { d: `M${cx - 3} ${cy - 1} q1.5 -1 3 0 t3 0 M${cx - 2} ${cy + 2} q1 -1 2 0 t2 0`, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('line', { x1: cx - 11, y1: cy, x2: cx + 11, y2: cy, stroke: INK, 'stroke-width': 1.6 }, g);
+  el('rect', { x: cx - 12.5, y: cy - 1.8, width: 3, height: 3.6, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g);
+  el('rect', { x: cx + 9.5, y: cy - 1.8, width: 3, height: 3.6, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g);
+} };
+['rocher', 'eau'].forEach(id => { DECOR[id].cat = 'nature'; });
+
+BIG.arbre = { label: 'Arbre', cat: 'nature', w: 2, h: 2, blocks: true, draw: (g, L, H, s) => {
+  const R = Math.min(L, H) / 2 - 2.5;
+  el('path', { d: scallop(R * 0.12, R * 0.14, R, 14, s), fill: SHADOW }, g);
+  el('path', { d: scallop(0, 0, R, 14, s), fill: LEAF, stroke: INK, 'stroke-width': 1.7, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: bumps(0, 0, R * 0.62, -2.6, 0.5, 5, s) + bumps(0, 0, R * 0.3, 1.2, 3.6, 3, s + 1), fill: 'none', stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round' }, g);
+  shadeStrokes(g, 0, 0, R, s, 0.1, 1.8);
+  shadeStrokes(g, 0, 0, R * 0.75, s + 3, 0.4, 1.4);
+  let b = ''; for (let i = 0; i < 4; i++) { const a = hash(s, i, 250) * Math.PI * 2; b += `M0 0 L${f1(Math.cos(a) * R * 0.22)} ${f1(Math.sin(a) * R * 0.22)} `; }
+  el('path', { d: b, stroke: INK, 'stroke-width': 1, 'stroke-linecap': 'round' }, g);
+  el('circle', { cx: 0, cy: 0, r: 2, fill: INK }, g);
+} };
+BIG.sapin = { label: 'Sapin', cat: 'nature', w: 2, h: 2, blocks: true, draw: (g, L, H, s) => {
+  const R = Math.min(L, H) / 2 - 2;
+  const star = (r, n, k) => { let d = ''; for (let i = 0; i < n * 2; i++) { const a = i / (n * 2) * Math.PI * 2 + k, rr = i % 2 ? r * 0.72 : r * (0.95 + hash(s, i, 260 + k * 10) * 0.08); d += (i ? 'L' : 'M') + f1(Math.cos(a) * rr) + ' ' + f1(Math.sin(a) * rr); } return d + 'Z'; };
+  el('path', { d: star(R, 16, 0).replace(/(-?\d+\.\d) (-?\d+\.\d)/g, (m, x, y) => f1(+x + 2) + ' ' + f1(+y + 2.5)), fill: SHADOW }, g);
+  [[R, 16, 0], [R * 0.7, 12, 0.2], [R * 0.42, 8, 0.4]].forEach(([r, n, k], i) => el('path', { d: star(r, n, k), fill: i === 1 ? LEAF2 : LEAF, stroke: INK, 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, g));
+  let v = ''; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + 0.2; v += `M0 0 L${f1(Math.cos(a) * R * 0.85)} ${f1(Math.sin(a) * R * 0.85)} `; }
+  el('path', { d: v, stroke: INK, 'stroke-width': 0.5, 'stroke-dasharray': '2 2' }, g);
+  el('circle', { cx: 0, cy: 0, r: 1.8, fill: INK }, g);
+} };
+BIG.armoire = { label: 'Armoire', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+  const y = -H / 2 + 2;
+  el('rect', { x: f1(-L / 2 + 3), y: f1(y), width: f1(L - 6), height: 12, fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+  el('rect', { x: f1(-L / 2 + 5), y: f1(y + 2), width: f1(L - 10), height: 8, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('path', { d: `M0 ${f1(y + 2)} V${f1(y + 10)}`, stroke: INK, 'stroke-width': 1 }, g);
+  el('circle', { cx: -2, cy: f1(y + 6), r: 0.9, fill: INK }, g); el('circle', { cx: 2, cy: f1(y + 6), r: 0.9, fill: INK }, g);
+} };
+BIG.banc = { label: 'Banc', cat: 'mobilier', w: 2, h: 1, blocks: false, draw: (g, L) => {
+  el('rect', { x: f1(-L / 2 + 3), y: -3.5, width: f1(L - 6), height: 7, fill: PAPER, stroke: INK, 'stroke-width': 1.5 }, g);
+  el('path', { d: `M${f1(-L / 2 + 3)} 0 H${f1(L / 2 - 3)} M${f1(-L / 2 + 6)} -3.5 V3.5 M${f1(L / 2 - 6)} -3.5 V3.5`, stroke: INK, 'stroke-width': 0.6 }, g);
+} };
+BIG.etabli = { label: 'Établi', cat: 'mobilier', w: 3, h: 1, blocks: true, draw: (g, L, H) => {
+  const y = -H / 2 + 3;
+  el('rect', { x: f1(-L / 2 + 2), y: f1(y), width: f1(L - 4), height: 12, fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+  el('path', { d: `M${f1(-L / 2 + 2)} ${f1(y + 4)} H${f1(L / 2 - 2)}`, stroke: INK, 'stroke-width': 0.6 }, g);
+  el('path', { d: `M${f1(-L / 4 - 5)} ${f1(y + 8)} H${f1(-L / 4 + 4)} M${f1(-L / 4 + 2)} ${f1(y + 6)} V${f1(y + 10)}`, stroke: INK, 'stroke-width': 1.3, 'stroke-linecap': 'round' }, g);
+  el('path', { d: `M-4 ${f1(y + 9)} l2 -2 l2 2 l2 -2 l2 2 l2 -2`, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+  el('circle', { cx: f1(L / 4 + 4), cy: f1(y + 7.5), r: 2.4, fill: 'none', stroke: INK, 'stroke-width': 1 }, g);
+  el('circle', { cx: f1(L / 4 - 2), cy: f1(y + 8), r: 1.2, fill: INK }, g);
+} };
+BIG.cheminee = { label: 'Cheminée', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H, s) => {
+  const y = -H / 2 + 1;
+  el('rect', { x: f1(-L / 2 + 2), y: f1(y), width: f1(L - 4), height: 12, fill: STONE, stroke: INK, 'stroke-width': 1.6 }, g);
+  let j = `M${f1(-L / 2 + 2)} ${f1(y + 6)} H${f1(-L / 4 - 1)} M${f1(L / 4 + 1)} ${f1(y + 6)} H${f1(L / 2 - 2)} `;
+  [-L / 2 + 7, -L / 2 + 12, L / 2 - 7, L / 2 - 12].forEach((x, i) => { j += `M${f1(x)} ${f1(y + (i % 2 ? 6 : 0))} v6 `; });
+  el('path', { d: j, stroke: INK, 'stroke-width': 0.7 }, g);
+  el('rect', { x: f1(-L / 4), y: f1(y), width: f1(L / 2), height: 9, fill: PAPER, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('path', { d: `M${f1(-L / 4 + 2)} ${f1(y + 7)} L${f1(L / 4 - 2)} ${f1(y + 5)} M${f1(-L / 4 + 2)} ${f1(y + 5)} L${f1(L / 4 - 2)} ${f1(y + 7)}`, stroke: INK, 'stroke-width': 1.4, 'stroke-linecap': 'round' }, g);
+  el('path', { d: `M0 ${f1(y + 7)} C-3 ${f1(y + 4)} -1 ${f1(y + 2)} 0 ${f1(y + 1)} C1 ${f1(y + 3)} 3 ${f1(y + 4)} 0 ${f1(y + 7)}Z`, fill: PAPER, stroke: INK, 'stroke-width': 0.9 }, g);
+  el('path', { d: `M${f1(-L / 4 - 2)} ${f1(y + 12)} A${f1(L / 4 + 2)} 6 0 0 0 ${f1(L / 4 + 2)} ${f1(y + 12)}`, fill: 'none', stroke: INK, 'stroke-width': 1, 'stroke-dasharray': '2 1.5' }, g);
+} };
+BIG.sarcophage = { label: 'Sarcophage', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+  const a = L / 2 - 3, b = H / 2 - 3;
+  const p = [[-a, -b * 0.55], [-a + 7, -b], [a - 2, -b * 0.75], [a, 0], [a - 2, b * 0.75], [-a + 7, b], [-a, b * 0.55]];
+  el('path', { d: poly(p), fill: STONE, stroke: INK, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: poly(p.map(([x, y]) => [x * 0.82, y * 0.72])), fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+  el('path', { d: `M${f1(-a + 6)} 0 H${f1(a - 6)} M${f1(-a + 10)} -3 V3`, stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round' }, g);
+  el('circle', { cx: f1(-a + 5), cy: 0, r: 2.2, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+} };
+BIG.ratelier = { label: 'Râtelier', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+  const y = -H / 2 + 2;
+  el('rect', { x: f1(-L / 2 + 3), y: f1(y), width: f1(L - 6), height: 3.5, fill: PAPER, stroke: INK, 'stroke-width': 1.4 }, g);
+  const xs = [-L / 3, -L / 9, L / 9, L / 3];
+  let d = '';
+  xs.forEach(x => { d += `M${f1(x)} ${f1(y + 3.5)} V${f1(y + 15)} `; });
+  el('path', { d, stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, g);
+  el('path', { d: `M${f1(xs[0] - 2.5)} ${f1(y + 15)} L${f1(xs[0])} ${f1(y + 19)} L${f1(xs[0] + 2.5)} ${f1(y + 15)}Z`, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g);
+  el('path', { d: `M${f1(xs[1] - 3)} ${f1(y + 7)} H${f1(xs[1] + 3)} M${f1(xs[2] - 3)} ${f1(y + 7)} H${f1(xs[2] + 3)}`, stroke: INK, 'stroke-width': 1.2 }, g);
+  el('path', { d: `M${f1(xs[3])} ${f1(y + 10)} a4 4 0 0 0 0 7 Z`, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g);
+} };
+BIG.tente = { label: 'Tente', cat: 'nature', w: 2, h: 2, blocks: true, draw: (g, L, H) => {
+  const a = L / 2 - 6, b = H / 2 - 6;
+  el('path', { d: `M${f1(-a - 4)} ${f1(-b - 4)} l3 3 M${f1(a + 4)} ${f1(-b - 4)} l-3 3 M${f1(-a - 4)} ${f1(b + 4)} l3 -3 M${f1(a + 4)} ${f1(b + 4)} l-3 -3`, stroke: INK, 'stroke-width': 0.8 }, g);
+  el('path', { d: poly([[-a, -b], [a, -b], [a, b], [-a, b]]), fill: PAPER, stroke: INK, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: `M${f1(-a)} 0 H${f1(a)}`, stroke: INK, 'stroke-width': 1.3 }, g);
+  let d = ''; for (let x = -a + 3; x < a; x += 3) d += `M${f1(x)} 0 L${f1(x)} ${f1(b)} `;
+  el('path', { d, stroke: INK, 'stroke-width': 0.55 }, g);
+  el('path', { d: `M${f1(a)} ${f1(-b * 0.5)} L${f1(a + 4)} 0 L${f1(a)} ${f1(b * 0.5)}`, fill: PAPER, stroke: INK, 'stroke-width': 1.1, 'stroke-linejoin': 'round' }, g);
+} };
+BIG.lit_double = { label: 'Lit double', cat: 'mobilier', w: 2, h: 2, blocks: true, draw: (g, L, H) => {
+  const a = L / 2 - 4, b = H / 2 - 3;
+  el('rect', { x: f1(-a), y: f1(-b), width: f1(a * 2), height: f1(b * 2), fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+  el('rect', { x: f1(-a), y: f1(-b), width: f1(a * 2), height: 3, fill: STONE, stroke: INK, 'stroke-width': 1.2 }, g);
+  [-a / 2, a / 2].forEach(x => el('rect', { x: f1(x - 6), y: f1(-b + 5), width: 12, height: 6, rx: 2, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g));
+  el('path', { d: `M${f1(-a)} ${f1(-b + 14)} H${f1(a)}`, stroke: INK, 'stroke-width': 1.1 }, g);
+  let d = ''; for (let x = -a + 2; x < a - 2; x += 5) d += `M${f1(x)} ${f1(-b + 15)} l4 ${f1(2 * b - 16)} `;
+  el('path', { d, stroke: INK, 'stroke-width': 0.55 }, g);
+} };
+['grande_table', 'lit', 'bibliotheque', 'tapis', 'autel', 'charrette'].forEach(id => { BIG[id].cat = 'mobilier'; });
+BIG.charrette.cat = 'nature';
+['grand_rocher', 'bassin'].forEach(id => { BIG[id].cat = 'nature'; });
+
+const WATER = '#e1e9e9', WAVE = '#5c7c85';
+const rect0 = (g, x, y, w, h, extra = {}) => el('rect', { x: f1(x), y: f1(y), width: f1(w), height: f1(h), fill: PAPER, stroke: INK, 'stroke-width': 1.5, ...extra }, g);
+
+DECOR.chaudron = { label: 'Chaudron', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('path', { d: `M${cx - 9} ${cy - 2} a2.5 2.5 0 0 1 0 4 M${cx + 9} ${cy - 2} a2.5 2.5 0 0 0 0 4`, fill: 'none', stroke: INK, 'stroke-width': 1.3 }, g);
+  el('circle', { cx, cy, r: 8, fill: PAPER, stroke: INK, 'stroke-width': 2 }, g);
+  el('circle', { cx, cy, r: 5.5, fill: '#dde5df', stroke: INK, 'stroke-width': 0.8 }, g);
+  [[-2, -1.5, 1.3], [1.8, 0.8, 1], [-0.5, 2.4, 0.7]].forEach(([x, y, r]) => el('circle', { cx: cx + x, cy: cy + y, r, fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g));
+} };
+DECOR.enclume = { label: 'Enclume', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('circle', { cx, cy: cy + 1, r: 8.5, fill: PAPER, stroke: INK, 'stroke-width': 1.2 }, g);
+  el('circle', { cx, cy: cy + 1, r: 5.5, fill: 'none', stroke: INK, 'stroke-width': 0.5 }, g);
+  el('path', { d: `M${cx - 6} ${cy - 3} H${cx + 4} L${cx + 10} ${cy - 1} L${cx + 4} ${cy + 1} V${cy + 3} H${cx - 6} Z`, fill: '#d9d2c6', stroke: INK, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+  el('line', { x1: cx - 4, y1: cy - 1, x2: cx + 2, y2: cy - 1, stroke: INK, 'stroke-width': 0.6 }, g);
+} };
+DECOR.brasero = { label: 'Brasero', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('circle', { cx, cy, r: 7.5, fill: STONE, stroke: INK, 'stroke-width': 1.6 }, g);
+  el('circle', { cx, cy, r: 5, fill: PAPER, stroke: INK, 'stroke-width': 0.8 }, g);
+  [[-2, 1], [1.5, 1.8], [0, -1.5], [2.2, -0.8], [-2.4, -1.4]].forEach(([x, y]) => el('circle', { cx: cx + x, cy: cy + y, r: 1, fill: INK }, g));
+  el('path', { d: `M${cx} ${cy + 2} C${cx - 3} ${cy - 1} ${cx - 1} ${cy - 4} ${cx} ${cy - 6} C${cx + 1} ${cy - 3} ${cx + 3} ${cy - 1} ${cx} ${cy + 2}Z`, fill: PAPER, stroke: INK, 'stroke-width': 0.9 }, g);
+} };
+DECOR.cage = { label: 'Cage', cat: 'mobilier', blocks: true, draw: (g, cx, cy) => {
+  el('rect', { x: cx - 8, y: cy - 8, width: 16, height: 16, fill: PAPER, stroke: INK, 'stroke-width': 1.7 }, g);
+  let d = ''; for (let x = -5; x <= 5; x += 2.5) d += `M${cx + x} ${cy - 8} V${cy + 8} `;
+  el('path', { d, stroke: INK, 'stroke-width': 0.9 }, g);
+  el('rect', { x: cx + 5.5, y: cy - 1.5, width: 3, height: 3, fill: INK }, g);
+} };
+DECOR.colimacon = { label: 'Colimaçon', cat: 'decor', blocks: false, draw: (g, cx, cy) => {
+  el('circle', { cx, cy, r: 10, fill: PAPER, stroke: INK, 'stroke-width': 1.5 }, g);
+  let d = ''; for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2; d += `M${f1(cx + Math.cos(a) * 2.6)} ${f1(cy + Math.sin(a) * 2.6)} Q${f1(cx + Math.cos(a + 0.35) * 6)} ${f1(cy + Math.sin(a + 0.35) * 6)} ${f1(cx + Math.cos(a + 0.5) * 10)} ${f1(cy + Math.sin(a + 0.5) * 10)} `; }
+  el('path', { d, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+  el('circle', { cx, cy, r: 2.6, fill: STONE, stroke: INK, 'stroke-width': 1.2 }, g);
+} };
+DECOR.nenuphar = { label: 'Nénuphars', cat: 'nature', blocks: false, draw: (g, cx, cy, s) => {
+  [[-4, -3, 4.2], [4, -1, 3.4], [-1, 5, 3]].forEach(([x, y, r], i) => {
+    const a = hash(s, i, 400) * Math.PI * 2, px = cx + x, py = cy + y;
+    el('path', { d: `M${f1(px)} ${f1(py)} L${f1(px + Math.cos(a) * r)} ${f1(py + Math.sin(a) * r)} A${r} ${r} 0 1 1 ${f1(px + Math.cos(a + 0.6) * r)} ${f1(py + Math.sin(a + 0.6) * r)} Z`, fill: LEAF, stroke: INK, 'stroke-width': 1, 'stroke-linejoin': 'round' }, g);
+  });
+  el('circle', { cx: cx - 4, cy: cy - 3, r: 1.3, fill: INK }, g);
+} };
+DECOR.roseaux = { label: 'Roseaux', cat: 'nature', blocks: false, draw: (g, cx, cy, s) => {
+  let d = '';
+  for (let i = 0; i < 8; i++) { const x = cx + (hash(s, i, 410) - 0.5) * 14, y = cy + (hash(s, i, 411) - 0.5) * 12, l = 5 + hash(s, i, 412) * 5, t = (hash(s, i, 413) - 0.5) * 4; d += `M${f1(x)} ${f1(y + l / 2)} q${f1(t / 2)} ${f1(-l / 2)} ${f1(t)} ${f1(-l)} `; }
+  el('path', { d, fill: 'none', stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round' }, g);
+  for (let i = 0; i < 3; i++) { const x = cx + (hash(s, i, 414) - 0.5) * 10, y = cy + (hash(s, i, 415) - 0.5) * 8; el('ellipse', { cx: f1(x), cy: f1(y - 4), rx: 1.1, ry: 2.4, fill: INK }, g); }
+} };
+
+BIG.table_ronde = { label: 'Table ronde', cat: 'mobilier', w: 2, h: 2, blocks: true, draw: (g, L, H) => {
+  const R = Math.min(L, H) / 2 - 9;
+  for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + 0.3, x = Math.cos(a) * (R + 4.5), y = Math.sin(a) * (R + 4.5); el('rect', { x: f1(x - 3.5), y: f1(y - 3.5), width: 7, height: 7, rx: 1.5, fill: PAPER, stroke: INK, 'stroke-width': 1.1, transform: `rotate(${f1(a * 180 / Math.PI)} ${f1(x)} ${f1(y)})` }, g); }
+  el('circle', { cx: 0, cy: 0, r: f1(R), fill: PAPER, stroke: INK, 'stroke-width': 1.8 }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(R - 3), fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('circle', { cx: -3, cy: -2, r: 2, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+  el('circle', { cx: 4, cy: 2.5, r: 1.6, fill: 'none', stroke: INK, 'stroke-width': 0.9 }, g);
+} };
+BIG.comptoir = { label: 'Comptoir', cat: 'mobilier', w: 3, h: 1, blocks: true, draw: (g, L, H) => {
+  const y = -H / 2 + 1.5;
+  rect0(g, -L / 2 + 2, y, L - 4, 4.5, { 'stroke-width': 1.2 });
+  for (let x = -L / 2 + 5; x < L / 2 - 4; x += 3.2) el('circle', { cx: f1(x), cy: f1(y + 2.25), r: 1.1, fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+  rect0(g, -L / 2 + 2, y + 8, L - 4, 8, { 'stroke-width': 1.8 });
+  el('line', { x1: f1(-L / 2 + 2), y1: f1(y + 10), x2: f1(L / 2 - 2), y2: f1(y + 10), stroke: INK, 'stroke-width': 0.6 }, g);
+  [-L / 4, 2, L / 4 + 3].forEach(x => el('circle', { cx: f1(x), cy: f1(y + 13), r: 1.8, fill: PAPER, stroke: INK, 'stroke-width': 0.9 }, g));
+} };
+BIG.bureau = { label: 'Bureau', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H) => {
+  const y = -H / 2 + 2;
+  rect0(g, -L / 2 + 3, y, L - 6, 11, { 'stroke-width': 1.7 });
+  el('rect', { x: -9, y: f1(y + 2), width: 8, height: 6, fill: PAPER, stroke: INK, 'stroke-width': 0.7, transform: `rotate(-8 -5 ${f1(y + 5)})` }, g);
+  el('circle', { cx: 6, cy: f1(y + 4), r: 1.6, fill: INK }, g);
+  el('path', { d: `M5 ${f1(y + 3)} l5 -2`, stroke: INK, 'stroke-width': 0.8 }, g);
+  el('rect', { x: -3.5, y: f1(H / 2 - 9), width: 7, height: 6, rx: 1, fill: PAPER, stroke: INK, 'stroke-width': 1.1 }, g);
+} };
+BIG.etagere = { label: 'Étagère', cat: 'mobilier', w: 2, h: 1, blocks: true, draw: (g, L, H, s) => {
+  const y = -H / 2 + 2;
+  rect0(g, -L / 2 + 3, y, L - 6, 7, { 'stroke-width': 1.5 });
+  for (let x = -L / 2 + 6, i = 0; x < L / 2 - 5; x += 4 + hash(s, i, 420) * 2, i++) {
+    if (hash(s, i, 421) < 0.5) el('circle', { cx: f1(x), cy: f1(y + 3.5), r: 1.5, fill: 'none', stroke: INK, 'stroke-width': 0.8 }, g);
+    else el('rect', { x: f1(x - 1.3), y: f1(y + 1.8), width: 2.6, height: 3.4, fill: 'none', stroke: INK, 'stroke-width': 0.7 }, g);
+  }
+} };
+BIG.pont = { label: 'Pont', cat: 'nature', w: 3, h: 1, blocks: false, draw: (g, L, H) => {
+  const t = -H / 2 + 4, b = H / 2 - 4;
+  el('rect', { x: f1(-L / 2), y: f1(t), width: f1(L), height: f1(b - t), fill: PAPER }, g);
+  let d = ''; for (let x = -L / 2 + 2.5; x < L / 2; x += 3) d += `M${f1(x)} ${f1(t)} V${f1(b)} `;
+  el('path', { d, stroke: INK, 'stroke-width': 0.7 }, g);
+  el('path', { d: `M${f1(-L / 2)} ${f1(t)} H${f1(L / 2)} M${f1(-L / 2)} ${f1(b)} H${f1(L / 2)}`, stroke: INK, 'stroke-width': 1.9, 'stroke-linecap': 'round' }, g);
+  [-L / 2 + 1, -L / 6, L / 6, L / 2 - 1].forEach(x => [t, b].forEach(y => el('rect', { x: f1(x - 1.5), y: f1(y - 1.5), width: 3, height: 3, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g)));
+} };
+BIG.barque = { label: 'Barque', cat: 'nature', w: 2, h: 1, blocks: true, draw: (g, L) => {
+  const a = L / 2 - 3;
+  el('path', { d: `M${f1(-a)} -5 L${f1(a - 8)} -5 Q${f1(a)} -4 ${f1(a)} 0 Q${f1(a)} 4 ${f1(a - 8)} 5 L${f1(-a)} 5 Z`, fill: PAPER, stroke: INK, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+  el('path', { d: `M${f1(-a + 2)} -3 L${f1(a - 8)} -3 Q${f1(a - 3)} -2 ${f1(a - 3)} 0 Q${f1(a - 3)} 2 ${f1(a - 8)} 3 L${f1(-a + 2)} 3 Z`, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+  el('path', { d: `M-4 -5 V5 M6 -5 V5`, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('path', { d: `M-1 -5 l-6 -5 M-1 5 l-6 5`, stroke: INK, 'stroke-width': 1.1, 'stroke-linecap': 'round' }, g);
+} };
+
+Object.values(DECOR).forEach(d => { d.w = 1; d.h = 1; });
+delete DECOR.colimacon;
+BIG.colimacon = { label: 'Colimaçon', cat: 'decor', w: 2, h: 2, draw: (g, L, H) => {
+  const R = Math.min(L, H) / 2 - 2, r0 = R * 0.2, n = 14, a0 = -Math.PI / 2;
+  el('circle', { cx: 0, cy: 0, r: f1(R + 1.5), fill: STONE, stroke: INK, 'stroke-width': 1.6 }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(R - 1.5), fill: PAPER, stroke: INK, 'stroke-width': 0.8 }, g);
+  let d = '';
+  for (let i = 0; i <= n; i++) { const a = a0 + i / n * Math.PI * 1.6; d += `M${f1(Math.cos(a) * r0)} ${f1(Math.sin(a) * r0)} L${f1(Math.cos(a) * (R - 1.5))} ${f1(Math.sin(a) * (R - 1.5))} `; }
+  el('path', { d, stroke: INK, 'stroke-width': 1 }, g);
+  const ae = a0 + Math.PI * 1.6;
+  el('path', { d: `M${f1(Math.cos(ae) * (R - 1.5))} ${f1(Math.sin(ae) * (R - 1.5))} A${f1(R - 1.5)} ${f1(R - 1.5)} 0 0 1 ${f1(Math.cos(a0) * (R - 1.5))} ${f1(Math.sin(a0) * (R - 1.5))} L0 0 Z`, fill: '#e9e3d8', stroke: 'none' }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(r0), fill: STONE, stroke: INK, 'stroke-width': 1.4 }, g);
+  const am = a0 + Math.PI * 0.8, rm = R * 0.6;
+  el('path', { d: `M${f1(Math.cos(am - 0.35) * rm)} ${f1(Math.sin(am - 0.35) * rm)} A${f1(rm)} ${f1(rm)} 0 0 1 ${f1(Math.cos(am + 0.35) * rm)} ${f1(Math.sin(am + 0.35) * rm)}`, fill: 'none', stroke: INK, 'stroke-width': 1.2, 'stroke-linecap': 'round' }, g);
+} };
+BIG.pont.label = 'Pont';
+BIG.pont_petit = { ...BIG.pont, label: 'Petit pont', w: 2, h: 1 };
+BIG.pont_long = { ...BIG.pont, label: 'Long pont', w: 4, h: 1 };
+BIG.pont_large = { ...BIG.pont, label: 'Pont large', w: 3, h: 2 };
+['pont', 'pont_petit', 'pont_long', 'pont_large'].forEach(id => { BIG[id].noInset = true; });
+DECOR.eau.noInset = true; BIG.tapis.noInset = true;
+DECOR.tabouret = { label: 'Tabouret', cat: 'mobilier', draw: (g, cx, cy) => {
+  el('circle', { cx, cy, r: 5.5, fill: PAPER, stroke: INK, 'stroke-width': 1.5 }, g);
+  el('circle', { cx, cy, r: 3, fill: 'none', stroke: INK, 'stroke-width': 0.6 }, g);
+} };
+DECOR.chandelier = { label: 'Candélabre', cat: 'mobilier', draw: (g, cx, cy) => {
+  el('circle', { cx, cy, r: 4, fill: STONE, stroke: INK, 'stroke-width': 1.3 }, g);
+  [[0, -7], [6.1, 3.5], [-6.1, 3.5]].forEach(([x, y]) => {
+    el('line', { x1: cx, y1: cy, x2: cx + x, y2: cy + y, stroke: INK, 'stroke-width': 1 }, g);
+    el('circle', { cx: cx + x, cy: cy + y, r: 2.4, fill: PAPER, stroke: INK, 'stroke-width': 1 }, g);
+    el('circle', { cx: cx + x, cy: cy + y, r: 1, fill: '#f0ad66' }, g);
+  });
+} };
+DECOR.sacs = { label: 'Sacs', cat: 'mobilier', draw: (g, cx, cy, s) => {
+  [[-3.5, -2, 5], [4, -1, 4.5], [0, 5, 4.2]].forEach(([x, y, r], i) => {
+    el('path', { d: scallop(cx + x, cy + y, r, 6, s + i), fill: '#ece2cc', stroke: INK, 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: `M${f1(cx + x - 1.5)} ${f1(cy + y - r + 1.5)} l1.5 1.5 l1.5 -1.5`, fill: 'none', stroke: INK, 'stroke-width': 0.8 }, g);
+  });
+} };
+DECOR.echelle = { label: 'Échelle', cat: 'decor', draw: (g, cx, cy) => {
+  el('path', { d: `M${cx - 4} ${cy - 10} V${cy + 10} M${cx + 4} ${cy - 10} V${cy + 10}`, stroke: INK, 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+  let d = ''; for (let y = -7; y <= 7; y += 3.5) d += `M${cx - 4} ${cy + y} H${cx + 4} `;
+  el('path', { d, stroke: INK, 'stroke-width': 1.1 }, g);
+} };
+DECOR.foin = { label: 'Foin', cat: 'nature', draw: (g, cx, cy, s) => {
+  el('path', { d: scallop(cx, cy, 9, 10, s), fill: '#efe0a8', stroke: INK, 'stroke-width': 1.3, 'stroke-linejoin': 'round' }, g);
+  let d = ''; for (let i = 0; i < 9; i++) { const x = cx + (hash(s, i, 500) - 0.5) * 12, y = cy + (hash(s, i, 501) - 0.5) * 12, a = hash(s, i, 502) * Math.PI; d += `M${f1(x)} ${f1(y)} l${f1(Math.cos(a) * 3)} ${f1(Math.sin(a) * 3)} `; }
+  el('path', { d, stroke: INK, 'stroke-width': 0.7, 'stroke-linecap': 'round' }, g);
+} };
+DECOR.mannequin = { label: 'Mannequin', cat: 'mobilier', draw: (g, cx, cy) => {
+  el('line', { x1: cx - 9, y1: cy, x2: cx + 9, y2: cy, stroke: INK, 'stroke-width': 2.2, 'stroke-linecap': 'round' }, g);
+  el('circle', { cx, cy, r: 5, fill: '#ece2cc', stroke: INK, 'stroke-width': 1.5 }, g);
+  el('path', { d: `M${cx - 2.5} ${cy - 2.5} l5 5 M${cx + 2.5} ${cy - 2.5} l-5 5`, stroke: INK, 'stroke-width': 0.9 }, g);
+} };
+BIG.tombe = { label: 'Tombe', cat: 'decor', w: 2, h: 1, draw: (g, L, H) => {
+  const a = L / 2 - 3, b = H / 2 - 4;
+  el('rect', { x: f1(-a), y: f1(-b), width: f1(a * 2), height: f1(b * 2), rx: 2, fill: STONE, stroke: INK, 'stroke-width': 1.5 }, g);
+  el('path', { d: `M${f1(-a + 4)} 0 H${f1(-a + 12)} M${f1(-a + 8)} -4 V4`, stroke: INK, 'stroke-width': 1.3, 'stroke-linecap': 'round' }, g);
+  let d = ''; for (let x = -a + 16; x < a - 2; x += 4) d += `M${f1(x)} ${f1(-b + 2)} l2 ${f1(b * 2 - 4)} `;
+  el('path', { d, stroke: INK, 'stroke-width': 0.5 }, g);
+} };
+BIG.baignoire = { label: 'Baignoire', cat: 'mobilier', w: 2, h: 1, draw: (g, L, H) => {
+  const a = L / 2 - 3, b = H / 2 - 3;
+  el('rect', { x: f1(-a), y: f1(-b), width: f1(a * 2), height: f1(b * 2), rx: f1(b), fill: WOOD, stroke: INK, 'stroke-width': 1.6 }, g);
+  el('rect', { x: f1(-a + 3), y: f1(-b + 3), width: f1(a * 2 - 6), height: f1(b * 2 - 6), rx: f1(b - 3), fill: '#e1e9e9', stroke: INK, 'stroke-width': 0.8 }, g);
+  el('path', { d: `M${f1(-a + 8)} -1 q2 -1.5 4 0 t4 0 M${f1(a - 18)} 2 q2 -1.5 4 0 t4 0`, fill: 'none', stroke: '#5c7c85', 'stroke-width': 0.7 }, g);
+} };
+BIG.fontaine = { label: 'Fontaine', cat: 'decor', w: 2, h: 2, draw: (g, L, H) => {
+  const R = Math.min(L, H) / 2 - 3;
+  el('circle', { cx: 0, cy: 0, r: f1(R), fill: STONE, stroke: INK, 'stroke-width': 1.7 }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(R - 4), fill: '#e1e9e9', stroke: INK, 'stroke-width': 1 }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(R * 0.3), fill: STONE, stroke: INK, 'stroke-width': 1.3 }, g);
+  el('circle', { cx: 0, cy: 0, r: f1(R * 0.12), fill: '#e1e9e9', stroke: INK, 'stroke-width': 0.8 }, g);
+  el('path', { d: `M${f1(-R * 0.65)} ${f1(-R * 0.2)} q2.5 -2 5 0 t5 0 M${f1(R * 0.3)} ${f1(R * 0.45)} q2.5 -2 5 0 t5 0`, fill: 'none', stroke: '#5c7c85', 'stroke-width': 0.8 }, g);
+} };
+BIG.four = { label: 'Four à pain', cat: 'mobilier', w: 2, h: 2, draw: (g, L, H) => {
+  const R = Math.min(L, H) / 2 - 3;
+  el('path', { d: `M${f1(-R)} ${f1(R * 0.6)} V0 A${f1(R)} ${f1(R)} 0 0 1 ${f1(R)} 0 V${f1(R * 0.6)} Z`, fill: STONE, stroke: INK, 'stroke-width': 1.7, 'stroke-linejoin': 'round' }, g);
+  let d = ''; for (let i = 1; i < 6; i++) { const a = Math.PI + i / 6 * Math.PI; d += `M${f1(Math.cos(a) * R * 0.5)} ${f1(Math.sin(a) * R * 0.5)} L${f1(Math.cos(a) * R)} ${f1(Math.sin(a) * R)} `; }
+  el('path', { d, stroke: INK, 'stroke-width': 0.8 }, g);
+  el('path', { d: `M${f1(-R * 0.4)} ${f1(R * 0.6)} V${f1(R * 0.1)} A${f1(R * 0.4)} ${f1(R * 0.4)} 0 0 1 ${f1(R * 0.4)} ${f1(R * 0.1)} V${f1(R * 0.6)} Z`, fill: '#f6d6a8', stroke: INK, 'stroke-width': 1.2 }, g);
+  el('path', { d: `M0 ${f1(R * 0.5)} C-2.5 ${f1(R * 0.3)} -0.8 ${f1(R * 0.12)} 0 0 C0.8 ${f1(R * 0.12)} 2.5 ${f1(R * 0.3)} 0 ${f1(R * 0.5)} Z`, fill: '#f0ad66', stroke: INK, 'stroke-width': 0.8 }, g);
+} };
+['tabouret', 'chandelier', 'sacs', 'echelle', 'foin', 'mannequin'].forEach(id => { DECOR[id].w = 1; DECOR[id].h = 1; });
+BIG.table_longue = { ...BIG.grande_table, label: 'Table longue', w: 3, h: 1 };
+BIG.table_banquet = { ...BIG.grande_table, label: 'Table de banquet', w: 4, h: 2 };
+const OBJ = { ...DECOR, ...BIG };
+const PASS = {
+  bloque: ['colonne', 'statue', 'armoire', 'bibliotheque', 'etagere', 'cheminee', 'ratelier', 'cage', 'puits'],
+  escalade: ['table_longue', 'table_banquet', 'baignoire', 'fontaine', 'four', 'tombe', 'foin', 'mannequin', 'lit', 'lit_double', 'grande_table', 'table', 'table_ronde', 'coffre', 'tonneau', 'caisse', 'bureau', 'comptoir', 'sarcophage', 'autel', 'enclume', 'chaudron', 'brasero', 'trone', 'etabli', 'rocher', 'grand_rocher', 'souche', 'charrette', 'barque', 'arbre', 'sapin', 'tente']
+};
+Object.keys(OBJ).forEach(id => {
+  OBJ[id].pass = PASS.bloque.includes(id) ? 'bloque' : PASS.escalade.includes(id) ? 'escalade' : 'libre';
+  OBJ[id].blocks = OBJ[id].pass === 'bloque';
+});
+const GOLD = '#efd794', FLAME = '#f0ad66', EMBER = '#f6d6a8', TRAP = '#f0c4ba';
+const tint = (id, fn) => { if (!OBJ[id]) return; const d = OBJ[id].draw; OBJ[id].draw = (g, ...args) => { d(g, ...args); fn(g); }; };
+const recolor = (from, to) => g => g.querySelectorAll(`[fill="${from}"]`).forEach(e => e.setAttribute('fill', to));
+const paths = g => [...g.querySelectorAll('path')];
+['table', 'tonneau', 'caisse', 'banc', 'grande_table', 'table_ronde', 'bureau', 'comptoir', 'etagere', 'etabli', 'armoire', 'bibliotheque', 'ratelier', 'table_longue', 'table_banquet', 'tabouret', 'echelle', 'pont', 'pont_petit', 'pont_long', 'pont_large', 'barque', 'charrette', 'chaise'].forEach(id => tint(id, recolor(PAPER, WOOD)));
+tint('coffre', recolor(PAPER, GOLD));
+const CATS = {
+  mobilier: ['table', 'grande_table', 'table_longue', 'table_banquet', 'table_ronde', 'chaise', 'tabouret', 'banc', 'trone', 'lit', 'lit_double', 'tapis', 'armoire', 'bibliotheque', 'etagere', 'coffre', 'bureau', 'comptoir', 'baignoire', 'cheminee', 'four', 'chaudron', 'brasero', 'chandelier', 'tonneau', 'caisse', 'sacs', 'etabli', 'enclume', 'ratelier', 'mannequin', 'cage'],
+  decor: ['rocher', 'colonne', 'statue', 'autel', 'sarcophage', 'tombe', 'fontaine', 'puits', 'escalier', 'colimacon', 'echelle', 'piege', 'crane', 'charrette'],
+  nature: ['arbre', 'sapin', 'buisson', 'vegetation', 'souche', 'rocher', 'grand_rocher', 'foin', 'eau', 'bassin', 'nenuphar', 'roseaux', 'feu', 'tente', 'pont_petit', 'pont', 'pont_long', 'pont_large', 'barque']
+};
+Object.entries(CATS).forEach(([cat, ids]) => ids.forEach((id, i) => { if (OBJ[id]) { OBJ[id].cat = cat; OBJ[id].ord = i; } }));
+const MAUVE = '#e4d8ea', MAUVE2 = '#d3c1dd', VELVET = '#c99aaf';
+tint('lit', g => { const r = g.querySelector('rect'); if (r) r.setAttribute('fill', MAUVE); });
+tint('lit_double', g => { const r = g.querySelector('rect'); if (r) r.setAttribute('fill', MAUVE); });
+tint('tapis', g => { const rs = g.querySelectorAll('rect'); if (rs[0]) rs[0].setAttribute('fill', MAUVE); if (rs[1]) rs[1].setAttribute('fill', MAUVE2); const p = g.querySelector('path'); if (p) p.setAttribute('fill', MAUVE); });
+tint('trone', g => { const p = g.querySelector('path'); if (p) p.setAttribute('fill', GOLD); const rs = g.querySelectorAll('rect'); rs.forEach((r, i) => r.setAttribute('fill', i === 3 ? VELVET : i === 2 ? MAUVE : WOOD)); });
+
+tint('autel', g => g.querySelectorAll(`circle[fill="${PAPER}"]`).forEach(e => e.setAttribute('fill', GOLD)));
+tint('piege', g => { const c = g.querySelector('circle'); if (c) c.setAttribute('fill', TRAP); });
+tint('feu', g => { const p = paths(g).pop(); if (p) p.setAttribute('fill', FLAME); g.querySelectorAll('circle').forEach(e => e.setAttribute('fill', '#e7e0d4')); });
+tint('brasero', g => { const p = paths(g).pop(); if (p) p.setAttribute('fill', FLAME); const c = g.querySelectorAll('circle')[1]; if (c) c.setAttribute('fill', EMBER); });
+tint('cheminee', g => { const ps = paths(g); const fl = ps[ps.length - 2]; if (fl) fl.setAttribute('fill', FLAME); const r = g.querySelectorAll('rect')[1]; if (r) r.setAttribute('fill', EMBER); });
+
+
+const C = 24;
+const squareGrid = {
+  type: 'square', W: 28, H: 21, vw: 672, vh: 504,
+  center: (c, r) => [c * C + C / 2, r * C + C / 2],
+  corners: (c, r) => [[c * C, r * C], [c * C + C, r * C], [c * C + C, r * C + C], [c * C, r * C + C]],
+  neigh: (c, r) => [[c, r - 1], [c + 1, r], [c, r + 1], [c - 1, r]],
+  cellAt: (x, y) => [Math.floor(x / C), Math.floor(y / C)]
+};
+const S = C / Math.sqrt(3), PAD = 6;
+const hexCenter = (c, r) => [PAD + C / 2 + C * (c + 0.5 * (r & 1)), PAD + S + 1.5 * S * r];
+const hexGrid = {
+  type: 'hex', W: 27, H: 23,
+  vw: Math.ceil(PAD * 2 + C * 27.5), vh: Math.ceil(PAD * 2 + S * 2 + 1.5 * S * 22),
+  center: hexCenter,
+  corners: (c, r) => { const [x, y] = hexCenter(c, r); return [0, 1, 2, 3, 4, 5].map(i => { const a = Math.PI / 180 * (60 * i - 30); return [x + S * Math.cos(a), y + S * Math.sin(a)]; }); },
+  neigh: (c, r) => (r & 1)
+    ? [[c + 1, r], [c + 1, r + 1], [c, r + 1], [c - 1, r], [c, r - 1], [c + 1, r - 1]]
+    : [[c + 1, r], [c, r + 1], [c - 1, r + 1], [c - 1, r], [c - 1, r - 1], [c, r - 1]],
+  cellAt: (x, y) => {
+    const r0 = Math.round((y - PAD - S) / (1.5 * S));
+    let best = null, bd = Infinity;
+    for (let r = r0 - 1; r <= r0 + 1; r++) {
+      const c0 = Math.round((x - PAD - C / 2) / C - 0.5 * (r & 1));
+      for (let c = c0 - 1; c <= c0 + 1; c++) { const [cx, cy] = hexCenter(c, r); const d = (cx - x) ** 2 + (cy - y) ** 2; if (d < bd) { bd = d; best = [c, r]; } }
+    }
+    return best;
+  }
+};
+
+const STONEOBJ = '#e9e4da', IRON = '#d9d4cb';
+['rocher', 'colonne', 'statue', 'autel', 'sarcophage', 'tombe', 'fontaine', 'puits', 'four', 'cheminee', 'baignoire', 'crane'].forEach(id => tint(id, recolor(PAPER, STONEOBJ)));
+['enclume', 'chaudron', 'cage', 'brasero'].forEach(id => tint(id, recolor(PAPER, IRON)));
+const LIGHTS = { cheminee: 2.6, brasero: 2, chandelier: 1.8, feu: 2.6, four: 1.8 };
+let G = squareGrid, tool = 'in', rot = 0, painting = false, dragRemove = false, pending = null;
+const floor = new Map(), edges = new Map(), objects = new Map(), occ = new Map(), zones = new Set();
+let nextId = 1;
+const key = (c, r) => c + ',' + r;
+let floorView = null;
+const fl = (c, r) => (floorView || floor).get(key(c, r));
+const inside = (c, r) => c >= 0 && r >= 0 && c < G.W && r < G.H;
+const poly = p => 'M' + p.map(q => f1(q[0]) + ' ' + f1(q[1])).join(' L') + 'Z';
+const edgeKey = (c, r, nc, nr) => [key(c, r), key(nc, nr)].sort().join('|');
+const edgeGeom = (c, r, i) => {
+  const cs = G.corners(c, r), a = cs[i], b = cs[(i + 1) % cs.length], ctr = G.center(c, r);
+  const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], len = Math.hypot(m[0] - ctr[0], m[1] - ctr[1]);
+  return { a, b, nx: (m[0] - ctr[0]) / len, ny: (m[1] - ctr[1]) / len };
+};
+const WALLED = t => (t === 'stone' || t === 'muret') ? t : null;
+const autoEdge = () => null;
+const edgeType = (c, r, nc, nr) => edges.get(edgeKey(c, r, nc, nr)) || autoEdge(c, r, nc, nr);
+const sizeOf = (t, o = rot) => o % 2 ? [OBJ[t].h, OBJ[t].w] : [OBJ[t].w, OBJ[t].h];
+const footprint = (c, r, w, h) => { const out = []; for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) out.push([c + i, r + j]); return out; };
+let fond = null;
+const fondUrl = f => f.id ? '/_blob/' + f.id : f.src;
+const walkable = (c, r) => inside(c, r) && !!(fl(c, r) || fond);
+const canPlace = (c, r, w, h) => footprint(c, r, w, h).every(([x, y]) => walkable(x, y) && !occ.has(key(x, y)));
+const place = (t, c, r, w, h, o = 0, p) => { const id = nextId++; objects.set(id, p ? { t, c, r, w, h, o, p } : { t, c, r, w, h, o }); footprint(c, r, w, h).forEach(([x, y]) => occ.set(key(x, y), id)); return id; };
+const removeObj = id => { const o = objects.get(id); if (!o) return; footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => occ.delete(key(x, y))); objects.delete(id); };
+
+const mapTools = OY => {
+  const put = (c, r, t) => { r += OY; if (inside(c, r)) floor.set(key(c, r), t); };
+  const T = {
+    put,
+    rect: (x, y, w, h, t) => { for (let c = x; c < x + w; c++) for (let r = y; r < y + h; r++) put(c, r, t); },
+    blob: (cx, cy, rad, t) => { for (let c = 0; c < G.W; c++) for (let r = 0; r < G.H; r++) { const [x, y] = G.center(c, r), [ox, oy] = G.center(cx, cy + OY); if (Math.hypot(x - ox, y - oy) < rad * (1 + (hash(c, r - OY, 40) - 0.5) * 0.35)) floor.set(key(c, r), t); } },
+    setE: (c, r, i, t) => { r += OY; const [nc, nr] = G.neigh(c, r)[i]; edges.set(edgeKey(c, r, nc, nr), t); },
+    link: (c1, r1, c2, r2, t) => edges.set(edgeKey(c1, r1 + OY, c2, r2 + OY), t),
+    vwall: (c, r0, r1, t, doors = []) => { for (let r = r0; r <= r1; r++) T.link(c, r, c + 1, r, doors.includes(r) ? 'door' : t); },
+    hwall: (r, c0, c1, t, doors = []) => { for (let c = c0; c <= c1; c++) T.link(c, r, c, r + 1, doors.includes(c) ? 'door' : t); },
+    wallAround: kind => floor.forEach((t, k) => {
+      if (t !== kind) return;
+      const [c, r] = k.split(',').map(Number);
+      G.neigh(c, r).forEach(([nc, nr]) => { const o = fl(nc, nr); const ek = edgeKey(c, r, nc, nr); if (o && o !== kind && !edges.has(ek)) edges.set(ek, kind); });
+    }),
+    obj: (t, c, r, o = 0) => { r += OY; const [w, h] = sizeOf(t, o); if (canPlace(c, r, w, h)) place(t, c, r, w, h, o); }
+  };
+  return T;
+};
+
+const TEMPLATES = {
+  campement: { label: 'Campement', desc: 'Ta carte : clairière boisée, tente et feu de camp, bassin, rochers et coffre caché.', data: {"b":null,"e":[],"f":[["8,10","out"],["8,9","out"],["8,8","out"],["8,7","out"],["8,6","out"],["9,6","out"],["9,5","out"],["10,5","out"],["11,5","out"],["12,5","out"],["12,6","out"],["12,7","out"],["11,8","out"],["10,8","out"],["9,8","out"],["9,9","out"],["9,10","out"],["10,11","out"],["11,10","out"],["11,9","out"],["11,7","out"],["10,7","out"],["10,6","out"],["11,6","out"],["9,7","out"],["10,9","out"],["12,8","out"],["12,9","out"],["12,10","out"],["11,11","out"],["9,11","out"],["10,10","out"],["12,11","out"],["13,7","out"],["14,7","out"],["14,8","out"],["13,8","out"],["13,10","out"],["14,10","out"],["14,9","out"],["14,6","out"],["14,5","out"],["15,5","out"],["15,6","out"],["15,7","out"],["13,9","out"],["15,8","out"],["15,9","out"],["16,9","out"],["16,7","out"],["16,6","out"],["17,6","out"],["18,6","out"],["18,5","out"],["19,4","out"],["19,3","out"],["19,2","out"],["20,2","out"],["20,1","out"],["20,0","out"],["21,0","out"],["22,0","out"],["21,1","out"],["17,5","out"],["16,5","out"],["18,4","out"],["18,3","out"],["21,2","out"],["11,12","out"],["12,12","out"],["13,12","out"],["13,13","out"],["14,13","out"],["15,13","out"],["15,14","out"],["16,14","out"],["16,15","out"],["17,15","out"],["17,16","out"],["16,17","out"],["16,18","out"],["17,18","out"],["17,19","out"],["17,20","out"],["18,20","out"],["16,20","out"],["16,19","out"],["17,17","out"],["16,16","out"],["15,18","out"],["14,12","out"],["15,12","out"],["15,11","out"],["15,10","out"],["14,11","out"],["13,11","out"],["16,12","out"],["16,13","out"],["18,19","out"],["19,20","out"],["18,15","out"],["18,14","out"],["17,14","out"],["17,13","out"],["17,12","out"],["17,11","out"],["16,11","out"],["16,10","out"],["16,8","out"],["17,8","out"],["18,8","out"],["18,7","out"],["18,9","out"],["18,10","out"],["18,11","out"],["17,10","out"],["17,9","out"],["17,7","out"],["19,8","out"],["19,7","out"],["19,6","out"],["6,16","out"],["6,15","out"],["7,15","out"],["8,16","out"],["8,17","out"],["7,17","out"],["6,17","out"],["7,16","out"],["24,14","out"],["24,15","out"],["23,15","out"],["23,16","out"],["24,16","out"],["25,16","out"],["25,15","out"],["25,14","out"],["24,13","out"],["27,0","out"],["27,1","out"],["27,2","out"],["26,2","out"],["26,3","out"],["25,3","out"],["25,4","out"],["24,4","out"],["24,5","out"],["25,5","out"],["26,5","out"],["26,6","out"],["27,6","out"],["27,7","out"],["27,5","out"],["27,4","out"],["27,3","out"],["26,4","out"],["27,8","out"],["3,0","out"],["3,1","out"],["3,2","out"],["4,2","out"],["4,3","out"],["3,3","out"],["3,4","out"],["2,4","out"],["1,4","out"],["1,3","out"],["2,3","out"],["2,2","out"],["2,1","eau"],["2,0","eau"],["1,0","eau"],["1,1","eau"],["0,1","eau"],["0,0","eau"],["0,2","eau"],["0,3","eau"],["0,4","out"],["1,2","out"],["4,1","out"],["4,0","out"],["5,0","out"],["6,0","out"],["7,0","out"],["8,0","out"],["9,0","out"],["10,0","out"],["11,0","out"],["12,0","out"],["2,6","out"],["1,6","out"],["1,5","out"],["2,5","out"],["0,5","out"],["0,6","out"],["0,7","out"],["8,1","out"],["9,1","out"],["10,1","out"],["11,1","out"],["5,1","out"],["4,4","out"],["13,6","out"],["13,5","out"],["13,4","out"],["14,4","out"],["12,4","out"],["11,4","out"],["10,4","out"],["17,3","out"],["17,4","out"],["16,4","out"],["16,3","out"],["15,4","out"],["15,3","out"],["14,3","out"],["13,3","out"],["12,3","out"],["11,3","out"],["10,3","out"],["10,2","out"],["11,2","out"],["12,1","out"],["13,1","out"],["14,1","out"],["14,2","out"],["13,2","out"],["12,2","out"],["15,2","out"],["14,0","out"],["15,0","out"],["16,0","out"],["15,1","out"],["5,16","out"],["4,16","out"],["4,15","out"],["5,15","out"],["5,14","out"],["6,14","out"],["5,13","out"],["4,14","out"],["3,14","out"],["3,13","out"],["4,13","out"],["5,17","out"],["5,18","out"],["4,18","out"],["4,17","out"],["3,17","out"],["3,16","out"],["3,15","out"],["7,14","out"],["6,13","out"],["4,12","out"],["2,13","out"],["1,13","out"],["1,12","out"],["0,12","out"],["0,13","out"],["0,11","out"],["2,12","out"],["3,12","out"],["5,12","out"],["3,11","out"],["2,11","out"],["1,11","out"],["0,10","out"],["0,9","out"],["0,8","out"],["1,7","out"],["1,10","out"],["1,9","out"],["2,10","out"],["1,8","out"],["2,14","out"],["1,14","out"],["2,15","out"],["1,15","out"],["0,14","out"],["13,0","out"]],"o":[{"c":10,"h":2,"o":1,"r":6,"t":"arbre","w":2},{"c":17,"h":2,"o":1,"r":7,"t":"arbre","w":2},{"c":16,"h":1,"o":2,"r":10,"t":"buisson","w":1},{"c":15,"h":1,"o":1,"r":6,"t":"buisson","w":1},{"c":13,"h":1,"o":1,"r":11,"t":"buisson","w":1},{"c":18,"h":1,"o":1,"r":20,"t":"buisson","w":1},{"c":24,"h":1,"o":1,"r":15,"t":"buisson","w":1},{"c":10,"h":2,"o":2,"r":9,"t":"bassin","w":2},{"c":9,"h":2,"o":1,"r":7,"t":"charrette","w":1},{"c":25,"h":1,"o":1,"r":16,"t":"rocher","w":1},{"c":6,"h":1,"o":1,"r":15,"t":"rocher","w":1},{"c":7,"h":2,"o":1,"r":16,"t":"grand_rocher","w":2},{"c":3,"h":2,"o":2,"r":3,"t":"grand_rocher","w":2},{"c":24,"h":1,"o":1,"r":4,"t":"rocher","w":1},{"c":12,"h":1,"o":1,"r":8,"t":"chaudron","w":1},{"c":14,"h":2,"o":2,"r":8,"t":"tente","w":2},{"c":13,"h":1,"o":2,"r":6,"t":"feu","w":1},{"c":4,"h":1,"o":0,"r":14,"t":"coffre","w":1},{"c":4,"h":2,"o":1,"r":16,"t":"arbre","w":2},{"c":2,"h":2,"o":0,"r":12,"t":"arbre","w":2},{"c":1,"h":1,"o":0,"r":13,"t":"buisson","w":1},{"c":1,"h":1,"o":1,"r":10,"t":"buisson","w":1},{"c":1,"h":1,"o":0,"r":12,"t":"souche","w":1},{"c":6,"h":1,"o":0,"r":13,"t":"souche","w":1}]} },
+  cabane: { label: 'La cabane de la rivière', desc: 'Ta carte : rivière et étang, deux ponts, cabane en pierre avec four, cheminée et autel.', data: {"b":null,"e":[["0,14|0,15","stone"],["1,14|1,15","stone"],["2,14|2,15","stone"],["3,14|3,15","stone"],["3,15|4,15","stone"],["3,16|4,16","stone"],["3,17|4,17","stone"],["4,17|4,18","stone"],["7,18|8,18","stone"],["7,19|8,19","stone"],["7,20|8,20","stone"],["7,17|7,18","stone"],["3,17|3,18","stone"],["6,17|6,18","stone"],["5,17|5,18","door"],["2,17|2,18","stone"],["1,18|2,18","stone"],["1,20|2,20","stone"],["1,19|2,19","door"]],"f":[["12,10","eau"],["13,10","eau"],["15,5","eau"],["15,6","eau"],["14,4","eau"],["13,4","eau"],["12,4","eau"],["11,4","eau"],["10,4","eau"],["10,5","eau"],["9,5","eau"],["9,6","eau"],["9,7","eau"],["10,7","eau"],["10,8","eau"],["11,8","eau"],["12,8","eau"],["12,7","eau"],["13,7","eau"],["14,7","eau"],["14,6","eau"],["14,5","eau"],["11,5","eau"],["10,6","eau"],["11,7","eau"],["13,6","eau"],["13,5","eau"],["12,5","eau"],["12,6","eau"],["11,6","eau"],["14,8","eau"],["13,8","eau"],["13,9","eau"],["12,9","eau"],["11,9","eau"],["10,9","eau"],["9,9","eau"],["9,8","eau"],["9,4","eau"],["10,3","eau"],["11,3","eau"],["12,3","eau"],["13,3","eau"],["14,3","eau"],["15,3","eau"],["15,4","eau"],["16,4","eau"],["16,5","eau"],["16,6","eau"],["16,7","eau"],["15,7","eau"],["15,8","eau"],["14,9","eau"],["10,2","eau"],["11,2","eau"],["12,2","eau"],["13,2","eau"],["8,7","eau"],["8,6","eau"],["8,5","eau"],["9,3","eau"],["9,2","eau"],["8,3","eau"],["8,4","eau"],["7,5","eau"],["7,6","eau"],["11,10","eau"],["10,10","eau"],["10,11","eau"],["10,12","eau"],["10,13","eau"],["11,13","eau"],["11,12","eau"],["11,11","eau"],["10,14","eau"],["11,14","eau"],["11,15","eau"],["12,15","eau"],["13,15","eau"],["13,16","eau"],["14,16","eau"],["14,15","eau"],["12,16","eau"],["10,15","eau"],["12,13","eau"],["12,14","eau"],["15,15","eau"],["15,16","eau"],["16,16","eau"],["17,16","eau"],["18,16","eau"],["19,16","eau"],["20,16","eau"],["21,16","eau"],["21,17","eau"],["22,17","eau"],["22,18","eau"],["22,19","eau"],["21,18","eau"],["20,17","eau"],["19,17","eau"],["18,17","eau"],["17,17","eau"],["16,17","eau"],["16,15","eau"],["17,15","eau"],["18,15","eau"],["23,18","eau"],["23,19","eau"],["23,20","eau"],["21,20","eau"],["22,20","eau"],["21,19","eau"],["19,15","eau"],["18,14","eau"],["17,14","eau"],["16,14","eau"],["16,13","eau"],["15,13","eau"],["15,14","eau"],["14,13","eau"],["13,13","eau"],["13,14","eau"],["14,14","eau"],["12,12","eau"],["12,11","eau"],["13,11","eau"],["14,11","eau"],["14,10","eau"],["9,10","eau"],["8,10","eau"],["8,11","eau"],["9,11","eau"],["9,12","eau"],["9,13","eau"],["7,3","eau"],["7,4","eau"],["6,4","eau"],["6,3","eau"],["5,3","eau"],["4,3","eau"],["6,5","eau"],["5,2","eau"],["4,2","eau"],["3,1","eau"],["3,0","eau"],["2,0","eau"],["4,1","eau"],["5,1","eau"],["5,0","eau"],["4,0","eau"],["2,1","eau"],["1,0","eau"],["3,2","eau"],["5,4","eau"],["5,5","eau"],["4,5","eau"],["4,4","eau"],["3,4","eau"],["3,3","eau"],["2,2","eau"],["20,14","out"],["21,14","out"],["21,15","out"],["22,15","out"],["22,14","out"],["23,14","out"],["23,15","out"],["23,16","out"],["19,14","out"],["19,13","out"],["20,15","out"],["22,16","out"],["23,17","out"],["24,17","out"],["24,18","out"],["24,19","out"],["24,20","out"],["25,20","out"],["25,19","out"],["25,18","out"],["25,17","out"],["25,16","out"],["25,15","out"],["24,16","out"],["24,15","out"],["24,14","out"],["25,14","out"],["26,17","out"],["26,16","out"],["26,18","out"],["26,19","out"],["26,20","out"],["27,20","out"],["27,19","out"],["27,18","out"],["27,17","out"],["27,16","out"],["27,15","out"],["27,14","out"],["27,13","out"],["27,12","out"],["27,11","out"],["26,11","out"],["26,14","out"],["26,13","out"],["26,12","out"],["26,15","out"],["25,13","out"],["25,12","out"],["25,11","out"],["25,10","out"],["25,9","out"],["26,9","out"],["26,8","out"],["24,13","out"],["23,12","out"],["23,11","out"],["23,10","out"],["23,9","out"],["23,8","out"],["23,7","out"],["24,12","out"],["24,11","out"],["24,10","out"],["24,9","out"],["24,8","out"],["24,7","out"],["24,6","out"],["25,5","out"],["25,4","out"],["25,2","out"],["25,1","out"],["25,0","out"],["25,3","out"],["25,6","out"],["25,7","out"],["26,0","out"],["26,1","out"],["26,2","out"],["26,3","out"],["26,4","out"],["26,5","out"],["26,6","out"],["26,7","out"],["26,10","out"],["25,8","out"],["27,10","out"],["27,9","out"],["27,8","out"],["27,7","out"],["27,6","out"],["27,5","out"],["27,4","out"],["27,3","out"],["27,2","out"],["27,1","out"],["27,0","out"],["22,13","out"],["22,12","out"],["23,13","out"],["21,13","out"],["21,12","out"],["22,11","out"],["22,10","out"],["21,11","out"],["20,11","out"],["20,12","out"],["21,10","out"],["21,9","out"],["22,8","out"],["22,9","out"],["22,7","out"],["22,6","out"],["22,5","out"],["21,6","out"],["21,7","out"],["21,8","out"],["23,5","out"],["23,4","out"],["24,5","out"],["24,4","out"],["24,3","out"],["23,6","out"],["23,3","out"],["23,2","out"],["23,1","out"],["24,2","out"],["24,1","out"],["24,0","out"],["23,0","out"],["22,0","out"],["22,1","out"],["22,2","out"],["21,0","out"],["20,0","out"],["19,0","out"],["17,0","out"],["18,0","out"],["20,1","out"],["19,1","out"],["19,2","out"],["18,2","out"],["20,2","out"],["21,2","out"],["21,3","out"],["22,3","out"],["21,1","out"],["22,4","out"],["21,5","out"],["20,5","out"],["19,5","out"],["19,4","out"],["19,3","out"],["18,4","out"],["18,5","out"],["18,6","out"],["17,6","out"],["17,5","out"],["17,4","out"],["17,3","out"],["17,2","out"],["18,3","out"],["20,3","out"],["20,4","out"],["21,4","out"],["20,6","out"],["19,6","out"],["18,7","out"],["17,7","out"],["17,8","out"],["16,8","out"],["16,9","out"],["15,9","out"],["15,10","out"],["15,11","out"],["15,12","out"],["14,12","out"],["16,11","out"],["16,12","out"],["17,12","out"],["17,11","out"],["18,11","out"],["18,10","out"],["19,11","out"],["19,12","out"],["20,13","out"],["18,12","out"],["20,10","out"],["19,10","out"],["19,9","out"],["18,9","out"],["17,9","out"],["17,10","out"],["16,10","out"],["20,9","out"],["18,8","out"],["19,7","out"],["20,7","out"],["20,8","out"],["19,8","out"],["18,1","out"],["17,1","out"],["16,0","out"],["15,0","out"],["14,0","out"],["13,0","out"],["15,1","out"],["16,1","out"],["12,0","out"],["11,0","out"],["10,0","out"],["9,0","out"],["10,1","out"],["11,1","out"],["12,1","out"],["13,1","out"],["14,1","out"],["16,2","out"],["8,0","out"],["7,0","out"],["6,0","out"],["8,1","out"],["7,1","out"],["7,2","out"],["6,2","out"],["9,1","out"],["6,1","out"],["8,2","out"],["0,0","out"],["0,1","out"],["0,2","out"],["0,3","out"],["1,3","out"],["1,2","out"],["1,4","out"],["2,4","out"],["2,5","out"],["1,5","out"],["0,5","out"],["0,4","out"],["1,6","out"],["2,6","out"],["3,6","out"],["3,5","out"],["2,3","out"],["4,6","out"],["5,6","out"],["5,7","out"],["6,7","out"],["6,6","out"],["7,7","out"],["7,8","out"],["8,8","out"],["7,9","out"],["8,9","out"],["7,10","out"],["6,10","out"],["5,10","out"],["5,9","out"],["6,9","out"],["6,8","out"],["5,8","out"],["4,8","out"],["4,7","out"],["3,7","out"],["2,7","out"],["1,7","out"],["0,6","out"],["0,7","out"],["0,8","out"],["1,8","out"],["1,9","out"],["2,9","out"],["2,10","out"],["2,8","out"],["3,8","out"],["3,9","out"],["4,9","out"],["4,10","out"],["3,10","out"],["3,11","out"],["2,11","stone"],["1,11","stone"],["0,11","stone"],["0,10","stone"],["1,10","stone"],["0,9","out"],["1,12","stone"],["1,13","stone"],["0,13","stone"],["0,12","stone"],["2,13","stone"],["3,13","stone"],["3,12","stone"],["4,11","out"],["5,12","out"],["4,12","out"],["4,13","out"],["2,12","stone"],["5,11","out"],["6,11","out"],["7,11","out"],["7,12","out"],["7,13","out"],["7,14","out"],["6,14","out"],["6,13","out"],["8,13","out"],["8,12","out"],["6,12","out"],["5,13","out"],["4,14","stone"],["5,14","out"],["4,15","stone"],["3,15","stone"],["2,15","stone"],["2,14","stone"],["3,14","stone"],["1,15","stone"],["1,14","stone"],["0,14","stone"],["0,15","stone"],["0,16","stone"],["1,16","stone"],["2,16","stone"],["3,16","stone"],["3,17","stone"],["4,16","stone"],["5,15","out"],["6,15","out"],["6,16","out"],["7,16","stone"],["7,15","out"],["8,15","out"],["8,14","out"],["9,14","out"],["9,15","out"],["9,16","out"],["8,16","out"],["9,17","out"],["10,17","out"],["8,17","stone"],["7,17","stone"],["6,17","stone"],["5,16","out"],["5,17","stone"],["4,17","stone"],["2,17","stone"],["1,17","stone"],["1,18","stone"],["0,17","stone"],["0,18","stone"],["0,20","stone"],["0,19","stone"],["1,19","stone"],["1,20","stone"],["2,20","stone"],["3,20","stone"],["3,19","stone"],["2,19","stone"],["2,18","stone"],["3,18","stone"],["4,18","stone"],["5,18","stone"],["6,18","stone"],["6,19","stone"],["6,20","stone"],["5,20","stone"],["4,20","stone"],["4,19","stone"],["5,19","stone"],["7,19","stone"],["8,19","stone"],["8,18","stone"],["9,18","out"],["10,18","out"],["7,18","stone"],["10,16","out"],["11,17","out"],["11,16","out"],["12,17","out"],["12,18","out"],["13,17","out"],["14,17","out"],["14,18","out"],["15,17","out"],["15,18","out"],["16,18","out"],["17,18","out"],["17,19","out"],["18,19","out"],["18,18","out"],["19,18","out"],["19,19","out"],["20,19","out"],["20,18","out"],["20,20","out"],["19,20","out"],["18,20","out"],["17,20","out"],["16,20","out"],["15,20","out"],["14,20","out"],["16,19","out"],["15,19","out"],["14,19","out"],["13,19","out"],["12,19","out"],["13,18","out"],["11,18","out"],["10,19","out"],["11,19","out"],["11,20","out"],["12,20","out"],["13,20","out"],["10,20","out"],["9,20","out"],["8,20","stone"],["9,19","stone"],["7,20","stone"]],"o":[{"c":18,"h":1,"o":1,"r":9,"t":"puits","w":1},{"c":7,"h":3,"o":3,"r":2,"t":"pont","w":1},{"c":7,"h":3,"o":3,"r":5,"t":"pont","w":1},{"c":4,"h":2,"o":3,"r":6,"t":"arbre","w":2},{"c":7,"h":2,"o":1,"r":11,"t":"arbre","w":2},{"c":11,"h":2,"o":0,"r":16,"t":"arbre","w":2},{"c":10,"h":2,"o":3,"r":1,"t":"arbre","w":2},{"c":23,"h":2,"o":0,"r":13,"t":"arbre","w":2},{"c":15,"h":1,"o":3,"r":14,"t":"nenuphar","w":1},{"c":15,"h":1,"o":0,"r":15,"t":"nenuphar","w":1},{"c":12,"h":1,"o":3,"r":14,"t":"nenuphar","w":1},{"c":1,"h":2,"o":3,"r":3,"t":"grand_rocher","w":2},{"c":15,"h":2,"o":3,"r":9,"t":"grand_rocher","w":2},{"c":23,"h":1,"o":3,"r":0,"t":"souche","w":1},{"c":25,"h":1,"o":3,"r":2,"t":"souche","w":1},{"c":23,"h":1,"o":3,"r":2,"t":"souche","w":1},{"c":24,"h":1,"o":3,"r":5,"t":"souche","w":1},{"c":26,"h":1,"o":3,"r":1,"t":"souche","w":1},{"c":27,"h":1,"o":3,"r":4,"t":"souche","w":1},{"c":20,"h":1,"o":0,"r":15,"t":"roseaux","w":1},{"c":22,"h":1,"o":0,"r":16,"t":"roseaux","w":1},{"c":20,"h":1,"o":0,"r":18,"t":"roseaux","w":1},{"c":20,"h":1,"o":2,"r":20,"t":"roseaux","w":1},{"c":17,"h":1,"o":0,"r":18,"t":"roseaux","w":1},{"c":17,"h":1,"o":0,"r":5,"t":"roseaux","w":1},{"c":8,"h":1,"o":0,"r":8,"t":"roseaux","w":1},{"c":7,"h":2,"o":1,"r":19,"t":"cheminee","w":1},{"c":1,"h":2,"o":0,"r":12,"t":"four","w":2},{"c":1,"h":1,"o":0,"r":15,"t":"armoire","w":2},{"c":3,"h":1,"o":0,"r":18,"t":"autel","w":2},{"c":3,"h":1,"o":1,"r":16,"t":"coffre","w":1},{"c":0,"h":1,"o":3,"r":19,"t":"escalier","w":1},{"c":0,"h":1,"o":3,"r":18,"t":"escalier","w":1},{"c":3,"h":1,"o":3,"r":20,"t":"caisse","w":1},{"c":4,"h":1,"o":3,"r":20,"t":"caisse","w":1},{"c":4,"h":1,"o":3,"r":15,"t":"caisse","w":1},{"c":18,"h":2,"o":0,"r":18,"t":"grand_rocher","w":2},{"c":1,"h":1,"o":3,"r":10,"t":"vegetation","w":1},{"c":9,"h":1,"o":3,"r":17,"t":"foin","w":1},{"c":21,"h":1,"o":3,"r":12,"t":"foin","w":1},{"c":19,"h":1,"o":3,"r":4,"t":"foin","w":1},{"c":4,"h":1,"o":3,"r":9,"t":"foin","w":1},{"c":6,"h":1,"o":0,"r":0,"t":"foin","w":1}]} },
+  auberge: { label: 'L\'auberge de la grenouille baveuse', desc: 'Ta carte : salle commune aux deux cheminées, comptoir, cuisine, chambres à l\'étage, cour avec fontaine et puits.', data: {"b":null,"e":[["20,1|21,1","stone"],["20,2|21,2","stone"],["21,2|21,3","door"],["22,2|22,3","stone"],["22,2|23,2","stone"],["22,1|23,1","stone"],["23,2|23,3","door"],["24,2|24,3","stone"],["24,1|25,1","stone"],["24,2|25,2","stone"],["25,2|25,3","door"],["26,2|26,3","stone"],["18,4|18,5","stone"],["19,4|19,5","door"],["19,5|20,5","stone"],["19,6|20,6","stone"],["20,4|20,5","stone"],["21,4|21,5","door"],["21,5|22,5","stone"],["21,6|22,6","stone"],["22,4|22,5","stone"],["23,4|23,5","stone"],["23,5|24,5","door"],["23,6|24,6","stone"],["23,6|23,7","stone"],["22,6|22,7","stone"],["23,7|24,7","door"],["23,8|24,8","stone"],["23,8|23,9","stone"],["22,8|22,9","stone"],["23,9|24,9","door"],["23,10|24,10","stone"],["23,10|23,11","stone"],["22,10|22,11","stone"],["9,13|9,14","door"],["8,13|8,14","door"],["2,12|2,13","door"],["10,16|11,16","door"],["15,12|16,12","door"],["15,11|16,11","door"],["2,14|3,14","door"]],"f":[["1,1","stone"],["2,1","stone"],["2,2","stone"],["3,2","stone"],["3,3","stone"],["4,3","stone"],["4,4","stone"],["5,4","stone"],["5,5","stone"],["6,5","stone"],["6,6","stone"],["7,6","stone"],["7,7","stone"],["8,8","stone"],["7,8","stone"],["6,7","stone"],["2,3","stone"],["2,4","stone"],["2,5","stone"],["2,6","stone"],["3,6","stone"],["3,7","stone"],["3,8","stone"],["3,5","stone"],["3,4","stone"],["4,7","stone"],["4,6","stone"],["5,6","stone"],["4,5","stone"],["3,1","stone"],["4,1","stone"],["5,1","stone"],["5,2","stone"],["6,2","stone"],["7,2","stone"],["8,2","stone"],["8,3","stone"],["7,3","stone"],["7,4","stone"],["6,3","stone"],["6,1","stone"],["7,1","stone"],["8,1","stone"],["8,4","stone"],["8,5","stone"],["7,5","stone"],["5,3","stone"],["6,4","stone"],["4,2","stone"],["1,2","stone"],["1,3","stone"],["1,4","stone"],["1,5","stone"],["1,6","stone"],["1,7","stone"],["1,8","stone"],["1,9","stone"],["1,10","stone"],["2,10","stone"],["2,9","stone"],["2,8","stone"],["2,7","stone"],["2,11","stone"],["3,10","stone"],["3,9","stone"],["4,9","stone"],["4,8","stone"],["5,8","stone"],["5,7","stone"],["6,8","stone"],["6,9","stone"],["5,9","stone"],["5,10","stone"],["5,11","stone"],["6,10","stone"],["8,7","stone"],["8,9","stone"],["8,10","stone"],["8,6","stone"],["9,6","stone"],["10,6","stone"],["10,5","stone"],["11,5","stone"],["11,4","stone"],["10,4","stone"],["10,3","stone"],["9,3","stone"],["9,4","stone"],["9,5","stone"],["9,2","stone"],["10,2","stone"],["11,2","stone"],["12,2","stone"],["13,2","stone"],["13,3","stone"],["12,4","stone"],["12,5","stone"],["11,6","stone"],["11,7","stone"],["13,4","stone"],["14,4","stone"],["11,3","stone"],["12,3","stone"],["14,3","stone"],["9,1","stone"],["10,1","stone"],["11,1","stone"],["12,1","stone"],["13,1","stone"],["14,1","stone"],["14,2","stone"],["14,5","stone"],["13,5","stone"],["13,6","stone"],["12,6","stone"],["12,7","stone"],["12,8","stone"],["11,8","stone"],["10,8","stone"],["9,8","stone"],["10,7","stone"],["9,7","stone"],["9,9","stone"],["8,11","stone"],["7,11","stone"],["6,11","stone"],["7,10","stone"],["7,9","stone"],["4,10","stone"],["4,11","stone"],["3,11","stone"],["3,12","stone"],["1,11","stone"],["1,12","stone"],["2,12","stone"],["4,12","stone"],["5,12","stone"],["9,11","stone"],["8,12","stone"],["7,12","stone"],["6,12","stone"],["9,12","stone"],["10,11","stone"],["11,11","stone"],["12,11","stone"],["13,11","stone"],["12,10","stone"],["13,9","stone"],["13,8","stone"],["13,7","stone"],["14,6","stone"],["14,7","stone"],["14,8","stone"],["14,9","stone"],["14,10","stone"],["14,11","stone"],["13,12","stone"],["12,12","stone"],["11,12","stone"],["10,12","stone"],["14,12","stone"],["12,9","stone"],["11,10","stone"],["13,10","stone"],["11,9","stone"],["10,9","stone"],["10,10","stone"],["9,10","stone"],["15,3","stone"],["15,2","stone"],["18,1","stone"],["19,1","stone"],["20,1","stone"],["21,1","stone"],["22,1","stone"],["23,1","stone"],["24,1","stone"],["25,1","stone"],["26,1","stone"],["26,2","stone"],["26,3","stone"],["26,4","stone"],["26,5","stone"],["25,3","stone"],["25,2","stone"],["24,2","stone"],["23,2","stone"],["22,2","stone"],["21,2","stone"],["20,2","stone"],["19,2","stone"],["18,2","stone"],["17,2","stone"],["17,3","stone"],["18,3","stone"],["19,3","stone"],["20,3","stone"],["21,3","stone"],["22,3","stone"],["23,3","stone"],["24,3","stone"],["25,4","stone"],["25,5","stone"],["25,6","stone"],["26,6","stone"],["26,7","stone"],["18,4","stone"],["19,4","stone"],["20,4","stone"],["21,4","stone"],["25,7","stone"],["24,7","stone"],["24,6","stone"],["24,5","stone"],["24,4","stone"],["23,4","stone"],["22,4","stone"],["22,5","stone"],["23,5","stone"],["23,6","stone"],["23,7","stone"],["23,8","stone"],["24,8","stone"],["21,5","stone"],["20,5","stone"],["18,5","stone"],["7,13","stone"],["8,13","stone"],["9,13","stone"],["10,13","stone"],["11,13","stone"],["12,13","stone"],["13,13","stone"],["14,13","stone"],["15,7","stone"],["15,8","stone"],["15,9","stone"],["15,10","stone"],["15,11","stone"],["15,12","stone"],["15,13","stone"],["19,5","stone"],["25,8","stone"],["26,8","stone"],["25,9","stone"],["25,10","stone"],["26,9","stone"],["26,10","stone"],["22,6","stone"],["22,7","stone"],["22,8","stone"],["24,9","stone"],["24,10","stone"],["8,14","stone"],["9,14","stone"],["8,15","stone"],["7,15","stone"],["6,15","stone"],["5,15","stone"],["4,15","stone"],["4,16","stone"],["4,17","stone"],["5,16","stone"],["5,17","stone"],["6,17","stone"],["6,16","stone"],["7,16","stone"],["8,16","stone"],["9,16","stone"],["9,15","stone"],["9,17","stone"],["8,17","stone"],["7,17","stone"],["10,15","stone"],["10,16","stone"],["10,17","stone"],["23,9","stone"],["23,10","stone"],["22,9","stone"],["22,10","stone"],["21,6","stone"],["20,6","stone"],["19,6","stone"],["18,6","stone"],["2,13","stone"],["2,14","stone"],["2,15","stone"],["2,16","stone"],["3,16","stone"],["10,14","libre"],["11,14","libre"],["11,15","libre"],["11,16","libre"],["11,17","libre"],["12,17","libre"],["12,16","libre"],["13,16","libre"],["13,15","libre"],["12,15","libre"],["12,14","libre"],["13,14","libre"],["11,18","libre"],["11,19","libre"],["10,19","libre"],["10,18","libre"],["9,18","libre"],["12,18","libre"],["13,17","libre"],["13,18","libre"],["12,19","libre"],["13,19","libre"],["14,15","libre"],["14,14","libre"],["15,15","libre"],["15,14","libre"],["15,16","libre"],["14,16","libre"],["15,17","libre"],["14,17","libre"],["17,8","libre"],["17,9","libre"],["17,10","libre"],["17,7","libre"],["16,7","libre"],["16,8","libre"],["16,9","libre"],["16,10","libre"],["16,11","libre"],["16,12","libre"],["16,13","libre"],["16,14","libre"],["16,15","libre"],["16,16","libre"],["16,17","libre"],["16,6","libre"],["15,6","libre"],["17,6","libre"],["17,5","libre"],["18,7","libre"],["19,7","libre"],["20,7","libre"],["21,7","libre"],["21,8","libre"],["21,9","libre"],["20,9","libre"],["20,8","libre"],["19,8","libre"],["19,9","libre"],["18,8","libre"],["18,9","libre"],["18,10","libre"],["19,10","libre"],["20,10","libre"],["21,10","libre"],["20,11","libre"],["19,11","libre"],["18,11","libre"],["18,12","libre"],["17,12","libre"],["17,11","libre"],["19,12","libre"],["21,11","libre"],["21,12","libre"],["20,12","libre"],["18,13","libre"],["17,14","libre"],["17,15","libre"],["17,13","libre"],["17,16","libre"],["18,16","libre"],["18,15","libre"],["18,14","libre"],["19,16","libre"],["16,5","libre"],["26,13","libre"],["25,13","libre"],["26,17","libre"],["25,17","libre"],["24,13","libre"],["27,17","libre"],["25,18","libre"],["26,18","libre"],["27,12","libre"],["26,12","libre"],["25,12","libre"],["24,12","libre"],["23,12","libre"],["23,13","libre"],["22,13","libre"],["22,14","libre"],["24,11","libre"],["23,11","libre"],["22,11","libre"],["25,11","libre"],["26,11","libre"],["22,12","libre"],["21,13","libre"],["20,13","libre"],["19,13","libre"],["19,14","libre"],["20,14","libre"],["21,14","libre"],["21,15","libre"],["21,16","libre"],["20,15","libre"],["19,15","libre"],["20,16","libre"],["20,17","libre"],["19,18","libre"],["19,17","libre"],["18,17","libre"],["17,17","libre"],["16,18","libre"],["17,18","libre"],["18,18","libre"],["19,19","libre"],["18,19","libre"],["18,20","libre"],["19,20","libre"],["17,19","libre"],["24,15","libre"],["24,14","libre"],["23,14","libre"],["26,15","libre"],["26,14","libre"],["25,14","libre"],["25,15","libre"],["24,16","libre"],["27,16","libre"],["24,17","libre"],["25,16","libre"],["26,16","libre"],["23,16","libre"],["23,17","libre"],["22,17","libre"],["22,16","libre"],["24,19","libre"],["24,18","libre"],["23,18","libre"],["23,19","libre"],["22,19","libre"],["22,15","libre"],["23,15","libre"],["21,17","libre"],["22,18","libre"],["21,18","libre"],["20,18","libre"],["20,19","libre"],["20,20","libre"],["21,19","libre"],["21,20","libre"],["3,13","libre"],["4,13","libre"],["5,13","libre"],["6,13","libre"],["6,14","libre"],["7,14","libre"],["5,14","libre"],["4,14","libre"],["3,14","libre"],["3,15","libre"]],"o":[{"c":15,"h":1,"o":1,"r":2,"t":"escalier","w":1},{"c":15,"h":1,"o":1,"r":3,"t":"escalier","w":1},{"c":17,"h":1,"o":1,"r":2,"t":"escalier","w":1},{"c":17,"h":1,"o":1,"r":3,"t":"escalier","w":1},{"c":22,"h":1,"o":0,"r":10,"t":"lit","w":2},{"c":22,"h":1,"o":2,"r":6,"t":"lit","w":2},{"c":20,"h":2,"o":1,"r":5,"t":"lit","w":1},{"c":18,"h":2,"o":3,"r":5,"t":"lit","w":1},{"c":22,"h":2,"o":1,"r":1,"t":"lit","w":1},{"c":26,"h":2,"o":1,"r":1,"t":"lit","w":1},{"c":22,"h":1,"o":1,"r":9,"t":"tabouret","w":1},{"c":21,"h":1,"o":1,"r":6,"t":"tabouret","w":1},{"c":22,"h":2,"o":1,"r":7,"t":"lit","w":1},{"c":23,"h":1,"o":1,"r":8,"t":"sacs","w":1},{"c":19,"h":1,"o":3,"r":6,"t":"chandelier","w":1},{"c":25,"h":1,"o":0,"r":1,"t":"chaise","w":1},{"c":26,"h":3,"o":1,"r":8,"t":"bibliotheque","w":1},{"c":26,"h":3,"o":1,"r":5,"t":"bibliotheque","w":1},{"c":26,"h":2,"o":1,"r":3,"t":"etagere","w":1},{"c":24,"h":2,"o":1,"r":1,"t":"baignoire","w":1},{"c":23,"h":1,"o":1,"r":1,"t":"tabouret","w":1},{"c":19,"h":1,"o":2,"r":1,"t":"banc","w":2},{"c":13,"h":2,"o":2,"r":8,"t":"table_ronde","w":2},{"c":11,"h":2,"o":1,"r":11,"t":"table_ronde","w":2},{"c":9,"h":2,"o":2,"r":8,"t":"table_ronde","w":2},{"c":10,"h":1,"o":0,"r":1,"t":"cheminee","w":2},{"c":5,"h":1,"o":0,"r":1,"t":"cheminee","w":2},{"c":3,"h":3,"o":3,"r":10,"t":"comptoir","w":1},{"c":3,"h":3,"o":3,"r":7,"t":"comptoir","w":1},{"c":16,"h":2,"o":3,"r":5,"t":"grand_rocher","w":2},{"c":18,"h":2,"o":3,"r":10,"t":"fontaine","w":2},{"c":22,"h":1,"o":0,"r":13,"t":"puits","w":1},{"c":19,"h":1,"o":0,"r":8,"t":"charrette","w":2},{"c":13,"h":2,"o":0,"r":15,"t":"four","w":2},{"c":15,"h":1,"o":3,"r":15,"t":"caisse","w":1},{"c":12,"h":1,"o":0,"r":15,"t":"tonneau","w":1},{"c":10,"h":1,"o":3,"r":17,"t":"tonneau","w":1},{"c":1,"h":1,"o":3,"r":12,"t":"tonneau","w":1},{"c":1,"h":3,"o":3,"r":9,"t":"etabli","w":1},{"c":1,"h":2,"o":3,"r":7,"t":"armoire","w":1},{"c":14,"h":3,"o":3,"r":4,"t":"bibliotheque","w":1},{"c":6,"h":1,"o":3,"r":15,"t":"chaudron","w":1},{"c":5,"h":1,"o":0,"r":15,"t":"coffre","w":1},{"c":4,"h":1,"o":0,"r":15,"t":"caisse","w":1},{"c":4,"h":1,"o":0,"r":17,"t":"caisse","w":1},{"c":20,"h":1,"o":1,"r":16,"t":"buisson","w":1},{"c":25,"h":1,"o":0,"r":16,"t":"buisson","w":1},{"c":22,"h":2,"o":2,"r":18,"t":"arbre","w":2},{"c":25,"h":2,"o":0,"r":12,"t":"arbre","w":2},{"c":12,"h":2,"o":1,"r":18,"t":"arbre","w":2},{"c":18,"h":1,"o":0,"r":18,"t":"rocher","w":1},{"c":17,"h":1,"o":0,"r":8,"t":"rocher","w":1},{"c":6,"h":1,"o":0,"r":17,"t":"table_longue","w":3},{"c":10,"h":2,"o":3,"r":5,"t":"table_ronde","w":2},{"c":7,"h":2,"o":3,"r":3,"t":"table_ronde","w":2},{"c":3,"h":2,"o":2,"r":3,"t":"table_ronde","w":2},{"c":2,"h":1,"o":0,"r":1,"t":"etagere","w":2},{"c":10,"h":1,"o":2,"r":15,"t":"cage","w":1},{"c":1,"h":2,"o":3,"r":2,"t":"bureau","w":1},{"c":1,"h":1,"o":3,"r":5,"t":"tonneau","w":1},{"c":1,"h":1,"o":3,"r":6,"t":"tonneau","w":1},{"c":6,"h":1,"o":0,"r":13,"t":"tonneau","w":1},{"c":5,"h":1,"o":3,"r":13,"t":"tonneau","w":1},{"c":4,"h":1,"o":0,"r":13,"t":"tonneau","w":1},{"c":3,"h":1,"o":3,"r":13,"t":"tabouret","w":1},{"c":7,"h":1,"o":3,"r":14,"t":"tabouret","w":1},{"c":3,"h":1,"o":1,"r":15,"t":"tabouret","w":1},{"c":7,"h":1,"o":0,"r":15,"t":"chaudron","w":1},{"c":5,"h":1,"o":0,"r":17,"t":"chaudron","w":1},{"c":25,"h":1,"o":0,"r":10,"t":"coffre","w":1},{"c":6,"h":2,"o":3,"r":6,"t":"grande_table","w":1},{"c":6,"h":1,"o":0,"r":11,"t":"grande_table","w":2},{"c":6,"h":1,"o":0,"r":9,"t":"grande_table","w":2},{"c":10,"h":1,"o":0,"r":3,"t":"table_longue","w":3},{"c":14,"h":2,"o":1,"r":11,"t":"grande_table","w":1}]} },
+  trone: { label: 'Salle du trône', desc: 'Ta carte : double trône, salle des gardes, réserve, armurerie, cimetière et parvis aux braseros.', data: {"b":null,"e":[["11,17|11,18","stone"],["12,17|12,18","stone"],["15,17|15,18","stone"],["16,17|16,18","stone"],["20,6|21,6","stone"],["20,7|21,7","stone"],["20,8|21,8","door"],["20,9|21,9","door"],["20,10|21,10","stone"],["20,11|21,11","stone"],["14,17|14,18","door"],["13,17|13,18","door"],["5,11|5,12","stone"],["6,11|6,12","stone"],["7,11|7,12","door"],["8,11|8,12","stone"],["9,11|9,12","stone"],["10,11|9,11","stone"],["10,10|9,10","stone"],["10,9|9,9","stone"],["10,8|9,8","stone"],["10,7|9,7","stone"],["10,6|9,6","stone"],["9,5|9,6","stone"],["8,5|8,6","stone"]],"f":[["7,5","libre"],["7,6","stone"],["7,7","stone"],["7,8","stone"],["7,9","stone"],["7,10","stone"],["7,11","stone"],["7,12","stone"],["8,3","stone"],["8,4","stone"],["8,5","stone"],["8,6","stone"],["8,7","stone"],["8,8","stone"],["8,9","stone"],["8,10","stone"],["8,11","stone"],["8,12","stone"],["8,13","stone"],["8,14","stone"],["8,15","stone"],["8,16","stone"],["9,3","stone"],["9,4","stone"],["9,5","stone"],["9,6","stone"],["9,7","stone"],["9,8","stone"],["9,9","stone"],["9,10","stone"],["9,11","stone"],["9,12","stone"],["9,13","stone"],["9,14","stone"],["9,15","stone"],["9,16","stone"],["9,17","stone"],["10,2","stone"],["10,3","stone"],["10,4","stone"],["10,5","stone"],["10,6","stone"],["10,7","stone"],["10,8","stone"],["10,9","stone"],["10,10","stone"],["10,11","stone"],["10,12","stone"],["10,13","stone"],["10,14","stone"],["10,15","stone"],["10,16","stone"],["10,17","stone"],["11,1","stone"],["11,2","stone"],["11,3","stone"],["11,4","stone"],["11,5","stone"],["11,6","stone"],["11,7","stone"],["11,8","stone"],["11,9","stone"],["11,10","stone"],["11,11","stone"],["11,12","stone"],["11,13","stone"],["11,14","stone"],["11,15","stone"],["11,16","stone"],["11,17","stone"],["12,1","stone"],["12,2","stone"],["12,3","stone"],["12,4","stone"],["12,5","stone"],["12,6","stone"],["12,7","stone"],["12,8","stone"],["12,9","stone"],["12,10","stone"],["12,11","stone"],["12,12","stone"],["12,13","stone"],["12,14","stone"],["12,15","stone"],["12,16","stone"],["12,17","stone"],["13,1","stone"],["13,2","stone"],["13,3","stone"],["13,4","stone"],["13,5","stone"],["13,6","stone"],["13,7","stone"],["13,8","stone"],["13,9","stone"],["13,10","stone"],["13,11","stone"],["13,12","stone"],["13,13","stone"],["13,14","stone"],["13,15","stone"],["13,16","stone"],["13,17","stone"],["14,1","stone"],["14,2","stone"],["14,3","stone"],["14,4","stone"],["14,5","stone"],["14,6","stone"],["14,7","stone"],["14,8","stone"],["14,9","stone"],["14,10","stone"],["14,11","stone"],["14,12","stone"],["14,13","stone"],["14,14","stone"],["14,15","stone"],["14,16","stone"],["14,17","stone"],["15,1","stone"],["15,2","stone"],["15,3","stone"],["15,4","stone"],["15,5","stone"],["15,6","stone"],["15,7","stone"],["15,8","stone"],["15,9","stone"],["15,10","stone"],["15,11","stone"],["15,12","stone"],["15,13","stone"],["15,14","stone"],["15,15","stone"],["15,16","stone"],["15,17","stone"],["16,1","stone"],["16,2","stone"],["16,3","stone"],["16,4","stone"],["16,5","stone"],["16,6","stone"],["16,7","stone"],["16,8","stone"],["16,9","stone"],["16,10","stone"],["16,11","stone"],["16,12","stone"],["16,13","stone"],["16,14","stone"],["16,15","stone"],["16,16","stone"],["16,17","stone"],["17,3","stone"],["17,4","stone"],["17,5","stone"],["17,6","stone"],["17,7","stone"],["17,8","stone"],["17,9","stone"],["17,10","stone"],["17,11","stone"],["17,12","stone"],["17,13","stone"],["17,14","stone"],["17,15","stone"],["17,16","stone"],["17,17","stone"],["18,3","stone"],["18,4","stone"],["18,5","stone"],["18,6","stone"],["18,7","stone"],["18,8","stone"],["18,9","stone"],["18,10","stone"],["18,11","stone"],["18,12","stone"],["18,13","stone"],["18,14","stone"],["18,15","stone"],["18,16","stone"],["18,17","stone"],["19,3","stone"],["19,4","stone"],["19,5","stone"],["19,6","stone"],["19,7","stone"],["19,8","stone"],["19,9","stone"],["19,10","stone"],["19,11","stone"],["19,12","stone"],["19,13","stone"],["19,14","stone"],["19,15","stone"],["19,16","stone"],["20,5","stone"],["20,6","stone"],["20,7","stone"],["20,8","stone"],["20,9","stone"],["20,10","stone"],["20,11","stone"],["20,12","stone"],["17,2","stone"],["21,7","stone"],["22,7","stone"],["23,7","stone"],["24,7","stone"],["25,9","stone"],["24,9","stone"],["23,8","stone"],["22,8","stone"],["21,8","stone"],["24,8","stone"],["25,8","stone"],["24,10","stone"],["23,10","stone"],["22,10","stone"],["21,10","stone"],["22,9","stone"],["23,9","stone"],["21,9","stone"],["6,6","stone"],["5,6","stone"],["4,6","stone"],["3,6","stone"],["3,7","stone"],["3,8","stone"],["3,9","stone"],["3,10","stone"],["3,11","stone"],["4,11","stone"],["5,11","stone"],["6,11","stone"],["6,10","stone"],["6,9","stone"],["6,8","stone"],["6,7","stone"],["5,9","stone"],["5,10","stone"],["5,8","stone"],["5,7","stone"],["4,7","stone"],["4,8","stone"],["4,9","stone"],["4,10","stone"],["21,6","stone"],["22,6","stone"],["23,6","stone"],["23,11","stone"],["22,11","stone"],["21,11","stone"],["24,11","stone"],["24,6","stone"],["25,7","stone"],["25,10","stone"],["2,7","stone"],["2,8","stone"],["2,9","stone"],["2,10","stone"],["21,12","libre"],["22,12","libre"],["23,12","libre"],["24,12","libre"],["21,13","libre"],["20,13","stone"],["22,13","libre"],["23,13","libre"],["24,13","libre"],["21,14","libre"],["21,15","libre"],["20,15","stone"],["20,14","stone"],["22,15","libre"],["22,14","libre"],["23,14","libre"],["23,15","libre"],["21,16","libre"],["21,17","libre"],["20,17","stone"],["20,16","stone"],["22,16","libre"],["23,16","libre"],["24,14","libre"],["24,15","libre"],["24,16","libre"],["25,16","libre"],["25,17","libre"],["24,17","libre"],["23,17","libre"],["22,17","libre"],["22,18","libre"],["21,18","libre"],["20,18","libre"],["19,17","stone"],["19,18","libre"],["19,19","libre"],["18,18","libre"],["18,19","libre"],["18,20","libre"],["19,20","libre"],["20,19","libre"],["21,19","libre"],["25,13","libre"],["26,13","libre"],["26,12","libre"],["25,12","libre"],["26,11","libre"],["26,10","libre"],["27,10","libre"],["27,11","libre"],["7,13","stone"],["7,14","stone"],["7,15","stone"],["7,16","stone"],["7,17","stone"],["8,17","stone"],["20,4","stone"],["20,3","stone"],["17,1","stone"],["10,1","stone"],["23,3","libre"],["24,3","libre"],["24,2","libre"],["25,3","libre"],["23,4","libre"],["23,5","libre"],["25,5","libre"],["24,5","libre"],["26,5","libre"],["22,3","libre"],["22,4","libre"],["22,5","libre"],["21,5","libre"],["21,4","libre"],["21,3","libre"],["21,2","libre"],["20,2","libre"],["21,1","libre"],["25,1","libre"],["17,19","libre"],["17,18","libre"],["16,18","libre"],["15,18","libre"],["15,19","libre"],["14,19","libre"],["14,18","libre"],["13,18","libre"],["13,19","libre"],["12,19","libre"],["11,19","libre"],["11,18","libre"],["12,18","libre"],["13,20","libre"],["14,20","libre"],["12,20","libre"],["15,20","libre"],["10,18","libre"],["9,18","libre"],["8,18","libre"],["8,19","libre"],["9,19","libre"],["7,19","libre"],["7,18","libre"],["6,18","libre"],["5,17","libre"],["6,17","libre"],["6,16","stone"],["6,15","stone"],["6,14","stone"],["5,14","stone"],["5,13","stone"],["6,13","stone"],["6,12","stone"],["5,12","stone"],["4,12","libre"],["3,12","libre"],["4,13","libre"],["6,5","libre"],["6,4","libre"],["7,4","libre"],["7,3","libre"],["7,2","libre"],["8,2","libre"],["9,2","libre"],["9,1","libre"],["8,1","libre"],["7,1","libre"],["7,0","libre"],["8,0","libre"],["9,0","libre"],["6,1","libre"],["6,2","libre"],["6,3","libre"],["5,3","libre"],["5,4","libre"],["4,4","libre"],["3,4","libre"],["3,5","libre"],["4,5","libre"],["5,5","libre"],["5,16","stone"],["5,15","stone"],["1,10","libre"],["1,11","libre"],["1,12","libre"],["2,12","libre"],["2,13","libre"],["2,14","libre"],["1,13","libre"],["3,14","libre"],["4,14","libre"],["4,15","libre"],["3,15","libre"],["3,13","libre"],["2,15","libre"],["2,11","libre"],["3,16","libre"],["4,16","libre"],["25,19","libre"],["26,19","libre"],["26,18","libre"],["25,18","libre"],["0,17","eau"],["0,18","eau"],["0,19","eau"],["1,19","eau"],["1,18","eau"],["1,17","eau"],["5,20","eau"],["4,20","eau"],["4,19","eau"],["2,19","eau"],["2,20","eau"],["1,20","eau"],["0,20","eau"],["0,16","eau"],["3,18","libre"],["3,19","libre"],["3,20","libre"],["4,18","libre"],["5,18","libre"],["5,19","libre"],["6,19","libre"],["6,20","libre"],["7,20","libre"],["8,20","libre"],["3,17","libre"],["2,18","libre"],["2,17","libre"],["2,16","libre"],["1,16","libre"],["1,15","libre"],["0,15","libre"],["0,14","libre"],["0,13","libre"],["1,14","libre"],["0,12","libre"],["0,11","libre"],["0,10","libre"],["0,9","libre"],["0,8","libre"],["1,8","libre"],["1,9","libre"],["1,7","libre"],["1,6","libre"],["1,5","libre"],["0,4","libre"],["0,3","libre"],["0,5","libre"],["0,6","libre"],["0,7","libre"],["1,4","libre"],["1,3","libre"],["2,3","libre"],["2,2","libre"],["2,1","libre"],["1,1","libre"],["1,0","libre"],["0,0","libre"],["0,1","libre"],["0,2","libre"],["2,0","libre"],["3,0","libre"],["1,2","libre"],["2,4","libre"],["2,5","libre"],["2,6","libre"],["3,1","libre"],["4,1","libre"],["4,0","libre"],["4,2","libre"],["4,3","libre"],["3,3","libre"],["3,2","libre"],["5,0","libre"],["6,0","libre"],["5,2","libre"],["5,1","libre"],["10,0","libre"],["11,0","libre"],["12,0","libre"],["13,0","libre"],["14,0","libre"],["15,0","libre"],["16,0","libre"],["17,0","libre"],["18,0","libre"],["19,0","libre"],["20,0","libre"],["21,0","libre"],["22,0","libre"],["23,0","libre"],["24,0","libre"],["25,0","libre"],["26,0","libre"],["26,1","libre"],["27,1","libre"],["27,0","libre"],["27,2","libre"],["26,2","libre"],["26,3","libre"],["25,4","libre"],["25,2","libre"],["24,1","libre"],["23,1","libre"],["23,2","libre"],["22,1","libre"],["22,2","libre"],["20,1","libre"],["19,1","libre"],["19,2","libre"],["18,2","libre"],["18,1","libre"],["24,4","libre"],["26,4","libre"],["27,3","libre"],["27,4","libre"],["27,5","libre"],["27,6","libre"],["27,7","libre"],["26,6","libre"],["25,6","libre"],["27,8","libre"],["27,9","libre"],["26,7","libre"],["26,8","libre"],["26,9","libre"],["25,11","libre"],["27,12","libre"],["27,13","libre"],["26,14","libre"],["26,15","libre"],["26,16","libre"],["25,14","libre"],["25,15","libre"],["27,15","libre"],["27,14","libre"],["27,17","libre"],["27,18","libre"],["27,16","libre"],["26,17","libre"],["27,19","libre"],["27,20","libre"],["26,20","libre"],["25,20","libre"],["24,20","libre"],["23,20","libre"],["23,19","libre"],["24,18","libre"],["23,18","libre"],["22,19","libre"],["22,20","libre"],["21,20","libre"],["24,19","libre"],["20,20","libre"],["17,20","libre"],["16,20","libre"],["16,19","libre"],["11,20","libre"],["10,20","libre"],["9,20","libre"],["10,19","libre"],["4,17","libre"]],"o":[{"c":14,"h":1,"o":0,"r":2,"t":"trone","w":1},{"c":13,"h":1,"o":0,"r":2,"t":"trone","w":1},{"c":13,"h":3,"o":1,"r":4,"t":"tapis","w":2},{"c":3,"h":1,"o":2,"r":6,"t":"tonneau","w":1},{"c":3,"h":1,"o":2,"r":11,"t":"tonneau","w":1},{"c":4,"h":1,"o":2,"r":6,"t":"tonneau","w":1},{"c":5,"h":1,"o":2,"r":6,"t":"tonneau","w":1},{"c":25,"h":1,"o":3,"r":8,"t":"coffre","w":1},{"c":25,"h":1,"o":3,"r":9,"t":"coffre","w":1},{"c":20,"h":2,"o":1,"r":6,"t":"cheminee","w":1},{"c":21,"h":2,"o":3,"r":10,"t":"armoire","w":1},{"c":20,"h":3,"o":1,"r":10,"t":"bibliotheque","w":1},{"c":18,"h":3,"o":1,"r":4,"t":"table_longue","w":1},{"c":16,"h":3,"o":1,"r":4,"t":"table_longue","w":1},{"c":16,"h":3,"o":1,"r":8,"t":"table_longue","w":1},{"c":18,"h":3,"o":1,"r":8,"t":"table_longue","w":1},{"c":8,"h":2,"o":1,"r":3,"t":"autel","w":1},{"c":2,"h":2,"o":1,"r":7,"t":"autel","w":1},{"c":2,"h":2,"o":1,"r":9,"t":"autel","w":1},{"c":4,"h":1,"o":1,"r":10,"t":"chaudron","w":1},{"c":15,"h":1,"o":1,"r":16,"t":"brasero","w":1},{"c":12,"h":1,"o":1,"r":16,"t":"brasero","w":1},{"c":22,"h":1,"o":2,"r":6,"t":"ratelier","w":2},{"c":24,"h":1,"o":2,"r":11,"t":"mannequin","w":1},{"c":23,"h":2,"o":3,"r":8,"t":"banc","w":1},{"c":6,"h":1,"o":1,"r":6,"t":"cage","w":1},{"c":15,"h":1,"o":3,"r":2,"t":"tabouret","w":1},{"c":12,"h":1,"o":3,"r":2,"t":"tabouret","w":1},{"c":3,"h":1,"o":3,"r":7,"t":"brasero","w":1},{"c":22,"h":1,"o":0,"r":13,"t":"tombe","w":2},{"c":22,"h":1,"o":0,"r":15,"t":"tombe","w":2},{"c":22,"h":2,"o":3,"r":3,"t":"tombe","w":1},{"c":24,"h":1,"o":0,"r":2,"t":"puits","w":1},{"c":6,"h":3,"o":1,"r":13,"t":"tapis","w":2},{"c":25,"h":2,"o":1,"r":18,"t":"sapin","w":2},{"c":7,"h":2,"o":1,"r":0,"t":"sapin","w":2},{"c":2,"h":2,"o":1,"r":2,"t":"sapin","w":2},{"c":22,"h":1,"o":2,"r":19,"t":"foin","w":1},{"c":7,"h":2,"o":1,"r":9,"t":"table_ronde","w":2},{"c":9,"h":1,"o":1,"r":7,"t":"chaise","w":1},{"c":15,"h":1,"o":1,"r":14,"t":"brasero","w":1},{"c":12,"h":1,"o":1,"r":14,"t":"brasero","w":1},{"c":16,"h":1,"o":1,"r":19,"t":"statue","w":1},{"c":11,"h":1,"o":1,"r":19,"t":"statue","w":1},{"c":20,"h":3,"o":1,"r":14,"t":"comptoir","w":1},{"c":26,"h":1,"o":1,"r":13,"t":"vegetation","w":1},{"c":1,"h":1,"o":1,"r":13,"t":"vegetation","w":1},{"c":25,"h":1,"o":1,"r":4,"t":"vegetation","w":1},{"c":21,"h":1,"o":1,"r":1,"t":"vegetation","w":1},{"c":8,"h":1,"o":1,"r":19,"t":"vegetation","w":1},{"c":6,"h":1,"o":1,"r":4,"t":"vegetation","w":1}]} },
+  manoir: { hatch: [1, 1], label: 'Le manoir mystérieux', desc: 'Ta carte : salle de banquet à colonnes, trésor piégé, cour aux fontaines, chambre et escaliers.', data: {"b":null,"e":[["20,3|21,3","door"],["18,12|19,12","door"],["16,12|17,12","door"]],"f":[["24,2","in"],["24,3","in"],["24,4","in"],["23,2","in"],["22,2","in"],["22,3","in"],["23,3","in"],["23,4","in"],["22,4","in"],["21,3","in"],["20,3","in"],["20,2","in"],["20,1","in"],["19,1","in"],["18,1","in"],["18,2","in"],["19,2","in"],["19,3","in"],["18,3","in"],["18,4","in"],["19,4","in"],["20,4","in"],["17,4","in"],["17,3","in"],["17,2","in"],["17,1","in"],["17,5","in"],["18,5","in"],["19,5","in"],["20,5","in"],["17,6","in"],["18,6","in"],["19,6","in"],["20,6","in"],["16,6","in"],["16,5","in"],["16,4","in"],["16,3","in"],["16,2","in"],["16,1","in"],["15,1","in"],["15,2","in"],["15,3","in"],["15,4","in"],["15,5","in"],["15,6","in"],["14,1","in"],["14,2","in"],["14,3","in"],["14,4","in"],["14,5","in"],["14,6","in"],["14,7","in"],["15,7","in"],["16,7","in"],["17,7","in"],["18,7","in"],["19,7","in"],["20,7","in"],["13,1","in"],["13,2","in"],["13,3","in"],["13,4","in"],["13,5","in"],["13,6","in"],["13,7","in"],["16,8","stone"],["17,8","stone"],["15,8","in"],["18,8","in"],["12,5","in"],["11,5","in"],["10,5","in"],["10,3","in"],["9,3","in"],["8,3","in"],["8,4","in"],["8,2","in"],["7,2","in"],["7,3","in"],["7,4","in"],["6,4","in"],["6,3","in"],["6,2","in"],["7,5","in"],["7,6","in"],["7,7","in"],["7,8","in"],["7,9","in"],["8,9","in"],["9,9","in"],["6,9","in"],["5,9","in"],["10,9","in"],["10,10","in"],["10,11","in"],["10,12","in"],["9,12","in"],["9,13","in"],["9,14","in"],["10,13","in"],["10,14","in"],["10,15","in"],["9,15","in"],["8,15","in"],["7,15","in"],["6,15","in"],["5,15","in"],["4,15","in"],["4,14","in"],["4,13","in"],["4,12","in"],["4,11","in"],["4,10","in"],["5,10","in"],["4,9","in"],["6,10","in"],["7,10","in"],["8,10","in"],["9,10","in"],["9,11","in"],["8,11","in"],["7,11","in"],["6,11","in"],["5,11","in"],["5,12","in"],["5,13","in"],["5,14","in"],["6,14","in"],["7,14","in"],["8,14","in"],["8,13","in"],["8,12","in"],["7,12","in"],["6,12","in"],["6,13","in"],["7,13","in"],["7,16","in"],["7,17","in"],["7,18","in"],["7,19","in"],["8,19","in"],["9,19","in"],["10,19","in"],["11,19","in"],["12,19","in"],["13,19","in"],["14,19","in"],["14,18","in"],["13,18","in"],["13,17","in"],["14,17","in"],["15,17","in"],["15,18","in"],["15,19","in"],["13,16","in"],["14,16","in"],["15,16","in"],["16,17","in"],["16,16","in"],["16,18","in"],["16,19","in"],["13,11","in"],["13,12","in"],["13,13","in"],["14,13","in"],["15,13","in"],["16,13","in"],["16,12","in"],["16,11","in"],["15,11","in"],["14,11","in"],["14,12","in"],["15,12","in"],["16,14","in"],["15,14","in"],["14,14","in"],["13,14","in"],["17,12","in"],["18,12","in"],["19,12","in"],["19,11","in"],["20,11","in"],["21,11","in"],["22,11","in"],["20,12","in"],["19,13","in"],["19,14","in"],["20,14","in"],["21,14","in"],["22,14","in"],["23,14","in"],["23,13","in"],["23,12","in"],["23,11","in"],["21,12","in"],["20,13","in"],["21,13","in"],["22,12","in"],["22,13","in"]],"o":[{"c":24,"h":1,"o":1,"r":3,"t":"coffre","w":1},{"c":23,"h":1,"o":1,"r":3,"t":"piege","w":1},{"c":19,"h":1,"o":2,"r":2,"t":"colonne","w":1},{"c":19,"h":1,"o":2,"r":4,"t":"colonne","w":1},{"c":19,"h":1,"o":2,"r":6,"t":"colonne","w":1},{"c":14,"h":1,"o":2,"r":2,"t":"colonne","w":1},{"c":14,"h":1,"o":2,"r":4,"t":"colonne","w":1},{"c":14,"h":1,"o":2,"r":6,"t":"colonne","w":1},{"c":10,"h":1,"o":3,"r":5,"t":"escalier","w":1},{"c":10,"h":1,"o":3,"r":3,"t":"escalier","w":1},{"c":8,"h":2,"o":3,"r":10,"t":"fontaine","w":2},{"c":5,"h":2,"o":3,"r":13,"t":"fontaine","w":2},{"c":14,"h":2,"o":3,"r":17,"t":"colimacon","w":2},{"c":20,"h":1,"o":3,"r":1,"t":"caisse","w":1},{"c":6,"h":1,"o":3,"r":2,"t":"caisse","w":1},{"c":6,"h":2,"o":1,"r":3,"t":"grande_table","w":1},{"c":8,"h":2,"o":3,"r":13,"t":"sapin","w":2},{"c":14,"h":2,"o":0,"r":12,"t":"colimacon","w":2},{"c":17,"h":1,"o":3,"r":12,"t":"piege","w":1},{"c":16,"h":4,"o":3,"r":3,"t":"table_banquet","w":2},{"c":16,"h":1,"o":0,"r":1,"t":"cheminee","w":2},{"c":22,"h":2,"o":1,"r":12,"t":"lit_double","w":2},{"c":22,"h":1,"o":0,"r":2,"t":"sarcophage","w":2},{"c":24,"h":1,"o":2,"r":2,"t":"tabouret","w":1},{"c":19,"h":2,"o":3,"r":13,"t":"bureau","w":1},{"c":20,"h":1,"o":0,"r":11,"t":"etagere","w":2},{"c":4,"h":1,"o":0,"r":9,"t":"etabli","w":3},{"c":4,"h":1,"o":0,"r":11,"t":"tonneau","w":1},{"c":4,"h":1,"o":0,"r":10,"t":"tonneau","w":1}]} }
+};
+const clearMap = () => { floor.clear(); edges.clear(); objects.clear(); occ.clear(); zones.clear(); fond = null; };
+const buildTemplate = id => { clearMap(); const t = TEMPLATES[id]; const hs = t.hatch || [6, 2], dEl = document.getElementById('dens'), pEl = document.getElementById('depth'); if (dEl) dEl.value = hs[0]; if (pEl) pEl.value = hs[1]; if (t.data) { t.data.f.forEach(([k, v]) => floor.set(k, v)); t.data.e.forEach(([k, v]) => edges.set(k, v)); t.data.o.forEach(o => place(o.t, o.c, o.r, o.w, o.h, o.o, o.p)); (t.data.z || []).forEach(k => zones.add(k)); return; } t.build(mapTools(t.oy || 0)); };
+
+const loadDemo = () => {
+  if (G.type === 'square') { buildTemplate('campement'); return; }
+  clearMap();
+  const { rect, blob, setE, wallAround, obj } = mapTools(2);
+  blob(22, 9, 105, 'out'); rect(20, 8, 1, 2, 'out');
+  rect(2, 6, 7, 6, 'in'); rect(9, 8, 3, 2, 'in'); rect(12, 3, 6, 12, 'in'); rect(18, 8, 2, 2, 'in');
+  rect(23, 11, 3, 3, 'stone'); setE(23, 12, 3, 'door');
+  rect(3, 14, 6, 3, 'stone');
+  for (let c = 12; c <= 17; c++) { setE(c, 8, 1, c === 14 ? 'door' : 'stone'); setE(c, 8, 2, 'stone'); }
+  for (let c = 3; c <= 5; c++) { setE(c, 8, 1, 'wall'); setE(c, 8, 2, 'wall'); }
+  obj('grande_table', 3, 7); obj('lit', 7, 10); obj('tapis', 14, 10); obj('autel', 15, 4);
+  obj('colonne', 13, 4); obj('statue', 16, 13); obj('crane', 10, 9); obj('piege', 19, 8); obj('coffre', 24, 12);
+  wallAround('stone'); wallAround('muret');
+  obj('arbre', 22, 6); obj('sapin', 24, 4); obj('buisson', 21, 12); obj('souche', 26, 10); obj('tente', 21, 14); obj('cheminee', 4, 6); obj('armoire', 4, 14); obj('banc', 6, 16, 2); obj('puits', 23, 9); obj('charrette', 20, 11); obj('feu', 22, 9); obj('vegetation', 25, 6); obj('rocher', 25, 8);
+};
+
+
+const cluster = (g, cx, cy, size, angle, seed) => {
+  const n = 3 + Math.floor(hash(seed, 1, 2) * 4), gap = 2.5 + hash(seed, 2, 3) * 0.6;
+  const ca = Math.cos(angle), sa = Math.sin(angle);
+  const grp = el('g', { 'stroke-width': (0.85 + hash(seed, 3, 4) * 0.45).toFixed(2) }, g);
+  for (let i = 0; i < n; i++) {
+    const off = (i - (n - 1) / 2) * gap, half = size / 2 * (0.7 + hash(seed, i, 5) * 0.45), shift = (hash(seed, i, 6) - 0.5) * 3;
+    const mx = cx - sa * off + ca * shift, my = cy + ca * off + sa * shift;
+    el('line', { x1: f1(mx - ca * half), y1: f1(my - sa * half), x2: f1(mx + ca * half), y2: f1(my + sa * half) }, grp);
+  }
+};
+
+const OKC = '#6b4d10', BADC = '#b91c1c', TIMBER = '#a07e5c', SLATE = '#6f6352', SHOREW = '#7fa3a0';
+const T = 7;
+const stoneSeg = (g, a, b, nx, ny, off, seed, endA, endB) => {
+  const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const corner = (P, end, sign, v) => end.m
+    ? [P[0] + end.m[0] * (off + v), P[1] + end.m[1] * (off + v)]
+    : [P[0] + sign * ux * end.ext + nx * (off + v), P[1] + sign * uy * end.ext + ny * (off + v)];
+  const A1 = corner(a, endA, -1, -T / 2), A2 = corner(a, endA, -1, T / 2), B1 = corner(b, endB, 1, -T / 2), B2 = corner(b, endB, 1, T / 2);
+  el('path', { d: poly([A1, B1, B2, A2]), fill: STONE, stroke: INK, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+  const mA = [(A1[0] + A2[0]) / 2, (A1[1] + A2[1]) / 2], mB = [(B1[0] + B2[0]) / 2, (B1[1] + B2[1]) / 2];
+  const P = (u, v) => [a[0] + ux * u + nx * (off + v), a[1] + uy * u + ny * (off + v)];
+  let d = `M${f1(mA[0])} ${f1(mA[1])} L${f1(mB[0])} ${f1(mB[1])} `;
+  [[-T / 2, 0, 0], [0, T / 2, 1]].forEach(([v0, v1, row]) => {
+    for (let u = 1.5 + hash(seed, row, 101) * 4, k = 0; u < len - 1.5; u += 4.5 + hash(seed, k + row * 9, 102) * 4, k++) {
+      const p = P(u, v0), q = P(u + (hash(seed, k, 103) - 0.5) * 1.2, v1);
+      d += `M${f1(p[0])} ${f1(p[1])} L${f1(q[0])} ${f1(q[1])} `;
+    }
+  });
+  el('path', { d, stroke: INK, 'stroke-width': 0.8, 'stroke-linecap': 'round' }, g);
+};
+const stoneWall = (g, a, b, nx, ny, off, seed) => stoneSeg(g, a, b, nx, ny, off, seed, { ext: T / 2 }, { ext: T / 2 });
+
+const inkWall = (g, a, b, w = 2.8) => {
+  const lay = g._lay || (g._lay = [el('g', { stroke: INK, 'stroke-linecap': 'round' }, g), el('g', { stroke: TIMBER, 'stroke-linecap': 'round' }, g)]);
+  const at = { x1: f1(a[0]), y1: f1(a[1]), x2: f1(b[0]), y2: f1(b[1]) };
+  el('line', { ...at, 'stroke-width': f1(w * 2.2) }, lay[0]);
+  el('line', { ...at, 'stroke-width': f1(w * 2.2 - 2.4) }, lay[1]);
+};
+
+const TM = 13;
+const muretSeg = (g, a, b, nx, ny, off, seed, endA, endB) => {
+  const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+  const uAt = (end, v, atB) => end.m ? (atB ? len : 0) + (end.m[0] * ux + end.m[1] * uy) * v : (atB ? len + end.ext : -end.ext);
+  const P = (u, v) => [a[0] + ux * u + nx * (off + v), a[1] + uy * u + ny * (off + v)];
+  const H = TM / 2;
+  el('path', { d: poly([P(uAt(endA, -H + 1.5, false), -H + 1.5), P(uAt(endB, -H + 1.5, true), -H + 1.5), P(uAt(endB, H - 1.5, true), H - 1.5), P(uAt(endA, H - 1.5, false), H - 1.5)]), fill: '#7d776b' }, g);
+  const mid = (q, r) => [(q[0] + r[0]) / 2, (q[1] + r[1]) / 2];
+  const stone = (s0, s1, v0, v1, k) => {
+    const j = i => (hash(seed, k * 11 + i, 302) - 0.5) * 1.8;
+    const um = s0 + (s1 - s0) * (0.35 + hash(seed, k, 306) * 0.3), side = hash(seed, k, 307) < 0.5;
+    const p = [P(s0 + 0.5 + j(0), v0 + 0.6 + j(1)), ...(side ? [P(um + j(8), v0 + 0.3 + j(9) * 0.6)] : []), P(s1 - 0.5 + j(2), v0 + 0.6 + j(3)), P(s1 - 0.5 + j(4), v1 - 0.6 + j(5)), ...(side ? [] : [P(um + j(10), v1 - 0.3 + j(11) * 0.6)]), P(s0 + 0.5 + j(6), v1 - 0.6 + j(7))];
+    const n = p.length, cut = (q, r, t) => [q[0] + (r[0] - q[0]) * t, q[1] + (r[1] - q[1]) * t];
+    let d = '';
+    for (let i = 0; i < n; i++) {
+      const q = p[i], pr = p[(i + n - 1) % n], nx2 = p[(i + 1) % n], t = 0.16;
+      const s = cut(q, pr, t), e = cut(q, nx2, t);
+      d += (i ? ' L' : 'M') + f1(s[0]) + ' ' + f1(s[1]) + ` Q${f1(q[0])} ${f1(q[1])} ${f1(e[0])} ${f1(e[1])}`;
+    }
+    el('path', { d: d + 'Z', fill: ROCK, stroke: INK, 'stroke-width': 1.25, 'stroke-linejoin': 'round' }, g);
+    if (s1 - s0 > 5 && hash(seed, k, 303) < 0.6) {
+      const c1 = P(s1 - 1.8, v1 - 1.8), c2 = P(s1 - 1.8 - (s1 - s0) * 0.35, v1 - 1.5), c3 = P(s1 - 1.8, v1 - 1.8 - (v1 - v0) * 0.3);
+      el('path', { d: `M${f1(c2[0])} ${f1(c2[1])} Q${f1(c1[0])} ${f1(c1[1])} ${f1(c3[0])} ${f1(c3[1])}`, fill: 'none', stroke: INK, 'stroke-width': 0.75, 'stroke-linecap': 'round' }, g);
+    }
+  };
+  const u0 = Math.min(uAt(endA, -H, false), uAt(endA, H, false)), u1 = Math.max(uAt(endB, -H, true), uAt(endB, H, true));
+  let u = u0 - hash(seed, 0, 300) * 3, k = 0;
+  while (u < u1 - 1.5) {
+    const w = 7 + hash(seed, k, 301) * 5, s0 = Math.max(u, u0), s1 = Math.min(u + w, u1);
+    if (s1 - s0 > 2.5) {
+      const pinch = (hash(seed, k, 304) - 0.5) * 2;
+      if (hash(seed, k, 305) < 0.28 && s1 - s0 > 5) { stone(s0, s1, -H + pinch * 0.4, 0.3, k * 2); stone(s0 + 0.8, s1 - 0.4, 0.3, H + pinch * 0.4, k * 2 + 1); }
+      else stone(s0, s1, -H + Math.max(0, pinch), H + Math.min(0, pinch), k * 2);
+    }
+    u += w + 0.3; k++;
+  }
+};
+const wallSeg = (style, g, a, b, nx, ny, off, seed, endA, endB) => style === 'muret' ? muretSeg(g, a, b, nx, ny, off, seed, endA, endB) : stoneSeg(g, a, b, nx, ny, off, seed, endA, endB);
+const door = (g, a, b, nx, ny, style, seed, off = 0, endA = { ext: 0 }, endB = { ext: 0 }) => {
+  const L = t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  if (style) { const st = style === 'muret' ? 'muret' : 'stone'; wallSeg(st, g, a, L(0.2), nx, ny, off, seed, endA, { ext: 0 }); wallSeg(st, g, L(0.8), b, nx, ny, off, seed + 1, { ext: 0 }, endB); }
+  else { inkWall(g, a, L(0.2)); inkWall(g, L(0.8), b); }
+  const sh = (p, v) => [p[0] + nx * (off + v), p[1] + ny * (off + v)];
+  const p = L(0.2), q = L(0.8), h = 2.6;
+  el('path', { d: poly([sh(p, h), sh(q, h), sh(q, -h), sh(p, -h)]), fill: '#d8bf9c', stroke: INK, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+  const m = L(0.5), m1 = sh(m, h), m2 = sh(m, -h);
+  el('line', { x1: f1(m1[0]), y1: f1(m1[1]), x2: f1(m2[0]), y2: f1(m2[1]), stroke: INK, 'stroke-width': 0.9 }, g);
+};
+
+const objBox = o => {
+  const cs = footprint(o.c, o.r, o.w, o.h).map(([x, y]) => G.center(x, y));
+  const xs = cs.map(p => p[0]), ys = cs.map(p => p[1]);
+  const x0 = Math.min(...xs) - C / 2, x1 = Math.max(...xs) + C / 2, y0 = Math.min(...ys) - C / 2, y1 = Math.max(...ys) + C / 2;
+  const bw = G.type === 'hex' ? o.w * C : x1 - x0;
+  return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, bw, bh: y1 - y0 };
+};
+const WALL_INS = 4;
+const blockedEdge = (c, r, nc, nr) => { const t = edges.get(edgeKey(c, r, nc, nr)); if (t) return true; const ta = fl(c, r), tb = fl(nc, nr); return !fond && !!ta && (!tb || (tb === 'libre' && ta !== 'libre' && ta !== 'eau')); };
+const objInsets = () => ({ t: 0, r: 0, b: 0, l: 0 });
+const objInsetsOld = (o, d) => {
+  const z = { t: 0, r: 0, b: 0, l: 0 };
+  if (d.noInset) return z;
+  if (G.type !== 'square') return { t: 2, r: 2, b: 2, l: 2 };
+  for (let i = 0; i < o.w; i++) { if (blockedEdge(o.c + i, o.r, o.c + i, o.r - 1)) z.t = WALL_INS; if (blockedEdge(o.c + i, o.r + o.h - 1, o.c + i, o.r + o.h)) z.b = WALL_INS; }
+  for (let j = 0; j < o.h; j++) { if (blockedEdge(o.c, o.r + j, o.c - 1, o.r + j)) z.l = WALL_INS; if (blockedEdge(o.c + o.w - 1, o.r + j, o.c + o.w, o.r + j)) z.r = WALL_INS; }
+  return z;
+};
+const drawObj = (parent, o, seed) => {
+  const d = OBJ[o.t], ang = (o.o || 0) * 90;
+  const ins = objInsets(o, d);
+  if (d.w === 1 && d.h === 1) {
+    const [x, y] = G.center(o.c, o.r), touch = ins.t || ins.r || ins.b || ins.l, k = touch ? 0.86 : 1;
+    const dx = (ins.l - ins.r) / 2, dy = (ins.t - ins.b) / 2;
+    d.draw(el('g', { transform: `translate(${f1(x + dx)} ${f1(y + dy)}) rotate(${ang}) scale(${k}) translate(${f1(-x)} ${f1(-y)})` }, parent), x, y, seed); return;
+  }
+  const bx = objBox(o), odd = (o.o || 0) % 2;
+  const w = bx.bw - ins.l - ins.r, h = bx.bh - ins.t - ins.b;
+  const g = el('g', { transform: `translate(${f1(bx.cx + (ins.l - ins.r) / 2)} ${f1(bx.cy + (ins.t - ins.b) / 2)}) rotate(${ang})` }, parent);
+  d.draw(g, odd ? h : w, odd ? w : h, seed);
+};
+
+const clusterTidy = (g, cx, cy, size, angle, seed) => {
+  const n = 4 + Math.floor(hash(seed, 1, 2) * 3), gap = 1.9, ca = Math.cos(angle), sa = Math.sin(angle);
+  const grp = el('g', { 'stroke-width': (0.5 + hash(seed, 3, 4) * 0.2).toFixed(2) }, g);
+  for (let i = 0; i < n; i++) {
+    const off = (i - (n - 1) / 2) * gap, half = size / 2 * (0.55 + hash(seed, i, 5) * 0.6), shift = (hash(seed, i, 6) - 0.5) * 2.2;
+    const mx = cx - sa * off + ca * shift, my = cy + ca * off + sa * shift;
+    el('line', { x1: f1(mx - ca * half), y1: f1(my - sa * half), x2: f1(mx + ca * half), y2: f1(my + sa * half) }, grp);
+  }
+};
+const hatchPass = (parent, segs, o) => {
+  if (!segs.length) return;
+  const step = o.step, reachMax = o.reach * 1.25;
+  for (let gx = -reachMax; gx < G.vw + reachMax; gx += step) for (let gy = -reachMax; gy < G.vh + reachMax; gy += step) {
+    const ix = Math.round(gx / step) + o.salt, iy = Math.round(gy / step);
+    const px = gx + (hash(ix, iy, 16) - 0.5) * 5, py = gy + (hash(ix, iy, 17) - 0.5) * 5;
+    const cell = G.cellAt(px, py);
+    if (cell && fl(cell[0], cell[1])) continue;
+    let best = Infinity, bdx = 0, bdy = 0;
+    for (const s of segs) {
+      const ex = s.b[0] - s.a[0], ey = s.b[1] - s.a[1];
+      const u = Math.max(0, Math.min(1, ((px - s.a[0]) * ex + (py - s.a[1]) * ey) / (ex * ex + ey * ey)));
+      const qx = s.a[0] + ex * u, qy = s.a[1] + ey * u, d = Math.hypot(px - qx, py - qy);
+      if (d < best) { best = d; bdx = qx - px; bdy = qy - py; }
+    }
+    if (best < o.start) continue;
+    const reach = o.reach * (o.tidy ? 0.88 + hash(ix, iy, 11) * 0.24 : 0.75 + hash(ix, iy, 11) * 0.5);
+    if (best > reach) continue;
+    const t = (best - o.start) / (reach - o.start), p = o.tidy ? (t < 0.75 ? 1 : 1 - (t - 0.75) * 2.4) * o.prob : (t < 0.35 ? 1 : 1 - (t - 0.35) * 1.1) * o.prob;
+    if (hash(ix, iy, 12) > p) continue;
+    const angle = (t < 0.3 && hash(ix, iy, 13) < 0.6) ? Math.atan2(bdy, bdx) + (hash(ix, iy, 14) - 0.5) * 0.7 : hash(ix, iy, 15) * Math.PI;
+    const seed = ix * 92821 + iy * 68917;
+    if (o.tidy) clusterTidy(parent, px, py, o.size + hash(ix, iy, 18) * 1.5, angle, seed); else cluster(parent, px, py, o.size + hash(ix, iy, 18) * 5 - t * 3, angle, seed);
+    if (o.double && t < 0.2 && hash(ix, iy, 19) < o.double) cluster(parent, px + (hash(ix, iy, 20) - 0.5) * 6, py + (hash(ix, iy, 21) - 0.5) * 6, 10, hash(ix, iy, 22) * Math.PI, seed + 7);
+  }
+};
+
+const vk = p => f1(p[0]) + ',' + f1(p[1]);
+
+const buildDefs = root => {
+  const defs = el('defs', {}, root);
+  const pat = (id, w, h) => el('pattern', { id, width: w, height: h, patternUnits: 'userSpaceOnUse' }, defs);
+  const rows = (p, W, rh, n, seed, tones, line, rx) => {
+    for (let row = 0; row < n; row++) {
+      const js = [0, 1, 2].map(k => (k + hash(row, k, seed) * 0.7) * W / 3).sort((x, y) => x - y);
+      js.forEach((x, k) => {
+        const x2 = k < 2 ? js[k + 1] : js[0] + W, fill = tones[Math.floor(hash(row, k, seed + 1) * tones.length)];
+        [x, x - W].forEach(xx => el('rect', { x: f1(xx), y: row * rh, width: f1(x2 - x), height: rh, rx, fill, stroke: line, 'stroke-width': 0.75, 'stroke-opacity': 0.55 }, p));
+      });
+    }
+  };
+  const blotch = (p, W, base, tones, n, seed, marks) => {
+    const pat0 = p;
+    el('rect', { width: W, height: W, fill: base }, p);
+    const wrap = (x, y, fn) => [[0, 0], [-W, 0], [0, -W], [-W, -W]].forEach(([dx, dy]) => fn(x + dx, y + dy));
+    for (let i = 0; i < n; i++) {
+      const x = hash(i, 1, seed) * W, y = hash(i, 2, seed) * W, rx = 7 + hash(i, 3, seed) * 13, ry = 5 + hash(i, 4, seed) * 9, fill = tones[i % tones.length], rot = Math.round(hash(i, 5, seed) * 180);
+      wrap(x, y, (px, py) => el('ellipse', { cx: f1(px), cy: f1(py), rx: f1(rx), ry: f1(ry), fill, 'fill-opacity': 0.55, transform: `rotate(${rot} ${f1(px)} ${f1(py)})` }, p));
+    }
+    marks(wrap, pat0);
+  };
+  rows(pat('pWood', 168, 48), 168, 8, 6, 201, ['#e6d3b9', '#e3cfb4', '#e9d7be', '#e0ccb0', '#e5d1b6', '#e8d5bb'], '#a88d6c', 0);
+  rows(pat('pStone', 96, 72), 96, 18, 4, 211, ['#ebe6da', '#e8e2d5', '#eee9de', '#e5dfd1', '#eae4d8'], '#aba190', 2.5);
+  blotch(pat('pGrass', 120, 120), 120, '#dde3c4', ['#d6ddbb', '#e3e8cd', '#d2d9b6', '#dfe4c7'], 16, 221, (wrap, pat0) => {
+    for (let i = 0; i < 12; i++) { const x = hash(i, 6, 222) * 120, y = hash(i, 7, 222) * 120; wrap(x, y, (px, py) => el('path', { d: `M${f1(px - 2)} ${f1(py)} l1 -3 M${f1(px)} ${f1(py)} v-3.6 M${f1(px + 2)} ${f1(py)} l-1 -3`, stroke: '#a8b285', 'stroke-width': 0.7, 'stroke-linecap': 'round', fill: 'none' }, pat0)); }
+  });
+  blotch(pat('pDirt', 120, 120), 120, '#ece1ca', ['#e6dac1', '#f0e6d1', '#e8dcc4'], 14, 231, (wrap, pat0) => {
+    for (let i = 0; i < 16; i++) { const x = hash(i, 6, 232) * 120, y = hash(i, 7, 232) * 120; wrap(x, y, (px, py) => el('ellipse', { cx: f1(px), cy: f1(py), rx: 1.3, ry: 0.9, fill: '#bba886' }, pat0)); }
+  });
+  blotch(pat('pRock', 120, 120), 120, '#7f776b', ['#746c61', '#8a8275', '#6e675c', '#857d70'], 18, 261, (wrap, pat0) => {
+    for (let i = 0; i < 9; i++) { const x = hash(i, 6, 262) * 120, y = hash(i, 7, 262) * 120, a = hash(i, 8, 262) * 6.3, l = 5 + hash(i, 9, 262) * 8; wrap(x, y, (px, py) => el('path', { d: `M${f1(px)} ${f1(py)} l${f1(Math.cos(a) * l)} ${f1(Math.sin(a) * l)} l${f1(Math.cos(a + 0.8) * l * 0.5)} ${f1(Math.sin(a + 0.8) * l * 0.5)}`, stroke: '#4f483f', 'stroke-width': 0.8, fill: 'none', 'stroke-linecap': 'round' }, pat0)); }
+    for (let i = 0; i < 14; i++) { const x = hash(i, 10, 263) * 120, y = hash(i, 11, 263) * 120; wrap(x, y, (px, py) => el('ellipse', { cx: f1(px), cy: f1(py), rx: f1(1 + hash(i, 12, 263) * 1.6), ry: f1(0.8 + hash(i, 13, 263)), fill: '#9a9284', stroke: '#4f483f', 'stroke-width': 0.5 }, pat0)); }
+  });
+  blotch(pat('pWater', 120, 120), 120, '#c9dfdc', ['#d2e6e3', '#c1d8d5', '#cde3e0'], 14, 241, () => { });
+  blotch(pat('pSand', 120, 120), 120, '#ece2c9', ['#e7dcc2', '#f0e7d0'], 8, 251, () => { });
+  const pb = pat('pBlock', 6, 6); pb.setAttribute('patternTransform', 'rotate(45)');
+  el('rect', { width: 6, height: 6, fill: '#c0392b', 'fill-opacity': 0.14 }, pb);
+  el('line', { x1: 0, y1: 3, x2: 6, y2: 3, stroke: '#c0392b', 'stroke-width': 1.6 }, pb);
+  const gg = el('radialGradient', { id: 'gGlow' }, defs);
+  [[0, '#f6dca6', 0.22], [0.45, '#e8b979', 0.08], [1, '#e8b979', 0]].forEach(([o, c, a]) => el('stop', { offset: o, 'stop-color': c, 'stop-opacity': a }, gg));
+  const f = el('filter', { id: 'fShadow', x: '-5%', y: '-5%', width: '110%', height: '110%' }, defs);
+  el('feDropShadow', { dx: 1, dy: 1.7, stdDeviation: 1.1, 'flood-color': '#2a1f16', 'flood-opacity': 0.18 }, f);
+};
+
+// ---- Passage : ce qui bloque les pions. Fonctions pures sur les données de la carte, à reprendre telles quelles côté table de jeu. ----
+let showPass = false, probe = null;
+const PASS_TOOLS = { pBloque: 'bloque', pEscalade: 'escalade', pLibre: 'libre' };
+const passOf = o => o.p || OBJ[o.t].pass;
+const cellPass = (c, r) => {
+  if (!walkable(c, r)) return 'vide';
+  const k = key(c, r);
+  if (zones.has(k)) return 'bloque';
+  const id = occ.get(k);
+  return id ? passOf(objects.get(id)) : 'libre';
+};
+const edgeOpen = (c, r, nc, nr) => {
+  const e = edges.get(edgeKey(c, r, nc, nr));
+  if (e) return e === 'door';
+  const ta = floor.get(key(c, r)), tb = floor.get(key(nc, nr));
+  if (!ta || !tb || ta === tb) return true;
+  const air = t => t === 'libre' || t === 'eau';
+  return !((ta === 'libre' && !air(tb)) || (tb === 'libre' && !air(ta)));
+};
+const canStep = (c, r, nc, nr) => { const p = cellPass(nc, nr); return p !== 'vide' && p !== 'bloque' && edgeOpen(c, r, nc, nr); };
+const reachable = (c0, r0) => {
+  const seen = new Map([[key(c0, r0), 0]]), queue = [[c0, r0]];
+  while (queue.length) {
+    const [c, r] = queue.shift(), d = seen.get(key(c, r));
+    G.neigh(c, r).forEach(([nc, nr]) => { const k = key(nc, nr); if (!seen.has(k) && canStep(c, r, nc, nr)) { seen.set(k, d + 1); queue.push([nc, nr]); } });
+  }
+  return seen;
+};
+const drawPass = root => {
+  const g = el('g', { id: 'passOv', 'pointer-events': 'none' }, root);
+  const cellD = k => { const [c, r] = k.split(',').map(Number); return inside(c, r) ? poly(G.corners(c, r)) : ''; };
+  if (probe) {
+    const [c0, r0] = probe.split(',').map(Number);
+    if (cellPass(c0, r0) === 'vide') probe = null;
+    else {
+      let d = ''; reachable(c0, r0).forEach((n, k) => { d += cellD(k); });
+      el('path', { d, fill: '#2f7f74', 'fill-opacity': 0.16, stroke: '#2f7f74', 'stroke-width': 0.5, 'stroke-opacity': 0.45 }, g);
+    }
+  }
+  zones.forEach(k => { const d = cellD(k); if (d) el('path', { d, fill: 'url(#pBlock)', stroke: '#c0392b', 'stroke-width': 1.1 }, g); });
+  objects.forEach(o => {
+    const p = passOf(o); if (p === 'libre' && !o.p) return;
+    const col = p === 'bloque' ? '#c0392b' : p === 'escalade' ? '#d68910' : '#2f7f74', at = { fill: col, 'fill-opacity': 0.3, stroke: col, 'stroke-width': 1.2 };
+    if (!o.p) at['stroke-dasharray'] = '2.5 2';
+    footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => el('path', { d: poly(G.corners(x, y)), ...at }, g));
+  });
+  if (probe) { const [c0, r0] = probe.split(',').map(Number), [x, y] = G.center(c0, r0); el('circle', { cx: f1(x), cy: f1(y), r: 7.5, fill: '#1e231f', stroke: '#fbf5e8', 'stroke-width': 2 }, g); el('circle', { cx: f1(x), cy: f1(y), r: 2.4, fill: '#fff' }, g); }
+};
+
+const PADC = 3;
+const render = () => {
+  floorView = new Map(floor);
+  for (let c = -PADC; c < G.W + PADC; c++) for (let r = -PADC; r < G.H + PADC; r++) {
+    if (inside(c, r)) continue;
+    const t = floor.get(key(Math.min(G.W - 1, Math.max(0, c)), Math.min(G.H - 1, Math.max(0, r))));
+    if (t) floorView.set(key(c, r), t);
+  }
+  try { renderInner(); } finally { floorView = null; }
+};
+const sizeBoard = () => {
+  const box = svg.parentElement; if (!box) return;
+  const W = box.clientWidth - 16, H = box.clientHeight - 16;
+  if (W <= 0 || H <= 0) return;
+  const k = Math.min(W / G.vw, H / G.vh);
+  svg.style.width = Math.floor(G.vw * k) + 'px'; svg.style.height = Math.floor(G.vh * k) + 'px';
+};
+window.addEventListener('resize', sizeBoard);
+const renderInner = () => {
+  svg.setAttribute('viewBox', `0 0 ${G.vw} ${G.vh}`);
+  sizeBoard();
+  svg.innerHTML = '';
+  buildDefs(svg);
+  if (!fond) el('rect', { x: -60, y: -60, width: G.vw + 120, height: G.vh + 120, fill: VOID }, svg);
+  const dens = +document.getElementById('dens').value / 10, depth = +document.getElementById('depth').value;
+
+  if (fond) {
+    const w = G.vw * fond.scale, h = w * fond.h / fond.w;
+    el('image', { href: fondUrl(fond), x: f1((G.vw - w) / 2 + fond.dx), y: f1((G.vh - h) / 2 + fond.dy), width: f1(w), height: f1(h), opacity: fond.op, preserveAspectRatio: 'none' }, svg);
+    let d = '';
+    if (G.type === 'square') { for (let x = 0; x <= G.W; x++) d += `M${x * C} 0 V${G.vh} `; for (let y = 0; y <= G.H; y++) d += `M0 ${y * C} H${G.vw} `; }
+    else for (let c = 0; c < G.W; c++) for (let r = 0; r < G.H; r++) d += poly(G.corners(c, r));
+    el('path', { d, fill: 'none', stroke: '#1f1b18', 'stroke-opacity': 0.45, 'stroke-width': 0.7 }, svg);
+  }
+  updateFondUI();
+  if (G.type === 'square') {
+    const dots = el('g', { fill: '#a8966f' }, svg);
+    for (let x = 0; x <= G.W; x++) for (let y = 0; y <= G.H; y++) el('circle', { cx: x * C, cy: y * C, r: 0.9 }, dots);
+  } else {
+    let d = '';
+    for (let c = 0; c < G.W; c++) for (let r = 0; r < G.H; r++) d += poly(G.corners(c, r));
+    el('path', { d, fill: 'none', stroke: '#a8966f', 'stroke-width': 0.6, 'stroke-dasharray': '1 3' }, svg);
+  }
+
+  const bnd = [], inner = [];
+  floorView.forEach((t, k) => {
+    const [c, r] = k.split(',').map(Number);
+    G.neigh(c, r).forEach(([nc, nr], i) => {
+      const geo = edgeGeom(c, r, i);
+      const tn = fl(nc, nr);
+      if (!tn || (tn === 'libre' && t !== 'libre' && t !== 'eau')) {
+        if (t === 'libre') return;
+        const et = edges.get(edgeKey(c, r, nc, nr));
+        if (et === 'door') { const style = WALLED(t); inner.push({ ...geo, c, r, i, nc, nr, type: 'door', style, outline: !!style, shore: false }); return; }
+        bnd.push({ ...geo, t, c, r, i }); return;
+      }
+      if (t === 'libre' && tn !== 'libre' && tn !== 'eau') return;
+      if (key(nc, nr) < k) return;
+      const ka = WALLED(fl(c, r)), kb = WALLED(fl(nc, nr));
+      const style = ka === 'stone' || kb === 'stone' ? 'stone' : ka || kb;
+      const wa = fl(c, r) === 'eau', wb = fl(nc, nr) === 'eau';
+      const seg = { ...geo, c, r, i, nc, nr, type: edgeType(c, r, nc, nr), style, outline: !!style && ka !== kb, shore: wa !== wb, wnx: wa ? geo.nx : -geo.nx, wny: wa ? geo.ny : -geo.ny };
+      if (seg.outline && kb === style) { seg.nx = -seg.nx; seg.ny = -seg.ny; }
+      inner.push(seg);
+    });
+  });
+  if (fond) edges.forEach((t, ek) => {
+    const [k1, k2] = ek.split('|'), [c, r] = k1.split(',').map(Number), [nc, nr] = k2.split(',').map(Number);
+    if (fl(c, r) && fl(nc, nr)) return;
+    const i = G.neigh(c, r).findIndex(([x, y]) => x === nc && y === nr);
+    if (i < 0) return;
+    inner.push({ ...edgeGeom(c, r, i), c, r, i, nc, nr, type: t, style: null, outline: false, shore: false });
+  });
+  const inB = bnd.filter(s => s.t === 'in'), outB = bnd.filter(s => s.t === 'out'), stB = bnd.filter(s => s.t === 'stone'), muB = bnd.filter(s => s.t === 'muret');
+  const outline = [...stB.map(s => ({ ...s, kind: 'stone', style: 'stone' })), ...muB.map(s => ({ ...s, kind: 'muret', style: 'muret' })), ...inner.filter(s => s.outline && ['stone', 'muret', 'door'].includes(s.type)).map(s => ({ ...s, kind: s.type }))];
+  const innerStone = inner.filter(s => s.type === 'stone' && !s.outline);
+
+  const vmap = new Map();
+  const addV = (p, s) => { const k = vk(p); if (!vmap.has(k)) vmap.set(k, []); vmap.get(k).push(s); };
+  outline.forEach(s => { addV(s.a, s); addV(s.b, s); });
+  const miter = (s, p) => {
+    const o = (vmap.get(vk(p)) || []).find(x => x !== s);
+    if (!o) return { m: [s.nx, s.ny] };
+    const dot = s.nx * o.nx + s.ny * o.ny;
+    if (1 + dot < 0.2) return { m: [s.nx, s.ny] };
+    return { m: [(s.nx + o.nx) / (1 + dot), (s.ny + o.ny) / (1 + dot)] };
+  };
+  const wv = new Map();
+  const addW = p => wv.set(vk(p), (wv.get(vk(p)) || 0) + 1);
+  [...inB, ...outline, ...inner.filter(s => s.type && !s.outline)].forEach(s => { addW(s.a); addW(s.b); });
+  const endExt = (p, t = T) => ({ ext: (wv.get(vk(p)) || 0) > 1 ? t / 2 : 0 });
+
+  const hatch = el('g', { stroke: SLATE, 'stroke-linecap': 'round', opacity: 0.85 }, svg);
+  hatchPass(hatch, inB, { step: 10.5 - dens * 4, reach: (depth + 1) * C * 0.36, start: 0, prob: 0.3 + dens * 0.7, size: 6.5, double: 0, salt: 0, tidy: true });
+
+  const peb = el('g', { fill: 'none', stroke: SLATE, 'stroke-width': 0.9 }, svg);
+  [...outB, ...muB].forEach(s => {
+    const sd = s.c * 1291 + s.r * 37 + s.i * 7;
+    for (let k = 0; k < (s.t === 'muret' ? 1 : 2 + depth); k++) {
+      if (hash(sd, k, 50) > 0.55 + dens * 0.3) continue;
+      const u = hash(sd, k, 51), o = 14 + hash(sd, k, 52) * 10 * depth;
+      const x = s.a[0] + (s.b[0] - s.a[0]) * u + s.nx * o, y = s.a[1] + (s.b[1] - s.a[1]) * u + s.ny * o;
+      const cell = G.cellAt(x, y);
+      if (cell && fl(cell[0], cell[1])) continue;
+      el('ellipse', { cx: f1(x), cy: f1(y), rx: f1(0.9 + hash(sd, k, 53) * 1.4), ry: f1(0.7 + hash(sd, k, 54)) }, peb);
+    }
+  });
+
+  const floorG = el('g', {}, svg);
+  const FILL = { in: 'url(#pWood)', stone: 'url(#pStone)', muret: 'url(#pDirt)', out: 'url(#pGrass)', libre: 'url(#pGrass)', deep: 'url(#pWater)' };
+  const byType = {};
+  floorView.forEach((t, k) => {
+    const [c, r] = k.split(',').map(Number);
+    if (t === 'eau') { const nb = G.neigh(c, r).map(([x, y]) => fl(x, y)).find(v => v && v !== 'eau'); t = nb || 'deep'; }
+    byType[t] = (byType[t] || '') + poly(G.corners(c, r));
+  });
+  Object.entries(byType).forEach(([t, d]) => el('path', { d, fill: FILL[t] || PAPER, stroke: FILL[t] || PAPER, 'stroke-width': 0.8 }, floorG));
+  floorView.forEach((t, k) => {
+    if (t !== 'out' && t !== 'muret' && t !== 'libre') return;
+    const [c, r] = k.split(',').map(Number), [x, y] = G.center(c, r), sd = c * 733 + r * 19, dirt = t === 'muret';
+    for (let i = 0; i < 2; i++) el('circle', { cx: f1(x + (hash(sd, i, 60) - 0.5) * 16), cy: f1(y + (hash(sd, i, 61) - 0.5) * 16), r: 0.8, fill: dirt ? '#bba886' : '#a8b285' }, floorG);
+    if (hash(sd, 0, 62) < (dirt ? 0.08 : 0.22)) { const gx = x + (hash(sd, 1, 63) - 0.5) * 10, gy = y + (hash(sd, 2, 63) - 0.5) * 10; el('path', { d: `M${f1(gx - 3)} ${f1(gy)} l1.5 -4 M${f1(gx)} ${f1(gy)} v-5 M${f1(gx + 3)} ${f1(gy)} l-1.5 -4`, stroke: '#a3ad7e', 'stroke-width': 0.9, 'stroke-linecap': 'round' }, floorG); }
+  });
+
+  const loops = [];
+  {
+    const segs = [];
+    floorView.forEach((t, k) => {
+      if (t !== 'eau') return;
+      const [c, r] = k.split(',').map(Number), cs = G.corners(c, r);
+      G.neigh(c, r).forEach(([nc, nr], i) => { if (fl(nc, nr) !== 'eau') segs.push({ a: cs[i], b: cs[(i + 1) % cs.length], used: false }); });
+    });
+    const starts = new Map();
+    segs.forEach(s => { const k = vk(s.a); if (!starts.has(k)) starts.set(k, []); starts.get(k).push(s); });
+    segs.forEach(s0 => {
+      if (s0.used) return;
+      const pts = []; let s = s0, guard = 0;
+      while (s && !s.used && guard++ < 5000) { s.used = true; pts.push(s.a); s = (starts.get(vk(s.b)) || []).find(x => !x.used); }
+      if (pts.length > 2) loops.push(pts);
+    });
+  }
+  const noisy = loops.map(pts => {
+    const out = [];
+    pts.forEach((p, i) => {
+      const q = pts[(i + 1) % pts.length], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy);
+      const h = (hash(Math.round(m[0] * 10), Math.round(m[1] * 10), 90) - 0.5) * 7;
+      out.push([m[0] - dy / l * h, m[1] + dx / l * h]);
+    });
+    let cur = out;
+    for (let it = 0; it < 3; it++) {
+      const nx = [];
+      cur.forEach((p, i) => { const q = cur[(i + 1) % cur.length]; nx.push([p[0] * 0.75 + q[0] * 0.25, p[1] * 0.75 + q[1] * 0.25], [p[0] * 0.25 + q[0] * 0.75, p[1] * 0.25 + q[1] * 0.75]); });
+      cur = nx;
+    }
+    return cur;
+  });
+  const offsetLoop = (pts, d) => pts.map((p, i) => {
+    const a = pts[(i + pts.length - 1) % pts.length], b = pts[(i + 1) % pts.length], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+    return [p[0] - dy / l * d, p[1] + dx / l * d];
+  });
+  const loopD = pts => 'M' + pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join(' L') + 'Z';
+  if (noisy.length) el('path', { d: noisy.map(loopD).join(' '), fill: 'url(#pWater)', 'fill-rule': 'evenodd' }, svg);
+
+  const gl = el('g', { stroke: '#1a120a', 'stroke-opacity': 0.16, 'stroke-width': 0.6 }, svg);
+  inner.filter(s => !s.type && !s.shore).forEach(s => el('line', { x1: f1(s.a[0]), y1: f1(s.a[1]), x2: f1(s.b[0]), y2: f1(s.b[1]) }, gl));
+
+  const shG = el('g', { fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
+  floorView.forEach((t, k) => {
+    if (t !== 'eau') return;
+    const [c, r] = k.split(',').map(Number), [x, y] = G.center(c, r), sd = c * 733 + r * 19;
+    if (hash(sd, 0, 70) < 0.55) { const wx = x + (hash(sd, 1, 71) - 0.5) * 8, wy = y + (hash(sd, 2, 71) - 0.5) * 8; el('path', { d: `M${f1(wx - 5)} ${f1(wy)} q2.5 -2 5 0 t5 0`, stroke: SHOREW, 'stroke-width': 0.8, 'stroke-opacity': 0.6 }, shG); }
+  });
+  noisy.forEach(pts => {
+    el('path', { d: loopD(offsetLoop(pts, 7)), stroke: SHOREW, 'stroke-width': 0.7, 'stroke-opacity': 0.55, 'stroke-dasharray': '2.5 3' }, shG);
+    el('path', { d: loopD(offsetLoop(pts, 3.4)), stroke: SHOREW, 'stroke-width': 1.1, 'stroke-opacity': 0.8 }, shG);
+    el('path', { d: loopD(pts), stroke: INK, 'stroke-width': 1.7 }, shG);
+  });
+
+  const ao = el('g', { stroke: '#000', 'stroke-opacity': 0.16, 'stroke-width': 7, 'stroke-linecap': 'round' }, svg);
+  const aoLine = (s, k) => el('line', { x1: f1(s.a[0] - s.nx * k), y1: f1(s.a[1] - s.ny * k), x2: f1(s.b[0] - s.nx * k), y2: f1(s.b[1] - s.ny * k) }, ao);
+  [...inB, ...stB, ...muB].forEach(s => aoLine(s, 2.5));
+  inner.filter(s => s.type && s.type !== 'door').forEach(s => aoLine(s, 0));
+  const og = el('g', { filter: 'url(#fShadow)' }, svg);
+  const lg = el('g', { 'pointer-events': 'none' }, svg);
+  const wl = el('g', {}, svg);
+  inB.forEach(s => {
+    const j = (hash(s.c, s.r, s.i) - 0.5) * 0.8;
+    inkWall(wl, [s.a[0] + s.nx * j, s.a[1] + s.ny * j], [s.b[0] - s.nx * j, s.b[1] - s.ny * j], 2.9);
+  });
+  const stG = el('g', {}, svg);
+  outline.forEach(s => {
+    const seed = s.c * 977 + s.r * 31 + s.i;
+    if (s.kind === 'door') door(stG, s.a, s.b, s.nx, s.ny, s.style, seed, 0, miter(s, s.a), miter(s, s.b));
+    else wallSeg(s.kind, stG, s.a, s.b, s.nx, s.ny, 0, seed, miter(s, s.a), miter(s, s.b));
+  });
+  const inW = el('g', {}, svg);
+  inner.filter(s => s.type && !s.outline).forEach(s => {
+    const seed = s.c * 977 + s.r * 31 + s.i;
+    if (s.type === 'stone') stoneSeg(inW, s.a, s.b, s.nx, s.ny, 0, seed, endExt(s.a), endExt(s.b));
+    else if (s.type === 'muret') muretSeg(inW, s.a, s.b, s.nx, s.ny, 0, seed, endExt(s.a, TM), endExt(s.b, TM));
+    else if (s.type === 'wall') inkWall(inW, s.a, s.b, 2.6);
+    else if (s.type === 'door') door(inW, s.a, s.b, s.nx, s.ny, s.style, seed);
+  });
+  inner.filter(s => s.outline && s.type === 'wall').forEach(s => inkWall(inW, s.a, s.b, 2.6));
+
+  const rocks = [];
+  outB.forEach(s => {
+    const sd = s.c * 1291 + s.r * 37 + s.i * 7;
+    [0.15, 0.5, 0.85].forEach((u0, k) => {
+      const u = u0 + (hash(sd, k, 40) - 0.5) * 0.2, o = 2 + hash(sd, k, 41) * 5;
+      rocks.push({ x: s.a[0] + (s.b[0] - s.a[0]) * u + s.nx * o, y: s.a[1] + (s.b[1] - s.a[1]) * u + s.ny * o, rad: 4.5 + hash(sd, k, 42) * 4, seed: sd + k });
+    });
+    if (depth > 1 && hash(sd, 5, 43) < 0.4 + dens * 0.4) {
+      const u = hash(sd, 6, 44), o = 10 + hash(sd, 7, 45) * 6 * (depth - 1);
+      rocks.push({ x: s.a[0] + (s.b[0] - s.a[0]) * u + s.nx * o, y: s.a[1] + (s.b[1] - s.a[1]) * u + s.ny * o, rad: 3 + hash(sd, 8, 46) * 3, seed: sd + 9 });
+    }
+  });
+  const rg = el('g', {}, svg);
+  rocks.sort((p, q) => p.y - q.y).forEach(o => boulder(rg, o.x, o.y, o.rad, o.seed));
+
+  let blocked = 0, climb = 0;
+  [...objects.values()].sort((p, q) => (OBJ[p.t].blocks ? 1 : 0) - (OBJ[q.t].blocks ? 1 : 0)).forEach(o => {
+    if (passOf(o) === 'bloque') blocked++;
+    if (passOf(o) === 'escalade') climb++;
+    drawObj(og, o, o.c * 131 + o.r * 7);
+    if (LIGHTS[o.t]) { const bx = objBox(o); el('circle', { cx: f1(bx.cx), cy: f1(bx.cy), r: f1(LIGHTS[o.t] * C), fill: 'url(#gGlow)' }, lg); }
+  });
+  if (showPass) drawPass(svg);
+  el('g', { id: 'hov' }, svg);
+  const vis = s => inside(s.c, s.r);
+  const walls = bnd.filter(vis).length + inner.filter(s => vis(s) && s.type && s.type !== 'door').length, doors = inner.filter(s => vis(s) && s.type === 'door').length;
+  const st = document.getElementById('stats');
+  st.textContent = floor.size + ' cases · ' + walls + ' murs · ' + doors + (doors > 1 ? ' portes' : ' porte') + ' · ' + objects.size + ' objets' + (zones.size ? ' · ' + zones.size + (zones.size > 1 ? ' cases bloquées' : ' case bloquée') : '');
+  st.title = blocked + ' objets bloquants, ' + climb + ' à escalader';
+};
+
+const history = [], future = [];
+const snap = () => JSON.stringify({ f: [...floor], e: [...edges], o: [...objects.values()], z: [...zones], b: fond });
+const restore = str => {
+  const s = JSON.parse(str);
+  floor.clear(); edges.clear(); objects.clear(); occ.clear(); zones.clear();
+  (s.z || []).forEach(k => zones.add(k));
+  s.f.forEach(([k, v]) => floor.set(k, v));
+  s.e.forEach(([k, v]) => edges.set(k, v));
+  s.o.forEach(o => place(o.t, o.c, o.r, o.w, o.h, o.o, o.p));
+  fond = s.b || null;
+};
+const updHist = () => {
+  document.getElementById('bUndo').disabled = !history.length;
+  document.getElementById('bRedo').disabled = !future.length;
+};
+const commit = before => { if (before !== null && before !== snap()) { touched = true; history.push(before); if (history.length > 200) history.shift(); future.length = 0; markDirty(); } updHist(); };
+const undo = () => { if (!history.length) return; future.push(snap()); restore(history.pop()); render(); updHist(); markDirty(); };
+const redo = () => { if (!future.length) return; history.push(snap()); restore(future.pop()); render(); updHist(); markDirty(); };
+
+const ptOf = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; const q = p.matrixTransform(svg.getScreenCTM().inverse()); return [q.x, q.y]; };
+const nearestEdge = ([px, py]) => {
+  const cell = G.cellAt(px, py); if (!cell) return null;
+  const [c, r] = cell; let best = null, bd = Infinity;
+  G.neigh(c, r).forEach(([nc, nr], i) => {
+    const { a, b } = edgeGeom(c, r, i), ex = b[0] - a[0], ey = b[1] - a[1];
+    const u = Math.max(0, Math.min(1, ((px - a[0]) * ex + (py - a[1]) * ey) / (ex * ex + ey * ey)));
+    const d = Math.hypot(px - a[0] - ex * u, py - a[1] - ey * u);
+    if (d < bd) { bd = d; best = { c, r, i, nc, nr, d }; }
+  });
+  return best;
+};
+const edgeOk = (ne, t) => (walkable(ne.c, ne.r) && walkable(ne.nc, ne.nr)) || (t === 'door' && !fond && (!!fl(ne.c, ne.r) !== !!fl(ne.nc, ne.nr)));
+const EDGE_TOOLS = { wall: 'wall', stonewall: 'stone', murettool: 'muret', door: 'door' };
+const FLOOR_TOOLS = ['in', 'stone', 'muret', 'out', 'libre', 'eau'];
+
+const turnObj = id => {
+  const o = objects.get(id);
+  footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => occ.delete(key(x, y)));
+  for (let k = 1; k <= 3; k++) {
+    const no = (o.o + k) % 4, [w, h] = sizeOf(o.t, no);
+    if (canPlace(o.c, o.r, w, h)) { o.o = no; o.w = w; o.h = h; break; }
+  }
+  footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => occ.set(key(x, y), id));
+};
+
+const apply = (e, first) => {
+  const pt = ptOf(e), cell = G.cellAt(pt[0], pt[1]);
+  if (!cell) return;
+  const [c, r] = cell, k = key(c, r);
+  if (FLOOR_TOOLS.includes(tool)) { if (inside(c, r) && floor.get(k) !== tool) { floor.set(k, tool); render(); } return; }
+  if (tool === 'eraseObj') { if (occ.has(k)) { removeObj(occ.get(k)); render(); } return; }
+  if (tool === 'erase') {
+    if (occ.has(k)) { removeObj(occ.get(k)); render(); return; }
+    const ne = nearestEdge(pt);
+    if (ne && ne.d < 5) { const ek = edgeKey(ne.c, ne.r, ne.nc, ne.nr); if (edges.has(ek)) { edges.delete(ek); render(); return; } }
+    if (zones.has(k)) { zones.delete(k); render(); return; }
+    if (floor.has(k)) { floor.delete(k); render(); }
+    return;
+  }
+  if (tool === 'zone') {
+    if (!walkable(c, r)) return;
+    if (first) dragRemove = zones.has(k);
+    if (dragRemove ? zones.delete(k) : (!zones.has(k) && zones.add(k))) render();
+    return;
+  }
+  if (PASS_TOOLS[tool]) {
+    if (first && occ.has(k)) { const o = objects.get(occ.get(k)), v = PASS_TOOLS[tool]; if (v === OBJ[o.t].pass) delete o.p; else o.p = v; painting = false; render(); }
+    return;
+  }
+  if (tool === 'probe') { if (first) { probe = probe === k ? null : k; painting = false; render(); } return; }
+  if (EDGE_TOOLS[tool]) {
+    const ne = nearestEdge(pt);
+    if (!ne || !edgeOk(ne, tool)) return;
+    const ek = edgeKey(ne.c, ne.r, ne.nc, ne.nr), type = EDGE_TOOLS[tool];
+    if (first) dragRemove = edges.get(ek) === type;
+    if (dragRemove) { if (edges.has(ek)) { edges.delete(ek); render(); } }
+    else if (edges.get(ek) !== type) { edges.set(ek, type); render(); }
+    return;
+  }
+  if (OBJ[tool]) {
+    if (occ.has(k)) { if (first) { turnObj(occ.get(k)); painting = false; render(); } return; }
+    const [w, h] = sizeOf(tool);
+    if (!first && (w > 1 || h > 1)) return;
+    if (canPlace(c, r, w, h)) { place(tool, c, r, w, h, rot); render(); }
+  }
+};
+
+const hover = e => {
+  const hv = document.getElementById('hov'); if (!hv) return;
+  hv.innerHTML = '';
+  const pt = ptOf(e), cell = G.cellAt(pt[0], pt[1]);
+  if (!cell || !inside(cell[0], cell[1])) return;
+  const [c, r] = cell;
+  const mark = (d, ok) => el('path', { d, fill: ok ? OKC : BADC, 'fill-opacity': 0.12, stroke: ok ? OKC : BADC, 'stroke-width': 1.5, 'stroke-dasharray': '3 3' }, hv);
+  if (EDGE_TOOLS[tool]) {
+    const ne = nearestEdge(pt); if (!ne) return;
+    const { a, b } = edgeGeom(ne.c, ne.r, ne.i), ok = edgeOk(ne, tool);
+    el('line', { x1: f1(a[0]), y1: f1(a[1]), x2: f1(b[0]), y2: f1(b[1]), stroke: ok ? OKC : BADC, 'stroke-width': 4, 'stroke-opacity': 0.6, 'stroke-linecap': 'round' }, hv);
+    return;
+  }
+  if (tool === 'eraseObj') {
+    const k = key(c, r);
+    if (occ.has(k)) { const o = objects.get(occ.get(k)); footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => mark(poly(G.corners(x, y)), false)); }
+    else mark(poly(G.corners(c, r)), true);
+    return;
+  }
+  if (PASS_TOOLS[tool]) {
+    const k = key(c, r);
+    if (occ.has(k)) { const o = objects.get(occ.get(k)); footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => mark(poly(G.corners(x, y)), true)); }
+    return;
+  }
+  if (OBJ[tool]) {
+    const k = key(c, r);
+    if (occ.has(k)) { const o = objects.get(occ.get(k)); footprint(o.c, o.r, o.w, o.h).forEach(([x, y]) => mark(poly(G.corners(x, y)), true)); return; }
+    const [w, h] = sizeOf(tool), ok = canPlace(c, r, w, h);
+    footprint(c, r, w, h).filter(([x, y]) => inside(x, y)).forEach(([x, y]) => mark(poly(G.corners(x, y)), ok));
+    if (ok) drawObj(el('g', { opacity: 0.45 }, hv), { t: tool, c, r, w, h, o: rot }, 5);
+    return;
+  }
+  mark(poly(G.corners(c, r)), true);
+};
+let lastPt = null;
+const deleteAt = pt => {
+  const cell = G.cellAt(pt[0], pt[1]); if (!cell) return false;
+  const k = key(cell[0], cell[1]);
+  if (occ.has(k)) { removeObj(occ.get(k)); return true; }
+  const ne = nearestEdge(pt);
+  if (ne && ne.d < 6) { const ek = edgeKey(ne.c, ne.r, ne.nc, ne.nr); if (edges.has(ek)) { edges.delete(ek); return true; } }
+  if (showPass && zones.has(k)) { zones.delete(k); return true; }
+  return false;
+};
+svg.addEventListener('contextmenu', e => { e.preventDefault(); const before = snap(); if (deleteAt(ptOf(e))) { commit(before); render(); hover(e); } });
+svg.addEventListener('pointermove', e => { lastPt = ptOf(e); });
+svg.addEventListener('pointerleave', () => { lastPt = null; });
+svg.addEventListener('pointerdown', e => { if (e.button === 2) return; painting = true; dragRemove = false; pending = snap(); svg.setPointerCapture(e.pointerId); apply(e, true); hover(e); });
+svg.addEventListener('pointermove', e => { if (painting) apply(e, false); hover(e); });
+svg.addEventListener('pointerup', () => { painting = false; dragRemove = false; commit(pending); pending = null; });
+svg.addEventListener('pointerleave', () => { const hv = document.getElementById('hov'); if (hv) hv.innerHTML = ''; });
+
+const pal = document.getElementById('pal');
+const tabsEl = document.getElementById('tabs');
+const panes = {};
+const pane = (id, label) => {
+  const p = document.createElement('div'); p.className = 'pane'; p.dataset.pane = id; pal.appendChild(p); panes[id] = p;
+  const t = document.createElement('button'); t.className = 'tab'; t.textContent = label; t.dataset.pane = id; t.onclick = () => showPane(id); tabsEl.appendChild(t);
+  return p;
+};
+const MODES = { dessin: ['modeles', 'sols', 'objets', 'passage'], image: ['fond', 'passage'] };
+let panelMode = 'dessin', prevTool = 'in';
+const lastPane = { dessin: 'modeles', image: 'fond' };
+const showPane = id => {
+  Object.entries(panes).forEach(([k, p]) => { p.hidden = k !== id; });
+  tabsEl.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.pane === id));
+  if (MODES[panelMode].includes(id)) lastPane[panelMode] = id;
+  const bm = document.getElementById('bMaps'); if (bm) bm.classList.toggle('on', id === 'cartes');
+  tabsEl.classList.toggle('dim', id === 'cartes');
+  if (id === 'passage') { if (tool !== 'zone' && !PASS_TOOLS[tool] && tool !== 'probe') setTool('zone'); if (!showPass) setPass(true); }
+  else if (id === 'fond' && tool !== 'none') setTool('none');
+};
+const setPass = v => { showPass = v; if (!v) probe = null; const b = document.getElementById('bPass'); b.classList.toggle('on', v); b.setAttribute('aria-pressed', v); render(); };
+const setPanelMode = m => {
+  panelMode = m;
+  document.querySelectorAll('.mode button').forEach(bt => bt.classList.toggle('on', bt.dataset.mode === m));
+  const tabs = [...tabsEl.querySelectorAll('.tab')];
+  tabs.forEach(t => { t.hidden = !MODES[m].includes(t.dataset.pane); });
+  MODES[m].forEach(id => { const t = tabs.find(x => x.dataset.pane === id); if (t) tabsEl.appendChild(t); });
+  tabsEl.hidden = MODES[m].length < 2;
+  document.querySelectorAll('.help [data-mode]').forEach(h => { h.hidden = h.dataset.mode !== m; });
+  if (m === 'image') { if (tool !== 'none') prevTool = tool; setTool('none'); } else if (tool === 'none') setTool(prevTool);
+  showPane(lastPane[m]);
+};
+let cur = null;
+const section = (title, items) => {
+  if (title) { const h = document.createElement('h2'); h.textContent = title; cur.appendChild(h); }
+  const gr = document.createElement('div'); gr.className = 'grid'; cur.appendChild(gr);
+  items.forEach(({ id, label, icon, blocks, size, pass }) => {
+    const b = document.createElement('div');
+    b.className = 'item'; b.dataset.tool = id; b.setAttribute('role', 'button'); b.tabIndex = 0; b.title = label;
+    const s = el('svg', { viewBox: '0 0 32 32' });
+    icon(s);
+    b.appendChild(s);
+    b.appendChild(document.createTextNode(label));
+    if (pass && pass !== 'libre') { const dot = document.createElement('span'); dot.className = 'blk' + (pass === 'escalade' ? ' climb' : ''); b.appendChild(dot); b.title = label + (pass === 'escalade' ? ' · on peut grimper dessus' : ' · bloque le déplacement'); }
+    if (size) { const z = document.createElement('span'); z.className = 'sz'; z.textContent = size; b.appendChild(z); }
+    b.onclick = () => setTool(id);
+    b.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setTool(id); } };
+    gr.appendChild(b);
+  });
+};
+const tile = (s, fill) => el('rect', { x: 3, y: 3, width: 26, height: 26, fill: fill || PAPER, stroke: '#c4bcb0', 'stroke-width': 0.6 }, s);
+cur = pane('sols', 'Terrain');
+section('Sols', [
+  { id: 'in', label: 'Salle', icon: s => { for (let i = 0; i < 6; i++) cluster(s, 5 + (i % 3) * 11, 5 + Math.floor(i / 3) * 22, 7, i * 0.7, i + 3); el('rect', { x: 8, y: 10, width: 16, height: 12, fill: PAPER, stroke: INK, 'stroke-width': 2 }, s); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke', INK); } },
+  { id: 'stone', label: 'Pierre', icon: s => { tile(s, '#f3efe6'); stoneWall(s, [7, 9], [25, 9], 0, -1, 0, 3); stoneWall(s, [7, 23], [25, 23], 0, 1, 0, 4); } },
+  { id: 'muret', label: 'Enclos', icon: s => { tile(s); muretSeg(s, [3, 10], [29, 10], 0, -1, 0, 3, { ext: 0 }, { ext: 0 }); muretSeg(s, [3, 24], [29, 24], 0, 1, 0, 9, { ext: 0 }, { ext: 0 }); } },
+  { id: 'eau', label: 'Eau', icon: s => { tile(s, WATER); el('path', { d: 'M3 21 Q10 17 16 20 T29 18', fill: 'none', stroke: INK, 'stroke-width': 1.6 }, s); el('path', { d: 'M8 10 q2.5 -2 5 0 t5 0 M14 26 q2 -1.6 4 0 t4 0', fill: 'none', stroke: WAVE, 'stroke-width': 0.9 }, s); } },
+  { id: 'out', label: 'Extérieur', icon: s => { tile(s); [[8, 8, 4], [16, 6, 3.5], [24, 9, 4.5], [7, 18, 3.5], [25, 21, 4], [13, 26, 4], [21, 26, 3]].forEach(([x, y, rr], i) => boulder(s, x, y, rr, i + 11)); } },
+  { id: 'libre', label: 'Plein air', icon: s => { tile(s); [[9, 9], [22, 12], [12, 23], [24, 24], [17, 17]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 0.8, fill: '#8a8072' }, s)); el('path', { d: 'M10 18 l1.5 -4 M13 18 v-5 M16 18 l-1.5 -4 M19 27 l1.2 -3 M21.5 27 v-4 M24 27 l-1.2 -3', stroke: INK, 'stroke-width': 0.9, 'stroke-linecap': 'round', fill: 'none' }, s); } }
+]);
+const WALL_ITEMS = [
+  { id: 'wall', label: 'Mur', icon: s => { tile(s); inkWall(s, [16, 5], [16, 27], 3.2); } },
+  { id: 'stonewall', label: 'Mur pierre', icon: s => { tile(s); stoneSeg(s, [16, 5], [16, 27], 1, 0, 0, 7, { ext: 0 }, { ext: 0 }); } },
+  { id: 'murettool', label: 'Muret', icon: s => { tile(s); muretSeg(s, [16, 3], [16, 29], 1, 0, 0, 7, { ext: 0 }, { ext: 0 }); } },
+  { id: 'door', label: 'Porte', icon: s => { tile(s); door(s, [16, 3], [16, 29], 1, 0, false, 2); } }
+];
+section('Murs', WALL_ITEMS);
+const objIcon = id => s => {
+  tile(s);
+  const d = OBJ[id];
+  if (d.w === 1 && d.h === 1) { d.draw(el('g', {}, s), 16, 16, 5); return; }
+  const L = 24 * d.w, H = 24 * d.h, k = 25 / Math.max(L, H);
+  d.draw(el('g', { transform: `translate(16 16) scale(${k.toFixed(3)})` }, s), L, H, 5);
+};
+const objItems = cat => Object.keys(OBJ).filter(id => (OBJ[id].cat || 'decor') === cat).sort((p, q) => (OBJ[p].ord ?? 99) - (OBJ[q].ord ?? 99)).map(id => ({ id, label: OBJ[id].label, pass: OBJ[id].pass, size: OBJ[id].w * OBJ[id].h > 1 ? OBJ[id].w + '×' + OBJ[id].h : '', icon: objIcon(id) }));
+const extraParent = panes.sols;
+const legend = () => { const d = document.createElement('div'); d.className = 'legend'; d.innerHTML = '<span><i></i>Bloque le déplacement</span><span><i class="climb"></i>On peut grimper dessus, le MJ peut demander un jet</span><span>Réglage de départ, à changer objet par objet dans l\'onglet Passage.</span>'; cur.appendChild(d); };
+cur = pane('murs', 'Murs');
+section('', WALL_ITEMS);
+{ const n = document.createElement('p'); n.className = 'note'; n.textContent = "Trace les murs sur les bords des cases pour marquer ce qui bloque sur ton image (falaises, palissades, murs). Une porte laisse passer."; cur.appendChild(n); }
+cur = pane('objets', 'Objets'); legend();
+{
+  const objPane = cur, chips = document.createElement('div'); chips.className = 'chips'; objPane.appendChild(chips);
+  const groups = {};
+  [['mobilier', 'Mobilier'], ['decor', 'Décors'], ['nature', 'Nature']].forEach(([cat, label]) => {
+    const ch = document.createElement('button'); ch.className = 'chip'; ch.textContent = label; ch.dataset.cat = cat; chips.appendChild(ch);
+    const g = document.createElement('div'); g.className = 'objcat'; g.dataset.cat = cat; objPane.appendChild(g); groups[cat] = g;
+    cur = g; section('', objItems(cat));
+    ch.onclick = () => { Object.entries(groups).forEach(([k, el2]) => { el2.hidden = k !== cat; }); chips.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.cat === cat)); };
+  });
+  chips.firstChild.click();
+}
+cur = pane('passage', 'Passage');
+{
+  const n = document.createElement('p'); n.className = 'note'; n.textContent = 'Décide ici ce que les pions des joueurs peuvent traverser. Les blocages s\'affichent en couleur sur la carte tant que cet onglet est ouvert.'; cur.appendChild(n);
+  const ring = (s, col) => { tile(s); el('circle', { cx: 16, cy: 16, r: 9, fill: col, stroke: INK, 'stroke-width': 1.4 }, s); };
+  section('Cases', [
+    { id: 'zone', label: 'Zone bloquée', icon: s => { tile(s); el('rect', { x: 6, y: 6, width: 20, height: 20, fill: '#c0392b', 'fill-opacity': 0.25, stroke: '#c0392b', 'stroke-width': 1.4 }, s); el('path', { d: 'M8 14 L14 8 M8 20 L20 8 M8 26 L26 8 M14 26 L26 14 M20 26 L26 20', stroke: '#c0392b', 'stroke-width': 1.6 }, s); } }
+  ]);
+  { const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Glisse sur les cases que personne ne peut traverser : gouffre, lave, eau profonde, falaise d\'une image. Glisse à nouveau dessus pour les libérer.'; cur.appendChild(p); }
+  section('Objets posés', [
+    { id: 'pBloque', label: 'Bloquant', icon: s => { ring(s, '#c0392b'); el('rect', { x: 10.5, y: 14.2, width: 11, height: 3.6, rx: 1, fill: '#fff' }, s); } },
+    { id: 'pEscalade', label: 'À escalader', icon: s => { ring(s, '#d68910'); el('path', { d: 'M11 19 l5 -5 l5 5 M11 14.5 l5 -5 l5 5', fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, s); } },
+    { id: 'pLibre', label: 'Traversable', icon: s => { ring(s, '#2f7f74'); el('path', { d: 'M10.5 16 H21 M17 11.5 l4.5 4.5 l-4.5 4.5', fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, s); } }
+  ]);
+  { const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Choisis un réglage puis clique sur un objet de la carte. Chaque objet garde son propre réglage : une table peut bloquer ici et se laisser escalader ailleurs.'; cur.appendChild(p); }
+  section('Vérifier', [
+    { id: 'probe', label: 'Tester un pion', icon: s => { tile(s); el('circle', { cx: 16, cy: 16, r: 8, fill: '#1e231f', stroke: '#fbf5e8', 'stroke-width': 2.2 }, s); el('circle', { cx: 16, cy: 16, r: 2.6, fill: '#fff' }, s); } }
+  ]);
+  { const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Clique sur une case : toutes les cases qu\'un pion peut atteindre depuis là s\'éclairent en vert.'; cur.appendChild(p); }
+  const d = document.createElement('div'); d.className = 'legend';
+  d.innerHTML = '<span><i class="zone"></i>Case bloquée</span><span><i></i>Objet bloquant</span><span><i class="climb"></i>Objet à escalader</span><span><i class="free"></i>Objet rendu traversable</span><span>Contour plein : réglage choisi par toi. Pointillé : réglage de départ.</span><span>Les murs, murets et bords rocheux bloquent toujours. Les portes et l\'eau laissent passer.</span>';
+  cur.appendChild(d);
+}
+cur = pane('cartes', 'Mes cartes');
+{
+  const row = document.createElement('div'); row.className = 'row'; row.style.marginBottom = '10px';
+  const b1 = document.createElement('button'); b1.textContent = 'Enregistrer une copie'; b1.onclick = () => saveNew('Enregistrer une copie', 'Enregistrer la copie');
+  const b2 = document.createElement('button'); b2.textContent = 'Nouvelle carte vierge';
+  b2.onclick = () => { const before = snap(); clearMap(); commit(before); render(); currentId = null; currentName = ''; dirty = false; setStatus('Nouvelle carte, pas encore enregistrée'); refreshList(); };
+  row.append(b1, b2); cur.appendChild(row);
+  const box = document.createElement('div'); box.id = 'myMaps'; box.className = 'tpls'; box.innerHTML = '<p class="empty">Chargement de tes cartes…</p>'; cur.appendChild(box);
+}
+cur = pane('modeles', 'Modèles');
+const fondPane = pane('fond', 'Image de fond');
+fondPane.innerHTML = '<p class="note">Pour jouer sur ta propre carte (dessinée, achetée ou générée) : la grille se pose par-dessus et les jetons restent calés sur les cases.</p>'
+  + '<div id="bgDrop" class="drop"><div id="bgPreview"></div><p>Glisse une image ici</p><label class="btnlike" for="bgFile">Choisir une image</label><input type="file" id="bgFile" accept="image/png,image/jpeg,image/webp,image/gif" hidden><span class="note">PNG, JPEG, WebP ou GIF</span></div>'
+  + '<p id="bgMsg" class="note" role="status"></p>'
+  + '<div id="bgCtrls" hidden>'
+  + '<h2>Caler la grille</h2>'
+  + '<label for="bgCells">Largeur de l\'image, en cases</label><div class="row"><input id="bgCells" type="number" min="2" max="200" step="1"><span class="note">Compte les cases dessinées sur ton image.</span></div>'
+  + '<label for="bgScale">Taille <span id="bgScaleV"></span></label><input id="bgScale" type="range" min="20" max="300" step="1">'
+  + '<label for="bgX">Décalage horizontal</label><input id="bgX" type="range" min="-400" max="400" step="1">'
+  + '<label for="bgY">Décalage vertical</label><input id="bgY" type="range" min="-300" max="300" step="1">'
+  + '<div class="row" style="margin-top:8px"><button id="bgCenter">Recentrer</button><button id="bgFit">Pleine largeur</button></div>'
+  + '<h2 style="margin-top:14px">Affichage</h2>'
+  + '<label for="bgOp">Opacité de l\'image</label><input id="bgOp" type="range" min="20" max="100" step="1">'
+  + '<div class="row" style="margin-top:12px"><button id="bgRemove" class="danger">Retirer l\'image</button></div>'
+  + '</div>';
+cur = panes.modeles;
+{
+  const intro = document.createElement('p'); intro.className = 'note'; intro.textContent = 'Point de départ en grille carrée. Le modèle remplace la carte en cours (Ctrl + Z pour revenir).'; cur.appendChild(intro);
+  const list = document.createElement('div'); list.className = 'tpls'; cur.appendChild(list);
+  Object.entries(TEMPLATES).forEach(([id, t]) => {
+    const card = document.createElement('div'); card.className = 'tpl';
+    card.innerHTML = `<div class="thumb" data-thumb="${id}"></div><div class="tpl-body"><b>${t.label}</b><span>${t.desc}</span></div>`;
+    const btn = document.createElement('button'); btn.textContent = 'Utiliser ce modèle'; btn.onclick = () => useTemplate(id);
+    card.querySelector('.tpl-body').appendChild(btn);
+    list.appendChild(card);
+  });
+}
+const extra = document.createElement('div');
+extra.innerHTML = '<div class="note">Les murs, les murets et les bords rocheux bloquent toujours le déplacement. Les portes le laissent passer. Le sol Pierre est bordé de murs de pierre et le sol Enclos d\'un gros muret, côté vide. Le sol Plein air n\'a aucune bordure et ne touche pas aux murs des autres sols. Là où deux sols se touchent, le passage reste ouvert : trace un mur ou un muret pour le fermer. L\'eau ne bloque pas : le MJ décide si l\'on peut nager, et avec quel malus.</div><label for="dens">Densité des hachures</label><input id="dens" type="range" min="1" max="10" step="1" value="6"><label for="depth">Épaisseur de roche</label><input id="depth" type="range" min="1" max="3" step="1" value="2">';
+extraParent.appendChild(extra);
+
+
+
+const statusEl = document.getElementById('saveStatus');
+const setStatus = t => { statusEl.textContent = t; };
+let currentId = null, currentName = '', dirty = false;
+const named = () => currentName ? '« ' + currentName + ' » · ' : '';
+const markDirty = () => { dirty = true; setStatus(named() + 'modifications non enregistrées'); };
+const markClean = t => { dirty = false; setStatus(t); };
+const mapData = () => ({ format: 'jdr-carte', version: 2, nom: currentName || 'Ma carte', maj: new Date().toISOString(), grille: G.type, ...JSON.parse(snap()) });
+const openMap = d => {
+  showGrid(d.grille === 'hex' ? hexGrid : squareGrid);
+  restore(JSON.stringify({ f: d.f || [], e: d.e || [], o: d.o || [], z: d.z || [], b: d.b || null }));
+  history.length = 0; future.length = 0; updHist(); render();
+};
+let dbApi = null, uid = null, dl = null, touched = false;
+const hhmm = (t = new Date()) => String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+const LKEY = 'jdr-cartes';
+const localAll = () => { try { return JSON.parse(localStorage.getItem(LKEY)) || {}; } catch (e) { return {}; } };
+const localSet = o => { try { localStorage.setItem(LKEY, JSON.stringify(o)); return true; } catch (e) { return false; } };
+try {
+  const old = JSON.parse(localStorage.getItem('jdr-carte-editeur'));
+  if (old && old.format === 'jdr-carte') { const o = localAll(); if (!o['map-ancienne']) { o['map-ancienne'] = { ...old, nom: old.nom || 'Carte enregistrée', maj: old.maj || new Date(0).toISOString() }; localSet(o); } }
+} catch (e) { }
+const store = {
+  list: async () => {
+    if (dbApi) { try { const s = await dbApi.collection('data/users/' + uid).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })).filter(d => d.format === 'jdr-carte'); } catch (e) { } }
+    return Object.entries(localAll()).map(([id, d]) => ({ id, ...d }));
+  },
+  put: async (id, d) => {
+    if (dbApi) { try { await dbApi.doc('data/users/' + uid + '/' + id).set(d); return 'db'; } catch (e) { } }
+    const o = localAll(); o[id] = d; return localSet(o) ? 'local' : null;
+  },
+  del: async id => {
+    if (dbApi) { try { await dbApi.doc('data/users/' + uid + '/' + id).delete(); return true; } catch (e) { } }
+    const o = localAll(); delete o[id]; return localSet(o);
+  }
+};
+const newId = () => 'map-' + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36);
+
+let saving = false;
+const doSave = async () => {
+  if (saving) return;
+  saving = true;
+  const btn = document.getElementById('bSave'); btn.disabled = true;
+  try {
+    setStatus('Enregistrement…');
+    const where = await store.put(currentId, mapData());
+    if (!where) { setStatus("L'enregistrement a échoué, réessaie"); return; }
+    markClean('« ' + currentName + ' » enregistrée à ' + hhmm() + (where === 'local' ? ' (dans ce navigateur)' : ''));
+    refreshList();
+  } finally { saving = false; btn.disabled = false; }
+};
+const nameModal = document.getElementById('nameModal'), nameInput = document.getElementById('nameInput'), nameErr = document.getElementById('nameErr'), nameTitle = document.getElementById('nameTitle');
+let nameAction = null;
+const askName = (title, value, okLabel, action) => {
+  nameTitle.textContent = title; nameInput.value = value; nameErr.textContent = '';
+  document.getElementById('nameOk').textContent = okLabel;
+  nameAction = action; nameModal.hidden = false;
+  setTimeout(() => { nameInput.focus(); nameInput.select(); }, 0);
+};
+const submitName = async () => {
+  const v = nameInput.value.trim();
+  if (!v) { nameErr.textContent = 'Donne un nom à la carte.'; return; }
+  if (v.length > 60) { nameErr.textContent = 'Le nom doit faire 60 caractères au plus.'; return; }
+  nameModal.hidden = true;
+  const act = nameAction; nameAction = null;
+  if (act) await act(v);
+};
+document.getElementById('nameOk').onclick = submitName;
+document.getElementById('nameCancel').onclick = () => { nameModal.hidden = true; nameAction = null; };
+nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitName(); } if (e.key === 'Escape') { nameModal.hidden = true; } e.stopPropagation(); });
+nameInput.addEventListener('input', () => { nameErr.textContent = ''; });
+nameModal.addEventListener('pointerdown', e => { if (e.target === nameModal) nameModal.hidden = true; });
+
+const saveNew = (title, okLabel) => askName(title, currentName || 'Ma carte', okLabel, async v => { currentId = newId(); currentName = v; await doSave(); showPane('cartes'); });
+const save = () => { if (!nameModal.hidden) return; if (currentId) doSave(); else saveNew('Enregistrer la carte', 'Enregistrer'); };
+document.getElementById('bSave').onclick = save;
+
+const thumbCache = new Map();
+const thumbOf = d => {
+  const k = d.id + '|' + d.maj;
+  if (thumbCache.has(k)) return thumbCache.get(k).cloneNode(true);
+  const keepG = G, keep = snap();
+  G = d.grille === 'hex' ? hexGrid : squareGrid;
+  restore(JSON.stringify({ f: d.f || [], e: d.e || [], o: d.o || [], z: d.z || [], b: d.b || null })); render();
+  const c = svg.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('style'); const hv = c.querySelector('#hov'); if (hv) hv.remove(); c.querySelectorAll('#passOv').forEach(x => x.remove()); c.setAttribute('aria-hidden', 'true');
+  G = keepG; restore(keep); render();
+  thumbCache.set(k, c);
+  return c.cloneNode(true);
+};
+const fmtDate = iso => { const t = new Date(iso); if (isNaN(t) || t.getTime() === 0) return 'date inconnue'; return t.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' à ' + hhmm(t); };
+let listCache = [];
+const refreshList = async () => {
+  const box = document.getElementById('myMaps');
+  if (!box) return [];
+  const items = (await store.list()).sort((p, q) => String(q.maj || '').localeCompare(String(p.maj || '')));
+  listCache = items;
+  box.innerHTML = '';
+  if (!items.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'Aucune carte enregistrée pour le moment. Le bouton Enregistrer en haut ajoute la carte en cours ici.'; box.appendChild(p); return items; }
+  items.forEach(it => {
+    const card = document.createElement('div'); card.className = 'tpl' + (it.id === currentId ? ' current' : '');
+    const th = document.createElement('div'); th.className = 'thumb'; th.appendChild(thumbOf(it)); card.appendChild(th);
+    const body = document.createElement('div'); body.className = 'tpl-body';
+    const t = document.createElement('b'); t.textContent = it.nom || 'Carte enregistrée'; body.appendChild(t);
+    const s = document.createElement('span'); s.textContent = (it.id === currentId ? 'Ouverte · ' : '') + 'Modifiée le ' + fmtDate(it.maj) + (it.grille === 'hex' ? ' · grille hexagonale' : ''); body.appendChild(s);
+    const row = document.createElement('div'); row.className = 'row';
+    const bo = document.createElement('button'); bo.textContent = 'Ouvrir'; bo.className = 'primary';
+    bo.onclick = () => {
+      if (dirty && bo.dataset.armed !== '1') { bo.dataset.armed = '1'; bo.textContent = 'Ouvrir sans enregistrer ?'; return; }
+      openMap(it); currentId = it.id; currentName = it.nom || 'Carte enregistrée'; touched = true;
+      markClean('« ' + currentName + ' » ouverte'); refreshList(); setPanelMode(fond ? 'image' : 'dessin');
+    };
+    const br = document.createElement('button'); br.textContent = 'Renommer';
+    br.onclick = () => askName('Renommer la carte', it.nom || '', 'Renommer', async v => {
+      const d = { ...it }; delete d.id; d.nom = v; d.maj = new Date().toISOString();
+      await store.put(it.id, d);
+      if (it.id === currentId) { currentName = v; setStatus(dirty ? named() + 'modifications non enregistrées' : '« ' + v + ' »'); }
+      refreshList();
+    });
+    const bd = document.createElement('button'); bd.textContent = 'Supprimer';
+    bd.onclick = async () => {
+      if (bd.dataset.armed !== '1') { bd.dataset.armed = '1'; bd.textContent = 'Confirmer la suppression'; bd.classList.add('danger'); return; }
+      await store.del(it.id);
+      if (it.id === currentId) { currentId = null; markDirty(); }
+      refreshList();
+    };
+    row.append(bo, br, bd); body.appendChild(row); card.appendChild(body); box.appendChild(card);
+  });
+  return items;
+};
+
+const useCap = name => (typeof claude !== 'undefined' && claude && typeof claude.use === 'function') ? claude.use(name).catch(() => null) : Promise.resolve(null);
+const updDl = () => { ['dlPng', 'dlJson'].forEach(id => { document.getElementById(id).hidden = !dl; }); };
+useCap('downloads').then(d => { dl = d; updDl(); });
+const storeInit = (async () => {
+  const [db, user] = await Promise.all([useCap('db'), useCap('user')]);
+  if (db && user) {
+    let id = null;
+    try { id = await user.id(); } catch (e) { id = null; }
+    if (id) { dbApi = db; uid = id; }
+  }
+  const items = await refreshList();
+  if (items.length && !touched && !dirty) {
+    const it = items[0];
+    openMap(it); currentId = it.id; currentName = it.nom || 'Carte enregistrée';
+    markClean('« ' + currentName + ' » rouverte'); refreshList(); setPanelMode(fond ? 'image' : 'dessin');
+  }
+})();
+
+const modal = document.getElementById('modal');
+const jsonBox = document.getElementById('jsonBox');
+const jsonErr = document.getElementById('jsonErr');
+const pngImg = document.getElementById('pngImg');
+let pngBlob = null;
+const makePng = () => new Promise((resolve, reject) => {
+  const clone = svg.cloneNode(true);
+  const hv = clone.querySelector('#hov'); if (hv) hv.remove(); clone.querySelectorAll('#passOv').forEach(x => x.remove());
+  clone.setAttribute('xmlns', NS);
+  clone.setAttribute('width', G.vw * 3); clone.setAttribute('height', G.vh * 3);
+  clone.removeAttribute('style');
+  const bg = document.createElementNS(NS, 'rect');
+  bg.setAttribute('width', G.vw); bg.setAttribute('height', G.vh); bg.setAttribute('fill', VOID);
+  clone.insertBefore(bg, clone.firstChild);
+  const imgEl = clone.querySelector('image'); if (imgEl) imgEl.remove();
+  if (fond) bg.setAttribute('fill', 'none');
+  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml' }));
+  const img = new Image();
+  const bgImg = fond ? new Image() : null;
+  const bgReady = bgImg ? new Promise(res => { bgImg.onload = () => res(true); bgImg.onerror = () => res(false); bgImg.src = fondUrl(fond); }) : Promise.resolve(false);
+  img.onload = async () => {
+    const cv = document.createElement('canvas'); cv.width = G.vw * 3; cv.height = G.vh * 3;
+    const cx = cv.getContext('2d');
+    cx.fillStyle = VOID; cx.fillRect(0, 0, cv.width, cv.height);
+    if (await bgReady) { const w = G.vw * fond.scale, h = w * fond.h / fond.w; cx.globalAlpha = fond.op; cx.drawImage(bgImg, ((G.vw - w) / 2 + fond.dx) * 3, ((G.vh - h) / 2 + fond.dy) * 3, w * 3, h * 3); cx.globalAlpha = 1; }
+    cx.drawImage(img, 0, 0, cv.width, cv.height);
+    URL.revokeObjectURL(url);
+    try { const du = cv.toDataURL('image/png'); cv.toBlob(bl => { pngBlob = bl; resolve(du); }, 'image/png'); } catch (e) { reject(e); }
+  };
+  img.onerror = reject;
+  img.src = url;
+});
+const openExport = async () => {
+  jsonBox.value = JSON.stringify(mapData());
+  jsonErr.textContent = '';
+  modal.hidden = false;
+  pngImg.removeAttribute('src');
+  pngBlob = null;
+  try { const png = await makePng(); pngImg.src = png; }
+  catch (e) { jsonErr.textContent = "L'aperçu de l'image n'a pas pu être généré."; }
+};
+document.getElementById('bExport').onclick = openExport;
+document.getElementById('mClose').onclick = () => { modal.hidden = true; };
+modal.addEventListener('pointerdown', e => { if (e.target === modal) modal.hidden = true; });
+document.getElementById('bCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(jsonBox.value); jsonErr.textContent = 'Données copiées.'; }
+  catch (e) { jsonBox.select(); jsonErr.textContent = 'Copie bloquée : le texte est sélectionné, utilise Ctrl ou Cmd + C.'; }
+};
+document.getElementById('bImport').onclick = () => {
+  try {
+    const d = JSON.parse(jsonBox.value);
+    if (!d || d.format !== 'jdr-carte' || !Array.isArray(d.f)) throw new Error();
+    const before = snap();
+    openMap(d); history.push(before); updHist(); currentId = null; currentName = d.nom ? d.nom + ' (importée)' : 'Carte importée'; markDirty();
+    modal.hidden = true;
+  } catch (e) { jsonErr.textContent = "Ce texte n'est pas une carte exportée depuis l'éditeur."; }
+};
+jsonBox.addEventListener('input', () => { jsonErr.textContent = ''; });
+const offer = async (filename, data) => {
+  if (!dl) return;
+  try { await dl.save({ filename, data }); jsonErr.textContent = 'Fichier enregistré.'; }
+  catch (e) { if (e && e.code === 'declined') return; jsonErr.textContent = e && e.code === 'rate_limited' ? 'Une fenêtre de téléchargement est déjà ouverte.' : "Le téléchargement n'est pas disponible ici."; }
+};
+document.getElementById('dlPng').onclick = () => { if (pngBlob) offer('carte-jdr.png', pngBlob); else jsonErr.textContent = "L'image est encore en préparation."; };
+document.getElementById('dlJson').onclick = () => offer('carte-jdr.json', JSON.stringify(mapData(), null, 2));
+
+const bgCtrls = document.getElementById('bgCtrls'), bgMsg = document.getElementById('bgMsg');
+const sliders = { bgScale: ['scale', 100], bgX: ['dx', 1], bgY: ['dy', 1], bgOp: ['op', 100] };
+function updateFondUI() {
+  if (!bgCtrls) return;
+  bgCtrls.hidden = !fond;
+  const pv = document.getElementById('bgPreview'), src = fond ? fondUrl(fond) : '';
+  if (pv.dataset.src !== src) { pv.dataset.src = src; pv.innerHTML = src ? '<img alt="Image de fond actuelle">' : ''; if (src) pv.firstChild.src = src; }
+  drop.classList.toggle('has', !!fond);
+  if (!fond) return;
+  Object.entries(sliders).forEach(([id, [k, m]]) => { const el2 = document.getElementById(id); if (document.activeElement !== el2) el2.value = Math.round(fond[k] * m); });
+  document.getElementById('bgScaleV').textContent = Math.round(fond.scale * 100) + ' %';
+  if (document.activeElement !== bgCells) bgCells.value = Math.round(fond.scale * G.vw / C);
+}
+let sliderBefore = null;
+Object.entries(sliders).forEach(([id, [k, m]]) => {
+  const s = document.getElementById(id);
+  s.addEventListener('pointerdown', () => { sliderBefore = snap(); });
+  s.addEventListener('focus', () => { sliderBefore = sliderBefore || snap(); });
+  s.addEventListener('input', () => { if (!fond) return; fond[k] = +s.value / m; render(); });
+  s.addEventListener('change', () => { commit(sliderBefore); sliderBefore = null; });
+});
+const readImage = file => new Promise((res, rej) => { const u = URL.createObjectURL(file); const im = new Image(); im.onload = () => res({ im, u }); im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('image')); }; im.src = u; });
+const handleBgFile = async file => {
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { bgMsg.textContent = 'Choisis une image PNG, JPEG, WebP ou GIF.'; return; }
+  bgMsg.textContent = 'Chargement de l\'image…';
+  let loaded;
+  try { loaded = await readImage(file); } catch (err) { bgMsg.textContent = "Cette image n'a pas pu être lue."; return; }
+  const { im, u } = loaded, w = im.naturalWidth, h = im.naturalHeight;
+  const base = { w, h, scale: 1, dx: 0, dy: 0, op: 1 };
+  let next = null;
+  const assets = await useCap('assets');
+  if (assets) {
+    try { const r = await assets.upload(file); next = { ...base, id: r.id }; }
+    catch (err) { if (err && err.code === 'too_large') bgMsg.textContent = 'Image trop lourde pour être stockée (20 Mo au plus), elle est réduite.'; }
+  }
+  if (!next) {
+    const k = Math.min(1, 1600 / Math.max(w, h)), cv = document.createElement('canvas');
+    cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+    cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+    next = { ...base, src: cv.toDataURL('image/jpeg', 0.85) };
+  }
+  URL.revokeObjectURL(u);
+  const before = snap(); fond = next; commit(before); render();
+  bgMsg.textContent = next.id ? 'Image enregistrée avec la carte. Indique sa largeur en cases pour caler la grille.' : 'Image gardée dans ce navigateur. Indique sa largeur en cases pour caler la grille.';
+};
+document.getElementById('bgFile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; handleBgFile(f); });
+const drop = document.getElementById('bgDrop');
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files[0]; handleBgFile(f); });
+const bgCells = document.getElementById('bgCells');
+bgCells.addEventListener('focus', () => { sliderBefore = snap(); });
+bgCells.addEventListener('input', () => { const v = +bgCells.value; if (!fond || !(v >= 2 && v <= 200)) return; fond.scale = v * C / G.vw; render(); });
+bgCells.addEventListener('change', () => { commit(sliderBefore); sliderBefore = null; });
+document.getElementById('bgCenter').onclick = () => { if (!fond) return; const before = snap(); fond.dx = 0; fond.dy = 0; commit(before); render(); };
+document.getElementById('bgFit').onclick = () => { if (!fond) return; const before = snap(); fond.scale = 1; fond.dx = 0; fond.dy = 0; commit(before); render(); };
+document.getElementById('bgRemove').onclick = () => { const before = snap(); fond = null; commit(before); render(); bgMsg.textContent = ''; };
+const setTool = t => {
+  tool = t;
+  document.getElementById('bErase').classList.toggle('on', t === 'erase');
+  document.getElementById('bEraseObj').classList.toggle('on', t === 'eraseObj');
+  pal.querySelectorAll('.item').forEach(i => i.classList.toggle('on', i.dataset.tool === t));
+};
+const updRot = () => { const b = document.getElementById('bRot'); b.textContent = 'Pivoter (R) · ' + rot * 90 + '°'; b.classList.toggle('on', rot !== 0); };
+const toggleRot = () => { rot = (rot + 1) % 4; updRot(); };
+const showGrid = g => {
+  G = g; probe = null;
+  document.getElementById('gSq').classList.toggle('on', g === squareGrid);
+  document.getElementById('gHx').classList.toggle('on', g === hexGrid);
+};
+const setGrid = g => { showGrid(g); loadDemo(); currentId = null; currentName = g === squareGrid ? 'Campement' : ''; dirty = false; history.length = 0; future.length = 0; updHist(); render(); setStatus(g === squareGrid ? 'Modèle « Campement », pas encore enregistré' : "Carte d'exemple, pas encore enregistrée"); };
+const useTemplate = id => {
+  const before = snap(), wasHex = G !== squareGrid;
+  showGrid(squareGrid); buildTemplate(id); render();
+  if (wasHex) { history.length = 0; future.length = 0; updHist(); markDirty(); } else commit(before);
+  touched = true;
+  currentId = null; currentName = TEMPLATES[id].label; dirty = false;
+  setStatus('Modèle « ' + TEMPLATES[id].label + ' » chargé, pas encore enregistré');
+};
+const makeThumbs = () => {
+  const keepG = G, keep = snap(), keepH = [dens.value, depth.value];
+  G = squareGrid;
+  Object.keys(TEMPLATES).forEach(id => {
+    buildTemplate(id); render();
+    const c = svg.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('style'); const hv = c.querySelector('#hov'); if (hv) hv.remove(); c.querySelectorAll('#passOv').forEach(x => x.remove());
+    c.setAttribute('aria-hidden', 'true');
+    document.querySelector(`[data-thumb="${id}"]`).appendChild(c);
+  });
+  G = keepG; dens.value = keepH[0]; depth.value = keepH[1]; restore(keep); render();
+};
+document.getElementById('gSq').onclick = () => setGrid(squareGrid);
+document.getElementById('gHx').onclick = () => setGrid(hexGrid);
+document.getElementById('bErase').onclick = () => setTool('erase');
+document.getElementById('bEraseObj').onclick = () => setTool('eraseObj');
+document.getElementById('bRot').onclick = toggleRot;
+document.getElementById('bUndo').onclick = undo;
+document.getElementById('bRedo').onclick = redo;
+document.addEventListener('keydown', e => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+  if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redo(); return; }
+  if (mod && (e.key === 's' || e.key === 'S')) { e.preventDefault(); save(); return; }
+  if (!modal.hidden) { if (e.key === 'Escape') modal.hidden = true; return; }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && lastPt && !mod) { e.preventDefault(); const before = snap(); if (deleteAt(lastPt)) { commit(before); render(); } return; }
+  if ((e.key === 'r' || e.key === 'R') && !mod) toggleRot();
+});
+document.getElementById('bClear').onclick = () => { const before = snap(); floor.clear(); edges.clear(); objects.clear(); occ.clear(); zones.clear(); probe = null; commit(before); render(); };
+document.getElementById('dens').oninput = render;
+document.getElementById('depth').oninput = render;
+document.getElementById('bPass').onclick = () => setPass(!showPass);
+{
+  const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+  const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>';
+  const bT = document.getElementById('bTheme');
+  const showTheme = () => { const dark = document.documentElement.classList.contains('dark'); bT.innerHTML = dark ? SUN : MOON; const l = dark ? 'Thème clair' : 'Thème sombre'; bT.setAttribute('aria-label', l); bT.title = l; };
+  bT.onclick = () => { const dark = document.documentElement.classList.toggle('dark'); try { localStorage.setItem('fq-theme', dark ? 'dark' : 'light'); } catch (e) { } showTheme(); };
+  showTheme();
+}
+setTool('in');
+updRot();
+setGrid(squareGrid);
+makeThumbs();
+document.querySelectorAll('.mode button').forEach(bt => { bt.onclick = () => setPanelMode(bt.dataset.mode); });
+document.getElementById('bMaps').onclick = () => { refreshList(); showPane('cartes'); };
+setPanelMode(fond ? 'image' : 'dessin');
+const stage = document.getElementById('stage');
+const fit = () => {
+  const k = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
+  stage.style.transform = `translate(${Math.max(0, (window.innerWidth - 1440 * k) / 2)}px, ${Math.max(0, (window.innerHeight - 900 * k) / 2)}px) scale(${k})`;
+};
+window.addEventListener('resize', fit);
+fit();
+</script>
+</body>
+</html>

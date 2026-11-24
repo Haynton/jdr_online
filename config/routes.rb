@@ -60,6 +60,11 @@ Rails.application.routes.draw do
   end
   # The templates of a game master (the template editor): the list (theirs, then the predefined ones), the page of
   # one of them (rename, delete), and "Duplicate", which makes one of theirs from another
+  # The maps of a game master (« Mes cartes »), drawn in the map editor
+  resources :map_templates, only: %i[index new create edit update destroy] do
+    resource :layout, only: :update, module: :map_templates
+  end
+
   resources :sheet_templates, only: %i[index show update destroy] do
     resource :duplicate, only: :create, module: :sheet_templates
     # The fields of the character sheet, by section, then the form of one of them (named by its key)

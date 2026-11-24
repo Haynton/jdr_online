@@ -42,6 +42,8 @@
     <%# The templates of the game master, current on the page of one of them too %>
     <%= side_nav_link_to t(".my_templates"), sheet_templates_path, icon: "library_big",
                          current: sheet_templates_page? %>
+    <%# The maps of the game master, current on the page of one of them too %>
+    <%= side_nav_link_to t(".my_maps"), map_templates_path, icon: "map", current: map_templates_page? %>
   </div>
 
   <%= render "shared/account_nav" %>

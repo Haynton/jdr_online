@@ -1,0 +1,12 @@
+<%# A card of the row of « Mes cartes », drawn like the cards of « Mes modèles » (same classes): a link to the page of
+    the map as a whole, its picture (the map icon, until the editor draws a preview), its name on one line and the size
+    of its grid %>
+<%= link_to edit_map_template_path(map_template), class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES do %>
+  <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+    <%= render "shared/icons/map", css_class: "size-10" %>
+  </span>
+  <span class="flex flex-col gap-1 px-4 pt-3 pb-4">
+    <span class="truncate font-semibold text-ink" title="<%= map_template.name %>"><%= map_template.name %></span>
+    <span class="text-sm text-muted"><%= map_template_size(map_template) %></span>
+  </span>
+<% end %>
