@@ -105,7 +105,7 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
     @game_table.catalog_entries.create!(kind: "spell", key: "shield", name: "Bouclier de givre",
                                         description: shield.description, properties: shield.properties)
     get edit_game_table_catalog_path(@game_table)
-    assert_select "p", text: "1 personnage a une ancienne version d'un sort ou d'un objet que vous avez modifié."
+    assert_select "p", text: "1 personnage a une ancienne version d'un sort ou d'un objet modifié."
     assert_select "form[data-turbo-confirm^=?] button", "Appliquer vos changements au personnage déjà créé ?",
                   text: "Appliquer aux personnages déjà créés"
 

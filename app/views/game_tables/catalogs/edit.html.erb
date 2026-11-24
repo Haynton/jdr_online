@@ -17,26 +17,31 @@
   </nav>
   <p class="mt-5 max-w-2xl text-sm text-ink"><%= t(".all_offered.#{@catalog_kind}", count: @offered_count) %></p>
   <p class="mt-1 max-w-2xl text-sm text-muted"><%= t(".characters_keep_their_copy") %></p>
-  <% if @characters_to_update_count.positive? %>
-    <div class="mt-4 flex max-w-2xl flex-wrap items-center gap-x-4 gap-y-3">
-      <p class="text-sm text-ink"><%= t(".apply_to_characters.outdated", count: @characters_to_update_count) %></p>
-      <%= button_to t(".apply_to_characters.button"), game_table_catalog_application_path(@game_table, kind: @catalog_kind),
-                    class: button_classes(:secondary),
-                    form: { data: { turbo_confirm: t(".apply_to_characters.confirm", count: @characters_to_update_count),
-                                    confirm_button: t(".apply_to_characters.confirm_button") } } %>
+  <%# The buttons of the list on the left; on the right, when a character holds an older version, what is to do %>
+  <div class="mt-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
+    <div class="flex flex-wrap gap-3">
+      <%= link_to game_table_catalog_picker_path(@game_table, kind: @catalog_kind),
+                  class: "#{button_classes(:primary)} gap-2", data: catalog_picker_link_data do %>
+        <%= render "shared/icons/pencil" %>
+        <%= t(".customize.#{@catalog_kind}") %>
+      <% end %>
+      <%= link_to new_game_table_catalog_entry_path(@game_table, kind: @catalog_kind),
+                  class: "#{button_classes(:secondary)} gap-2", data: catalog_entry_dialog_link_data do %>
+        <%= render "shared/icons/plus" %>
+        <%= t(".add.#{@catalog_kind}") %>
+      <% end %>
     </div>
-  <% end %>
-
-  <div class="mt-6 flex flex-wrap gap-3">
-    <%= link_to game_table_catalog_picker_path(@game_table, kind: @catalog_kind),
-                class: "#{button_classes(:primary)} gap-2", data: catalog_picker_link_data do %>
-      <%= render "shared/icons/pencil" %>
-      <%= t(".customize.#{@catalog_kind}") %>
-    <% end %>
-    <%= link_to new_game_table_catalog_entry_path(@game_table, kind: @catalog_kind),
-                class: "#{button_classes(:secondary)} gap-2", data: catalog_entry_dialog_link_data do %>
-      <%= render "shared/icons/plus" %>
-      <%= t(".add.#{@catalog_kind}") %>
+    <% if @characters_to_update_count.positive? %>
+      <div class="flex max-w-xl flex-col items-start gap-2 lg:items-end">
+        <p class="text-sm text-ink lg:text-right"><%= t(".apply_to_characters.outdated", count: @characters_to_update_count) %></p>
+        <%= button_to game_table_catalog_application_path(@game_table, kind: @catalog_kind),
+                      class: button_classes(:attention),
+                      form: { data: { turbo_confirm: t(".apply_to_characters.confirm", count: @characters_to_update_count),
+                                      confirm_button: t(".apply_to_characters.confirm_button") } } do %>
+          <%= render "shared/icons/refresh_cw" %>
+          <%= t(".apply_to_characters.button") %>
+        <% end %>
+      </div>
     <% end %>
   </div>
 
