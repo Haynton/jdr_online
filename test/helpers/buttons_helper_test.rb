@@ -5,11 +5,12 @@ class ButtonsHelperTest < ActionView::TestCase
     assert_includes button_classes(:primary), "bg-primary text-primary-ink hover:bg-primary-hover"
     assert_includes button_classes(:secondary), "border border-line bg-surface text-ink"
     assert_includes button_classes(:quiet), "bg-transparent text-ink"
+    assert_includes button_classes(:attention), "border border-brass bg-primary-soft text-primary-soft-ink"
     assert_includes button_classes(:danger), "bg-danger text-white hover:bg-danger-hover"
   end
 
   test "every button shares the same shape and a visible keyboard focus" do
-    %i[primary secondary quiet danger].each do |variant|
+    %i[primary secondary quiet attention danger].each do |variant|
       assert_includes button_classes(variant), "rounded-lg font-semibold"
       assert_includes button_classes(variant), "focus-visible:outline-focus-ring"
     end
