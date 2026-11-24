@@ -30,13 +30,13 @@ class TableCatalogStepTest < ActionDispatch::IntegrationTest
     assert_select "p", text: /Les personnages déjà créés gardent leur version/
   end
 
-  test "continue saves the spells left out and opens the summary" do
+  test "continue saves the spells left out and opens the NPCs and enemies" do
     patch game_table_catalog_path(@game_table, kind: "spell"),
           params: { offered_keys: ["", "fire-bolt", "light", "mage-hand", "magic-missile", "bless", "blur"] }
 
-    assert_redirected_to game_table_summary_path(@game_table)
+    assert_redirected_to edit_game_table_cast_path(@game_table)
     assert_equal({ "spell" => ["shield"] }, @game_table.reload.disabled_catalog_keys)
-    assert_equal "summary", @game_table.resume_creation_step
+    assert_equal "npcs", @game_table.resume_creation_step
   end
 
   test "changing tab saves the tab shown first" do

@@ -9,10 +9,10 @@ module GameTables
   class CatalogEntriesController < ApplicationController
     include TableOfGameMaster
     include CatalogEntryDialogHelper
+    include VariesOnTurboFrame
 
     before_action :set_catalog_kind
     before_action :set_entry, only: %i[edit update destroy]
-    after_action :vary_on_turbo_frame
 
     def new
       @entry = @game_table.catalog_entries.build(kind: @catalog_kind)
@@ -85,11 +85,6 @@ module GameTables
       return render(turbo_stream: turbo_stream.refresh(request_id: nil)) if catalog_entry_in_dialog?
 
       redirect_to edit_game_table_catalog_path(@game_table, kind: @catalog_kind)
-    end
-
-    # The same address answers for the window or the whole page: a cache must keep them apart
-    def vary_on_turbo_frame
-      response.headers["Vary"] = [response.headers["Vary"], "Turbo-Frame"].compact.join(", ")
     end
   end
 end

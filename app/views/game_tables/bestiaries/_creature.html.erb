@@ -1,0 +1,17 @@
+<%# One creature of the bestiary: its name, the values the template lists ("CR 1/4 · AC 15 · HP 10"), and "Add",
+    named "Add Goblin Warrior" for screen readers, which copies it into the table %>
+<li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
+    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(creature) %>">
+  <div class="min-w-0">
+    <p class="truncate text-sm font-semibold text-ink" title="<%= creature.name %>"><%= creature.name %></p>
+    <p class="truncate text-xs text-muted"><%= creature_facts(@game_table, creature) %></p>
+  </div>
+  <%= button_to game_table_npcs_path(@game_table), params: { catalog_key: creature.key },
+                class: "#{button_classes(:secondary, size: :compact)} shrink-0 gap-1.5",
+                title: t("game_tables.bestiaries.show.add", name: creature.name),
+                form: { class: "shrink-0" } do %>
+    <%= render "shared/icons/plus" %>
+    <span><%= t("game_tables.bestiaries.show.add_short") %></span>
+    <span class="sr-only"><%= creature.name %></span>
+  <% end %>
+</li>

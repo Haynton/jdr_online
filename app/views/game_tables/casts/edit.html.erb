@@ -1,0 +1,31 @@
+<%# The fourth step of a table: its NPCs and enemies (decision: an empty list at first). "Add from the bestiary" opens
+    the creatures of the catalog the table offers, each added in one click (copied, numbered when added again);
+    "Create an NPC" an empty window. Each line opens its window (its whole sheet) and has its switch "Shown to the
+    players". Everything is saved as it is done: the buttons only go to the step before or after. Saved in a window or
+    by a switch, the page is refreshed by morphing, keeping its scroll %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%= creation_page(current_step: "npcs", game_table: @game_table) do %>
+  <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+  <div class="flex flex-wrap gap-3">
+    <%= link_to game_table_bestiary_path(@game_table), class: "#{button_classes(:primary)} gap-2",
+                                                      data: bestiary_dialog_link_data do %>
+      <%= render "shared/icons/library_big" %>
+      <%= t(".add_from_bestiary") %>
+    <% end %>
+    <%= link_to new_game_table_npc_path(@game_table), class: "#{button_classes(:secondary)} gap-2",
+                                                      data: npc_dialog_link_data do %>
+      <%= render "shared/icons/plus" %>
+      <%= t(".create") %>
+    <% end %>
+  </div>
+
+  <%= render "game_tables/casts/list", npcs: @npcs %>
+
+  <%= form_with url: game_table_cast_path(@game_table), method: :patch, class: "mt-auto flex flex-wrap justify-end gap-3 pt-10" do %>
+    <%= link_to t(".back"), edit_game_table_catalog_path(@game_table), class: button_classes(:secondary) %>
+    <%= button_tag t("game_tables.creation_actions.continue"), type: "submit", class: button_classes(:primary) %>
+  <% end %>
+  <%# Outside the list: each window holds forms of its own %>
+  <%= render "game_tables/npcs/dialog" %>
+  <%= render "game_tables/bestiaries/dialog" %>
+<% end %>

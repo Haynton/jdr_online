@@ -26,8 +26,8 @@ class GameTable < ApplicationRecord
   # Settings comes right after the choice of the template, since its settings depend on it (the starting level)
   # Then the catalog of the table (the spells and items offered), before its NPCs
   CREATION_STEPS = %w[details settings catalog npcs maps summary].freeze
-  # They come with their milestone (P4, P3): shown as coming soon until then, and skipped by the creation
-  LATER_CREATION_STEPS = %w[npcs maps].freeze
+  # It comes with its milestone (P3): shown as coming soon until then, and skipped by the creation
+  LATER_CREATION_STEPS = %w[maps].freeze
   AVAILABLE_CREATION_STEPS = (CREATION_STEPS - LATER_CREATION_STEPS).freeze
   # The level of the characters when the game begins, chosen by the game master. Same bounds as in the database
   STARTING_LEVELS = (1..20)

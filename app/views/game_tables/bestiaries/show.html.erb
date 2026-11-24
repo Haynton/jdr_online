@@ -1,0 +1,54 @@
+<%# The bestiary of the table: in its window over the step "NPCs and enemies" (its title bar: "Bestiary", how many
+    creatures, the close cross), or, opened directly or without JavaScript, a page of the step. A search without
+    accents or capitals (catalog_search_controller.js, rendered hidden and shown by it), then the creatures by challenge
+    rating, each with "Add" (copied into the table; the window stays open, and says what was added) %>
+<% content = capture do %>
+  <div class="@container min-h-0 flex-1 overflow-y-auto <%= "px-6 py-6" if bestiary_in_dialog? %>" data-controller="catalog-search">
+    <p id="bestiary-status" class="sr-only" role="status"></p>
+    <% if @creatures.empty? %>
+      <p class="text-sm text-ink"><%= t(".empty") %></p>
+    <% else %>
+      <div class="max-w-sm" hidden data-catalog-search-target="tools">
+        <label for="bestiary-search" class="sr-only"><%= t(".search") %></label>
+        <input id="bestiary-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
+               class="<%= SimpleFormFieldClasses::INPUT %>"
+               data-catalog-search-target="search" data-action="input->catalog-search#filter">
+      </div>
+      <p class="mt-6 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
+      <% bestiary_groups(@game_table, @creatures).each do |title, creatures| %>
+        <section class="mt-6" data-catalog-search-target="group">
+          <% if title %>
+            <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h3>
+          <% end %>
+          <ul class="mt-2 grid gap-x-10 border-t border-line @2xl:grid-cols-2">
+            <% creatures.each do |creature| %>
+              <%= render "game_tables/bestiaries/creature", creature: creature %>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+<% if bestiary_in_dialog? %>
+  <%= turbo_frame_tag GameTables::NpcDialogHelper::BESTIARY_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="bestiary-dialog-title" class="truncate text-lg font-semibold text-ink"><%= t(".title") %></h2>
+        <p class="text-sm text-muted"><%= t(".count", count: @creatures.size) %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= content %>
+  <% end %>
+<% else %>
+  <%= creation_page(current_step: "npcs", game_table: @game_table) do %>
+    <%= page_header(title: t(".title"), subtitle: t(".count", count: @creatures.size)) do %>
+      <%= link_to t(".back"), edit_game_table_cast_path(@game_table), class: button_classes(:secondary) %>
+    <% end %>
+    <%= content %>
+  <% end %>
+<% end %>

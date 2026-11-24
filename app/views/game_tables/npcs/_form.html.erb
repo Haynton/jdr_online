@@ -1,0 +1,72 @@
+<%# The values of an NPC or an enemy: its name, what it is (an NPC or an enemy), the notes of the game master, then
+    every value of the NPC sheet of the template, by the sections it gives them under gold titles, drawn by the fields
+    of a character sheet (under the scope npc[sheet]: the same look and checks as on a sheet; its attacks one line
+    each). In the window, the values scroll and the buttons stay at its foot: "Cancel" closes it; an NPC saved already
+    has "Delete", asked first. Full keys: the partial is rendered from two templates %>
+<% creating = npc.new_record? %>
+<% fields = game_table_npc_fields(@game_table) %>
+<%# The modifiers of its abilities, worked out by the server (never stored) %>
+<% computed = npc.computed_sheet_values %>
+<%= simple_form_for npc, as: :npc, url: (creating ? game_table_npcs_path(@game_table) : game_table_npc_path(@game_table, npc)),
+                         method: (creating ? :post : :patch),
+                         html: { id: "npc-form", class: "flex min-h-0 flex-1 flex-col" } do |form| %>
+  <div class="<%= in_dialog ? "@container min-h-0 flex-1 overflow-y-auto px-6 py-6" : "" %>">
+    <%= form_error_notification(form) %>
+    <div class="grid gap-x-6 @xl:grid-cols-2">
+      <%= form.input :name, required: true, label: t("game_tables.npcs.form.name"), input_html: { maxlength: Character::NAME_MAX_LENGTH, autofocus: creating } %>
+      <%= form.input :kind, collection: npc_kind_choices, include_blank: false, required: false,
+                            label: t("game_tables.npcs.form.kind") %>
+    </div>
+    <% catalog_entry_sections(fields).each do |section, section_fields| %>
+      <section class="mt-6 border-t border-line pt-5">
+        <% if section %>
+          <h3 class="mb-3 text-xs font-semibold tracking-wider text-brass uppercase"><%= section %></h3>
+        <% end %>
+        <div class="@container" data-controller="info-notes">
+          <div class="grid grid-cols-1 items-start gap-x-6 gap-y-4 @xl:grid-cols-6 @xl:[&_fieldset>div]:grid-cols-[repeat(4,max-content)]">
+            <% with_sheet_field_scope("npc[sheet]") do %>
+              <% section_fields.each do |field| %>
+                <div class="min-w-0 <%= catalog_entry_cell_classes(field) %>">
+                  <%= render sheet_field_partial(field), character: npc, field: field,
+                                                         computed: computed, all_fields: fields,
+                                                         modifier: computed[:modifiers][field["key"]],
+                                                         value: computed[:values][field["key"]] %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+          <% sheet_section_notes(section_fields).each do |note| %>
+            <p id="<%= note[:id] %>" class="mt-3 rounded-lg bg-field px-4 py-3 text-sm text-ink" data-info-notes-target="note">
+              <%= t("game_tables.characters.new.note_html", labels: tag.span(note[:labels], class: "font-semibold"),
+                                                            text: note[:text]) %>
+            </p>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+    <section class="mt-6 border-t border-line pt-5">
+      <%= form.input :gm_notes, as: :text, required: false, label: t("game_tables.npcs.form.gm_notes"),
+                                hint: t("game_tables.npcs.form.gm_notes_hint"), input_html: { class: "min-h-24", rows: 3 } %>
+    </section>
+  </div>
+
+  <div class="<%= in_dialog ? "flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-line px-6 py-4" : "mt-10 flex flex-wrap justify-end gap-3" %>">
+    <% unless creating %>
+      <%= button_tag t("game_tables.npcs.form.delete"), type: "submit", form: "npc-removal", class: "#{button_classes(:danger)} mr-auto" %>
+    <% end %>
+    <% if in_dialog %>
+      <%= button_tag t("game_tables.creation_actions.cancel"), type: "button", class: button_classes(:secondary),
+                                                              data: { action: "frame-dialog#close" } %>
+    <% else %>
+      <%= link_to t("game_tables.creation_actions.cancel"), edit_game_table_cast_path(@game_table), class: button_classes(:secondary) %>
+    <% end %>
+    <%= form.button :submit, t("game_tables.creation_actions.save"), class: button_classes(:primary) %>
+  </div>
+<% end %>
+<%# Outside the form above (no form inside a form): deleting an NPC, asked first in the confirm window %>
+<% unless creating %>
+  <%= form_with url: game_table_npc_path(@game_table, npc), method: :delete, id: "npc-removal", class: "hidden",
+                data: { turbo_confirm: t("game_tables.npcs.form.confirm_delete", name: npc.name_in_database),
+                        confirm_button: t("game_tables.npcs.form.delete"), confirm_variant: "danger" } do %>
+  <% end %>
+<% end %>

@@ -705,6 +705,34 @@ fr:
       created: "Table créée en brouillon. Vous pouvez reprendre sa création à tout moment."
     create_table_card:
       title: "Créer une table"
+    bestiaries:
+      show:
+        add: "Ajouter %{name}"
+        add_short: "Ajouter"
+        back: "Retour aux PNJ"
+        close: "Fermer le bestiaire"
+        count:
+          one: "%{count} créature"
+          other: "%{count} créatures"
+        empty: "Le modèle de cette table n'a pas de bestiaire. Créez vos PNJ vous-même."
+        no_match: "Aucune créature ne correspond à cette recherche."
+        search: "Rechercher une créature"
+        title: "Bestiaire"
+    casts:
+      edit:
+        add_from_bestiary: "Ajouter depuis le bestiaire"
+        back: "Retour"
+        change: "Modifier %{name}"
+        count:
+          one: "%{count} PNJ ou ennemi"
+          other: "%{count} PNJ et ennemis"
+        create: "Créer un PNJ"
+        empty: "Aucun PNJ pour l'instant. Ajoutez des créatures du bestiaire, ou créez vos propres personnages."
+        subtitle: "Les personnages que vous jouerez. Chacun a sa propre fiche, que vous pouvez modifier sans toucher au bestiaire."
+        title: "PNJ et ennemis"
+        visible: "Montrer %{name} aux joueurs"
+      update:
+        saved: "PNJ et ennemis enregistrés."
     catalog_entries:
       form:
         confirm_added: "Supprimer « %{name} » de cette table ?"
@@ -865,6 +893,22 @@ fr:
     invite_tokens:
       update:
         regenerated: "Nouveau lien généré : l'ancien ne fonctionne plus."
+    npcs:
+      create:
+        added: "Ajouté à la table : %{name}."
+      form:
+        confirm_delete: "Supprimer « %{name} » ?"
+        delete: "Supprimer"
+        gm_notes: "Notes du MJ"
+        gm_notes_hint: "Ce que vous seul voyez : son rôle dans l'histoire, ses secrets."
+        kind: "Rôle"
+        name: "Nom"
+      kinds:
+        monster: "Ennemi"
+        npc: "PNJ"
+      window:
+        close: "Fermer la fiche"
+        new: "Nouveau PNJ"
     player_invitations:
       create:
         invited: "Invitation envoyée à %{username}, en attente de sa réponse."

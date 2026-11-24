@@ -1,0 +1,25 @@
+<%# An NPC of the table: in the window of the step "NPCs and enemies" (its title bar: the name, what it is, the close
+    cross; GameTables::NpcDialogHelper), or, opened directly or without JavaScript, a page of the step.
+    title: its name, or "New NPC" %>
+<% subtitle = t("game_tables.npcs.kinds.#{@npc.kind}") %>
+<% if npc_in_dialog? %>
+  <%= turbo_frame_tag GameTables::NpcDialogHelper::NPC_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="npc-dialog-title" class="truncate text-lg font-semibold text-ink"><%= title %></h2>
+        <p class="text-sm text-muted"><%= subtitle %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t("game_tables.npcs.window.close") %>" title="<%= t("game_tables.npcs.window.close") %>"
+              data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= render "game_tables/npcs/form", npc: @npc, in_dialog: true %>
+  <% end %>
+<% else %>
+  <%= creation_page(current_step: "npcs", game_table: @game_table) do %>
+    <%= page_header(title: title, subtitle: subtitle) %>
+    <%= render "game_tables/npcs/form", npc: @npc, in_dialog: false %>
+  <% end %>
+<% end %>

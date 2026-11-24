@@ -44,7 +44,8 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_select "ol[aria-label] a[href=?]", edit_game_table_settings_path(@game_table), text: /Réglages\s*Modifier/
     assert_select "ol[aria-label] li[aria-current=step] a", count: 0
     assert_select "ol[aria-label] a[href=?]", edit_game_table_catalog_path(@game_table), text: /Sorts et objets\s*Modifier/
-    assert_select "ol[aria-label] a", count: 3
+    assert_select "ol[aria-label] a[href=?]", edit_game_table_cast_path(@game_table), text: /PNJ et ennemis\s*Modifier/
+    assert_select "ol[aria-label] a", count: 4
 
     get edit_game_table_details_path(@game_table)
 
