@@ -19,13 +19,14 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_select "ol[aria-label] > li[aria-current=step]", text: /Cartes/
     assert_select "p", text: /Aucune carte pour l'instant/
     assert_select "a[href=?][data-turbo-frame=map_dialog]", new_game_table_game_map_path(@game_table),
-                  text: /Ajouter une carte/
+                  text: /Importer depuis « Mes cartes »/
+    assert_select "form[action=?] button", game_table_game_maps_path(@game_table), text: /Créer une carte/
 
     patch game_table_map_list_path(@game_table)
     assert_redirected_to game_table_summary_path(@game_table)
   end
 
-  test "« Ajouter une carte » lists my maps only, and the one chosen is copied into the table, then listed" do
+  test "« Importer depuis Mes cartes » lists my maps only, and the one chosen is copied into the table, then listed" do
     tavern = @game_master.map_templates.create!(name: "Taverne du Pendu", columns: 20, rows: 15, layout: drawing)
     stranger = User.create!(email: "other@example.com", username: "autre", password: TEST_PASSWORD)
     stranger.map_templates.create!(name: "Donjon d'un autre")
@@ -41,7 +42,7 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_equal [tavern, "Taverne du Pendu", 20, 15, drawing], game_map.slice(:map_template, :name, :columns, :rows, :layout).values
 
     get edit_game_table_map_list_path(@game_table)
-    assert_select "#map-list li svg[data-controller=map-preview]"
+    assert_select "#map-list section[aria-labelledby=map-list-title] li svg[data-controller=map-preview]"
     assert_select "#map-list li", text: /Taverne du Pendu\s+20 × 15 cases/
   end
 
@@ -89,10 +90,6 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
   end
 
   test "« Créer une carte » draws an empty map for the table and opens its editor" do
-    get new_game_table_game_map_path(@game_table), headers: MAP_HEADERS
-    assert_select "turbo-frame#map_dialog form[action=?][data-turbo-frame=_top]", game_table_game_maps_path(@game_table),
-                  text: /Créer une carte/
-
     post game_table_game_maps_path(@game_table)
     game_map = @game_table.game_maps.sole
     assert_redirected_to edit_game_table_game_map_path(@game_table, game_map)

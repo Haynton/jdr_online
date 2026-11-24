@@ -869,14 +869,15 @@ fr:
   game_tables:
     map_lists:
       edit:
-        add: "Ajouter une carte"
         back: "Retour"
         change: "Modifier %{name}"
         count:
           one: "%{count} carte"
           other: "%{count} cartes"
+        create: "Créer une carte"
         delete: "Supprimer %{name}"
-        empty: "Aucune carte pour l'instant. Dessinez-en une, ou ajoutez celles de « Mes cartes »."
+        empty: "Aucune carte pour l'instant. Dessinez-en une, ou importez celles de « Mes cartes »."
+        import: "Importer depuis « Mes cartes »"
         intro: "Les cartes de votre partie, dessinées pour elle ou copiées de « Mes cartes » : la table garde sa propre copie, case par case."
         purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
         title: "Cartes"
@@ -901,14 +902,11 @@ fr:
       picker:
         add_label: "Ajouter la carte « %{name} »"
         empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."
-        from_my_maps: "Depuis « Mes cartes »"
-        intro: "Dessinez une carte pour cette table, ou choisissez-en une de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
+        intro: "Choisissez une carte de « Mes cartes » : la table en garde sa propre copie, que vous pourrez retoucher sans changer l'originale."
         my_maps: "Aller à « Mes cartes »"
-        new: "Créer une carte"
-        new_hint: "Une carte vide, dessinée pour cette table seulement."
       window:
         close: "Fermer la carte"
-        new: "Ajouter une carte"
+        new: "Importer depuis « Mes cartes »"
     hit_dice_rolls:
       create:
         rolled: "Dés de vie lancés : %{results}."

@@ -898,14 +898,15 @@ en:
   game_tables:
     map_lists:
       edit:
-        add: "Add a map"
         back: "Back"
         change: "Change %{name}"
         count:
           one: "%{count} map"
           other: "%{count} maps"
+        create: "Create a map"
         delete: "Delete %{name}"
-        empty: "No map yet. Draw one, or add the ones of “My maps”."
+        empty: "No map yet. Draw one, or import the ones of “My maps”."
+        import: "Import from “My maps”"
         intro: "The maps of your game, drawn for it or copied from “My maps”: the table keeps its own copy, cell by cell."
         purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
         title: "Maps"
@@ -930,14 +931,11 @@ en:
       picker:
         add_label: "Add the map “%{name}”"
         empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."
-        from_my_maps: "From “My maps”"
-        intro: "Draw a map for this table, or choose one of “My maps”: the table keeps its own copy, which you can change without touching the original."
+        intro: "Choose a map of “My maps”: the table keeps its own copy, which you can change without touching the original."
         my_maps: "Go to “My maps”"
-        new: "Create a map"
-        new_hint: "An empty map, drawn for this table only."
       window:
         close: "Close the map"
-        new: "Add a map"
+        new: "Import from “My maps”"
     hit_dice_rolls:
       create:
         rolled: "Hit dice rolled: %{results}."

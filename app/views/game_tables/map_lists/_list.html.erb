@@ -1,14 +1,15 @@
-<%# The maps of the table, in the order they were added: one card each (its image, its name, its grid), 1, 2 then 3
-    per line; a dashed box while there is none %>
+<%# The maps of the table, in the order they were added, in a row of cards that scrolls sideways like everywhere on
+    the site for cards of this kind (Anthony's request; game_tables/_choice_row, a section named by its heading: the
+    cards are links, not choices); a dashed box while there is none %>
 <div id="map-list" class="mt-8">
   <% if game_maps.empty? %>
     <p class="max-w-xl rounded-xl border border-dashed border-line px-6 py-8 text-sm text-muted"><%= t("game_tables.map_lists.edit.empty") %></p>
   <% else %>
-    <h2 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= t("game_tables.map_lists.edit.count", count: game_maps.size) %></h2>
-    <ul class="mt-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <%= render layout: "game_tables/choice_row",
+               locals: { legend: t("game_tables.map_lists.edit.count", count: game_maps.size), heading_id: "map-list-title" } do %>
       <% game_maps.each do |game_map| %>
         <%= render "game_tables/map_lists/game_map", game_map: game_map %>
       <% end %>
-    </ul>
+    <% end %>
   <% end %>
 </div>

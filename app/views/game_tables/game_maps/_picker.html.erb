@@ -1,21 +1,9 @@
-<%# « Ajouter une carte »: the maps of « Mes cartes » of the game master, each one with its preview, its name and the
+<%# « Importer depuis Mes cartes »: the maps of « Mes cartes » of the game master, each one with its preview, its name and the
     size of its grid; a click copies it into the table (Anthony's decision: the table plays on its copy, « Mes cartes »
-    never changes). First « Créer une carte »: a map drawn for this table alone, opened in the editor (the whole page,
-    out of the window). Without a map yet in « Mes cartes », a link to it as well. Full keys: the partial is rendered
-    from two templates %>
+    never changes). Without a map yet, a link to « Mes cartes », where maps are drawn (a map for this table alone is
+    created from the step itself). Full keys: the partial is rendered from two templates %>
 <% scope = "game_tables.game_maps.picker" %>
 <div class="<%= in_dialog ? "min-h-0 flex-1 overflow-y-auto px-6 py-6" : "" %>">
-  <p class="mb-4 text-sm text-muted"><%= t("#{scope}.intro") %></p>
-  <%= button_to game_table_game_maps_path(@game_table), form: { data: { turbo_frame: "_top" } },
-                class: "mb-6 flex w-full items-center gap-4 rounded-xl border border-dashed border-line px-4 py-3 text-left hover:bg-surface-raised" do %>
-    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brass text-page" aria-hidden="true">
-      <%= render "shared/icons/plus", css_class: "size-5" %>
-    </span>
-    <span class="flex min-w-0 flex-col">
-      <span class="font-semibold text-ink"><%= t("#{scope}.new") %></span>
-      <span class="text-sm text-muted"><%= t("#{scope}.new_hint") %></span>
-    </span>
-  <% end %>
   <% if @map_templates.empty? %>
     <div class="rounded-xl border border-dashed border-line px-6 py-8 text-center">
       <p class="text-sm text-muted"><%= t("#{scope}.empty") %></p>
@@ -23,7 +11,7 @@
                                                              data: { turbo_frame: "_top" } %>
     </div>
   <% else %>
-    <h3 class="mb-3 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t("#{scope}.from_my_maps") %></h3>
+    <p class="mb-4 text-sm text-muted"><%= t("#{scope}.intro") %></p>
     <ul class="grid gap-4 sm:grid-cols-2">
       <% @map_templates.each do |map_template| %>
         <li>
