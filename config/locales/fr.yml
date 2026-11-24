@@ -43,6 +43,7 @@ fr:
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
         starting_equipment_method_choice: "Équipement de départ"
+        limit_skill_choices: "Limiter les compétences au choix de la classe"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -67,6 +68,10 @@ fr:
         outside_point_buy: "de %{minimum} à %{maximum} en achat de points"
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
+        skill_not_offered: "%{skill} n'est pas proposée par vos choix : décochez-la"
+        too_many_skills:
+          one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
+          other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
       models:
         map_template:
           attributes:
@@ -1243,6 +1248,7 @@ fr:
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
+        limit_skill_choices_hint: "Un joueur ne coche pas plus de compétences que sa classe n'en propose, et seulement parmi elles. Éteint : le nombre reste une aide."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."

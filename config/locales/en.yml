@@ -72,6 +72,7 @@ en:
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
         starting_equipment_method_choice: "Starting equipment"
+        limit_skill_choices: "Limit skills to the class choice"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -96,6 +97,10 @@ en:
         outside_point_buy: "from %{minimum} to %{maximum} with point buy"
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
+        skill_not_offered: "%{skill} is not offered by your choices: untick it"
+        too_many_skills:
+          one: "too many skills ticked: %{count} at most among those offered"
+          other: "too many skills ticked: %{count} at most among those offered"
       models:
         map_template:
           attributes:
@@ -1272,6 +1277,7 @@ en:
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
+        limit_skill_choices_hint: "A player ticks no more skills than their class offers, and only among them. Off: the number is only a guide."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."
