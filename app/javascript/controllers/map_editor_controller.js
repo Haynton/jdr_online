@@ -27,6 +27,8 @@ const toolSwatches = {
 }
 // How close to a side a right click must be to take its wall away
 const deletingReach = 6
+// The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
+const takingAwayKinds = ["eraser", "remover"]
 const zoomStep = 1.25
 
 export default class extends Controller {
@@ -41,7 +43,7 @@ export default class extends Controller {
     this.placementRotation = 0
     this.history = new DrawingHistory()
     // The first floor: the eraser comes first in the page, on the bar
-    this.tool = toolOf(this.toolTargets.find((button) => button.dataset.toolKind === "floor"))
+    this.tool = this.firstFloorTool()
     this.view = new BoardView(this.grid, cellSize)
     this.activePointers = new Map()
     this.boardResizeObserver = new ResizeObserver(() => this.resizeView())
@@ -130,9 +132,22 @@ export default class extends Controller {
     this.isPointerOverBoard = true
   }
 
+  // The eraser or Take object away, clicked again while in use, gives back the tool used before it (the first floor
+  // at first): the pointer goes back to drawing
   chooseTool(event) {
-    this.tool = toolOf(event.currentTarget)
+    const chosenTool = toolOf(event.currentTarget)
+    if (isSameTool(chosenTool, this.tool) && takingAwayKinds.includes(chosenTool.kind)) {
+      this.tool = this.toolBeforeTakingAway ?? this.firstFloorTool()
+    } else {
+      if (!takingAwayKinds.includes(this.tool.kind)) this.toolBeforeTakingAway = this.tool
+      this.tool = chosenTool
+    }
     this.pressCurrentTool()
+    this.hidePointer()
+  }
+
+  firstFloorTool() {
+    return toolOf(this.toolTargets.find((button) => button.dataset.toolKind === "floor"))
   }
 
   pressCurrentTool() {
@@ -450,6 +465,10 @@ export default class extends Controller {
 
 function isTyping(event) {
   return Boolean(event.target.closest?.("input, textarea, select, [contenteditable]"))
+}
+
+function isSameTool(first, second) {
+  return first.kind === second.kind && first.key === second.key
 }
 
 function toolOf(button) {
