@@ -2,7 +2,7 @@
 // and its objects ({ key, column, row, rotation }), and what a stroke of the editor may change. Also how the map is
 // made (mode: "draw", or "picture" for a picture of one's own) and how its picture sits under the grid (picture:
 // { cells_wide, offset_x, offset_y, opacity }). Sent to the server as the layout that MapLayoutValidator checks
-import { cellKey, cellPosition, sideKey } from "map_editor/square_grid"
+import { cellKey, cellPosition, cellSize, sideKey } from "map_editor/square_grid"
 import { doorKey } from "map_edges"
 import { objectOf, footprintSize } from "map_objects"
 
@@ -46,12 +46,39 @@ export default class MapLayout {
     return { columns, rows }
   }
 
-  // Whether something drawn would go out of a grid of that size (its cells kept from the top left)
-  hasSomethingOutside(columns, rows) {
-    const isOutside = ([column, row]) => column >= columns || row >= rows
+  // Whether something drawn would go out of a grid of that size, once moved by [columns, rows] (shiftFor)
+  hasSomethingOutside(columns, rows, [columnShift, rowShift] = [0, 0]) {
+    const isOutside = ([column, row]) => {
+      const [newColumn, newRow] = [column + columnShift, row + rowShift]
+      return newColumn < 0 || newRow < 0 || newColumn >= columns || newRow >= rows
+    }
     return [...this.floors.keys()].some((key) => isOutside(cellPosition(key))) ||
       [...this.edges.keys()].some((key) => key.split("|").some((cell) => isOutside(cellPosition(cell)))) ||
       this.objects.some((placedObject) => this.cellsOf(placedObject).some(isOutside))
+  }
+
+  // How far the drawing moves when the grid takes that size, so that it stays in the middle (Anthony's request: the
+  // grid grows, or shrinks, on every side): half the columns and rows gained, or lost
+  shiftFor(columns, rows) {
+    return [centeringShift(this.grid.columns, columns), centeringShift(this.grid.rows, rows)]
+  }
+
+  // Everything drawn moved by whole cells: floors, walls and doors, objects, and the picture with them
+  moveBy([columnShift, rowShift]) {
+    if (!columnShift && !rowShift) return
+
+    const moved = (key) => {
+      const [column, row] = cellPosition(key)
+      return [column + columnShift, row + rowShift]
+    }
+    this.floors = new Map([...this.floors].map(([key, floorKey]) => [cellKey(...moved(key)), floorKey]))
+    this.edges = new Map([...this.edges].map(([key, edgeKey]) => [sideKey(...key.split("|").map(moved)), edgeKey]))
+    this.objects = this.objects.map((placedObject) => ({ ...placedObject, column: placedObject.column + columnShift,
+                                                          row: placedObject.row + rowShift }))
+    if (this.picture) {
+      this.picture = { ...this.picture, offset_x: this.picture.offset_x + columnShift * cellSize,
+                       offset_y: this.picture.offset_y + rowShift * cellSize }
+    }
   }
 
   // What goes out of the new grid is taken out: floors, walls and doors, objects that do not hold in it whole
@@ -172,4 +199,14 @@ export default class MapLayout {
 
 function keyOfSide({ column, row, neighbourColumn, neighbourRow }) {
   return sideKey([column, row], [neighbourColumn, neighbourRow])
+}
+
+// The cells added before the drawing (or taken away before it, negative) when a side of the grid goes from one size to
+// another: half of them. An odd one goes before the drawing from an even size, after it from an odd one, so that the
+// grid grown or shrunk one cell at a time (« + », « − ») alternates its sides, and comes back the same
+function centeringShift(oldSize, newSize) {
+  const change = newSize - oldSize
+  if (change >= 0) return Math.floor((change + (oldSize % 2 === 0 ? 1 : 0)) / 2)
+
+  return -Math.floor((-change + (oldSize % 2 === 1 ? 1 : 0)) / 2)
 }

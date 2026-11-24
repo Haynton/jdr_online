@@ -445,16 +445,19 @@ export default class extends Controller {
     this.resizeGrid()
   }
 
-  // The columns typed, the rows following the proportions, both within the bounds of a grid
+  // The columns typed, the rows following the proportions, both within the bounds of a grid. The drawing stays in
+  // the middle: the grid grows, or shrinks, on every side
   async resizeGrid() {
     const { columns, rows } = this.sizeFor(Number.parseInt(this.columnsInputTarget.value, 10))
     if (columns === this.grid.columns && rows === this.grid.rows) return this.showSize()
 
-    const losesSomething = this.layout.hasSomethingOutside(columns, rows)
+    const shift = this.layout.shiftFor(columns, rows)
+    const losesSomething = this.layout.hasSomethingOutside(columns, rows, shift)
     if (losesSomething && !(await confirmWithDialog(this.shrinkQuestionValue, this.columnsInputTarget))) {
       return this.showSize()
     }
     const before = this.layout.snapshot()
+    this.layout.moveBy(shift)
     this.layout.cropTo(new SquareGrid(columns, rows))
     this.useGridSize({ columns, rows })
     this.render()
