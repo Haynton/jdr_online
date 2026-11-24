@@ -1,12 +1,19 @@
 # A small template for the tests of the Equipment and Spells steps: a mage and a priest who cast spells (2 cantrips
-# and 2 prepared spells at level 1, spells of level 2 from level 3), a warrior who casts none, their starting
+# and 2 prepared spells at level 1, spells of level 2 from level 3, spell slots, the priest's under a name of its own),
+# a warrior who casts none, their starting
 # equipment (the mage: 2 daggers and a musical instrument of their choice and 5 gold, or 55 gold; the warrior: chain
 # mail and 4 gold, or 60 gold), and a catalog of a few spells and items
 module EquipmentSpellsTemplateBuilder
   # One number per level, from 1 to 20, as the validator of the template asks (SheetTemplateValidator)
   SPELLCASTING = { "ability" => "intelligence", "cantrips" => [2, 2, 3] + ([3] * 17),
                    "prepared" => [2, 3, 4] + ([4] * 17), "max_spell_level" => [1, 1, 2] + ([2] * 17),
-                   "prepared_changes" => "long_rest" }.freeze
+                   "prepared_changes" => "long_rest",
+                   "slots" => [[2], [3], [4, 2]] + ([[4, 3]] * 17) }.freeze
+  # The priest gives its own name and help to its slots (label_from, help_from), as the pact slots of the warlock
+  PRIEST_SPELLCASTING = SPELLCASTING.merge("slots" => [[1]] + ([[0, 2]] * 19), "slots_label" => "Faveurs",
+                                           "slots_help" => "Rendues à l'aube.").freeze
+  SPELL_SLOTS = { "label" => "Emplacements de sorts", "help" => "Rendus après un repos long.", "count_from" => "slots",
+                  "label_from" => "slots_label", "help_from" => "slots_help" }.freeze
   # The groups of the heroic fantasy: the cantrips, then the prepared spells up to the highest level of the class
   SPELL_GROUPS = [
     { "key" => "cantrips", "label" => "Sorts mineurs", "help" => "Lancés à volonté.", "min_level" => 0,
@@ -50,7 +57,8 @@ module EquipmentSpellsTemplateBuilder
   end
 
   def character_fields(extra_fields = [])
-    { "creation_steps" => creation_steps, "spell_groups" => SPELL_GROUPS, "fields" => fields + extra_fields }
+    { "creation_steps" => creation_steps, "spell_groups" => SPELL_GROUPS, "spell_slots" => SPELL_SLOTS,
+      "fields" => fields + extra_fields }
   end
 
   def creation_steps
@@ -63,7 +71,8 @@ module EquipmentSpellsTemplateBuilder
 
   def fields
     class_effects = { "Mage" => { "spellcasting" => SPELLCASTING, "starting_equipment" => MAGE_EQUIPMENT },
-                      "Prêtre" => { "spellcasting" => SPELLCASTING }, "Guerrier" => { "starting_equipment" => WARRIOR_EQUIPMENT } }
+                      "Prêtre" => { "spellcasting" => PRIEST_SPELLCASTING },
+                      "Guerrier" => { "starting_equipment" => WARRIOR_EQUIPMENT } }
     [{ "key" => "class", "label" => "Classe", "type" => "choice", "section" => "Classe",
        "options" => %w[Mage Prêtre Guerrier], "effects" => class_effects },
      { "key" => "class_equipment", "label" => "Équipement de la classe", "type" => "equipment_option", "from" => "class",

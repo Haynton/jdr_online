@@ -69,6 +69,20 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal [3, 4, 1], wizard["spellcasting"].values_at("cantrips", "prepared", "max_spell_level").map(&:first)
   end
 
+  # The table of the SRD 5.2: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
+  # all of one level
+  test "the spell slots of the 2024 heroic fantasy follow the levels of each class" do
+    classes = heroic_fantasy_classes
+
+    assert_equal [[2], [4, 3, 2], [4, 3, 3, 3, 3, 2, 2, 1, 1]], slots_at(classes["Magicien"], 1, 5, 20)
+    assert_equal [[2], [4, 2], [4, 3, 3, 3, 2]], slots_at(classes["Paladin"], 1, 5, 20)
+    assert_equal [[1], [0, 0, 2], [0, 0, 0, 0, 4]], slots_at(classes["Occultiste"], 1, 5, 20)
+    assert_equal "Emplacements de pacte", classes["Occultiste"].dig("spellcasting", "slots_label")
+    classes.values.filter_map { |effects| effects["spellcasting"] }.each do |spellcasting|
+      assert_equal spellcasting["max_spell_level"], spellcasting["slots"].map(&:size), "slots up to the highest level"
+    end
+  end
+
   test "every class of the heroic fantasy has its subclass of the SRD 5.2, asked from level 3" do
     %w[fr en].each do |locale|
       template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))
@@ -84,6 +98,15 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   end
 
   private
+
+  def heroic_fantasy_classes
+    template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.fr.json"))
+    template.dig("character_fields", "fields").find { |field| field["key"] == "class" }["effects"]
+  end
+
+  def slots_at(class_effects, *levels)
+    levels.map { |level| class_effects.dig("spellcasting", "slots", level - 1) }
+  end
 
   def each_template
     TEMPLATE_FILES.each { |template_file| yield template_file, read_template(template_file) }

@@ -80,6 +80,19 @@ module CharacterSheets
         "properties" => entry.properties }
     end
 
+    # The level of the character (the field filled by the table, starting_level), between 1 and 20
+    def level
+      level_field = @game_table.character_sheet_fields.find { |field| field["from_table"] == "starting_level" }
+      value = level_field && @character.sheet[level_field["key"]]
+      (value || @game_table.starting_level).to_i.clamp(1, 20)
+    end
+
+    # The spellcasting effect of the option picked (the class), {} for a class without spells: its tables are also
+    # read by CharacterSheets::SpellSlots
+    def spellcasting
+      picked_spellcasting&.last || {}
+    end
+
     private
 
     # The spells of the catalog of the table (its template's, changed by its game master: Catalogs::TableCatalog)
@@ -111,17 +124,6 @@ module CharacterSheets
     # The number of a table of the class at the level of the character (0 without the table)
     def table_at_level(table_key)
       spellcasting.dig(table_key, level - 1).to_i
-    end
-
-    # The level of the character (the field filled by the table, starting_level), between 1 and 20
-    def level
-      level_field = @game_table.character_sheet_fields.find { |field| field["from_table"] == "starting_level" }
-      value = level_field && @character.sheet[level_field["key"]]
-      (value || @game_table.starting_level).to_i.clamp(1, 20)
-    end
-
-    def spellcasting
-      picked_spellcasting&.last || {}
     end
 
     # The option picked with a spellcasting effect (the class: "Magicien")
