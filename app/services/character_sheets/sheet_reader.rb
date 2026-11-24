@@ -35,10 +35,13 @@ module CharacterSheets
       @level_thresholds.reverse.find { |threshold| level >= threshold["level"] }
     end
 
-    # The effects of the option chosen in the list list_key ({} before a choice)
+    # The effects of the option chosen in the list list_key ({} before a choice), with those of the options chosen in
+    # the lists that depend on it (options_from: the subclass adds to its class, the unarmoured defense of the
+    # draconic sorcerer)
     def class_effects(list_key)
-      list = field(list_key)
-      list&.dig("effects", @sheet[list_key].to_s) || {}
+      [list_key, *refining_list_keys(list_key)].reduce({}) do |effects, key|
+        effects.merge(field(key)&.dig("effects", @sheet[key].to_s) || {})
+      end
     end
 
     # The value of the computed field proficiency_key (the proficiency bonus of the level), 0 without that field
@@ -48,6 +51,10 @@ module CharacterSheets
     end
 
     private
+
+    def refining_list_keys(list_key)
+      @fields.select { |candidate| candidate["options_from"] == list_key }.pluck("key")
+    end
 
     def field(key)
       @fields.find { |candidate| candidate["key"] == key }

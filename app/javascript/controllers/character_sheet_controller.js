@@ -13,7 +13,7 @@ import { modifierOf } from "modifier_rules"
 export default class extends Controller {
   static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices", "abilityBonus",
     "finalScore", "bonusNote"]
-  static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object }
+  static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object, refinements: Object }
 
   connect() {
     this.appliedOptions = Object.fromEntries(this.effectChoiceTargets.map((select) => [select.id, select.value]))
@@ -168,9 +168,16 @@ export default class extends Controller {
     return computedValue(output.dataset.rule, output.dataset, this.sheetReader({})) ?? 0
   }
 
+  // The effects of the option chosen in a list, with those of the lists that depend on it (refinements: the subclass
+  // adds to its class), as CharacterSheets::SheetReader#class_effects
+  classEffects(fieldKey) {
+    return [fieldKey, ...(this.refinementsValue[fieldKey] ?? [])]
+      .reduce((effects, listKey) => ({ ...effects, ...this.pickedEffectsOf(listKey) }), {})
+  }
+
   // The effects of the option chosen in a list ({} before a choice): from the list on the page, or from the value
   // saved on another step
-  classEffects(fieldKey) {
+  pickedEffectsOf(fieldKey) {
     const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
     if (select) return JSON.parse(select.dataset.effects || "{}")[select.value] ?? {}
 

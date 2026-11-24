@@ -16,9 +16,12 @@ class CharacterSheetValidator < ActiveModel::Validator
 
   private
 
-  # The fields marked required in the step being saved (Character#fill_step): the step stays until they are filled
+  # The fields marked required in the step being saved (Character#fill_step): the step stays until they are filled.
+  # A field the sheet does not ask yet (the subclass, before level 3) waits
   def validate_required_fields(character)
     character.required_sheet_fields.to_a.each do |field|
+      next unless FieldTypes.of(field).asked_on?(field, character.sheet)
+
       character.errors.add(:"sheet.#{field['key']}", :blank) if character.sheet[field["key"]].blank?
     end
   end

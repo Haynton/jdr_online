@@ -17,8 +17,24 @@ module CharacterSheets
       field["options"].include?(character.sheet[field["key"]])
     end
 
+    # A fact given from a level (the features of a subclass) shows once the character reaches it, read in the field
+    # level_from of the list (described_choices_controller.js follows the level on the page)
+    def choice_fact_hidden?(character, field, from_level)
+      return false unless from_level && field["level_from"]
+
+      level = character.sheet[field["level_from"]]
+      (level.is_a?(Integer) ? level : 1) < from_level
+    end
+
+    def choice_fact_data(character, field, from_level)
+      return {} unless from_level && field["level_from"]
+
+      { from_level: from_level, level_from: field["level_from"], saved_level: character.sheet[field["level_from"]] }
+    end
+
     # [label, text] for each effect of an option that a player can read, in the order of the registry (ChoiceEffects):
-    # each effect says what it brings (the others are kept for the next steps)
+    # each effect says what it brings (the others are kept for the next steps); [label, text, level] for what comes
+    # from a level of the character (the features of a subclass)
     def choice_option_facts(field, option, all_fields)
       effects = field.dig("effects", option).to_h
       fields_by_key = all_fields.index_by { |candidate| candidate["key"] }

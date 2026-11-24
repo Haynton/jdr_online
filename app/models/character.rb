@@ -56,9 +56,9 @@ class Character < ApplicationRecord
   end
 
   # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option changed
-  # in a list applies its effects to the other steps too (CharacterSheets::ChoiceEffectsApplier), and the starting
-  # equipment and the spells its new class does not offer go. The step that chooses the spells copies those chosen
-  # (spell_keys)
+  # in a list applies its effects to the other steps too, and a value the others no longer offer goes (the subclass of
+  # a class changed: CharacterSheets::ChoiceEffectsApplier), and the starting equipment and the spells its new
+  # class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
   def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
@@ -123,13 +123,14 @@ class Character < ApplicationRecord
                                     level_thresholds: game_table.level_thresholds).call
   end
 
-  # A copy of each spell chosen (decision: the catalog changing never changes a character). A key not offered stays as
-  # a bare key, refused by CharacterSpellsValidator
+  # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options
+  # always prepare. A key not offered stays as a bare key, refused by CharacterSpellsValidator
   def choose_spells(spell_keys)
     choices = spell_choices
-    self.spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
+    chosen_spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
       choices.copy_of(spell_key) || { "key" => spell_key }
     end
+    self.spells = chosen_spells + choices.always_prepared.copies
   end
 
   # CharacterSheetValidator adds its errors per field ("sheet.strength"), so that each one shows under its field.
