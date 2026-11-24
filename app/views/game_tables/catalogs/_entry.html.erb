@@ -33,12 +33,9 @@
     <%= hidden_field_tag "offered", "0", id: nil %>
     <%# Its state in words beside it (decision: the switch alone did not say that it takes the entry out of the whole
         game): "In the game", or "Out of the game" in red once turned off, changed by CSS as soon as it is clicked %>
-    <%# Both words in one cell of a grid, the other one invisible: the cell keeps the width of the longest, and nothing
-        beside it moves when the state changes %>
-    <%= label_tag box_id, class: "mr-2.5 grid cursor-pointer justify-items-end text-xs", aria: { hidden: true } do %>
-      <span class="invisible col-start-1 row-start-1 text-muted group-has-checked:visible"><%= t("game_tables.catalogs.edit.in_game") %></span>
-      <span class="col-start-1 row-start-1 font-semibold text-error-ink group-has-checked:invisible"><%= t("game_tables.catalogs.edit.out_of_game") %></span>
-    <% end %>
+    <%= render "shared/switch_state_label", box_id: box_id, on_text: t("game_tables.catalogs.edit.in_game"),
+                                            off_text: t("game_tables.catalogs.edit.out_of_game"),
+                                            off_classes: "font-semibold text-error-ink" %>
     <span class="relative inline-flex">
       <%= check_box_tag "offered", "1", offered, id: box_id, role: "switch",
                         aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),

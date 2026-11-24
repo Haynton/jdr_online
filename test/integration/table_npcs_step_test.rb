@@ -101,15 +101,14 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
     assert_empty @game_table.npcs
   end
 
-  test "the list shows each NPC with its values, a switch shows it to the players, its window deletes it" do
+  test "the list shows each NPC with its values, hidden from the players, and its window deletes it" do
     goblin = Catalogs::CreatureCopier.new(@game_table).call("goblin-warrior")
     get edit_game_table_cast_path(@game_table)
 
     assert_select "li", text: /Guerrier gobelin\s*Ennemi · FP 1\/4 · CA 15 · PV 10/
+    assert_select "#cast-list input[role=switch]", count: 0
     patch game_table_npc_path(@game_table, goblin), params: { npc: { visible_to_players: "1" } }
-    assert_redirected_to edit_game_table_cast_path(@game_table)
-    assert goblin.reload.visible_to_players
-    assert_equal "Guerrier gobelin", goblin.name
+    assert_not goblin.reload.visible_to_players
 
     delete game_table_npc_path(@game_table, goblin), headers: NPC_HEADERS
     assert_empty @game_table.npcs

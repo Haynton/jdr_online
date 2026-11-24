@@ -1,9 +1,7 @@
 <%# One NPC or enemy of the table: its name, what it is and the values the template lists ("Enemy · CR 1/4 · AC 15 ·
-    HP 10"), "Change", which opens its window (the pencil alone on a phone, its word for screen readers), and its switch
-    "Shown to the players", a real check box sized like its track, saved as soon as it changes (its own form,
-    submit_on_change_controller.js; without JavaScript, the button beside it saves, hidden by that controller: not a
-    noscript, which a list replaced by Turbo would show) %>
-<% box_id = "npc-#{npc.id}-visible" %>
+    HP 10"), and "Change", which opens its window (the pencil alone on a phone, its word for screen readers). No switch
+    "shown to the players" here (decision: nothing shows an NPC to the players yet; the game master will show one from
+    the game room, when it is met) %>
 <li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5">
   <div class="min-w-0">
     <p class="truncate text-sm font-semibold text-ink" title="<%= npc.name %>"><%= npc.name %></p>
@@ -14,22 +12,5 @@
     <%= render "shared/icons/pencil" %>
     <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
     <span class="sr-only"><%= npc.name %></span>
-  <% end %>
-  <%= form_with url: game_table_npc_path(@game_table, npc), method: :patch, class: "flex shrink-0 items-center",
-                data: { controller: "submit-on-change", action: "turbo:morph@document->submit-on-change#hideFallbacks" } do %>
-    <%= hidden_field_tag "npc[visible_to_players]", "0", id: nil %>
-    <span class="relative inline-flex">
-      <%= check_box_tag "npc[visible_to_players]", "1", npc.visible_to_players, id: box_id, role: "switch",
-                        aria: { label: t("game_tables.casts.edit.visible", name: npc.name) },
-                        title: t("game_tables.casts.edit.visible", name: npc.name),
-                        data: { action: "change->submit-on-change#submit" },
-                        class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
-      <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
-      <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
-    </span>
-    <%= button_tag t("game_tables.creation_actions.save"), type: "submit", class: "#{button_classes(:secondary, size: :compact)} ml-2",
-                                                           data: { submit_on_change_target: "fallback" } %>
-    <%= button_tag "", type: "submit", hidden: true, tabindex: -1, aria: { hidden: true },
-                       data: { submit_on_change_target: "submitter" } %>
   <% end %>
 </li>

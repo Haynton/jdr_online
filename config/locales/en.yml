@@ -762,7 +762,6 @@ en:
         empty: "No NPC yet. Add creatures from the bestiary, or create your own characters."
         subtitle: "The characters you will play. Each one has its own sheet, which you can change without touching the bestiary."
         title: "NPCs and enemies"
-        visible: "Show %{name} to the players"
       update:
         saved: "NPCs and enemies saved."
     catalog_entries:
@@ -780,9 +779,9 @@ en:
           spell: "Spell"
         new:
           item: "New item"
+          spell: "New spell"
     catalog_search:
       filter: "Filter by %{label}"
-          spell: "New spell"
     catalog_pickers:
       show:
         back: "Back"

@@ -3,7 +3,8 @@
 # value of the NPC sheet the template declares, checked by their types (CharacterSheetValidator). Saved in the window,
 # the list behind is refreshed and the window closes; refused, the errors stay in it.
 # From the bestiary (catalog_key), a creature is copied in one click (Catalogs::CreatureCopier): the list behind is
-# replaced and the bestiary stays open, to add several. The switch "Shown to the players" of a line saves only it
+# replaced and the bestiary stays open, to add several. An NPC is hidden from the players (visible_to_players): the
+# game room will show it when it is met
 module GameTables
   class NpcsController < ApplicationController
     include TableOfGameMaster
@@ -54,10 +55,10 @@ module GameTables
       render form_action, status: :unprocessable_content
     end
 
-    # What was sent, only: the switch of a line sends its visibility alone. The values of the sheet are converted by the
-    # type of their field (CharacterSheets::Builder), as on a player character sheet
+    # What was sent. The values of the sheet are converted by the type of their field (CharacterSheets::Builder), as on
+    # a player character sheet
     def npc_attributes
-      attributes = npc_params.slice(:name, :gm_notes, :visible_to_players).to_h
+      attributes = npc_params.slice(:name, :gm_notes).to_h
       attributes[:kind] = npc_params[:kind] if Character::GAME_MASTER_KINDS.include?(npc_params[:kind])
       attributes[:sheet] = submitted_sheet if npc_params.key?(:sheet)
       attributes
@@ -68,7 +69,7 @@ module GameTables
     end
 
     def npc_params
-      params.fetch(:npc, {}).permit(:name, :kind, :gm_notes, :visible_to_players, sheet: {})
+      params.fetch(:npc, {}).permit(:name, :kind, :gm_notes, sheet: {})
     end
 
     # The bestiary stays open: the list behind is replaced, and the window says what was added (for screen readers)
@@ -83,7 +84,7 @@ module GameTables
       ]
     end
 
-    # In the window: the list behind is drawn again, where it was. Opened directly, or by a switch: back to the list
+    # In the window: the list behind is drawn again, where it was. Opened directly: back to the list
     def show_list
       return render(turbo_stream: turbo_stream.refresh(request_id: nil)) if npc_in_dialog?
 

@@ -733,7 +733,6 @@ fr:
         empty: "Aucun PNJ pour l'instant. Ajoutez des créatures du bestiaire, ou créez vos propres personnages."
         subtitle: "Les personnages que vous jouerez. Chacun a sa propre fiche, que vous pouvez modifier sans toucher au bestiaire."
         title: "PNJ et ennemis"
-        visible: "Montrer %{name} aux joueurs"
       update:
         saved: "PNJ et ennemis enregistrés."
     catalog_entries:
@@ -751,9 +750,9 @@ fr:
           spell: "Sort"
         new:
           item: "Nouvel objet"
+          spell: "Nouveau sort"
     catalog_search:
       filter: "Filtrer par %{label}"
-          spell: "Nouveau sort"
     catalog_pickers:
       show:
         back: "Retour"

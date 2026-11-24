@@ -1,0 +1,10 @@
+<%# The state of a switch in words, beside it (decision: a switch alone did not say what it does): on_text while it is
+    on, off_text once it is off, changed by CSS as soon as it is clicked (group-has-checked: the form around it carries
+    group). Both words sit in one cell of a grid, the other one invisible: the cell keeps the width of the longest, and
+    nothing beside it moves when the state changes. Its <label> makes the words clickable; screen readers hear the
+    switch by its own name (aria-label). off_classes: how the off state reads ("Out of the game" in red, an alert; or
+    muted when off is the usual state) %>
+<%= label_tag box_id, class: "mr-2.5 grid cursor-pointer justify-items-end text-xs", aria: { hidden: true } do %>
+  <span class="invisible col-start-1 row-start-1 text-muted group-has-checked:visible"><%= on_text %></span>
+  <span class="col-start-1 row-start-1 group-has-checked:invisible <%= off_classes %>"><%= off_text %></span>
+<% end %>
