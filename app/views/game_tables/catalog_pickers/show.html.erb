@@ -7,12 +7,8 @@
   <div class="flex min-h-0 flex-1 flex-col" data-controller="catalog-search">
     <p id="catalog-picker-status" class="sr-only" role="status"></p>
     <% if @catalog_entries.any? %>
-      <div class="shrink-0 <%= catalog_picker_in_dialog? ? "border-b border-line px-6 py-4" : "pb-4" %>" hidden data-catalog-search-target="tools">
-        <label for="catalog-picker-search" class="sr-only"><%= t(".search") %></label>
-        <input id="catalog-picker-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
-               class="<%= SimpleFormFieldClasses::INPUT %> max-w-sm"
-               data-catalog-search-target="search" data-action="input->catalog-search#filter">
-      </div>
+      <%= render "game_tables/catalog_search_tools", input_id: "catalog-picker-search", placeholder: t(".search"), filters: @filters,
+                                                     in_dialog: catalog_picker_in_dialog? %>
     <% end %>
     <div class="min-h-0 flex-1 overflow-y-auto <%= "px-6 pb-6" if catalog_picker_in_dialog? %>">
       <% if @catalog_entries.empty? %>
@@ -24,7 +20,8 @@
             <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h3>
             <ul class="mt-2 grid gap-x-10 border-t border-line md:grid-cols-2">
               <% entries.each do |entry| %>
-                <%= render "game_tables/catalog_pickers/entry", entry: entry, listed: @listed_keys.include?(entry.key) %>
+                <%= render "game_tables/catalog_pickers/entry", entry: entry, listed: @listed_keys.include?(entry.key),
+                                                                        filter_keys: @filter_keys %>
               <% end %>
             </ul>
           </section>

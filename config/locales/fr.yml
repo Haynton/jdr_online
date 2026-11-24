@@ -421,6 +421,9 @@ fr:
       count:
         hint: "Combien d'options le joueur peut cocher au plus."
         label: "Nombre de choix"
+      filter:
+        hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
+        label: "Filtre de la recherche"
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
@@ -748,6 +751,8 @@ fr:
           spell: "Sort"
         new:
           item: "Nouvel objet"
+    catalog_search:
+      filter: "Filtrer par %{label}"
           spell: "Nouveau sort"
     catalog_pickers:
       show:

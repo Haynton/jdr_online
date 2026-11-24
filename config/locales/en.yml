@@ -450,6 +450,9 @@ en:
       count:
         hint: "How many options the player may tick at most."
         label: "Number of choices"
+      filter:
+        hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
+        label: "Search filter"
       from:
         hint: "The list whose option picked gives this field (the background, the class)."
         label: "Source list"
@@ -777,6 +780,8 @@ en:
           spell: "Spell"
         new:
           item: "New item"
+    catalog_search:
+      filter: "Filter by %{label}"
           spell: "New spell"
     catalog_pickers:
       show:
