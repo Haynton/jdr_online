@@ -691,7 +691,7 @@ en:
         place_result_on: "Assign a result to %{label}"
         proficient: "(proficient)"
         reroll: "Roll again"
-        resource_hint: "Maximum value: your character starts full."
+        resource_hint: "Maximum value: the character starts full."
         roll: "Roll the dice"
         roll_method: "%{dice}d%{sides} per ability, keeping the %{kept} best. Assign each result, or type your own scores."
         score_column: "Score"

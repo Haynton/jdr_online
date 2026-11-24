@@ -1,0 +1,15 @@
+<%# The helps of the boxes of a cell of the grid of a window (an NPC, a catalog entry), right under that cell and across
+    the window (decision: under the whole section, the help of the hit points came after the attacks). Each note opens
+    from the button (i) of its box (info_notes_controller.js); the block is hidden while every note is closed, or it would
+    add a row and its gap to the grid. Nothing when the cell has no help %>
+<% notes = sheet_section_notes(fields) %>
+<% if notes.any? %>
+  <div class="hidden flex-col gap-2 has-[>p:not([hidden])]:flex @xl:col-span-6">
+    <% notes.each do |note| %>
+      <p id="<%= note[:id] %>" class="rounded-lg bg-field px-4 py-3 text-sm text-ink" data-info-notes-target="note">
+        <%= t("game_tables.characters.new.note_html", labels: tag.span(note[:labels], class: "font-semibold"),
+                                                      text: note[:text]) %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

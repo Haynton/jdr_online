@@ -662,7 +662,7 @@ fr:
         place_result_on: "Attribuer un résultat à %{label}"
         proficient: "(maîtrise)"
         reroll: "Relancer les dés"
-        resource_hint: "Valeur maximale : votre personnage commence au maximum."
+        resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
         roll_method: "%{dice}d%{sides} par caractéristique, en gardant les %{kept} meilleurs. Attribuez chaque résultat, ou tapez vos propres scores."
         score_column: "Score"
