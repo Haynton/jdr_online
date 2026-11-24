@@ -402,6 +402,7 @@ fr:
       shrink_button: "Réduire"
       shrink_question: "Réduire la grille ? Ce qui est dessiné hors de la nouvelle grille sera retiré."
       tabs_label: "Outils"
+      table_help_html: "<b>Carte de votre table</b> : préparez ici le début de la partie. <b>Jetons</b> : dans l'onglet Jetons, choisissez un PNJ ou un ennemi, puis cliquez sur les cases où il se tient (autant de fois que vous voulez pour une bande).<br><b>Zones bloquantes</b> : le bouton ⊘ de la barre peint les cases que les pions ne traversent pas ; les murs des salles et des pierres, et le vide, bloquent déjà : ils s'affichent en rouge pendant que vous peignez."
       terrain_tab: "Terrain"
       tokens_tab: "Jetons"
       undo: "Annuler"
@@ -891,7 +892,7 @@ fr:
         empty: "Aucune carte pour l'instant. Dessinez-en une, ou importez celles de « Mes cartes »."
         import: "Importer depuis « Mes cartes »"
         intro: "Les cartes de votre partie, dessinées pour elle ou copiées de « Mes cartes » : la table garde sa propre copie, case par case."
-        purpose: "Le plateau les affichera en jeu, et y placera les jetons des personnages et des créatures."
+        purpose: "Ouvrez une carte pour y poser les jetons de vos PNJ et ennemis et peindre les zones que les pions ne traversent pas : la partie commencera ainsi."
         title: "Cartes"
       update:
         saved: "Cartes enregistrées."
@@ -911,6 +912,14 @@ fr:
         cells: "%{columns} × %{rows} cases"
         hidden: "Grille de %{size} px, masquée"
         shown: "Grille de %{size} px, affichée"
+      setup:
+        blocked:
+          one: "%{count} zone bloquante"
+          other: "%{count} zones bloquantes"
+        open: "Placer les jetons et les zones bloquantes"
+        tokens:
+          one: "%{count} jeton"
+          other: "%{count} jetons"
       picker:
         add_label: "Ajouter la carte « %{name} »"
         empty: "Vous n'avez pas encore de carte dans « Mes cartes ». Dessinez-en une, ou partez d'un modèle, puis revenez l'ajouter."

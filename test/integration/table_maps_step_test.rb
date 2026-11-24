@@ -62,7 +62,8 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     game_map = MapTemplates::TableCopier.new(tavern, @game_table).call
 
     get edit_game_table_map_list_path(@game_table)
-    assert_select "#map-list a[href=?]:not([data-turbo-frame])", edit_game_table_game_map_path(@game_table, game_map)
+    assert_select "#map-list a[href=?]:not([data-turbo-frame])", edit_game_table_game_map_path(@game_table, game_map),
+                  text: /Placer les jetons et les zones bloquantes/
 
     get edit_game_table_game_map_path(@game_table, game_map)
     assert_select "main[data-controller=map-editor][data-map-editor-url-value=?]",
@@ -85,6 +86,7 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
 
     get edit_game_table_game_map_path(@game_table, game_map)
     assert_select "[role=tab]#map-editor-tab-tokens", text: "Jetons"
+    assert_select "[data-map-help-storage-key-value=map_editor_table_help] p", text: /Carte de votre table/
     assert_select "button[data-tool-kind=token][data-tool-key=?]", goblin.id.to_s, text: /Gobelin\s+Ennemi/
     editor = css_select("main[data-controller=map-editor]").first
     token_characters = JSON.parse(editor["data-map-editor-token-characters-value"])
@@ -95,6 +97,9 @@ class TableMapsStepTest < ActionDispatch::IntegrationTest
     assert_response :no_content
     placed = game_map.reload.placed_tokens.map { |token| token.values_at(:character, :number) }
     assert_equal [[goblin, 1]], placed
+
+    get edit_game_table_map_list_path(@game_table)
+    assert_select "#map-list li", text: /1 jeton/
   end
 
   test "a map copied is renamed in its editor; its grid stays" do

@@ -431,6 +431,7 @@ en:
       shrink_button: "Shrink"
       shrink_question: "Shrink the grid? What is drawn outside the new grid will be taken away."
       tabs_label: "Tools"
+      table_help_html: "<b>Map of your table</b>: prepare the beginning of the game here. <b>Tokens</b>: in the tab Tokens, choose a non-player character or an enemy, then click the cells where it stands (as many times as you want for a band).<br><b>Blocked zones</b>: the ⊘ button of the bar paints the cells no token crosses; the walls of rooms and stones, and the empty ground, block already: they show in red while you paint."
       terrain_tab: "Terrain"
       tokens_tab: "Tokens"
       undo: "Undo"
@@ -920,7 +921,7 @@ en:
         empty: "No map yet. Draw one, or import the ones of “My maps”."
         import: "Import from “My maps”"
         intro: "The maps of your game, drawn for it or copied from “My maps”: the table keeps its own copy, cell by cell."
-        purpose: "The board will show them in the game, and place the tokens of the characters and creatures on them."
+        purpose: "Open a map to put the tokens of your non-player characters and enemies and paint the zones no token crosses: the game will begin so."
         title: "Maps"
       update:
         saved: "Maps saved."
@@ -940,6 +941,14 @@ en:
         cells: "%{columns} × %{rows} cells"
         hidden: "Grid of %{size} px, hidden"
         shown: "Grid of %{size} px, shown"
+      setup:
+        blocked:
+          one: "%{count} blocked zone"
+          other: "%{count} blocked zones"
+        open: "Place the tokens and the blocked zones"
+        tokens:
+          one: "%{count} token"
+          other: "%{count} tokens"
       picker:
         add_label: "Add the map “%{name}”"
         empty: "You have no map in “My maps” yet. Draw one, or start from a template, then come back to add it."

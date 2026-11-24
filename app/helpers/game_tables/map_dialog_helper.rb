@@ -22,6 +22,15 @@ module GameTables
       t("game_tables.game_maps.grid.#{state}", size: game_map.grid_cell_size)
     end
 
+    # What is put already on a map of the table for the game (« 3 jetons · 2 zones bloquantes »), nothing while nothing
+    # is: the card then only says what the editor is for
+    def game_map_setup_text(game_map)
+      counts = { tokens: game_map.layout.to_h.fetch("tokens", []).size,
+                 blocked: game_map.layout.to_h.fetch("blocked", []).size }
+      counts.select { |_, count| count.positive? }
+            .map { |figure, count| t("game_tables.game_maps.setup.#{figure}", count:) }.join(" · ").presence
+    end
+
     # What the preview of a map copied from « Mes cartes » draws (map_preview_controller.js), like a card of « Mes
     # cartes »: its drawing, its grid, its picture
     def game_map_preview_data(game_map)

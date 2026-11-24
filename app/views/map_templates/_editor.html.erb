@@ -103,7 +103,7 @@
       <%# Round buttons floating at the bottom right of the board (Anthony's requests): the help, then the zoom, the
           whole map at the foot. In the board: on a phone, above the floating bar of the navigation %>
       <div class="absolute right-5 bottom-5 flex flex-col items-end gap-4 lg:right-6 lg:bottom-6">
-        <%= render "map_templates/help" %>
+        <%= render "map_templates/help", table: map_editor_blocking?(map_template) %>
         <div hidden class="flex flex-col gap-2" role="group"
              aria-label="<%= t(".zoom_label") %>" data-map-editor-target="zoomButtons">
           <% [["zoomIn", t(".zoom_in"), "plus"], ["zoomOut", t(".zoom_out"), "minus"], ["showWholeMap", t(".whole_map"), "maximize"]].each do |action, label, icon| %>

@@ -1,8 +1,10 @@
 <%# One map of the table, a card of the row drawn like those of « Mes cartes » (same classes, same width): a link as a
-    whole, its preview (a map copied or drawn for the table, the whole map in the frame; the map icon while nothing is drawn) or its image (a map sent as an
-    image, cut to 16:9), its name and its grid. A map drawn opens in the map editor, its bin over the corner of its
-    preview (asked first, like in « Mes cartes »; beside the link, not in it: a button in a link is not allowed); a map
-    sent as an image opens its window, where it is deleted. Full keys: rendered inside a row (render layout:) %>
+    whole, its preview (a map copied or drawn for the table, the whole map in the frame; the map icon while nothing is
+    drawn) or its image (a map sent as an image, cut to 16:9), its name and its grid. A map drawn opens in the map
+    editor: the card says what the editor is for here (Anthony's request: the tokens and the blocked zones were not
+    found) and what is put already; its bin over the corner of its preview (asked first, like in « Mes cartes »;
+    beside the link, not in it: a button in a link is not allowed). A map sent as an image opens its window, where it
+    is deleted. Full keys: rendered inside a row (render layout:) %>
 <li class="relative w-[62%] shrink-0 sm:w-56">
   <%= link_to edit_game_table_game_map_path(@game_table, game_map), class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES,
               title: t("game_tables.map_lists.edit.change", name: game_map.name),
@@ -20,6 +22,15 @@
     <span class="flex flex-col gap-1 px-4 pt-3 pb-4">
       <span class="truncate font-semibold text-ink"><%= game_map.name %></span>
       <span class="text-sm text-muted"><%= game_map_grid_text(game_map) %></span>
+      <% if game_map.drawn? %>
+        <% if (setup = game_map_setup_text(game_map)) %>
+          <span class="text-sm text-ink"><%= setup %></span>
+        <% end %>
+        <span class="mt-1 inline-flex items-center gap-1 text-sm font-medium text-link">
+          <%= t("game_tables.game_maps.setup.open") %>
+          <%= render "shared/icons/chevron_right", css_class: "size-3.5 shrink-0" %>
+        </span>
+      <% end %>
     </span>
   <% end %>
   <% if game_map.drawn? %>
