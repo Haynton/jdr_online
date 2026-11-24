@@ -1,6 +1,7 @@
 <%# The question asked before an action that cannot be undone at once (log out, delete the account), instead of the
     plain window of the browser: Turbo hands every data-turbo-confirm to confirm_dialog.js, which fills and opens it.
-    The question is the title; the confirm button says the action (data-confirm-button of the form or its button,
+    The question is the title, what follows its question mark on its own line under it, smaller and muted
+    (confirm_dialog.js); the confirm button says the action (data-confirm-button of the form or its button,
     "Confirm" otherwise), in red for data-confirm-variant="danger". Both looks are written here in full
     (data-*-classes): no class built from pieces in JavaScript. Escape, Cancel or a click beside it answer no.
     A native <dialog>: the focus stays inside, the page behind is inert.
@@ -8,13 +9,16 @@
     (as in shared/_settings_dialog). Tab then reaches Cancel. No outline on the window: its buttons have their own.
     Like the title bar of the settings window, a line under the question runs from edge to edge. The two buttons
     share the whole width; on a phone they stand one above the other, the action first (flex-col-reverse) %>
-<dialog id="confirm-dialog" aria-labelledby="confirm-dialog-question" tabindex="-1"
+<dialog id="confirm-dialog" aria-labelledby="confirm-dialog-question" aria-describedby="confirm-dialog-detail" tabindex="-1"
         class="m-auto w-[min(400px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50"
         data-primary-classes="<%= button_classes(:primary, full_width: true) %>"
         data-danger-classes="<%= button_classes(:danger, full_width: true) %>"
         data-default-label="<%= t(".confirm") %>">
   <form method="dialog">
-    <p id="confirm-dialog-question" class="border-b border-line px-6 py-4 text-base font-semibold text-ink"></p>
+    <div class="border-b border-line px-6 py-4">
+      <p id="confirm-dialog-question" class="text-base font-semibold text-ink"></p>
+      <p hidden id="confirm-dialog-detail" class="mt-1 text-sm text-muted"></p>
+    </div>
     <div class="flex flex-col-reverse gap-3 p-6 sm:flex-row">
       <button type="submit" value="cancel" class="<%= button_classes(:secondary, full_width: true) %>"><%= t(".cancel") %></button>
       <button type="submit" value="confirm" class="<%= button_classes(:primary, full_width: true) %>" data-confirm-dialog-button></button>
