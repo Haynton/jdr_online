@@ -30,18 +30,8 @@
                                                              input: starting_level_input(form) %>
             </div>
 
-            <div class="<%= setting_line_classes %>">
-              <div class="min-w-0">
-                <%= form.label :players_choose_level, class: "cursor-pointer text-sm font-semibold text-ink" %>
-                <p id="players-choose-level-hint" class="mt-1 text-sm text-muted"><%= t(".players_choose_level_hint") %></p>
-              </div>
-              <span class="relative inline-flex shrink-0">
-                <%= form.check_box :players_choose_level, role: "switch", aria: { describedby: "players-choose-level-hint" },
-                                                          class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
-                <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
-                <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
-              </span>
-            </div>
+            <%= render "game_tables/settings/switch", form: form, attribute: :players_choose_level,
+                                                       hint: t(".players_choose_level_hint") %>
 
             <% if @game_table.ability_methods.any? %>
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "ability_method_choice",
@@ -51,6 +41,10 @@
               <% next if @game_table.rule_methods(rule).empty? %>
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
                                                               methods: @game_table.rule_methods(rule) %>
+            <% end %>
+            <% if @game_table.asks_skill_choices? %>
+              <%= render "game_tables/settings/switch", form: form, attribute: :limit_skill_choices,
+                                                         hint: t(".limit_skill_choices_hint") %>
             <% end %>
           </div>
         </section>
