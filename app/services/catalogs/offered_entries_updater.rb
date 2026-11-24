@@ -1,6 +1,7 @@
-# Saves which entries of a kind (the spells, the items) of its template a table offers, from the boxes ticked on its
-# step "Spells and items": the others are turned off for the table (game_tables.disabled_catalog_keys, nothing is
-# deleted), never an item of the starting equipment (Catalogs::StartingEquipmentItemKeys), whatever is sent
+# Offers or turns off one entry of the catalog of a table (a spell, an item), from its switch on the step "Spells and
+# items": a template entry turned off goes into game_tables.disabled_catalog_keys (nothing is deleted). An item of the
+# starting equipment turned off leaves the starting equipment of the table (decision of 24 November: the game master
+# says which items it holds; CharacterSheets::StartingEquipment skips an item the table does not offer)
 module Catalogs
   class OfferedEntriesUpdater
     def initialize(game_table, kind:)
@@ -8,21 +9,16 @@ module Catalogs
       @kind = kind
     end
 
-    def call(offered_keys)
-      turned_off = template_keys - offered_keys.to_a.map(&:to_s) - locked_keys
-      @game_table.update!(disabled_catalog_keys: @game_table.disabled_catalog_keys.to_h.merge(@kind => turned_off.sort))
+    def call(key, offered:)
+      keys = turned_off_keys - [key]
+      keys << key unless offered
+      @game_table.update!(disabled_catalog_keys: @game_table.disabled_catalog_keys.to_h.merge(@kind => keys.sort))
     end
 
     private
 
-    # The entries the step lists: those of the template, and those the table added
-    def template_keys
-      CatalogEntry.where(sheet_template_id: @game_table.sheet_template_id, kind: @kind)
-                  .or(CatalogEntry.where(game_table_id: @game_table.id, kind: @kind)).distinct.pluck(:key)
-    end
-
-    def locked_keys
-      @kind == "item" ? StartingEquipmentItemKeys.new(@game_table).call : []
+    def turned_off_keys
+      @game_table.disabled_catalog_keys.to_h[@kind].to_a
     end
   end
 end

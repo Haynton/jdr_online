@@ -12,10 +12,15 @@ Rails.application.routes.draw do
       resource :details, only: %i[edit update]
       # The settings that depend on the template chosen (the starting level), right after it
       resource :settings, only: %i[edit update]
-      # The spells and items the table offers, from the catalog of its template (Catalogs::TableCatalog)
+      # The spells and items the table customizes, from the catalog of its template (Catalogs::TableCustomizations)
       resource :catalog, only: %i[edit update]
-      # One spell or item of that catalog, in a window: seen and changed for the table (its copy, same key), or added
-      resources :catalog_entries, only: %i[new create edit update destroy], param: :key
+      # The whole catalog of its template, in a window: an entry picked is listed (copied for the table)
+      resource :catalog_picker, only: :show
+      # One spell or item of that catalog, in a window: seen and changed for the table (its copy, same key), or added;
+      # its switch offers it to the players or turns it off (offer)
+      resources :catalog_entries, only: %i[new create edit update destroy], param: :key do
+        resource :offer, only: :update, controller: "catalog_offers"
+      end
       # The NPCs and enemies of the table: the step lists them (cast), each one opens in a window (npcs), added from
       # the bestiary of the catalog (copied) or from nothing
       resource :cast, only: %i[edit update]

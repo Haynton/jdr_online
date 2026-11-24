@@ -1,20 +1,19 @@
-<%# One entry of the catalog of the table: its name, "Changed" or "Added" beside it when the table has its own version,
-    a button "Change" that opens its window (every value, to see and to change: GameTables::CatalogEntriesController;
-    decision: clearer than a click on the name; the pencil alone on a phone, its word for screen readers), what it is
-    (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like its track
-    (size-full appearance-none: Safari keeps a check box at its own size otherwise), named "Offer Fireball" for screen
-    readers. The switch is saved as soon as it changes (submit_on_change_controller.js on the form). An item of the
-    starting equipment stays offered: its switch is on and disabled, and says why (decision; the server keeps it) %>
+<%# One entry the table customizes: its name, "Changed" or "Added" beside it when the table's version differs from
+    its template, a button "Change" that opens its window (the pencil alone on a phone, its word for screen readers),
+    what it is (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like
+    its track, its state written beside it ("In the game", "Out of the game"), saved as soon as it changes (its own form, submit_on_change_controller.js; without JavaScript, the button
+    beside it saves, hidden by that controller). An item of the starting equipment says whether the starting equipment
+    of the table holds it: its switch takes it out or puts it back (decision of 24 November) %>
+<% offered = catalog_entry_offered?(@game_table, entry) %>
 <% box_id = "offered-#{entry.kind}-#{entry.key}" %>
-<% detail = catalog_entry_detail(entry, locked: locked) %>
-<% origin = catalog_entry_origin(@game_table, entry) %>
-<li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5"
-    data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(entry) %>">
+<% detail = catalog_entry_detail(entry, starting: customizations.starting_keys.include?(entry.key), offered: offered) %>
+<% change = catalog_entry_change(entry, customizations.originals) %>
+<li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5">
   <div class="min-w-0">
     <div class="flex min-w-0 items-center gap-2">
       <span class="truncate text-sm font-semibold text-ink" title="<%= entry.name %>"><%= entry.name %></span>
-      <% if origin %>
-        <span class="<%= badge_classes(:pending) %> shrink-0"><%= t("game_tables.catalogs.edit.origin.#{origin}") %></span>
+      <% if change %>
+        <span class="<%= badge_classes(:pending) %> shrink-0"><%= t("game_tables.catalogs.edit.origin.#{change}") %></span>
       <% end %>
     </div>
     <% if detail.present? %>
@@ -28,14 +27,30 @@
     <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
     <span class="sr-only"><%= entry.name %></span>
   <% end %>
-  <span class="relative inline-flex shrink-0 <%= "opacity-50" if locked %>">
-    <%= check_box_tag "offered_keys[]", entry.key, locked || catalog_entry_offered?(@game_table, entry),
-                      id: box_id, disabled: locked, role: "switch",
-                      aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),
-                              describedby: ("#{box_id}-detail" if detail.present?) },
-                      data: { action: "change->submit-on-change#submit" },
-                      class: "peer absolute inset-0 z-10 m-0 size-full appearance-none opacity-0 #{locked ? "cursor-not-allowed" : "cursor-pointer"}" %>
-    <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
-    <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
-  </span>
+  <%= form_with url: game_table_catalog_entry_offer_path(@game_table, entry.key, kind: entry.kind), method: :patch,
+                class: "group flex shrink-0 items-center",
+                data: { controller: "submit-on-change", action: "turbo:morph@document->submit-on-change#hideFallbacks" } do %>
+    <%= hidden_field_tag "offered", "0", id: nil %>
+    <%# Its state in words beside it (decision: the switch alone did not say that it takes the entry out of the whole
+        game): "In the game", or "Out of the game" in red once turned off, changed by CSS as soon as it is clicked %>
+    <%# Both words in one cell of a grid, the other one invisible: the cell keeps the width of the longest, and nothing
+        beside it moves when the state changes %>
+    <%= label_tag box_id, class: "mr-2.5 grid cursor-pointer justify-items-end text-xs", aria: { hidden: true } do %>
+      <span class="invisible col-start-1 row-start-1 text-muted group-has-checked:visible"><%= t("game_tables.catalogs.edit.in_game") %></span>
+      <span class="col-start-1 row-start-1 font-semibold text-error-ink group-has-checked:invisible"><%= t("game_tables.catalogs.edit.out_of_game") %></span>
+    <% end %>
+    <span class="relative inline-flex">
+      <%= check_box_tag "offered", "1", offered, id: box_id, role: "switch",
+                        aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),
+                                describedby: ("#{box_id}-detail" if detail.present?) },
+                        data: { action: "change->submit-on-change#submit" },
+                        class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+      <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+      <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+    </span>
+    <%= button_tag t("game_tables.creation_actions.save"), type: "submit", class: "#{button_classes(:secondary, size: :compact)} ml-2",
+                                                           data: { submit_on_change_target: "fallback" } %>
+    <%= button_tag "", type: "submit", hidden: true, tabindex: -1, aria: { hidden: true },
+                       data: { submit_on_change_target: "submitter" } %>
+  <% end %>
 </li>

@@ -1,0 +1,19 @@
+<%# The entries of a kind the table customizes, grouped (the spells by level, the items by category), two columns of
+    lines from 768 px; a dashed box while there is none. Replaced as a whole when an entry is picked in the window of
+    the catalog (id catalog-customizations) %>
+<div id="catalog-customizations" class="mt-8">
+  <% if customizations.entries.empty? %>
+    <p class="max-w-xl rounded-xl border border-dashed border-line px-6 py-8 text-sm text-muted"><%= t("game_tables.catalogs.edit.empty.#{customizations.kind}") %></p>
+  <% else %>
+    <% catalog_entry_groups(customizations.entries, customizations.kind).each do |title, entries| %>
+      <section class="mt-6 first:mt-0">
+        <h2 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= title %></h2>
+        <ul class="mt-2 grid gap-x-12 border-t border-line md:grid-cols-2">
+          <% entries.each do |entry| %>
+            <%= render "game_tables/catalogs/entry", entry: entry, customizations: customizations %>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+  <% end %>
+</div>

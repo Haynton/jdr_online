@@ -1,0 +1,10 @@
+<%# The window of the whole catalog, over the step "Spells and items": empty until "Customize a spell" is clicked. It
+    stays open while entries are picked (no closeOnSuccess: each pick replaces the list behind). Permanent: a refresh of
+    the page by morphing (after a switch) would otherwise close it and empty it, with what it shows %>
+<dialog id="catalog-picker-dialog" aria-labelledby="catalog-picker-dialog-title" tabindex="-1" data-turbo-prefetch="false" data-turbo-permanent
+        class="m-auto h-[min(760px,calc(100dvh-2rem))] w-[min(880px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-controller="frame-dialog"
+        data-action="turbo:frame-load->frame-dialog#open click->frame-dialog#closeOnBackdrop close->frame-dialog#empty turbo:before-cache@document->frame-dialog#close">
+  <%= turbo_frame_tag GameTables::CatalogEntryDialogHelper::PICKER_FRAME, class: "flex min-h-0 flex-1 flex-col",
+                                                                         data: { frame_dialog_target: "frame" } %>
+</dialog>
