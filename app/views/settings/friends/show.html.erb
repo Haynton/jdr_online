@@ -1,0 +1,70 @@
+<%= settings_section(title: t(".title")) do %>
+  <%= settings_group(title: t(".add_group")) do %>
+    <%# Same field as the invitation of a player to a table, with usernames suggested while typing %>
+    <%= simple_form_for @friend_request, url: settings_friendships_path, method: :post,
+                                         html: { id: "friend-request-form", class: "border-b border-line py-4",
+                                                 data: username_suggestions_data(settings_friend_suggestions_path) },
+                                         defaults: { wrapper_html: { class: "max-w-sm" } } do |form| %>
+      <%= form_error_notification(form) %>
+      <%= form.input :username, required: true, hint: t(".add_hint"),
+                                input_html: username_suggestions_input_options("friend-suggestions") %>
+      <datalist id="friend-suggestions" data-username-suggestions-target="list"></datalist>
+      <%= form.button :submit, t(".send_request"), class: button_classes(:secondary) %>
+    <% end %>
+  <% end %>
+
+  <% if @friend_requests_received.any? %>
+    <%= settings_group(title: t(".received_group")) do %>
+      <ul class="border-b border-line">
+        <% @friend_requests_received.each do |friendship| %>
+          <% username = friendship.requester.username %>
+          <% actions = capture do %>
+            <%# Waits for the user: the attention button, never the full plate (Components, Buttons) %>
+            <%= button_to t(".accept"), settings_friendship_path(friendship), method: :patch,
+                          class: button_classes(:attention, size: :compact),
+                          aria: { label: t(".accept_from", username: username) } %>
+            <%= button_to t(".refuse"), settings_friendship_path(friendship), method: :delete,
+                          class: button_classes(:secondary, size: :compact),
+                          aria: { label: t(".refuse_from", username: username) } %>
+          <% end %>
+          <%= render "settings/friends/person", user: friendship.requester, actions: actions %>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <% if @friend_requests_sent.any? %>
+    <%= settings_group(title: t(".sent_group")) do %>
+      <ul class="border-b border-line">
+        <% @friend_requests_sent.each do |friendship| %>
+          <% actions = capture do %>
+            <%= button_to t(".cancel"), settings_friendship_path(friendship), method: :delete,
+                          class: button_classes(:secondary, size: :compact),
+                          aria: { label: t(".cancel_to", username: friendship.addressee.username) } %>
+          <% end %>
+          <%= render "settings/friends/person", user: friendship.addressee, pending: true, actions: actions %>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+
+  <%= settings_group(title: t(".friends_group")) do %>
+    <% if @friendships.any? %>
+      <ul>
+        <% @friendships.each do |friendship| %>
+          <% friend = friendship.friend_of(current_user) %>
+          <% actions = capture do %>
+            <%= button_to t(".remove"), settings_friendship_path(friendship), method: :delete,
+                          class: button_classes(:secondary, size: :compact),
+                          aria: { label: t(".remove_friend", username: friend.username) },
+                          data: { turbo_confirm: t(".remove_confirmation", username: friend.username),
+                                  confirm_button: t(".remove"), confirm_variant: "danger" } %>
+          <% end %>
+          <%= render "settings/friends/person", user: friend, actions: actions %>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="py-4 text-sm text-muted"><%= t(".no_friends") %></p>
+    <% end %>
+  <% end %>
+<% end %>

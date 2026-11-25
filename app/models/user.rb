@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include HasAvatar
+  include HasFriends
 
   has_many :participations, dependent: :destroy
   # Only the tables the user takes part in: an invitation still pending does not open a table

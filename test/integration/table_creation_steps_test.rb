@@ -115,6 +115,28 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
     assert_equal [], response.parsed_body
   end
 
+  test "the friends of the game master come first, and are suggested before anything is typed" do
+    User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
+    friend = User.create!(email: "lumen@example.com", username: "Lumen", password: TEST_PASSWORD)
+    Friendship.create!(requester: friend, addressee: @user, status: :accepted)
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "lu" }
+    assert_equal %w[Lumen Luara], response.parsed_body
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "" }
+    assert_equal %w[Lumen], response.parsed_body
+  end
+
+  test "a friend already at the table is not suggested" do
+    friend = User.create!(email: "lumen@example.com", username: "Lumen", password: TEST_PASSWORD)
+    Friendship.create!(requester: @user, addressee: friend, status: :accepted)
+    @game_table.participations.create!(user: friend, role: :player, status: :pending)
+
+    get game_table_player_suggestions_path(@game_table), params: { query: "" }
+
+    assert_equal [], response.parsed_body
+  end
+
   test "a % typed is a plain character, not a wildcard that would list every player" do
     User.create!(email: "luara@example.com", username: "Luara", password: TEST_PASSWORD)
 
@@ -126,9 +148,11 @@ class TableCreationStepsTest < ActionDispatch::IntegrationTest
   test "the username field is tied to the list of suggestions" do
     get game_table_summary_path(@game_table)
 
-    assert_select "form[data-controller=username-suggestions][data-username-suggestions-url-value=?]",
+    assert_select "form[data-controller=username-suggestions][data-username-suggestions-url-value=?]" \
+                  "[data-username-suggestions-minimum-length-value='0']",
                   game_table_player_suggestions_path(@game_table) do
       assert_select "input#player_invitation_username[list=player-suggestions][autocomplete=off]"
+      assert_select "input[data-action~='focus->username-suggestions#suggest']"
       assert_select "datalist#player-suggestions[data-username-suggestions-target=list]"
     end
   end

@@ -98,6 +98,11 @@ Rails.application.routes.draw do
     resource :avatar, only: %i[update destroy]
     resource :username, only: :update
     resource :email, only: :update
+    # The friends, the requests received and sent. A friendship is asked (create), accepted by the user asked
+    # (update), then refused, cancelled or removed (destroy)
+    resource :friends, only: :show
+    resources :friendships, only: %i[create update destroy]
+    resources :friend_suggestions, only: :index
     resource :security, only: :show
     resource :password, only: :update
     resource :legal_notice, only: :show

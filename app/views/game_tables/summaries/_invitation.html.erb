@@ -35,14 +35,18 @@
 
   <%# Or straight to a player of the app, by their username: they accept or refuse the invitation (pending until then).
       The label sits above the field and the button, so that the button lines up with the field, error or not %>
-  <%# Usernames suggested from the database while typing (username_suggestions_controller.js, in a <datalist>) %>
+  <%# Usernames suggested from the database while typing (username_suggestions_controller.js, in a <datalist>):
+      the friends of the game master first, as soon as the field gets the focus %>
   <%= simple_form_for player_invitation, url: game_table_player_invitations_path(game_table),
-                                         html: { class: "mt-6", data: username_suggestions_data(game_table) } do |form| %>
+                                         html: { class: "mt-6",
+                                                 data: username_suggestions_data(
+                                                   game_table_player_suggestions_path(game_table), minimum_length: 0
+                                                 ) } do |form| %>
     <%# No required mark: a form of a single field %>
     <%= form.label :username, required: false, class: field_label_classes %>
     <div class="flex items-start gap-2">
       <%= form.input :username, label: false, required: false, wrapper_html: { class: "mb-0 min-w-0 flex-1" },
-                                input_html: username_suggestions_input_options %>
+                                input_html: username_suggestions_input_options("player-suggestions") %>
       <%= form.button :submit, t(".invite"), class: "#{button_classes(:secondary)} shrink-0" %>
     </div>
     <datalist id="player-suggestions" data-username-suggestions-target="list"></datalist>

@@ -19,6 +19,7 @@ module SettingsHelper
   SETTINGS_SECTION_CONTROLLERS = {
     display: %w[displays sections],
     account: %w[accounts avatars usernames emails],
+    friends: %w[friends friendships],
     security: %w[securities passwords],
     legal_notice: %w[legal_notices]
   }.freeze
