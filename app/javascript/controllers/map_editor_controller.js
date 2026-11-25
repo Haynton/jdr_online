@@ -24,9 +24,9 @@ import { confirmWithDialog } from "confirm_dialog"
 // a pinch of the touchpad, or of two fingers) zooms around the pointer, the space bar held or the middle button (or
 // two fingers) moves the map, the buttons of the bar zoom too. Undo and Redo (and their keys) go back through the
 // strokes, Clear everything empties the board (undone like a stroke). An object is put with a click, in the direction
-// chosen by Turn (R); a click on an object put turns it; Take object away, a right click or Delete takes it (or a wall)
-// away. The number of columns of the bar resizes the grid, the rows following to keep its proportions (Anthony's
-// request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
+// chosen by Turn (R); a click on an object put turns it; Take object away or Delete takes it (or a wall) away; a
+// right click puts the tool down. The number of columns of the bar resizes the grid, the rows following to keep its
+// proportions (Anthony's request): cells added or taken away on the right and at the bottom, asked first when something drawn would go,
 // undone like a stroke. The bar says when the drawing was saved. On a map of a table, the brush « Zones bloquantes »
 // paints the cells no token stands on, drawn or on a picture (the first cell of the stroke says whether it paints or
 // takes the paint away), and the tab Jetons puts the tokens of its non-player characters and enemies (one a cell, never
@@ -49,8 +49,10 @@ const toolSwatches = {
 }
 // The tools that act on a map played on a picture: elsewhere, dragging on it moves the map
 const toolsOnPicture = ["blocker", "token", "creature"]
-// How close to a side a right click must be to take its wall away
+// How close to a side Delete must be to take its wall away
 const deletingReach = 6
+// No tool in hand, after a right click (Anthony's request: a chair put, no more chairs): a click does nothing
+const noTool = { kind: "none" }
 // The tools that only take away: clicked again, they give back the tool used before them (Anthony's request)
 // The tools of the bar left by clicking them again: the tool used before comes back
 const toolsLeftByClickingAgain = ["eraser", "remover", "hand", "blocker"]
@@ -231,17 +233,27 @@ export default class extends Controller {
   chooseTool(event) {
     const chosenTool = toolOf(event.currentTarget)
     if (isSameTool(chosenTool, this.tool) && toolsLeftByClickingAgain.includes(chosenTool.kind)) {
-      this.tool = this.toolBeforeTakingAway ?? this.firstFloorTool()
-    } else {
-      if (!toolsLeftByClickingAgain.includes(this.tool.kind)) this.toolBeforeTakingAway = this.tool
-      this.tool = chosenTool
+      return this.useTool(this.toolBeforeTakingAway ?? this.firstFloorTool())
     }
+    if (!toolsLeftByClickingAgain.includes(this.tool.kind)) this.toolBeforeTakingAway = this.tool
+    this.useTool(chosenTool)
+  }
+
+  // A right click on the map puts the tool down: nothing is pressed on the bar, a click does nothing
+  dropToolWithRightClick(event) {
+    event.preventDefault()
+    this.finishStroke()
+    this.useTool(noTool)
+  }
+
+  useTool(tool) {
+    this.tool = tool
     this.pressCurrentTool()
     this.hidePointer()
     this.showBoardCursor()
     // What blocks by itself shows while the blocked zones are painted
-    if (chosenTool.kind === "blocker" || this.wasPaintingBlocked) this.render()
-    this.wasPaintingBlocked = this.tool.kind === "blocker"
+    if (tool.kind === "blocker" || this.wasPaintingBlocked) this.render()
+    this.wasPaintingBlocked = tool.kind === "blocker"
   }
 
   // H chooses the hand, or leaves it (Anthony's request: with a mouse, holding space was a chore). Not while typing
@@ -296,7 +308,7 @@ export default class extends Controller {
       this.showBoardCursor()
       return
     }
-    if (event.button !== 0) return
+    if (event.button !== 0 || this.tool === noTool) return
 
     this.stroke = { changed: false, removing: null, hasApplied: false, before: this.layout.snapshot() }
     this.applyTool(event)
@@ -601,13 +613,8 @@ export default class extends Controller {
     this.rotationLabelTarget.title = this.rotationLabelValue.replace("__degrees__", this.placementRotation * 90)
   }
 
-  // A right click takes away the token or the object under the pointer, or the wall of a side close to it
-  deleteWithRightClick(event) {
-    event.preventDefault()
-    this.deleteAt(this.boardPoint(event))
-  }
-
-  // Delete or Backspace (Stimulus knows neither as a key filter of an action: checked here)
+  // Delete or Backspace take away the token or the object under the pointer, or the wall of a side close to it
+  // (Stimulus knows neither as a key filter of an action: checked here)
   deleteWithKey(event) {
     if (!deletingKeys.includes(event.key)) return
     if (!this.isPointerOverBoard || !this.lastPoint || isTyping(event)) return
@@ -762,7 +769,7 @@ export default class extends Controller {
     this.isPointerOverBoard = true
     this.lastPoint = this.boardPoint(event)
     const side = this.grid.nearestSide(this.lastPoint)
-    if (!this.grid.inside(side.column, side.row)) return
+    if (!this.grid.inside(side.column, side.row) || this.tool === noTool) return
 
     if (this.tool.kind === "edge") return this.markSide(side)
     if (this.tool.kind === "object" || this.tool.kind === "remover") return this.markObject(side)
