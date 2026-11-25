@@ -1,4 +1,12 @@
-<%# Initials of the user in a circle. Hidden from screen readers: the username or a link label always names the user next to it %>
-<span class="flex size-8 shrink-0 items-center justify-center rounded-full border border-line bg-field text-[11px] font-bold text-ink" aria-hidden="true">
-  <%= user.initials %>
-</span>
+<%# The avatar of a user in a circle: their picture (HasAvatar), otherwise their initials. 32 px by default (css_class:
+    its size and the size of the initials). Hidden from screen readers: the username or a link label always names the
+    user next to it. A list of users preloads their picture (avatar_attachment: :blob): no query per avatar %>
+<% css_class = local_assigns.fetch(:css_class, "size-8 text-[11px]") %>
+<% if user.avatar.attached? %>
+  <%= image_tag user.avatar, alt: "", aria: { hidden: true },
+                             class: "#{css_class} shrink-0 rounded-full border border-line bg-field object-cover" %>
+<% else %>
+  <span class="<%= css_class %> flex shrink-0 items-center justify-center rounded-full border border-line bg-field font-bold text-ink" aria-hidden="true">
+    <%= user.initials %>
+  </span>
+<% end %>

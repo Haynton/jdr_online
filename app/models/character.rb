@@ -9,6 +9,7 @@ class Character < ApplicationRecord
   include CharacterHitPoints
   include PlacedOnMaps
   include CharacterDescription
+  include HasAvatar
 
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60

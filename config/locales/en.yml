@@ -143,6 +143,10 @@ en:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            avatar: &avatar_errors
+              blank: "Choose a picture."
+              content_type: "The picture must be a PNG, JPEG or WebP."
+              too_big: "The picture must not exceed %{count} MB."
             hit_point_rolls:
               not_rolled: "Roll your hit dice before finishing."
             ability_scores:
@@ -224,6 +228,7 @@ en:
           wrong_reference: "%{part} › %{field}: “%{parameter}” must name a “%{expected}” field (%{target})"
         user:
           attributes:
+            avatar: *avatar_errors
             username:
               invalid: "can only contain letters, digits, dashes (-) and underscores (_)"
               taken: "is already taken by another player"
@@ -309,6 +314,7 @@ en:
   settings:
     accounts:
       show:
+        avatar_group: "Avatar"
         change_email: "Change the email address"
         change_username: "Change the username"
         current_password_hint: "To confirm it is really you."
@@ -323,6 +329,11 @@ en:
         session_group: "Session"
         title: "Account"
         username_group: "Username"
+    avatars:
+      destroy:
+        removed: "Avatar removed."
+      update:
+        updated: "Avatar saved."
     displays:
       show:
         browser_language: "Browser language"
@@ -359,6 +370,19 @@ en:
       update:
         updated: "Username changed."
   shared:
+    avatar_picker:
+      cancel: "Cancel"
+      change: "Change the picture"
+      choose: "Choose a picture"
+      confirm: "Use this framing"
+      crop_hint: "Drag the picture to place the face in the frame, and enlarge it if needed."
+      crop_title: "Frame the picture"
+      hint: "PNG, JPEG or WebP, %{count} MB at most."
+      remove: "Remove the picture"
+      send: "Send"
+      sending: "Sending the picture…"
+      stage_label: "Picture to frame: drag it, or move it with the arrow keys"
+      zoom: "Enlarge the picture"
     navbar:
       label: "Main navigation"
     navbar_visitor_links:
@@ -1116,8 +1140,6 @@ en:
       previous: "Previous choices"
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
-      avatar: "Avatar"
-      avatar_soon: "Soon: a picture of your character."
       facts:
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"

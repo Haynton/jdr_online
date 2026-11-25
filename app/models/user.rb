@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include HasAvatar
+
   has_many :participations, dependent: :destroy
   # Only the tables the user takes part in: an invitation still pending does not open a table
   has_many :game_tables, -> { merge(Participation.accepted) }, through: :participations

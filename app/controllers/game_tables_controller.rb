@@ -8,7 +8,7 @@ class GameTablesController < ApplicationController
   # The invitations come first: the newest one stays at the top until the player answers it
   def index
     participations = current_user.participations.shown_in_my_tables
-                                 .preload(game_table: { participations: :user })
+                                 .preload(game_table: { participations: { user: { avatar_attachment: :blob } } })
                                  .order(created_at: :desc)
     @participations = participations.partition(&:pending?).flatten
     @chosen_participation = chosen_participation

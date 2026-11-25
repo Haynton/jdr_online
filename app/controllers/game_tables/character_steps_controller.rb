@@ -53,11 +53,8 @@ module GameTables
       redirect_to game_table_path(@game_table) unless @participation.needs_character?
     end
 
-    # The draft, or a new one starting with what the table gives (its level)
     def set_character
-      @character = @participation.character ||
-                   @participation.build_character(game_table: @game_table, kind: :pc, status: :draft,
-                                                  sheet: @game_table.character_values_from_table)
+      @character = @participation.character_draft
     end
 
     # A step not reached yet, unknown, or gone (no spells for this class, a step renamed in the template, an old

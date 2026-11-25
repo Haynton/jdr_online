@@ -13,6 +13,11 @@
     <% name_input = capture { form.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
   <% end %>
   <% sections = sheet_sections(step_page_fields(step)) %>
+  <% if character_avatar_above_fields?(step, sections) %>
+    <div class="mb-8 w-32 md:w-40">
+      <%= render "shared/avatar_picker", picker: character_avatar_picker(character), detached: true %>
+    </div>
+  <% end %>
   <% if sections.empty? && name_input %>
     <div class="max-w-sm"><%= name_input %></div>
   <% end %>

@@ -50,6 +50,12 @@ module CharacterSheets
       step.fields.reject { |field| field["summary_only"] || field["internal"] || field["type"] == "equipment_option" }
     end
 
+    # The picture of the character goes with its name, on the step that asks it: in its own column when the first
+    # section describes its choices (described_choices), otherwise above the fields (a template with one page)
+    def character_avatar_above_fields?(step, sections)
+      step.asks_name && (sections.empty? || sheet_section_layout(sections.first.last) != :described_choices)
+    end
+
     private
 
     def character_step_link(character, step)

@@ -22,5 +22,7 @@
 
     <%= render "shared/settings_dialog" if settings_dialog_available? %>
     <%= render "shared/confirm_dialog" if user_signed_in? %>
+    <%# The forms of a control placed inside another form (shared/_avatar_picker, detached): a form cannot hold one %>
+    <%= yield :detached_forms %>
   </body>
 </html>

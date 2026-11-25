@@ -1,0 +1,11 @@
+<%# The picture of a character (HasAvatar), square with rounded corners, as on a sheet of a game; without one, the
+    place it would take, dashed, with a silhouette. css_class: its size; icon_class: the size of the silhouette.
+    Decorative: the name of the character is always written beside it %>
+<% if character.avatar.attached? %>
+  <%= image_tag character.avatar, alt: "", aria: { hidden: true },
+                                  class: "#{css_class} shrink-0 rounded-xl bg-field object-cover" %>
+<% else %>
+  <span class="<%= css_class %> flex shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-field-line text-muted" aria-hidden="true">
+    <%= render "shared/icons/user_round", css_class: local_assigns.fetch(:icon_class, "size-8") %>
+  </span>
+<% end %>
