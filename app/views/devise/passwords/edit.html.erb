@@ -1,6 +1,6 @@
 <%= auth_card(title: t(".title")) do %>
-  <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-    <%= form_error_notification(f) %>
+  <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |form| %>
+    <%= form_error_notification(form) %>
 
     <%# Devise only checks the link when the form is sent: an expired link is reported here, with a way out %>
     <% if resource.errors.include?(:reset_password_token) %>
@@ -15,19 +15,19 @@
       </div>
     <% end %>
 
-    <%= f.input :reset_password_token, as: :hidden %>
+    <%= form.input :reset_password_token, as: :hidden %>
 
-    <%= f.input :password,
+    <%= form.input :password,
                 label: t(".new_password"),
                 required: true,
                 autofocus: true,
                 hint: (t("devise.shared.minimum_password_length", count: @minimum_password_length) if @minimum_password_length),
                 input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
+    <%= form.input :password_confirmation,
                 label: t(".confirm_new_password"),
                 required: true,
                 input_html: { autocomplete: "new-password" } %>
 
-    <%= f.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
+    <%= form.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
   <% end %>
 <% end %>

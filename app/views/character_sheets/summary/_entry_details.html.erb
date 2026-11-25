@@ -1,0 +1,17 @@
+<%# A spell or an item on the summary sheet whose description opens on demand: a native details (keyboard and screen
+    readers included, no JavaScript), its line as the summary with a chevron that turns. Rendered as a layout around
+    the line: render layout: "character_sheets/summary/entry_details", locals: { description: } do ... end.
+    Without a description, the line alone %>
+<% if description.present? %>
+  <details class="group text-sm">
+    <summary class="flex cursor-pointer list-none items-baseline gap-2 rounded-sm [&::-webkit-details-marker]:hidden">
+      <span class="self-center text-muted transition-transform group-open:rotate-90" aria-hidden="true">
+        <%= render "shared/icons/chevron_right", css_class: "size-3.5" %>
+      </span>
+      <%= yield %>
+    </summary>
+    <p class="mt-1 mb-2 ml-5.5 whitespace-pre-line text-muted"><%= description %></p>
+  </details>
+<% else %>
+  <p class="flex items-baseline gap-2 pl-5.5 text-sm"><%= yield %></p>
+<% end %>

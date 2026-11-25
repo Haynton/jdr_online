@@ -1,0 +1,22 @@
+<%# A card of « Mes personnages », drawn like those of « Mes cartes » (same classes): a link as a whole, the cover of
+    its table (decorative: no picture of the character yet), its name on one line, its main choices, then its table.
+    A draft says so (a neutral badge on the picture) and that its link resumes the creation %>
+<%= link_to character_card_path(character), class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES do %>
+  <span class="relative block aspect-video w-full overflow-hidden bg-primary-soft">
+    <%= image_tag character.game_table.cover_image_path, alt: "", class: "size-full object-cover" %>
+    <% if character.draft? %>
+      <span class="absolute top-2 left-2 <%= badge_classes(:pending) %>"><%= t("characters.tile.draft") %></span>
+    <% end %>
+  </span>
+  <span class="flex flex-1 flex-col gap-1 px-4 pt-3 pb-4">
+    <span class="truncate font-semibold text-ink" title="<%= character_display_name(character) %>"><%= character_display_name(character) %></span>
+    <% choices = character_card_choices(character) %>
+    <% if choices.present? %>
+      <span class="truncate text-sm text-ink" title="<%= choices %>"><%= choices %></span>
+    <% end %>
+    <span class="truncate text-sm text-muted"><%= t("characters.tile.table", name: character.game_table.name) %></span>
+    <% if character.draft? %>
+      <span class="mt-1 text-sm font-medium text-link"><%= t("characters.tile.resume") %></span>
+    <% end %>
+  </span>
+<% end %>

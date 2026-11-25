@@ -1,23 +1,23 @@
 <%= auth_card(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-    <%= form_error_notification(f) %>
+  <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |form| %>
+    <%= form_error_notification(form) %>
 
-    <%= f.input :username,
+    <%= form.input :username,
                 required: true,
                 autofocus: true,
                 input_html: { autocomplete: "nickname" } %>
-    <%= f.input :email,
+    <%= form.input :email,
                 required: true,
                 input_html: { autocomplete: "email" } %>
-    <%= f.input :password,
+    <%= form.input :password,
                 required: true,
                 hint: (t("devise.shared.minimum_password_length", count: @minimum_password_length) if @minimum_password_length),
                 input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
+    <%= form.input :password_confirmation,
                 required: true,
                 input_html: { autocomplete: "new-password" } %>
 
-    <%= f.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
+    <%= form.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
   <% end %>
 
   <p class="mt-5 text-center text-sm text-muted">

@@ -127,6 +127,11 @@ module NavigationHelper
     controller_path.start_with?("sheet_templates")
   end
 
+  # The list of the characters and the page of one of them (not the creation steps, under the table)
+  def characters_page?
+    controller_path == "characters"
+  end
+
   # The list of the maps and the page of one of them
   def map_templates_page?
     controller_path.start_with?("map_templates")

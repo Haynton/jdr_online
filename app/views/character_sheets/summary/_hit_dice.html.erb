@@ -1,11 +1,12 @@
 <%# Under the hit points on the summary (the block of the step that holds them), when the levels after the first get
     hit dice to roll (Character#hit_dice_to_roll, CharacterHitPoints): rolled, the dice kept; not yet, "Roll the hit
     dice" (the server rolls once). Imposed by the table, the button stands out (attention: the character cannot be
-    finished without it); left to the player, the average counts until they roll %>
+    finished without it); left to the player, the average counts until they roll. read_only (a complete character):
+    the dice kept only, nothing to roll %>
 <% dice = character.hit_dice_to_roll %>
 <% rolls = character.kept_hit_point_rolls %>
 <% scope = "game_tables.character_steps.summary.hit_dice" %>
-<% if dice && (rolls || character.may_roll_hit_dice?) %>
+<% if dice && (rolls || (!local_assigns[:read_only] && character.may_roll_hit_dice?)) %>
   <div class="mt-4 text-sm">
     <% if rolls %>
       <p class="text-muted"><%= t("#{scope}.rolled", dice: "d#{dice[:sides]}", results: rolls.join(", ")) %></p>

@@ -1,0 +1,29 @@
+<%# The identity and the description of a complete character (CharacterDescription, decision): its name and the fields
+    that change nothing worked out, by section, drawn by the fields of the creation steps. Cancel goes back to its
+    sheet without saving, Save saves and shows it. Refused, the errors show under their fields %>
+<% content_for :full_width_page do %>
+  <main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
+    <%= render "shared/flashes" %>
+    <%= page_header(title: t(".title", name: @character.name_in_database.presence || t("game_tables.character_steps.summary.unnamed")),
+                    subtitle: t(".subtitle", name: @character.game_table.name)) %>
+    <%= simple_form_for @character, url: character_path(@character), method: :patch,
+                                    html: { class: "flex flex-1 flex-col" } do |form| %>
+      <%= form_error_notification(form) %>
+      <% name_input = capture { form.input :name, required: true, input_html: { autocomplete: "off" } } %>
+      <% sections = sheet_sections(@character.description_fields) %>
+      <% if sections.empty? %>
+        <div class="max-w-sm"><%= name_input %></div>
+      <% end %>
+      <% sections.each_with_index do |(section, fields), position| %>
+        <%= render "character_sheets/sections/section", section: section, fields: fields, character: @character,
+                                                    all_fields: @character.sheet_fields,
+                                                    computed: @character.computed_sheet_values,
+                                                    lead: (name_input if position.zero?) %>
+      <% end %>
+      <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+        <%= form.button :submit, t(".save"), class: "#{button_classes(:primary)} order-last" %>
+        <%= link_to t(".cancel"), character_path(@character), class: button_classes(:secondary) %>
+      </div>
+    <% end %>
+  </main>
+<% end %>

@@ -1,5 +1,8 @@
 <%# The starting equipment on the summary sheet: the items of the options chosen, how many, then the gold
-    (CharacterSheets::StartingEquipment) %>
+    (CharacterSheets::StartingEquipment). Once complete, what the character carries instead: its inventory %>
+<% if character.complete? %>
+  <%= render "character_sheets/summary/inventory", character: character, step: step %>
+<% else %>
 <% starting_equipment = CharacterSheets::StartingEquipment.new(character) %>
 <% items = starting_equipment.chosen_items %>
 <% if items.any? || starting_equipment.gold.positive? %>
@@ -10,4 +13,5 @@
     <% end %>
     <li class="font-medium text-brass"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold", count: starting_equipment.gold) %></li>
   </ul>
+<% end %>
 <% end %>

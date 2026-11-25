@@ -1,24 +1,24 @@
 <%= auth_card(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-    <%= f.input :email,
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |form| %>
+    <%= form.input :email,
                 required: false,
                 autofocus: true,
                 input_html: { autocomplete: "email" } %>
 
     <%# The "forgot password" link sits next to the label, as in the mockups %>
     <div class="mb-1.5 flex items-baseline justify-between gap-4">
-      <%= f.label :password, required: false, class: "text-[13px] font-semibold text-ink" %>
+      <%= form.label :password, required: false, class: "text-[13px] font-semibold text-ink" %>
       <%= link_to t(".forgot_password"), new_password_path(resource_name),
                   class: "text-[13px] font-medium text-link hover:underline" %>
     </div>
-    <%= f.input :password,
+    <%= form.input :password,
                 label: false,
                 required: false,
                 input_html: { autocomplete: "current-password" } %>
 
-    <%= f.input :remember_me, as: :boolean if devise_mapping.rememberable? %>
+    <%= form.input :remember_me, as: :boolean if devise_mapping.rememberable? %>
 
-    <%= f.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
+    <%= form.button :submit, t(".submit"), class: button_classes(:primary, full_width: true) %>
   <% end %>
 
   <%= render "shared/divider", text: t(".new_here") %>

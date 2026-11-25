@@ -65,6 +65,10 @@ Rails.application.routes.draw do
   end
   # The templates of a game master (the template editor): the list (theirs, then the predefined ones), the page of
   # one of them (rename, delete), and "Duplicate", which makes one of theirs from another
+  # The characters of a player on all their tables (« Mes personnages »): the list, the sheet of one of them, and its
+  # identity and description changed once it is complete
+  resources :characters, only: %i[index show edit update]
+
   # The maps of a game master (« Mes cartes »), drawn in the map editor
   resources :map_templates, only: %i[index create edit update destroy] do
     resource :layout, only: :update, module: :map_templates

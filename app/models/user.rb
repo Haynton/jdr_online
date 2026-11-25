@@ -2,6 +2,8 @@ class User < ApplicationRecord
   has_many :participations, dependent: :destroy
   # Only the tables the user takes part in: an invitation still pending does not open a table
   has_many :game_tables, -> { merge(Participation.accepted) }, through: :participations
+  # Its player characters, on all its tables (« Mes personnages »)
+  has_many :characters, through: :participations
   has_many :sheet_templates, foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
   has_many :map_templates, foreign_key: :owner_id, inverse_of: :owner, dependent: :destroy
 

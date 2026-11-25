@@ -3,7 +3,10 @@
     choices, level given by the table), then two columns from 1024 px (summary_columns): abilities, combat, spells and
     details on the left, saving throws and skills, the longest, on the right. A block with nothing to fill in
     (combat: summary_only) shows here only. A name still missing is said here.
-    Then "Create my character", at the bottom of the screen on a short page (mt-auto) %>
+    Then "Create my character", at the bottom of the screen on a short page (mt-auto).
+    read_only: the sheet of a complete character (« Mes personnages »): its name is the title of the page, "Change"
+    leads to its identity and description only, nothing to roll or confirm %>
+<% read_only = local_assigns[:read_only] %>
 <% computed = character.computed_sheet_values %>
 <% steps = character.creation_steps.summary_blocks %>
 <% header_step = summary_header_step(steps) %>
@@ -20,23 +23,26 @@
 
 <% if header_step %>
   <%= render "character_sheets/summary/block", character: character, step: header_step,
-                                                          computed: computed, header: true %>
+                                                          computed: computed, header: true,
+                                                          read_only: read_only %>
 <% end %>
 <div class="mt-8 grid gap-x-12 gap-y-8 lg:grid-cols-2">
   <% summary_columns(steps - [header_step]).each do |column| %>
     <div class="flex min-w-0 flex-col gap-8">
       <% column.each do |step| %>
         <%= render "character_sheets/summary/block", character: character, step: step, computed: computed,
-                                                                in_grid: true %>
+                                                                in_grid: true, read_only: read_only %>
       <% end %>
     </div>
   <% end %>
 </div>
 
+<% unless read_only %>
 <%= form_with url: game_table_character_step_path(character.game_table, CharacterCreationSteps::SUMMARY),
               method: :patch, class: "mt-auto" do %>
   <% summary_step = character.creation_steps.find(CharacterCreationSteps::SUMMARY) %>
   <%= render layout: "game_tables/character_steps/actions", locals: { character: character, step: summary_step } do %>
     <%= button_tag t("game_tables.character_steps.show.submit"), type: :submit, class: button_classes(:primary) %>
   <% end %>
+<% end %>
 <% end %>

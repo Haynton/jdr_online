@@ -41,8 +41,8 @@ class SideNavTest < ActionDispatch::IntegrationTest
     assert_select "#side-nav > a[href=?] + div > button[data-action='side-nav#toggle']", game_tables_path
     assert_select "#side-nav > div:has(> button[data-action='side-nav#toggle']) + div.md\\:mt-auto > a[href=?]",
                   game_tables_path, text: "Mes tables"
-    assert_select "#side-nav > div.md\\:mt-auto > a[href=?] + a[href=?] + a[href=?]", game_tables_path,
-                  sheet_templates_path, map_templates_path
+    assert_select "#side-nav > div.md\\:mt-auto > a[href=?] + a[href=?] + a[href=?] + a[href=?]", game_tables_path,
+                  characters_path, sheet_templates_path, map_templates_path
     assert_select "#side-nav > div.md\\:mt-auto + div.md\\:hidden + div.hidden.md\\:flex"
   end
 

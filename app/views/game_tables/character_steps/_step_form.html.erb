@@ -5,12 +5,12 @@
     The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen on a short step %>
 <%= simple_form_for character, url: game_table_character_step_path(character.game_table, step.key), method: :patch,
                                html: { class: "flex flex-1 flex-col" },
-                               data: character_sheet_form_data(character, computed, step) do |f| %>
+                               data: character_sheet_form_data(character, computed, step) do |form| %>
   <%= hidden_field_tag :go_to, "", id: nil, data: { save_before_leaving_target: "destination" } %>
-  <%= form_error_notification(f) %>
+  <%= form_error_notification(form) %>
   <%# Asked by the step that names the character; required to finish, not for the draft %>
   <% if step.asks_name %>
-    <% name_input = capture { f.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
+    <% name_input = capture { form.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
   <% end %>
   <% sections = sheet_sections(step_page_fields(step)) %>
   <% if sections.empty? && name_input %>
@@ -30,6 +30,6 @@
   <% end %>
 
   <%= render layout: "game_tables/character_steps/actions", locals: { character: character, step: step, saves: true } do %>
-    <%= f.button :submit, t("game_tables.character_steps.show.continue"), class: button_classes(:primary) %>
+    <%= form.button :submit, t("game_tables.character_steps.show.continue"), class: button_classes(:primary) %>
   <% end %>
 <% end %>

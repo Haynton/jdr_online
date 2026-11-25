@@ -77,6 +77,15 @@ module CharacterSheets
       fields.all? { |field| summary_group(field) == :texts } && summary_texts(character, fields).empty?
     end
 
+    # The values of the game in the sections of a step, not asked at creation (the gold of the equipment), shown once
+    # the character is complete: they start from what was worked out then (initial_from)
+    def summary_play_fields(character, step)
+      sections = step.fields.pluck("section").uniq
+      character.sheet_fields.select do |field|
+        field["at_creation"] == false && sections.include?(field["section"]) && !character.sheet[field["key"]].nil?
+      end
+    end
+
     # The values the table gives (the level), shown with the facts of the first block, unless a step shows them
     # already: a level the players choose is a field of the first page (CharacterCreationSteps
     # #with_fields_chosen_by_players)

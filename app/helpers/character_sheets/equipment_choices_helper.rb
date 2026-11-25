@@ -80,6 +80,17 @@ module CharacterSheets
       t("#{SCOPE}.armor_class", value: properties["armor_class"]) if properties["armor_class"]
     end
 
+    # A line of the inventory of a complete character, written like a line of the starting equipment ("10 × Torche")
+    def inventory_item_text(item)
+      item.quantity > 1 ? t("#{SCOPE}.item_count", count: item.quantity, name: item.name) : item.name
+    end
+
+    def inventory_item_detail(item)
+      return item.properties["damage"] if item.properties["damage"]
+
+      t("#{SCOPE}.armor_class", value: item.properties["armor_class"]) if item.properties["armor_class"]
+    end
+
     # The weight of the line (5 kg for 10 torches), in the unit of the template, nothing for an item of no weight
     def equipment_item_weight(item)
       weight = item.entry.properties["weight"].to_f * item.count

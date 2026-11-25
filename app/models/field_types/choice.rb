@@ -20,6 +20,11 @@ module FieldTypes
       field["options"].to_a.map { |option| [option, option] }
     end
 
+    # A list whose options have effects (the class, the background) changes the sheet: fixed once complete
+    def describes_character?(field)
+      field["effects"].blank?
+    end
+
     # The options this sheet offers: those the option picked in options_from gives, or all of them
     def offered_options(field, sheet)
       return field["options"].to_a unless field["options_from"]
