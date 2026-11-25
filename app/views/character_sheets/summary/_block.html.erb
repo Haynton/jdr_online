@@ -5,8 +5,11 @@
     the upload comes with Active Storage and Cloudinary. Decorative until then (hidden from screen readers).
     in_grid: the block sits in a column of the sheet (summary_columns), which spaces its blocks itself.
     A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it. The block of the step
-    that chooses the spells lists them (summary_spells), the one of the hit points their hit dice (summary/_hit_dice) %>
+    that chooses the spells lists them (summary_spells), the one of the hit points their hit dice (summary/_hit_dice).
+    read_only: the sheet of a complete character: the header names the page (h1, its table in gold above it) and its
+    "Change" opens the identity and description; the other blocks have none (fixed once complete, decision) %>
 <% header = local_assigns[:header] %>
+<% read_only = local_assigns[:read_only] %>
 <% sections = step.fields.group_by { |field| field["section"] }
                          .reject { |_section, fields| summary_section_empty?(character, fields) } %>
 <section class="<%= "mt-10" unless local_assigns[:in_grid] || header %> <%= "flex items-start gap-4 sm:gap-6" if header %> min-w-0"
@@ -18,15 +21,29 @@
     </div>
   <% end %>
   <div class="min-w-0 flex-1">
-    <div class="flex items-baseline justify-between gap-4">
-      <% if header %>
+    <div class="flex <%= header && read_only ? "items-start" : "items-baseline" %> justify-between gap-4">
+      <% if header && read_only %>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold tracking-wider text-brass uppercase"><%= t("characters.show.table", name: character.game_table.name) %></p>
+          <h1 id="summary_<%= step.key %>" class="mt-1 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+            <%= character_display_name(character) %>
+          </h1>
+        </div>
+      <% elsif header %>
         <h2 id="summary_<%= step.key %>" class="text-2xl font-bold tracking-tight text-ink">
           <%= character.name.presence || t("game_tables.character_steps.summary.unnamed") %>
         </h2>
       <% else %>
         <h2 id="summary_<%= step.key %>" class="text-xs font-semibold tracking-wider text-brass uppercase"><%= character_step_label(step) %></h2>
       <% end %>
-      <% unless step.summary_only %>
+      <% if read_only %>
+        <% if header %>
+          <%= link_to edit_character_path(character), class: "#{button_classes(:secondary, size: :compact)} shrink-0" do %>
+            <%= render "shared/icons/pencil" %>
+            <%= t("characters.show.edit") %>
+          <% end %>
+        <% end %>
+      <% elsif !step.summary_only %>
         <%= link_to game_table_character_step_path(character.game_table, step.key),
                     class: "shrink-0 text-sm font-medium text-link hover:underline" do %>
           <%= t("game_tables.character_steps.show.change") %>
@@ -45,11 +62,11 @@
       <% end %>
     <% end %>
     <% step.behaviors.each do |behavior| %>
-      <%= render behavior.summary_partial, character: character %>
+      <%= render behavior.summary_partial, character: character, step: step %>
     <% end %>
     <%# Under the hit points worked out by their rule: the hit dice of the levels after the first %>
     <% if step.fields.any? { |field| field["rule"] == ComputedRules::HitPointsByLevel::KEY } %>
-      <%= render "character_sheets/summary/hit_dice", character: character %>
+      <%= render "character_sheets/summary/hit_dice", character: character, read_only: read_only %>
     <% end %>
   </div>
 </section>

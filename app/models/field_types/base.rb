@@ -72,6 +72,12 @@ module FieldTypes
       :facts
     end
 
+    # Tells who the character is, without changing what is worked out (a text, a list without effects): the player may
+    # still change it once the character is complete, from « Mes personnages » (decision: identity and description only)
+    def describes_character?(_field)
+      false
+    end
+
     # A computed value is worked out every time, never stored
     def stored?
       true

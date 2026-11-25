@@ -14,6 +14,11 @@ module FieldTypes
       field["options"].to_a.map { |option| [option, option] }
     end
 
+    # A list whose options have effects (the class, the background) changes the sheet: fixed once complete
+    def describes_character?(field)
+      field["effects"].blank?
+    end
+
     def error_for(value, field, **)
       [:inclusion] unless field["options"].include?(value)
     end

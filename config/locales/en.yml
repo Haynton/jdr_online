@@ -220,6 +220,11 @@ en:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
+    summary:
+      inventory:
+        title: "Inventory"
+        empty: "Nothing in the inventory."
+        play_value: "%{label}: %{value}"
     fields:
       attacks:
         add: "Add an attack"
@@ -369,6 +374,7 @@ en:
     side_nav:
       label: "Main navigation"
       my_tables: "My tables"
+      my_characters: "My characters"
       my_templates: "My templates"
       my_maps: "My maps"
       pending_invitations:
@@ -383,6 +389,28 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+  characters:
+    index:
+      title: "My characters"
+      subtitle: "Your characters on all your tables. A draft takes its creation up where you left it."
+      own_title: "Your characters"
+      empty_title: "No character yet"
+      empty_hint: "Join a table to make yours."
+    tile:
+      draft: "Draft"
+      table: "Table “%{name}”"
+      resume: "Resume my character"
+    show:
+      table: "Table “%{name}”"
+      edit: "Change"
+      back: "My characters"
+    edit:
+      title: "Change %{name}"
+      subtitle: "Its name, identity and description, for the table “%{name}”. The class, abilities, spells and equipment stay those of the creation."
+      save: "Save"
+      cancel: "Cancel"
+    update:
+      saved: "Character saved."
   map_templates:
     create:
       default_name: "New map"

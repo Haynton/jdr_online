@@ -19,6 +19,10 @@ module FieldTypes
       Array(typed_value).compact_blank.map(&:to_s)
     end
 
+    def describes_character?(_field)
+      true
+    end
+
     def error_for(value, field, **)
       return [:inclusion] unless value.is_a?(Array) && (value - field["options"].to_a).empty?
 

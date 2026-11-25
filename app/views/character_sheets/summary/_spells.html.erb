@@ -1,12 +1,15 @@
 <%# The spells chosen on the summary sheet, under the save DC and the attack bonus of the Spells block: the cantrips,
-    then the prepared spells by level, each with its school, as on a sheet of a game %>
+    then the prepared spells by level, each with its school, as on a sheet of a game. Each opens its description
+    (summary/_entry_details): the player reads the spells they chose %>
 <% summary_spell_groups(character).each do |title, spells| %>
   <h3 class="mt-5 text-sm font-semibold text-ink"><%= title %></h3>
-  <ul class="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+  <ul class="mt-2 grid items-start gap-x-6 gap-y-1 sm:grid-cols-2">
     <% spells.each do |spell| %>
-      <li class="flex items-baseline gap-2 text-sm">
-        <span class="text-ink"><%= spell["name"] %></span>
-        <span class="text-xs text-muted"><%= spell.dig("properties", "school") %></span>
+      <li>
+        <%= render layout: "character_sheets/summary/entry_details", locals: { description: spell["description"] } do %>
+          <span class="text-ink"><%= spell["name"] %></span>
+          <span class="text-xs text-muted"><%= spell.dig("properties", "school") %></span>
+        <% end %>
       </li>
     <% end %>
   </ul>

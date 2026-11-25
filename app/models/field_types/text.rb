@@ -13,6 +13,10 @@ module FieldTypes
       field["short"] ? :facts : :texts
     end
 
+    def describes_character?(_field)
+      true
+    end
+
     def error_for(value, _field, **)
       return [:invalid] unless value.is_a?(String)
 

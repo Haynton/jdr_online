@@ -191,6 +191,11 @@ fr:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
+    summary:
+      inventory:
+        title: "Inventaire"
+        empty: "Rien dans l'inventaire."
+        play_value: "%{label} : %{value}"
     fields:
       attacks:
         add: "Ajouter une attaque"
@@ -340,6 +345,7 @@ fr:
     side_nav:
       label: "Navigation principale"
       my_tables: "Mes tables"
+      my_characters: "Mes personnages"
       my_templates: "Mes modèles"
       my_maps: "Mes cartes"
       pending_invitations:
@@ -354,6 +360,28 @@ fr:
     confirm_dialog:
       cancel: "Annuler"
       confirm: "Confirmer"
+  characters:
+    index:
+      title: "Mes personnages"
+      subtitle: "Vos personnages sur toutes vos tables. Un brouillon reprend sa création là où vous l'avez laissée."
+      own_title: "Vos personnages"
+      empty_title: "Aucun personnage pour l'instant"
+      empty_hint: "Rejoignez une table pour créer le vôtre."
+    tile:
+      draft: "Brouillon"
+      table: "Table « %{name} »"
+      resume: "Reprendre mon personnage"
+    show:
+      table: "Table « %{name} »"
+      edit: "Modifier"
+      back: "Mes personnages"
+    edit:
+      title: "Modifier %{name}"
+      subtitle: "Son nom, son identité et sa description, pour la table « %{name} ». La classe, les caractéristiques, les sorts et l'équipement restent ceux de la création."
+      save: "Enregistrer"
+      cancel: "Annuler"
+    update:
+      saved: "Personnage enregistré."
   map_templates:
     create:
       default_name: "Nouvelle carte"

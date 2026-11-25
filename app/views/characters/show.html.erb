@@ -1,0 +1,12 @@
+<%# The sheet of a complete character of the player: the summary sheet of its creation, read only (its name is the
+    title of the page, "Change" leads to its identity and description). Across the whole width beside the navigation,
+    like the creation pages; « Mes personnages » at the bottom on the right, like the buttons of a step %>
+<% content_for :full_width_page do %>
+  <main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
+    <%= render "shared/flashes" %>
+    <%= render "character_sheets/summary/sheet", character: @character, read_only: true %>
+    <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+      <%= link_to t(".back"), characters_path, class: button_classes(:secondary) %>
+    </div>
+  </main>
+<% end %>

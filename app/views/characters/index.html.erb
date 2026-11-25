@@ -1,0 +1,33 @@
+<%# The characters of the player on all their tables, laid out like « Mes cartes » and « Mes modèles »: across the
+    whole width, a row of cards, the latest changed first. A complete one opens its sheet, a draft its creation steps.
+    None yet: a dashed card says how to make one (join a table) %>
+<%# The main landmark of the page: a page across the whole width carries its own (layouts/application does not) %>
+<% content_for :full_width_page do %>
+  <main class="px-4 pt-8 pb-12 sm:px-8">
+    <%# The messages float above the page (a bubble): rendered here, the layout leaves them to a full width page %>
+    <%= render "shared/flashes" %>
+    <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
+
+    <%# Full keys: inside a render layout: block, a short key is looked up under the row partial %>
+    <%= render layout: "game_tables/choice_row", locals: { legend: t(".own_title"), heading_id: "own-characters-title" } do %>
+      <% if @characters.empty? %>
+        <li class="w-[62%] shrink-0 sm:w-56">
+          <%= link_to game_tables_path, class: "#{SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES} border border-dashed border-field-line bg-transparent ring-0" do %>
+            <span class="flex aspect-video w-full items-center justify-center border-b border-dashed border-field-line text-brass" aria-hidden="true">
+              <%= render "shared/icons/venetian_mask", css_class: "size-10" %>
+            </span>
+            <span class="flex flex-col gap-1 px-4 pt-3 pb-4">
+              <span class="font-semibold text-ink"><%= t("characters.index.empty_title") %></span>
+              <span class="text-sm text-muted"><%= t("characters.index.empty_hint") %></span>
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+      <% @characters.each do |character| %>
+        <li class="w-[62%] shrink-0 sm:w-56">
+          <%= render "characters/tile", character: character %>
+        </li>
+      <% end %>
+    <% end %>
+  </main>
+<% end %>
