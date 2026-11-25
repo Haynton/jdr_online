@@ -19,7 +19,8 @@ module SettingsHelper
   SETTINGS_SECTION_CONTROLLERS = {
     display: %w[displays sections],
     account: %w[accounts avatars usernames emails],
-    security: %w[securities passwords]
+    security: %w[securities passwords],
+    legal_notice: %w[legal_notices]
   }.freeze
 
   def current_settings_section?(section)

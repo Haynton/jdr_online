@@ -271,6 +271,32 @@ fr:
   layouts:
     settings:
       back_to_settings: "Paramètres"
+  # The legal notice (legal_notices/_content). The attributions stay in English, word for word, as their licenses ask
+  legal_notices:
+    content:
+      assets_title: "Police et icônes"
+      contact: "Contact :"
+      fantasy_attribution: "This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."
+      fantasy_changes: "Modifications : sélection des règles et des entrées, traduction française de l'équipe, distances en mètres et poids en kilos, descriptions courtes réécrites."
+      fantasy_intro: "Compatible 5e édition. Ses règles, ses sorts, ses objets et ses créatures viennent du System Reference Document 5.2.1, publié sous licence Creative Commons Attribution 4.0 International. Mention d'attribution demandée par son éditeur :"
+      fantasy_title: "Modèle « Fantasy héroïque »"
+      font: "Police Inter, © 2016 The Inter Project Authors, sous licence SIL Open Font License 1.1."
+      game_rules_title: "Règles de jeu"
+      horror_licensed_material: "This product is based on the following Licensed Material: “Basic Roleplaying: Universal Game Engine,” copyright © 2024 Chaosium Inc., by Jason Durall and Steve Perrin."
+      horror_license: "This product is licensed under the ORC License held in the Library of Congress at TX 9-307-067 and available online at various locations including www.chaosium.com/orclicense, www.azoralaw.com/orclicense, www.gencon.com/orclicense and others. All warranties are disclaimed as set forth therein."
+      horror_changes: "Ses créatures, leurs valeurs et leurs textes sont écrits par l'équipe."
+      horror_intro: "D'après le moteur de jeu Basic Roleplaying, sous licence ORC. Mention demandée par son éditeur :"
+      horror_title: "Modèle « Horreur cosmique »"
+      hosting_emails: "E-mails : Brevo (Paris, France)."
+      hosting_images: "Images envoyées par les joueurs : Cloudinary."
+      hosting_site: "Site et base de données : Heroku, un service de Salesforce, Inc. (San Francisco, États-Unis), serveurs situés en Europe."
+      hosting_title: "Hébergement et services"
+      icons: "Icônes Lucide, sous licence ISC, dont une partie vient de Feather, sous licence MIT."
+      publication_director: "Directeur de la publication : l'équipe du projet."
+      publisher: "Fumble Quest est un projet de fin de formation, réalisé par une équipe d'élèves du bootcamp Le Wagon."
+      publisher_title: "Éditeur du site"
+    show:
+      title: "Mentions légales"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -325,9 +351,13 @@ fr:
     passwords:
       update:
         updated: "Mot de passe modifié."
+    legal_notices:
+      show:
+        title: "Mentions légales"
     sections_menu:
       account: "Compte"
       display: "Affichage"
+      legal_notice: "Mentions légales"
       security: "Sécurité"
       title: "Paramètres"
     securities:
@@ -377,6 +407,10 @@ fr:
     settings_dialog:
       close: "Fermer les paramètres"
       title: "Paramètres"
+    site_footer:
+      copyright: "© Fumble Quest"
+      label: "Pied de page"
+      legal_notice: "Mentions légales"
     side_nav:
       label: "Navigation principale"
       my_tables: "Mes tables"

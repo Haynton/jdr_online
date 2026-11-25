@@ -300,6 +300,32 @@ en:
   layouts:
     settings:
       back_to_settings: "Settings"
+  # The legal notice (legal_notices/_content). The attributions stay in English, word for word, as their licenses ask
+  legal_notices:
+    content:
+      assets_title: "Font and icons"
+      contact: "Contact:"
+      fantasy_attribution: "This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode."
+      fantasy_changes: "Changes: selection of the rules and entries, French translation by the team, short descriptions rewritten."
+      fantasy_intro: "5E compatible. Its rules, spells, items and creatures come from the System Reference Document 5.2.1, published under the Creative Commons Attribution 4.0 International License. Attribution asked for by its publisher:"
+      fantasy_title: "“Heroic fantasy” template"
+      font: "Inter font, © 2016 The Inter Project Authors, under the SIL Open Font License 1.1."
+      game_rules_title: "Game rules"
+      horror_licensed_material: "This product is based on the following Licensed Material: “Basic Roleplaying: Universal Game Engine,” copyright © 2024 Chaosium Inc., by Jason Durall and Steve Perrin."
+      horror_license: "This product is licensed under the ORC License held in the Library of Congress at TX 9-307-067 and available online at various locations including www.chaosium.com/orclicense, www.azoralaw.com/orclicense, www.gencon.com/orclicense and others. All warranties are disclaimed as set forth therein."
+      horror_changes: "Its creatures, their values and their texts are written by the team."
+      horror_intro: "Based on the Basic Roleplaying game engine, under the ORC License. Notice asked for by its publisher:"
+      horror_title: "“Cosmic horror” template"
+      hosting_emails: "Emails: Brevo (Paris, France)."
+      hosting_images: "Pictures sent by the players: Cloudinary."
+      hosting_site: "Site and database: Heroku, a service of Salesforce, Inc. (San Francisco, United States), servers in Europe."
+      hosting_title: "Hosting and services"
+      icons: "Lucide icons, under the ISC License, part of them from Feather, under the MIT License."
+      publication_director: "Publication director: the project team."
+      publisher: "Fumble Quest is a final project, made by a team of students of the Le Wagon bootcamp."
+      publisher_title: "Publisher"
+    show:
+      title: "Legal notice"
   # Each language is named in its own language, so that a user can always find theirs
   locale_names:
     en: "English"
@@ -354,9 +380,13 @@ en:
     passwords:
       update:
         updated: "Password changed."
+    legal_notices:
+      show:
+        title: "Legal notice"
     sections_menu:
       account: "Account"
       display: "Display"
+      legal_notice: "Legal notice"
       security: "Security"
       title: "Settings"
     securities:
@@ -406,6 +436,10 @@ en:
     settings_dialog:
       close: "Close the settings"
       title: "Settings"
+    site_footer:
+      copyright: "© Fumble Quest"
+      label: "Footer"
+      legal_notice: "Legal notice"
     side_nav:
       label: "Main navigation"
       my_tables: "My tables"
