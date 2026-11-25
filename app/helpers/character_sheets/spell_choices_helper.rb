@@ -4,7 +4,8 @@
 module CharacterSheets
   module CharacterSheets::SpellChoicesHelper
     # A spell chosen keeps the gold outline of a card chosen (choice_tile_classes)
-    SPELL_ROW_CLASSES = "flex flex-col rounded-lg border border-line bg-surface px-3 py-2.5 " \
+    # min-w-0: on a phone, a card holds in its column instead of stretching to its content (it widened the page)
+    SPELL_ROW_CLASSES = "flex min-w-0 flex-col rounded-lg border border-line bg-surface px-3 py-2.5 " \
                         "has-checked:border-brass has-checked:ring-1 has-checked:ring-brass " \
                         "has-checked:ring-inset".freeze
     # 18 px plus its border: as high as the name beside it (20 px), the cards keep the same height
