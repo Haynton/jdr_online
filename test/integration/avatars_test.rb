@@ -79,11 +79,12 @@ class AvatarsTest < ActionDispatch::IntegrationTest
     assert_not_predicate @character.reload.avatar, :attached?
   end
 
-  test "the page Change offers the picture above its form, not inside it" do
+  test "the page Change offers the picture beside its first section, its forms outside the form of the page" do
     get edit_character_path(@character)
 
-    assert_select "#character-avatar form#character-avatar-form"
-    assert_select "form[action=?] #character-avatar", character_path(@character), count: 0
+    assert_select "form[action=?] input[type=file][form=character-avatar-form]", character_path(@character)
+    assert_select "form form", count: 0
+    assert_select "body > form#character-avatar-form[action=?]", character_avatar_path(@character)
   end
 
   # The template of the test asks the name at its last step (description), in sections without described choices:
