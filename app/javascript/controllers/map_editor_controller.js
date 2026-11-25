@@ -71,7 +71,7 @@ export default class extends Controller {
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
                      "drawingTools", "pictureWidth", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
-                     "tokenTemplate"]
+                     "tokenTemplate", "brushSize"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
                     shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String,
@@ -81,6 +81,7 @@ export default class extends Controller {
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
     this.layout = new MapLayout(this.layoutValue, this.grid)
     this.placementRotation = 0
+    this.brushSize = 1
     // The proportions of the grid as it was opened: a resize keeps them, without drifting from rounding to rounding
     this.gridRatio = this.rowsValue / this.columnsValue
     this.history = new DrawingHistory()
@@ -126,6 +127,7 @@ export default class extends Controller {
     this.showSize()
     this.saveStateTarget.textContent = this.lastSaveState ?? ""
     this.pressCurrentTool()
+    this.pressBrushSize()
     this.render()
     this.showHistory()
     // An <svg> has no hidden property (only HTML elements do): the attribute itself is taken away
@@ -265,6 +267,33 @@ export default class extends Controller {
 
   firstFloorTool() {
     return toolOf(this.toolTargets.find((button) => button.dataset.toolKind === "floor"))
+  }
+
+  // The side of the square a floor paints at each cell; the walls and the objects stay one cell at a time
+  chooseBrushSize(event) {
+    this.brushSize = Number(event.currentTarget.dataset.brushSize)
+    this.pressBrushSize()
+  }
+
+  pressBrushSize() {
+    this.brushSizeTargets.forEach((button) => {
+      button.setAttribute("aria-pressed", Number(button.dataset.brushSize) === this.brushSize)
+    })
+  }
+
+  // The square of the brush around the cell aimed at (a little more to the right and below for an even side), cut by
+  // the edges of the grid
+  floorBrushCells({ column, row }) {
+    const firstOffset = -Math.floor((this.brushSize - 1) / 2)
+    const offsets = Array.from({ length: this.brushSize }, (_, index) => firstOffset + index)
+    return offsets.flatMap((rowOffset) => offsets.map((columnOffset) => [column + columnOffset, row + rowOffset]))
+      .filter(([brushColumn, brushRow]) => this.grid.inside(brushColumn, brushRow))
+  }
+
+  paintFloorBrush(side) {
+    const paintedCells = this.floorBrushCells(side)
+      .filter(([column, row]) => this.layout.paintFloor(column, row, this.tool.key))
+    return paintedCells.length > 0
   }
 
   pressCurrentTool() {
@@ -664,7 +693,7 @@ export default class extends Controller {
   // A floor paints its cell, the eraser takes a wall or a floor. A wall or a door: the first side of the stroke says
   // whether the stroke puts that wall, or takes it away from the sides that hold it already
   changeLayout(side, isFirstCell) {
-    if (this.tool.kind === "floor") return this.layout.paintFloor(side.column, side.row, this.tool.key)
+    if (this.tool.kind === "floor") return this.paintFloorBrush(side)
     if (this.tool.kind === "blocker") return this.paintBlocked(side)
     if (this.tool.kind === "token") return this.putToken(side)
     if (this.tool.kind === "creature") return this.putCreature(side, isFirstCell)
@@ -774,6 +803,7 @@ export default class extends Controller {
     if (this.tool.kind === "edge") return this.markSide(side)
     if (this.tool.kind === "object" || this.tool.kind === "remover") return this.markObject(side)
     if (this.tool.kind === "token" || this.tool.kind === "creature") return this.markToken(side)
+    if (this.tool.kind === "floor") return this.markCells(this.floorBrushCells(side), allowedMark)
     this.markCells([[side.column, side.row]], allowedMark)
   }
 

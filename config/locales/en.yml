@@ -512,7 +512,7 @@ en:
           one: "%{count} wall"
           other: "%{count} walls"
       hand: "Hand (H)"
-      help_html: "<b>Floors</b>: drag to paint. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: the hand (<kbd>H</kbd>) then drag, two fingers on the touchpad or the screen, hold <kbd>Space</kbd> and drag, or middle click. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: <kbd>Delete</kbd> on an object or a wall. <b>Right click</b>: puts the tool in hand down."
+      help_html: "<b>Floors</b>: drag to paint, <b>Brush</b> chooses the size of the square painted. <b>Walls and doors</b>: aim at the side between two cells, go over it again to take it away. <b>Eraser</b>: near a side, takes its wall away; otherwise, the floor of the cell.<br><b>Zoom</b>: wheel or pinch, around the pointer. <b>Move</b>: the hand (<kbd>H</kbd>) then drag, two fingers on the touchpad or the screen, hold <kbd>Space</kbd> and drag, or middle click. <kbd>Ctrl</kbd> <kbd>Z</kbd> to undo.<br><b>Objects</b>: <kbd>R</kbd> chooses the direction, a click on an object put turns it. <b>Take away</b>: <kbd>Delete</kbd> on an object or a wall. <b>Right click</b>: puts the tool in hand down."
       more_columns: "One column more"
       objects_tab: "Objects"
       presets_tab: "Templates"
@@ -558,6 +558,10 @@ en:
       stone: "Stone"
       water: "Water"
     floor_tools:
+      brush_size:
+        one: "One-cell brush"
+        other: "%{count} × %{count} cell brush"
+      brush_title: "Brush"
       edges_title: "Walls"
       floors_title: "Floors"
       walls_note: "A room, stone and an enclosure wall themselves on the side of the void. A door also goes between a floor and the void."
