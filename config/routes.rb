@@ -53,6 +53,8 @@ Rails.application.routes.draw do
       resources :character_steps, only: %i[show update], path: "character/steps", param: :step do
         patch :draft, on: :member
       end
+      # The picture of that character while it is made: the draft is saved first if it was not yet
+      resource :character_avatar, only: %i[update destroy], path: "character/avatar", controller: "/characters/avatars"
       # "Roll the dice" of the abilities on that sheet: the server rolls, nothing is stored (JSON)
       resource :ability_roll, only: :create
       # "Roll the hit dice" on the summary of that character: the server rolls once and keeps the results
@@ -63,11 +65,12 @@ Rails.application.routes.draw do
   resources :invitations, only: :show, param: :token do
     post :join, on: :member
   end
-  # The templates of a game master (the template editor): the list (theirs, then the predefined ones), the page of
-  # one of them (rename, delete), and "Duplicate", which makes one of theirs from another
   # The characters of a player on all their tables (« Mes personnages »): the list, the sheet of one of them, and its
   # identity and description changed once it is complete
-  resources :characters, only: %i[index show edit update]
+  resources :characters, only: %i[index show edit update] do
+    # Its picture, changed on its page "Change" (complete)
+    resource :avatar, only: %i[update destroy], module: :characters
+  end
 
   # The maps of a game master (« Mes cartes »), drawn in the map editor
   resources :map_templates, only: %i[index create edit update destroy] do
@@ -75,6 +78,8 @@ Rails.application.routes.draw do
     resource :picture, only: %i[create destroy], module: :map_templates
   end
 
+  # The templates of a game master (the template editor): the list (theirs, then the predefined ones), the page of
+  # one of them (rename, delete), and "Duplicate", which makes one of theirs from another
   resources :sheet_templates, only: %i[index show update destroy] do
     resource :duplicate, only: :create, module: :sheet_templates
     # The fields of the character sheet, by section, then the form of one of them (named by its key)
@@ -89,6 +94,7 @@ Rails.application.routes.draw do
     resource :display, only: :show
     resource :locale, only: :update
     resource :account, only: :show
+    resource :avatar, only: %i[update destroy]
     resource :username, only: :update
     resource :email, only: :update
     resource :security, only: :show

@@ -9,7 +9,7 @@ module GameTables
 
     # The invited players with their user, for their avatars and usernames: no query per player
     def show
-      @game_table = GameTable.includes(participations: :user).find(@game_table.id)
+      @game_table = GameTable.includes(participations: { user: { avatar_attachment: :blob } }).find(@game_table.id)
       @player_invitation = PlayerInvitation.new(game_table: @game_table)
     end
 

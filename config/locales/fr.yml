@@ -114,6 +114,10 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            avatar: &avatar_errors
+              blank: "Choisissez une image."
+              content_type: "L'image doit être en PNG, JPEG ou WebP."
+              too_big: "L'image ne doit pas dépasser %{count} Mo."
             hit_point_rolls:
               not_rolled: "Lancez vos dés de vie avant de terminer."
             ability_scores:
@@ -195,6 +199,7 @@ fr:
           wrong_reference: "%{part} › %{field} : « %{parameter} » doit désigner un champ « %{expected} » (%{target})"
         user:
           attributes:
+            avatar: *avatar_errors
             username:
               invalid: "ne peut contenir que des lettres, des chiffres, des tirets (-) et des tirets bas (_)"
               taken: "est déjà pris par un autre joueur"
@@ -280,6 +285,7 @@ fr:
   settings:
     accounts:
       show:
+        avatar_group: "Avatar"
         change_email: "Changer l'adresse e-mail"
         change_username: "Changer de pseudo"
         current_password_hint: "Pour confirmer que c'est bien vous."
@@ -294,6 +300,11 @@ fr:
         session_group: "Session"
         title: "Compte"
         username_group: "Pseudo"
+    avatars:
+      destroy:
+        removed: "Avatar retiré."
+      update:
+        updated: "Avatar enregistré."
     displays:
       show:
         browser_language: "Langue du navigateur"
@@ -330,6 +341,19 @@ fr:
       update:
         updated: "Pseudo modifié."
   shared:
+    avatar_picker:
+      cancel: "Annuler"
+      change: "Changer l'image"
+      choose: "Choisir une image"
+      confirm: "Utiliser ce cadrage"
+      crop_hint: "Faites glisser l'image pour placer le visage dans le cadre, et agrandissez-la si besoin."
+      crop_title: "Cadrer l'image"
+      hint: "PNG, JPEG ou WebP, %{count} Mo au plus."
+      remove: "Retirer l'image"
+      send: "Envoyer"
+      sending: "Envoi de l'image…"
+      stage_label: "Image à cadrer : faites-la glisser, ou déplacez-la avec les flèches du clavier"
+      zoom: "Agrandir l'image"
     navbar:
       label: "Navigation principale"
     navbar_visitor_links:
@@ -1087,8 +1111,6 @@ fr:
       previous: "Choix précédents"
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
-      avatar: "Avatar"
-      avatar_soon: "Bientôt : une image de votre personnage."
       facts:
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"

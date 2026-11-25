@@ -36,4 +36,10 @@ class Participation < ApplicationRecord
   def needs_character?
     player? && (character.nil? || character.draft?)
   end
+
+  # The character being made: the draft, or a new one starting with what the table gives (its level), not saved yet
+  def character_draft
+    character || build_character(game_table: game_table, kind: :pc, status: :draft,
+                                 sheet: game_table.character_values_from_table)
+  end
 end

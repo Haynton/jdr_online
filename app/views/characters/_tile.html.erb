@@ -1,9 +1,15 @@
-<%# A card of « Mes personnages », drawn like those of « Mes cartes » (same classes): a link as a whole, the cover of
-    its table (decorative: no picture of the character yet), its name on one line, its main choices, then its table.
+<%# A card of « Mes personnages », drawn like those of « Mes cartes » (same classes): a link as a whole, the picture
+    of the character (decision: the picture alone, whole: square, as the player framed it), otherwise the cover of
+    its table, cropped to a square; decorative, its name is written under it. Then its name on one line, its main
+    choices, then its table.
     A draft says so (a neutral badge on the picture) and that its link resumes the creation %>
 <%= link_to character_card_path(character), class: SheetTemplatesHelper::TEMPLATE_LINK_TILE_CLASSES do %>
-  <span class="relative block aspect-video w-full overflow-hidden bg-primary-soft">
-    <%= image_tag character.game_table.cover_image_path, alt: "", class: "size-full object-cover" %>
+  <span class="relative block aspect-square w-full overflow-hidden bg-primary-soft">
+    <% if character.avatar.attached? %>
+      <%= image_tag character.avatar, alt: "", class: "size-full object-cover" %>
+    <% else %>
+      <%= image_tag character.game_table.cover_image_path, alt: "", class: "size-full object-cover" %>
+    <% end %>
     <% if character.draft? %>
       <span class="absolute top-2 left-2 <%= badge_classes(:pending) %>"><%= t("characters.tile.draft") %></span>
     <% end %>

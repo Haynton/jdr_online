@@ -29,7 +29,7 @@ module GameTables
 
     # The summary again, its field showing why the invitation was refused
     def render_summary_with_error
-      @game_table = GameTable.includes(participations: :user).find(@game_table.id)
+      @game_table = GameTable.includes(participations: { user: { avatar_attachment: :blob } }).find(@game_table.id)
       render "game_tables/summaries/show", status: :unprocessable_content
     end
   end

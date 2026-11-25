@@ -1,6 +1,9 @@
 <%# The identity and the description of a complete character (CharacterDescription, decision): its name and the fields
     that change nothing worked out, by section, drawn by the fields of the creation steps. Cancel goes back to its
-    sheet without saving, Save saves and shows it. Refused, the errors show under their fields %>
+    sheet without saving, Save saves and shows it. Refused, the errors show under their fields.
+    Its picture on the left of the first section only (decision: beside the whole form, its column left an empty
+    space beside the sections under it), above it on a phone, as on the first step of the creation. Sent on its own
+    (shared/_avatar_picker), changed at once whatever the form holds: its forms are written outside this one %>
 <% content_for :full_width_page do %>
   <main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
     <%= render "shared/flashes" %>
@@ -10,15 +13,30 @@
                                     html: { class: "flex flex-1 flex-col" } do |form| %>
       <%= form_error_notification(form) %>
       <% name_input = capture { form.input :name, required: true, input_html: { autocomplete: "off" } } %>
-      <% sections = sheet_sections(@character.description_fields) %>
-      <% if sections.empty? %>
-        <div class="max-w-sm"><%= name_input %></div>
-      <% end %>
-      <% sections.each_with_index do |(section, fields), position| %>
-        <%= render "character_sheets/sections/section", section: section, fields: fields, character: @character,
-                                                    all_fields: @character.sheet_fields,
-                                                    computed: @character.computed_sheet_values,
-                                                    lead: (name_input if position.zero?) %>
+      <% first_section, *other_sections = sheet_sections(@character.description_fields).to_a %>
+      <div class="flex flex-col gap-8 md:flex-row md:gap-12">
+        <div class="w-32 shrink-0 self-start md:w-44 lg:w-48">
+          <%= render "shared/avatar_picker", picker: character_avatar_picker(@character), detached: true %>
+        </div>
+        <div class="min-w-0 flex-1">
+          <% if first_section %>
+            <%= render "character_sheets/sections/section", section: first_section.first, fields: first_section.last,
+                                                        character: @character, all_fields: @character.sheet_fields,
+                                                        computed: @character.computed_sheet_values, lead: name_input %>
+          <% else %>
+            <div class="max-w-sm"><%= name_input %></div>
+          <% end %>
+        </div>
+      </div>
+      <%# mt-10: the space between two sections (the first one of a block has none, first-of-type:mt-0) %>
+      <% if other_sections.any? %>
+        <div class="mt-10">
+          <% other_sections.each do |section, fields| %>
+            <%= render "character_sheets/sections/section", section: section, fields: fields, character: @character,
+                                                        all_fields: @character.sheet_fields,
+                                                        computed: @character.computed_sheet_values %>
+          <% end %>
+        </div>
       <% end %>
       <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
         <%= form.button :submit, t(".save"), class: "#{button_classes(:primary)} order-last" %>

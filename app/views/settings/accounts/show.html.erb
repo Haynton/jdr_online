@@ -1,4 +1,10 @@
 <%= settings_section(title: t(".title")) do %>
+  <%= settings_group(title: t(".avatar_group")) do %>
+    <div class="border-b border-line py-4">
+      <%= render "shared/avatar_picker", picker: account_avatar_picker(current_user, error: @avatar_error) %>
+    </div>
+  <% end %>
+
   <%= settings_group(title: t(".username_group")) do %>
     <%= simple_form_for @user_for_username, url: settings_username_path, method: :patch,
                                             html: { id: "username-form", class: "border-b border-line py-4" },

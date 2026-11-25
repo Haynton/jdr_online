@@ -14,14 +14,20 @@
   <% rows.each do |row| %>
     <div class="<%= row.size > 1 ? "flex flex-wrap items-start gap-x-12 gap-y-4" : "contents" %>">
       <% row.each do |group, group_fields| %>
+        <%# basis-64: with less room beside the lists, the picks go under them (min-w-0 alone let them shrink to
+            55 px on a phone, their labels past the page) %>
         <% group_classes = if row.size > 1
-                             group == :lists ? "flex w-60 flex-col" : "min-w-0 flex-1"
+                             group == :lists ? "flex w-60 flex-col" : "min-w-0 flex-1 basis-64"
                            elsif local_assigns[:paired] && group == :lists
                              "grid gap-x-4 sm:grid-cols-2"
                            else
                              sheet_flow_group_classes(group)
                            end %>
         <%= tag.div class: group_classes do %>
+          <%# The name of the character opens the column of the lists, at the height of the picks beside them %>
+          <% if local_assigns[:lead] && row.size > 1 && group == :lists %>
+            <%= lead %>
+          <% end %>
           <% group_fields.each do |field| %>
             <%= render sheet_field_partial(field),
                        character: character, field: field, computed: computed, all_fields: all_fields,

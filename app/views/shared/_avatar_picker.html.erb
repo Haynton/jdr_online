@@ -1,0 +1,17 @@
+<%# Choosing an avatar (AvatarsHelper: account_avatar_picker, character_avatar_picker): its preview, "Choose a
+    picture", "Remove", and the window that frames the picture before it is sent (avatar_cropper_controller.js).
+    Its two forms are empty: the controls point to them (form=), so that the picker may sit inside another form, like
+    the first step of a character, whose form cannot hold a form. detached: they are then written at the end of the
+    page (layouts/application, yield :detached_forms); otherwise here, which keeps them in the Turbo Frame of the
+    settings window. Its body (shared/_avatar_picker_body) is what a Turbo Stream replaces once a picture is sent %>
+<% forms = capture do %>
+  <%= form_with url: picker[:url], method: :patch, multipart: true, id: "#{picker[:id]}-form" do %><% end %>
+  <%= form_with url: picker[:url], method: :delete, id: "#{picker[:id]}-remove-form" do %><% end %>
+<% end %>
+<% content_for :detached_forms, forms if local_assigns[:detached] %>
+<div id="<%= picker[:id] %>" data-controller="avatar-cropper"
+     data-avatar-cropper-output-size-value="<%= AvatarsHelper::AVATAR_OUTPUT_SIZE %>"
+     data-avatar-cropper-sending-label-value="<%= t("shared.avatar_picker.sending") %>">
+  <%= render "shared/avatar_picker_body", picker: picker %>
+  <%= forms unless local_assigns[:detached] %>
+</div>

@@ -44,12 +44,20 @@ module StepsBandHelper
 
   # The other steps show their label from 640 px; on a band of more than four steps (the creation of a character),
   # only from 1280 px: under it, five to seven labels and their "Change" ran past the edge of the screen (at 800 px,
-  # the summary was cut off). Hidden, a label stays for screen readers, and the current step always shows its own
+  # the summary was cut off). Hidden, a label stays for screen readers.
+  # The current step shows its own, except on a phone in a band of more than four steps: six or seven rounds and one
+  # label overflowed 375 px, widening the page (a window opened on it was off centre). The title of the page says it
   def step_label_classes(step, step_count = 0)
-    return "font-semibold text-ink" if step[:state] == :current
+    long_band = step_count > MAX_STEPS_WITH_LABELS
+    return "font-semibold text-ink #{'max-sm:sr-only' if long_band}".strip if step[:state] == :current
 
-    hidden_classes = step_count > MAX_STEPS_WITH_LABELS ? "max-xl:sr-only" : "max-sm:sr-only"
+    hidden_classes = long_band ? "max-xl:sr-only" : "max-sm:sr-only"
     "#{step[:path] ? 'text-ink' : 'text-muted'} #{hidden_classes}"
+  end
+
+  # Tighter on a phone for a band of more than four steps: seven rounds hold in 343 px
+  def steps_band_classes(step_count)
+    step_count > MAX_STEPS_WITH_LABELS ? "flex items-center gap-1 sm:gap-3" : "flex items-center gap-1.5 sm:gap-3"
   end
 
   # Under the label: "Change" for a step done, "Open" for a later one reached already, "Soon" for a later milestone

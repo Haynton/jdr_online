@@ -6,7 +6,7 @@ class CharactersController < ApplicationController
   before_action :redirect_draft_to_its_steps, only: %i[show edit update]
 
   def index
-    @characters = current_user.characters.includes(:game_table).order(updated_at: :desc)
+    @characters = current_user.characters.includes(:game_table, avatar_attachment: :blob).order(updated_at: :desc)
   end
 
   def show

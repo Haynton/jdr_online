@@ -107,6 +107,12 @@ module CharacterSheets
       sheet_flow_groups(fields).slice_when { |before, after| !(before.first == :lists && after.first == :picks) }.to_a
     end
 
+    # The name of the character (lead) opens the column of the lists when the picks stand beside them (the
+    # languages): both columns start at the same height (decision). Otherwise the section puts it above its fields
+    def sheet_lead_in_lists_column?(fields)
+      sheet_section_layout(fields) == :flow && sheet_flow_rows(fields).any? { |row| row.size > 1 }
+    end
+
     def sheet_flow_group_classes(group)
       FLOW_GROUP_CLASSES.fetch(group)
     end
