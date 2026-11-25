@@ -26,6 +26,9 @@ class Participation < ApplicationRecord
   # "My tables": the tables of the user, and the invitations they have not answered yet
   scope :shown_in_my_tables, -> { joins(:game_table).accepted.or(invitations_to_ready_tables) }
 
+  # Someone who leaves a table (removed by the game master, table or account deleted) stops hearing it at once
+  after_destroy_commit :reconnect_live_streams
+
   validates :role, presence: true
   validates :user_id, uniqueness: { scope: :game_table_id, message: :already_at_table }
   validates :game_table_id,
@@ -41,5 +44,13 @@ class Participation < ApplicationRecord
   def character_draft
     character || build_character(game_table: game_table, kind: :pc, status: :draft,
                                  sheet: game_table.character_values_from_table)
+  end
+
+  private
+
+  # Their browser reconnects and subscribes again to the streams of its page: GameTableChannel refuses this table now,
+  # their other tables go on
+  def reconnect_live_streams
+    ActionCable.server.remote_connections.where(current_user: user).disconnect(reconnect: true)
   end
 end
