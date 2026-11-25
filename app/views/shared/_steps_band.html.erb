@@ -1,12 +1,12 @@
 <%# The steps of a creation (a table, a character), joined by a line, the current one stressed. A step reached
     already is a link to its page, to change it ("Change" under its label). On a phone, only the label of the current
-    step shows (under 1280 px for a band of more than five steps), the others stay for screen readers
-    (step_label_classes, StepsBandHelper).
+    step shows (under 1280 px for a band of more than four steps; on a phone, none for such a band: the title of the
+    page says it), the others stay for screen readers (step_label_classes, StepsBandHelper).
     steps: [{ key:, number:, label:, state:, path:, saves_form: }], label: the name of the list for screen readers.
     saves_form: the page has a form to save before leaving (the creation of a character): the link carries its step
     (data-save-step-key), and save_before_leaving_controller.js sends the form with it. Links, not buttons of the
     form: a submit button before the form in the page would be the one Enter presses %>
-<ol class="flex items-center gap-1.5 sm:gap-3" aria-label="<%= label %>">
+<ol class="<%= steps_band_classes(steps.size) %>" aria-label="<%= label %>">
   <% steps.each_with_index do |step, position| %>
     <% if position.positive? %>
       <li class="h-px min-w-2 flex-1 bg-line sm:min-w-3" aria-hidden="true"></li>
