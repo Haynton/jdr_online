@@ -429,6 +429,8 @@ fr:
     confirm_dialog:
       cancel: "Annuler"
       confirm: "Confirmer"
+    details_dialog:
+      close: "Fermer les détails"
   characters:
     index:
       title: "Mes personnages"

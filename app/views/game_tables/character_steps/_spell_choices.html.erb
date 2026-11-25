@@ -2,14 +2,15 @@
     and of its level (CharacterSheets::SpellChoices), cantrips then prepared spells by level, each group with its count ("2 sur 3
     choisis", in red past the number allowed). A search by name, without accents nor capitals, hides the other rows
     (spell_choices_controller.js, shown by it: without JavaScript, every row). One row per spell: a check box and its
-    name, its school, casting time, range and duration, Concentration and Ritual, then its description folded under
-    "Details" (details and summary, open and close without JavaScript). The server copies the spells chosen and
+    name, its school, casting time, range and duration, Concentration and Ritual, then "Details", which opens its
+    description in the window of the step (shared/_details_dialog; folded under the card
+    without JavaScript). The server copies the spells chosen and
     checks them (CharacterSpellsValidator); a hidden "" lets the player untick every box %>
 <% spell_choices = character.spell_choices %>
 <% groups = spell_choices.groups %>
 <%# Spacing (decision, balanced): 32 px under the header of the page (40 after the sections of the step, when there
     are), the search and the filters 20 px apart (12 px was too tight), one block of tools, then 40 px before each group of spells %>
-<%= tag.div class: ["flex flex-col gap-10", ("mt-10" if local_assigns[:after_sections])], data: { controller: "spell-choices" } do %>
+<%= tag.div class: ["flex flex-col gap-10", ("mt-10" if local_assigns[:after_sections])], data: { controller: "spell-choices details-dialog" } do %>
   <% if character.errors[:spells].any? %>
     <div role="alert">
       <% character.errors.messages_for(:spells).each do |message| %>
@@ -18,6 +19,7 @@
     </div>
   <% end %>
   <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
+  <%= render "shared/details_dialog" %>
   <%# The spell slots first (decision): they say how far the prepared spells will go %>
   <% if (slots = character_spell_slots(character)) %>
     <%= render "character_sheets/summary/spell_slots", slots: slots, title_classes: "text-lg leading-7 font-bold text-ink" %>

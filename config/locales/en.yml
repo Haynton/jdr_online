@@ -458,6 +458,8 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+    details_dialog:
+      close: "Close the details"
   characters:
     index:
       title: "My characters"

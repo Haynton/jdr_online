@@ -1,17 +1,34 @@
-<%# A spell or an item on the summary sheet whose description opens on demand: a native details (keyboard and screen
-    readers included, no JavaScript), its line as the summary with a chevron that turns. Rendered as a layout around
-    the line: render layout: "character_sheets/summary/entry_details", locals: { description: } do ... end.
-    Without a description, the line alone %>
-<% if description.present? %>
-  <details class="group text-sm">
-    <summary class="flex cursor-pointer list-none items-baseline gap-2 rounded-sm [&::-webkit-details-marker]:hidden">
-      <span class="self-center text-muted transition-transform group-open:rotate-90" aria-hidden="true">
-        <%= render "shared/icons/chevron_right", css_class: "size-3.5" %>
-      </span>
-      <%= yield %>
-    </summary>
-    <p class="mt-1 mb-2 ml-5.5 whitespace-pre-line text-muted"><%= description %></p>
-  </details>
+<%# A spell or an item on the summary sheet whose details open on demand, in the window of the sheet
+    (shared/_details_dialog, decision: as at the Spells step, rather than a fold under the line). Its line is the
+    button, with an info icon; details_dialog_controller.js shows it and copies the details into the window, its name
+    (title) and its short line (subtitle) in the title bar. Without JavaScript, a native details opens them under the
+    line. Rendered as a layout around the line:
+    render layout: "character_sheets/summary/entry_details", locals: { title:, subtitle:, description:, details: } do ... end
+    details: what the window shows (the details of a spell), else the description. Without either, the line alone %>
+<% line = yield %>
+<% details = local_assigns[:details].presence ||
+             (tag.p(description, class: "whitespace-pre-line leading-relaxed text-sm text-ink") if description.present?) %>
+<% if details %>
+  <div>
+    <button type="button" hidden aria-haspopup="dialog"
+            class="flex cursor-pointer items-baseline gap-2 rounded-sm text-left text-sm [&:hover>span:nth-child(2)]:underline"
+            data-details-dialog-target="opener" data-action="details-dialog#open"
+            data-details-dialog-name-param="<%= title %>" data-details-dialog-summary-param="<%= local_assigns[:subtitle] %>">
+      <span class="self-center text-muted" aria-hidden="true"><%= render "shared/icons/info", css_class: "size-3.5" %></span>
+      <%= line %>
+    </button>
+    <details class="group text-sm" data-details-dialog-target="fold">
+      <summary class="flex cursor-pointer list-none items-baseline gap-2 rounded-sm [&::-webkit-details-marker]:hidden">
+        <span class="self-center text-muted transition-transform group-open:rotate-90" aria-hidden="true">
+          <%= render "shared/icons/chevron_right", css_class: "size-3.5" %>
+        </span>
+        <%= line %>
+      </summary>
+      <div class="mt-1 mb-2 ml-5.5">
+        <div data-details-dialog-content><%= details %></div>
+      </div>
+    </details>
+  </div>
 <% else %>
-  <p class="flex items-baseline gap-2 pl-5.5 text-sm"><%= yield %></p>
+  <p class="flex items-baseline gap-2 pl-5.5 text-sm"><%= line %></p>
 <% end %>

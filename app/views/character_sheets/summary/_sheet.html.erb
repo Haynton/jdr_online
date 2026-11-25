@@ -5,11 +5,15 @@
     (combat: summary_only) shows here only. A name still missing is said here.
     Then "Create my character", at the bottom of the screen on a short page (mt-auto).
     read_only: the sheet of a complete character (« Mes personnages »): its name is the title of the page, "Change"
-    leads to its identity and description only, nothing to roll or confirm %>
+    leads to its identity and description only, nothing to roll or confirm.
+    The spells and the items open their details in one window (shared/_details_dialog): the whole sheet is the scope
+    of details_dialog_controller.js, in a box that does not count in the layout (contents) %>
 <% read_only = local_assigns[:read_only] %>
 <% computed = character.computed_sheet_values %>
 <% steps = character.creation_steps.summary_blocks %>
 <% header_step = summary_header_step(steps) %>
+<div class="contents" data-controller="details-dialog">
+<%= render "shared/details_dialog" %>
 
 <% if character.errors.any? %>
   <div class="mb-6 max-w-2xl">
@@ -46,3 +50,4 @@
   <% end %>
 <% end %>
 <% end %>
+</div>

@@ -27,6 +27,8 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
     assert_select "input[value=bless]", count: 0
     assert_select "p[role=status]", text: "0 sur 2 choisis", count: 2
     assert_select "details summary", text: "Détails"
+    assert_select "button[hidden][aria-haspopup=dialog][data-action='details-dialog#open']", text: /Détails/
+    assert_select "dialog#details-dialog[aria-labelledby=details-dialog-title]", count: 1
     assert_select "p", text: /Vous pourrez en remplacer un à chaque niveau gagné\./
     assert_select "p", text: /Vous pourrez changer toute la liste après chaque repos long\./
     assert_select "#spell-slots-title", text: "Emplacements de sorts"
