@@ -24,6 +24,10 @@
                              sheet_flow_group_classes(group)
                            end %>
         <%= tag.div class: group_classes do %>
+          <%# The name of the character opens the column of the lists, at the height of the picks beside them %>
+          <% if local_assigns[:lead] && row.size > 1 && group == :lists %>
+            <%= lead %>
+          <% end %>
           <% group_fields.each do |field| %>
             <%= render sheet_field_partial(field),
                        character: character, field: field, computed: computed, all_fields: all_fields,
