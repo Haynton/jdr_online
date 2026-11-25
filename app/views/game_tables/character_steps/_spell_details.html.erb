@@ -1,0 +1,18 @@
+<%# The details of a spell, the same in its window at the Spells step and on the summary sheet: the whole casting time
+    when it says more than the card (a reaction and its trigger), the components, the description, then what it does
+    at higher levels. spell: a CatalogEntry (a spell chosen, copied in the character, is read as one: summary_spell_entry) %>
+<div class="flex flex-col gap-2 text-sm text-ink">
+  <% if (trigger = spell_casting_trigger(spell)) %>
+    <p class="text-xs text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.casting_time", text: trigger) %></p>
+  <% end %>
+  <% if (components = spell_components(spell)).present? %>
+    <p class="text-xs text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.components", list: components) %></p>
+  <% end %>
+  <%= simple_format(spell.description, { class: "leading-relaxed" }, wrapper_tag: "p") %>
+  <% if spell.properties["higher_levels"] %>
+    <p class="leading-relaxed">
+      <span class="font-semibold"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.higher_levels") %></span>
+      <%= spell.properties["higher_levels"] %>
+    </p>
+  <% end %>
+</div>

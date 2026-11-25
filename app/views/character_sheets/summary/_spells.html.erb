@@ -1,7 +1,7 @@
 <%# The spells chosen on the summary sheet, under the save DC and the attack bonus of the Spells block: the cantrips,
     then the prepared spells by level, each with its school, as on a sheet of a game. First the spell slots of the
-    character, when its class has some at its level. Each spell opens its description (summary/_entry_details): the
-    player reads the spells they chose %>
+    character, when its class has some at its level. Each spell opens its details in a window (summary/_entry_details), the
+    same as at the Spells step: the player reads the spells they chose %>
 <% if (slots = character_spell_slots(character)) %>
   <%= render "character_sheets/summary/spell_slots", slots: slots %>
 <% end %>
@@ -10,7 +10,10 @@
   <ul class="mt-2 grid items-start gap-x-6 gap-y-1 sm:grid-cols-2">
     <% spells.each do |spell| %>
       <li>
-        <%= render layout: "character_sheets/summary/entry_details", locals: { description: spell["description"] } do %>
+        <% entry = summary_spell_entry(spell) %>
+        <%= render layout: "character_sheets/summary/entry_details",
+                   locals: { title: entry.name, subtitle: spell_summary_line(entry), description: entry.description,
+                             details: render("game_tables/character_steps/spell_details", spell: entry) } do %>
           <span class="text-ink"><%= spell["name"] %></span>
           <span class="text-xs text-muted"><%= spell.dig("properties", "school") %></span>
         <% end %>

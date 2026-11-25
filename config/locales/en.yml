@@ -458,6 +458,8 @@ en:
     confirm_dialog:
       cancel: "Cancel"
       confirm: "Confirm"
+    details_dialog:
+      close: "Close the details"
   characters:
     index:
       title: "My characters"
@@ -1114,7 +1116,6 @@ en:
           long_rest_one: "You can replace one of them after each long rest."
         chosen: "%{chosen} of %{allowed} chosen"
         chosen_only: "My choices"
-        close_details: "Close the details of the spell"
         components: "Components: %{list}"
         concentration: "Concentration"
         details: "Details"

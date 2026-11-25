@@ -79,6 +79,9 @@ class MyCharactersTest < ActionDispatch::IntegrationTest
     assert_select "li", text: "Pièces d'or\u00a0: 7"
     assert_select "details summary", text: /Lumière\s+Évocation/
     assert_select "details p", text: "Un objet brille."
+    assert_select "button[hidden][aria-haspopup=dialog][data-details-dialog-name-param=Lumière]" \
+                  "[data-details-dialog-summary-param=Évocation]", text: /Lumière\s+Évocation/
+    assert_select "button[data-details-dialog-name-param=Dague][data-details-dialog-summary-param='1d4 perforants']"
   end
 
   test "the form asks the name and the description, never the class" do

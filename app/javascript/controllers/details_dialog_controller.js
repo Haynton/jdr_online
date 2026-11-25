@@ -1,9 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The details of a spell in a window, at the Spells step (game_tables/character_steps/_spell_details_dialog): "Details"
-// on a card writes the name and the line of the spell in the title bar and copies its details, folded in the card,
-// into the window. The buttons are rendered hidden and shown here, the folds hidden instead: without JavaScript, the
-// details open under the card. A native <dialog>: Escape closes it, and the focus goes back to the button (returnFocus)
+// The details of a spell or an item in a window (shared/_details_dialog), at the Spells step and on the summary sheet:
+// a "Details" button writes the name and the line of the entry in the title bar and copies its details, folded beside
+// it ([data-details-dialog-content]), into the window. The buttons are rendered hidden and shown here, the folds hidden
+// instead: without JavaScript, the details open in place. A native <dialog>: Escape closes it, and the focus goes back
+// to the button (returnFocus)
 export default class extends Controller {
   static targets = ["opener", "fold", "dialog", "title", "summary", "body"]
 
@@ -14,11 +15,11 @@ export default class extends Controller {
 
   open({ currentTarget: opener, params: { name, summary } }) {
     this.opener = opener
-    const details = opener.closest("li").querySelector("[data-spell-details-content]")
+    const details = opener.parentElement.querySelector("[data-details-dialog-content]")
     this.titleTarget.textContent = name
     this.summaryTarget.textContent = summary
+    this.summaryTarget.hidden = !summary
     this.bodyTarget.replaceChildren(details.cloneNode(true))
-    this.bodyTarget.firstElementChild.classList.remove("mt-2")
     this.bodyTarget.scrollTop = 0
     this.dialogTarget.showModal()
     // showModal focuses the first button, the close cross: the window takes the focus itself instead

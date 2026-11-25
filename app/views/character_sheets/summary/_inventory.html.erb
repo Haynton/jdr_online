@@ -1,6 +1,6 @@
 <%# What a complete character carries (« Mes personnages »): the lines of its inventory (copies of the catalog made at
     the end of its creation, InventoryItem), each with how many and its damage or armour class, its description at
-    hand (a native details, without JavaScript), then the values of the game kept in the same sections (the gold).
+    hand (in a window, summary/_entry_details), then the values of the game kept in the same sections (the gold).
     A character made before the inventory existed has none: the block says so %>
 <% items = character.inventory_items.sort_by(&:name) %>
 <% play_fields = summary_play_fields(character, step) %>
@@ -12,7 +12,7 @@
     <% items.each do |item| %>
       <li>
         <%= render layout: "character_sheets/summary/entry_details",
-                   locals: { description: item.description } do %>
+                   locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
           <span class="text-ink"><%= inventory_item_text(item) %></span>
           <% if (detail = inventory_item_detail(item)) %>
             <span class="text-xs text-muted"><%= detail %></span>

@@ -14,6 +14,12 @@ module CharacterSheets
               .map { |level, spells| [summary_spell_level_title(declared_groups, level), spells] }
     end
 
+    # A spell chosen (a copy in the character, a hash) read as an entry of the catalog, so that its details are
+    # written by the same partial as at the Spells step (game_tables/character_steps/_spell_details). Never saved
+    def summary_spell_entry(spell)
+      CatalogEntry.new(spell.slice("key", "name", "description", "properties"))
+    end
+
     private
 
     def sorted_spells(character)
