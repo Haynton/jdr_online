@@ -3,7 +3,7 @@
   "locale": "fr",
   "icon": "swords",
   "banner_color": "gold",
-  "description": "Des héros, des sorts et des monstres : classes, historiques et espèces, caractéristiques, sorts et équipement de départ, d'après le SRD 5.2.",
+  "description": "Compatible 5e édition · Licence SRD 5.2.1.",
   "character_fields": {
     "ability_methods": [
       { "type": "roll", "label": "Lancer de dés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
@@ -314,9 +314,9 @@
       "properties": { "category": "Arme", "damage": "1d6 perforants, portée 24/96 m", "weight": 1, "value": 25 } },
     { "name": "Armure de cuir", "description": "Un plastron et des épaulières de cuir bouilli.",
       "properties": { "category": "Armure", "armor_class": "11 + modificateur de Dextérité", "weight": 5, "value": 10 } },
-    { "name": "Corde de chanvre (15 m)", "description": "Solide, mais lourde à porter.",
-      "properties": { "category": "Équipement", "weight": 5, "value": 1 } },
-    { "name": "Torche", "description": "Éclaire vivement sur 6 mètres pendant une heure.",
+    { "name": "Corde", "description": "Un nœud se fait avec un test de Dextérité (Escamotage) DD 10.",
+      "properties": { "category": "Équipement", "weight": 2.5, "value": 1 } },
+    { "name": "Torche", "description": "Éclaire vivement sur 6 mètres, et faiblement sur 6 mètres de plus, pendant une heure.",
       "properties": { "category": "Équipement", "weight": 0.5, "value": 0.01 } }
   ]
 }
