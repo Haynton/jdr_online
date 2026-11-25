@@ -145,9 +145,10 @@ export default class extends Controller {
     this.showView()
   }
 
-  // How far the floating pieces reach into the board, side by side: the size of the grid at the top, the help and the
-  // zoom on the right, what was saved at the bottom. A little room beyond them, so that a cell is not drawn against
-  // their edge
+  // How far the map may move past its edges: as far as the floating pieces reach into the board (the size of the grid
+  // at the top, the help and the zoom on the right, what was saved at the bottom), a little room beyond them so that
+  // a cell is not drawn against their edge. The same margin on the four sides (decision: the map moved past its top
+  // and right edges, but not past the bottom, where nothing floats on a map played on a picture, nor the left)
   floatingInsets() {
     const board = this.boardTarget.getBoundingClientRect()
     const reach = (element, side) => {
@@ -158,8 +159,9 @@ export default class extends Controller {
                          bottom: board.bottom - piece.top }[side]
       return Math.max(0, distance + floatingRoom)
     }
-    return { top: reach(this.gridSizeTarget, "top"), right: reach(this.zoomButtonsTarget.parentElement, "right"),
-             bottom: reach(this.figuresTarget.parentElement, "bottom"), left: 0 }
+    const margin = Math.max(reach(this.gridSizeTarget, "top"), reach(this.zoomButtonsTarget.parentElement, "right"),
+                            reach(this.figuresTarget.parentElement, "bottom"))
+    return { top: margin, right: margin, bottom: margin, left: margin }
   }
 
   showView() {
