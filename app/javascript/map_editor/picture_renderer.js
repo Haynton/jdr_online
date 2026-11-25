@@ -10,15 +10,19 @@ export function renderPicture(group, { grid, url, picture, ratio }) {
   group.replaceChildren()
   createSvgElement("rect", { x: -grid.width * 4, y: -grid.height * 4, width: grid.width * 9, height: grid.height * 9,
                              fill: voidGround }, group)
-  if (url && picture && ratio) drawPicture(group, url, picture, ratio)
+  if (url && picture && ratio) drawPicture(group, grid, url, picture, ratio)
   drawCellLines(group, grid)
 }
 
-function drawPicture(group, url, picture, ratio) {
+// Cut at the edges of the grid: what is left at the bottom of a picture (less than a cell, its rows rounded down)
+// is not part of the map. A nested <svg> cuts without an id, which would repeat on a page of previews
+function drawPicture(group, grid, url, picture, ratio) {
   const width = picture.cells_wide * cellSize
+  const frame = createSvgElement("svg", { x: 0, y: 0, width: grid.width, height: grid.height, overflow: "hidden" },
+                                 group)
   createSvgElement("image", { href: url, x: rounded(picture.offset_x), y: rounded(picture.offset_y),
                               width: rounded(width), height: rounded(width * ratio), opacity: picture.opacity,
-                              preserveAspectRatio: "none" }, group)
+                              preserveAspectRatio: "none" }, frame)
 }
 
 // Every line of the grid, and its frame a little stronger
