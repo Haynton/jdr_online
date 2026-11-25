@@ -364,8 +364,6 @@ en:
       system: "System"
     theme_selector:
       label: "Theme"
-    theme_switch:
-      dark_theme: "Dark theme"
     toast:
       close: "Close the message"
     settings_dialog:
@@ -1067,7 +1065,6 @@ en:
         bonus_included: "incl. +%{bonus} %{option}"
         bonus_column: "Bonus"
         bonus_done: "Bonus placed."
-        bonus_for: "Background bonus for %{label}"
         bonus_left_one: "1 point left to place."
         bonus_left_other: "%{count} points left to place."
         bonus_pick_background: "Pick a background first, at the Character step."

@@ -335,8 +335,6 @@ fr:
       system: "Système"
     theme_selector:
       label: "Thème"
-    theme_switch:
-      dark_theme: "Thème sombre"
     toast:
       close: "Fermer le message"
     settings_dialog:
@@ -1038,7 +1036,6 @@ fr:
         bonus_included: "dont +%{bonus} %{option}"
         bonus_column: "Bonus"
         bonus_done: "Bonus placés."
-        bonus_for: "Bonus de l'historique pour %{label}"
         bonus_left_one: "Reste 1 point à placer."
         bonus_left_other: "Reste %{count} points à placer."
         bonus_pick_background: "Choisissez d'abord un historique, à l'étape Personnage."

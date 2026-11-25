@@ -44,7 +44,7 @@ function addGlowGradient(definitions) {
 // Rows of boards (planks, paving stones), three per row at varying lengths, repeated on the side
 function drawRowsOfBoards(pattern, { width, rowHeight, rowCount, seed, tones, line, cornerRadius }) {
   for (let row = 0; row < rowCount; row++) {
-    const joints = [0, 1, 2].map((index) => ((index + noise(row, index, seed) * 0.7) * width) / 3).sort((a, b) => a - b)
+    const joints = [0, 1, 2].map((index) => ((index + noise(row, index, seed) * 0.7) * width) / 3).sort((firstJoint, secondJoint) => firstJoint - secondJoint)
     joints.forEach((jointX, index) => {
       const nextJointX = index < 2 ? joints[index + 1] : joints[0] + width
       const fill = tones[Math.floor(noise(row, index, seed + 1) * tones.length)]

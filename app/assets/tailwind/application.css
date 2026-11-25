@@ -180,10 +180,8 @@
   /* Darker on hover, like primary-hover: white text goes from 6.47 to 8.15 */
   --color-danger-hover: #9d1818;
   --color-success-bg: #e9f1e5;
-  --color-success-line: #c3d8b8;
   --color-success-ink: #2f5d3a;
   --color-error-bg: #fbe9e4;
-  --color-error-line: #eec3b8;
   --color-error-ink: #9b2c1f;
   /* The colors a template banner may take (SheetTemplate::BANNER_COLORS; gold is primary-soft): its background and its
      accent (eyebrow, large icon, pill of the choice). On each background: ink 12.02 to 12.58, its accent 6.04 to 7.05;
@@ -242,10 +240,8 @@
     --color-danger: #b91c1c;
     --color-danger-hover: #9d1818;
     --color-success-bg: #12302a;
-    --color-success-line: #2e7d6b;
     --color-success-ink: #a7e3d4;
     --color-error-bg: #3b1d1d;
-    --color-error-line: #7f2d2d;
     --color-error-ink: #f87171;
     /* ink 11.9 to 13.22 on each background, its accent 7.86 to 8.99; the accent on page 8.82 to 10.58 */
     --color-banner-crimson: #3a1a17;

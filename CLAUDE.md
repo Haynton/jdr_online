@@ -186,8 +186,8 @@ end
 | `card-veil` | Voile derrière le texte d'une carte de table : parchemin plus chaud et plus foncé que `page` en clair (rendu moins blanc), `page-deep` en sombre. Textes : `ink`, `brass`, `ink/75` (pas `muted`, 3,81 en clair) | `#030605` | `#ebe0cc` |
 | `danger` | Bouton de suppression (texte blanc) | `#b91c1c` | `#b91c1c` |
 | `danger-hover` | Bouton de suppression au survol (texte blanc) | `#9d1818` | `#9d1818` |
-| `success-bg` / `success-line` / `success-ink` | Message de succès (`notice`) | `#12302a` / `#2E7D6B` / `#a7e3d4` | `#e9f1e5` / `#c3d8b8` / `#2f5d3a` |
-| `error-bg` / `error-line` / `error-ink` | Message d'erreur (`alert`) | `#3b1d1d` / `#7f2d2d` / `#f87171` | `#fbe9e4` / `#eec3b8` / `#9b2c1f` |
+| `success-bg` / `success-ink` | Message de succès (`notice`) ; sa bordure est `success-ink` à 70 % | `#12302a` / `#a7e3d4` | `#e9f1e5` / `#2f5d3a` |
+| `error-bg` / `error-ink` | Message d'erreur (`alert`) ; sa bordure est `error-ink` à 70 % | `#3b1d1d` / `#f87171` | `#fbe9e4` / `#9b2c1f` |
 
 - Palette décidée (`feature/p1-table-cards`) : **plus de vert**. Bouton principal couleur encre (repris de l'essai `style/testing-night-dawn`), accent doré (`brass`) pour les liens, le focus, les badges et « Mes tables ». Parchemin léger pour le thème clair (fond légèrement chaud, texte brun très foncé plutôt que noir). Seuls les messages de succès gardent leur vert (décision : le vert y signale une réussite)
 - Le bouton principal et les messages de succès sont deux couleurs nommées distinctes : ne pas utiliser `primary` pour un message de succès

@@ -1,13 +1,13 @@
 <%= auth_card(title: t(".title"), subtitle: t(".subtitle")) do %>
-  <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-    <%= form_error_notification(f) %>
+  <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |form| %>
+    <%= form_error_notification(form) %>
 
-    <%= f.input :email,
+    <%= form.input :email,
                 required: true,
                 autofocus: true,
                 input_html: { autocomplete: "email" } %>
 
-    <%= f.button :submit, t(".send_me_reset_password_instructions"),
+    <%= form.button :submit, t(".send_me_reset_password_instructions"),
                  class: button_classes(:primary, full_width: true) %>
   <% end %>
 
