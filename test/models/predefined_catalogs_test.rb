@@ -1,6 +1,6 @@
 require "test_helper"
 
-# The predefined catalogs are files of db/seeds/catalogs (the spells of the heroic fantasy, from the SRD 5.2):
+# The predefined catalogs are files of db/seeds/catalogs (the spells of the heroic fantasy, from the SRD 5.2.1):
 # these tests read them and check them against their template, as the seed would load them
 class PredefinedCatalogsTest < ActiveSupport::TestCase
   CATALOG_FILES = Rails.root.glob("db/seeds/catalogs/*.json").sort
@@ -35,7 +35,7 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
-  test "the heroic fantasy has every spell of the SRD 5.2, cantrips to level 9" do
+  test "the heroic fantasy has every spell of the SRD 5.2.1, cantrips to level 9" do
     spells = read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.en.json"))["entries"]
     spells_by_level = spells.group_by { |spell| spell.dig("properties", "level") }.transform_values(&:size)
 
@@ -43,14 +43,14 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
                  spells_by_level)
   end
 
-  test "the heroic fantasy has the creatures of challenge 0 to 2 of the SRD 5.2, the same in both languages" do
+  test "the heroic fantasy has the creatures of challenge 0 to 2 of the SRD 5.2.1, the same in both languages" do
     bestiaries = %w[en fr].map do |locale|
       read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_monsters.#{locale}.json"))["entries"]
     end
     numbers = %w[challenge armor_class hp speed strength]
 
-    assert_equal [177, 177], bestiaries.map(&:size)
-    assert_equal({ "0" => 28, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 44 },
+    assert_equal [175, 175], bestiaries.map(&:size)
+    assert_equal({ "0" => 28, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 42 },
                  bestiaries.first.map { |creature| creature.dig("properties", "challenge") }.tally)
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature["properties"].slice(*numbers).except("speed") } })
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
