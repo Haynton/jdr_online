@@ -2,10 +2,19 @@ fr:
   # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
   activemodel:
     attributes:
+      friend_request:
+        username: "Pseudo de votre ami"
       player_invitation:
         username: "Inviter un joueur par son pseudo"
     errors:
       models:
+        friend_request:
+          attributes:
+            username:
+              already_asked: "demande déjà envoyée, en attente de sa réponse"
+              already_friends: "vous êtes déjà amis"
+              not_found: "aucun joueur n'a ce pseudo"
+              oneself: "c'est votre propre pseudo"
         player_invitation:
           attributes:
             username:
@@ -73,6 +82,11 @@ fr:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
       models:
+        friendship:
+          attributes:
+            addressee:
+              oneself: "ne peut pas être vous-même"
+              taken: "a déjà une demande d'ami avec vous"
         map_template:
           attributes:
             columns: &map_grid_size_errors
@@ -301,6 +315,18 @@ fr:
   locale_names:
     en: "English"
     fr: "Français"
+  notifications:
+    friend_request:
+      accept: "Accepter"
+      refuse: "Refuser"
+      text_html: "%{username} veut devenir votre ami."
+    received_ago: "Il y a %{time}"
+    show:
+      close: "Fermer les notifications"
+      empty: "Rien en attente pour l'instant."
+      title: "Notifications"
+    table_invitation:
+      text_html: "%{username} vous invite à la table « %{name} »."
   pages:
     home:
       create_account: "Créer un compte"
@@ -344,6 +370,37 @@ fr:
     emails:
       update:
         updated: "Adresse e-mail modifiée."
+    friends:
+      person:
+        pending: "En attente"
+      show:
+        accept: "Accepter"
+        accept_from: "Accepter la demande de %{username}"
+        add_group: "Ajouter un ami"
+        add_hint: "Il reçoit votre demande et l'accepte ou la refuse."
+        cancel: "Annuler la demande"
+        cancel_to: "Annuler la demande envoyée à %{username}"
+        friends_group: "Mes amis"
+        no_friends: "Pas encore d'amis. Ajoutez-en par leur pseudo : ils seront proposés en premier quand vous inviterez des joueurs à une table."
+        received_group: "Demandes reçues"
+        refuse: "Refuser"
+        refuse_from: "Refuser la demande de %{username}"
+        remove: "Retirer"
+        remove_confirmation: "Retirer %{username} de vos amis ? Vous pourrez lui envoyer une nouvelle demande plus tard."
+        remove_friend: "Retirer %{username} de vos amis"
+        send_request: "Envoyer la demande"
+        sent_group: "Demandes envoyées"
+        title: "Amis"
+    friendships:
+      create:
+        accepted: "%{username} et vous êtes maintenant amis."
+        sent: "Demande d'ami envoyée à %{username}."
+      destroy:
+        cancelled: "Demande à %{username} annulée."
+        refused: "Demande de %{username} refusée."
+        removed: "%{username} retiré(e) de vos amis."
+      update:
+        accepted: "%{username} et vous êtes maintenant amis."
     locales:
       update:
         unavailable: "Cette langue n'est pas disponible."
@@ -357,6 +414,7 @@ fr:
     sections_menu:
       account: "Compte"
       display: "Affichage"
+      friends: "Amis"
       legal_notice: "Mentions légales"
       security: "Sécurité"
       title: "Paramètres"
@@ -384,6 +442,11 @@ fr:
       sending: "Envoi de l'image…"
       stage_label: "Image à cadrer : faites-la glisser, ou déplacez-la avec les flèches du clavier"
       zoom: "Agrandir l'image"
+    notifications_bell:
+      label: "Notifications"
+      waiting:
+        one: "1 notification en attente"
+        other: "%{count} notifications en attente"
     navbar:
       label: "Navigation principale"
     navbar_visitor_links:
@@ -417,9 +480,6 @@ fr:
       my_characters: "Mes personnages"
       my_templates: "Mes modèles"
       my_maps: "Mes cartes"
-      pending_invitations:
-        one: "1 invitation en attente"
-        other: "%{count} invitations en attente"
       collapse: "Replier le menu"
       expand: "Déplier le menu"
     account_nav:

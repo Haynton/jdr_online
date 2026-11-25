@@ -1,0 +1,15 @@
+<%# The window of the bell (shared/_notifications_bell), on a phone too: empty until the bell is clicked, the
+    notifications then load into the frame and frame_dialog_controller.js opens it. Same window as the one of a field
+    (sheet_templates/fields/_dialog), narrower: 560 px at most, as tall as its list up to the screen. Its title bar
+    comes with the list (notifications/show). A form answered in it stays in it (no closeOnSuccess).
+    Not data-turbo-permanent (unlike the windows of the creation steps): accepting an invitation leads to another page,
+    and Turbo carried the open window there, no longer a modal, shown in the flow of the new page. Nothing
+    refreshes the page behind it while it is open: answering only reloads its frame %>
+<dialog id="notifications-dialog" aria-labelledby="notifications-dialog-title" tabindex="-1"
+        data-turbo-prefetch="false"
+        class="m-auto max-h-[min(640px,calc(100dvh-2rem))] w-[min(560px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-controller="frame-dialog"
+        data-action="turbo:frame-load->frame-dialog#open click->frame-dialog#closeOnBackdrop close->frame-dialog#empty turbo:before-cache@document->frame-dialog#close">
+  <%= turbo_frame_tag NotificationsHelper::FRAME, class: "flex min-h-0 flex-1 flex-col",
+                                                  data: { frame_dialog_target: "frame" } %>
+</dialog>

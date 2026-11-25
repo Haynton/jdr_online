@@ -1,0 +1,30 @@
+<%# The notifications, in the window of the bell (shared/_notifications_dialog) or as a page.
+    In the window: a title bar with the close cross, the list that scrolls, and the dot of the bell refreshed
+    (a <turbo-stream> runs as soon as it enters the page: answering a notification updates the navigation behind) %>
+<%= turbo_frame_tag NotificationsHelper::FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+  <% if notifications_in_dialog? %>
+    <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+      <h2 id="notifications-dialog-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= turbo_stream.replace "notifications-bell", partial: "shared/notifications_bell" %>
+  <% else %>
+    <%= page_header(title: t(".title")) %>
+  <% end %>
+
+  <%= render "shared/flashes" %>
+  <div class="<%= notifications_in_dialog? ? "min-h-0 flex-1 overflow-y-auto px-6" : "max-w-xl" %>">
+    <% if @notifications.any? %>
+      <ul class="divide-y divide-line" aria-label="<%= t(".title") %>">
+        <% @notifications.each do |notification| %>
+          <%= render notification.partial, source: notification.source %>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="py-10 text-center text-sm text-muted"><%= t(".empty") %></p>
+    <% end %>
+  </div>
+<% end %>

@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include HasAvatar
+  include HasFriends
 
   has_many :participations, dependent: :destroy
   # Only the tables the user takes part in: an invitation still pending does not open a table
@@ -34,11 +35,6 @@ class User < ApplicationRecord
   scope :username_starting_with, lambda { |typed_text|
     where("lower(username) LIKE ?", "#{sanitize_sql_like(typed_text.downcase)}%")
   }
-
-  # Shown on "My tables" in the navigation: invitations waiting for an answer
-  def pending_invitations_count
-    participations.invitations_to_ready_tables.count
-  end
 
   # Shown in the avatar
   def initials

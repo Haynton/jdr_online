@@ -31,10 +31,19 @@ en:
   # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
   activemodel:
     attributes:
+      friend_request:
+        username: "Your friend's username"
       player_invitation:
         username: "Invite a player by their username"
     errors:
       models:
+        friend_request:
+          attributes:
+            username:
+              already_asked: "request already sent, waiting for an answer"
+              already_friends: "you are already friends"
+              not_found: "no player has this username"
+              oneself: "is your own username"
         player_invitation:
           attributes:
             username:
@@ -102,6 +111,11 @@ en:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"
       models:
+        friendship:
+          attributes:
+            addressee:
+              oneself: "can't be yourself"
+              taken: "already has a friend request with you"
         map_template:
           attributes:
             columns: &map_grid_size_errors
@@ -330,6 +344,18 @@ en:
   locale_names:
     en: "English"
     fr: "Français"
+  notifications:
+    friend_request:
+      accept: "Accept"
+      refuse: "Refuse"
+      text_html: "%{username} wants to be your friend."
+    received_ago: "%{time} ago"
+    show:
+      close: "Close the notifications"
+      empty: "Nothing waiting for now."
+      title: "Notifications"
+    table_invitation:
+      text_html: "%{username} invites you to the table “%{name}”."
   pages:
     home:
       create_account: "Create an account"
@@ -373,6 +399,37 @@ en:
     emails:
       update:
         updated: "Email address changed."
+    friends:
+      person:
+        pending: "Pending"
+      show:
+        accept: "Accept"
+        accept_from: "Accept the request from %{username}"
+        add_group: "Add a friend"
+        add_hint: "They get your request and accept or refuse it."
+        cancel: "Cancel the request"
+        cancel_to: "Cancel the request sent to %{username}"
+        friends_group: "My friends"
+        no_friends: "No friends yet. Add some by their username: they will be suggested first when you invite players to a table."
+        received_group: "Requests received"
+        refuse: "Refuse"
+        refuse_from: "Refuse the request from %{username}"
+        remove: "Remove"
+        remove_confirmation: "Remove %{username} from your friends? You can send them a new request later."
+        remove_friend: "Remove %{username} from your friends"
+        send_request: "Send the request"
+        sent_group: "Requests sent"
+        title: "Friends"
+    friendships:
+      create:
+        accepted: "You and %{username} are now friends."
+        sent: "Friend request sent to %{username}."
+      destroy:
+        cancelled: "Request to %{username} cancelled."
+        refused: "Request from %{username} refused."
+        removed: "%{username} removed from your friends."
+      update:
+        accepted: "You and %{username} are now friends."
     locales:
       update:
         unavailable: "This language is not available."
@@ -386,6 +443,7 @@ en:
     sections_menu:
       account: "Account"
       display: "Display"
+      friends: "Friends"
       legal_notice: "Legal notice"
       security: "Security"
       title: "Settings"
@@ -413,6 +471,11 @@ en:
       sending: "Sending the picture…"
       stage_label: "Picture to frame: drag it, or move it with the arrow keys"
       zoom: "Enlarge the picture"
+    notifications_bell:
+      label: "Notifications"
+      waiting:
+        one: "1 notification waiting"
+        other: "%{count} notifications waiting"
     navbar:
       label: "Main navigation"
     navbar_visitor_links:
@@ -446,9 +509,6 @@ en:
       my_characters: "My characters"
       my_templates: "My templates"
       my_maps: "My maps"
-      pending_invitations:
-        one: "1 invitation waiting"
-        other: "%{count} invitations waiting"
       collapse: "Collapse the menu"
       expand: "Expand the menu"
     account_nav:

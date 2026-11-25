@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_25_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_220000) do
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
     t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.bigint "requester_id", null: false
+    t.bigint "addressee_id", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "LEAST(requester_id, addressee_id), GREATEST(requester_id, addressee_id)", name: "index_friendships_one_per_pair", unique: true
+    t.index ["addressee_id"], name: "index_friendships_on_addressee_id"
+    t.index ["requester_id"], name: "index_friendships_on_requester_id"
+    t.check_constraint "requester_id <> addressee_id", name: "friendships_not_oneself_check"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'accepted'::character varying]::text[])", name: "friendships_status_check"
   end
 
   create_table "game_maps", force: :cascade do |t|
@@ -378,6 +391,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_220000) do
   add_foreign_key "catalog_entries", "sheet_templates"
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
+  add_foreign_key "friendships", "users", column: "addressee_id"
+  add_foreign_key "friendships", "users", column: "requester_id"
   add_foreign_key "game_maps", "game_tables"
   add_foreign_key "game_maps", "map_templates", on_delete: :nullify
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify

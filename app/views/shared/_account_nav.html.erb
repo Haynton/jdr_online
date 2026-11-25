@@ -4,6 +4,9 @@
     in Account; decision: the gear rather than the avatar).
     From 768 px: "Settings", which opens the settings window (settings_link_data), or the settings page when already
     on it; "Log out"; then the avatar and the username, which only show who is signed in %>
+<%# Right before "Settings", in the floating bar of a phone and in the side bar alike %>
+<%= render "shared/notifications_bell" %>
+
 <div class="md:hidden">
   <%= side_nav_link_to t(".settings"), settings_path, icon: "settings", current: settings_page? %>
 </div>

@@ -1,0 +1,19 @@
+<%# A friend request received (Notification): answered here, the window stays open (Settings::FriendshipsController
+    comes back to the notifications when asked from their frame) %>
+<% requester = source.requester %>
+<li class="flex gap-3 py-4">
+  <%= render "shared/avatar", user: requester %>
+  <div class="min-w-0 flex-1">
+    <p class="text-sm text-ink"><%= notification_text("notifications.friend_request.text_html", username: requester.username) %></p>
+    <p class="mt-0.5 text-xs text-muted"><%= t("notifications.received_ago", time: time_ago_in_words(source.created_at)) %></p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%# Waits for the user: the attention button, never the full plate (Components, Buttons) %>
+      <%= button_to t("notifications.friend_request.accept"), settings_friendship_path(source), method: :patch,
+                    class: button_classes(:attention, size: :compact),
+                    aria: { label: t("settings.friends.show.accept_from", username: requester.username) } %>
+      <%= button_to t("notifications.friend_request.refuse"), settings_friendship_path(source), method: :delete,
+                    class: button_classes(:secondary, size: :compact),
+                    aria: { label: t("settings.friends.show.refuse_from", username: requester.username) } %>
+    </div>
+  </div>
+</li>

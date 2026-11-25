@@ -1,0 +1,12 @@
+<%# One person of the friends section: avatar, username, "Pending" for a request sent, then its buttons (actions) %>
+<% pending = local_assigns.fetch(:pending, false) %>
+<li class="flex min-h-14 flex-wrap items-center gap-x-3 gap-y-2 border-b border-line py-2.5 last:border-b-0">
+  <%= render "shared/avatar", user: user %>
+  <span class="min-w-0 truncate text-sm font-medium text-ink"><%= user.username %></span>
+  <% if pending %>
+    <span class="<%= badge_classes(:pending) %>"><%= t("settings.friends.person.pending") %></span>
+  <% end %>
+  <div class="ml-auto flex gap-2">
+    <%= actions %>
+  </div>
+</li>

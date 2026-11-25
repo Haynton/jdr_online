@@ -12,11 +12,11 @@ module GameTables
                   flash: { screen_reader_notice: t(".accepted", name: @invitation.game_table.name) }
     end
 
-    # The game master may invite them again later
+    # The game master may invite them again later. Declined from the window of the bell, the window stays
     def destroy
       @invitation.destroy
-      redirect_to game_tables_path,
-                  flash: { screen_reader_notice: t(".declined", name: @invitation.game_table.name) }
+      return_path = turbo_frame_request_id == NotificationsHelper::FRAME ? notifications_path : game_tables_path
+      redirect_to return_path, flash: { screen_reader_notice: t(".declined", name: @invitation.game_table.name) }
     end
 
     private
