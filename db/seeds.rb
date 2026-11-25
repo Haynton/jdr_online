@@ -5,7 +5,9 @@
 # The account othna (test@test.com) sees every case known so far: tables as game master (draft at its first step,
 # draft at its summary with pending invitations, ready with many players, ready and empty, made from a template of
 # their own), tables as player (invitation to answer, character to make, character in progress, character complete,
-# invitation to a draft that waits), and templates of their own (one used by a table, one that can be deleted).
+# invitation to a draft that waits), templates of their own (one used by a table, one that can be deleted), friends
+# (two friends, a request to answer in the bell, a request sent), maps of their own (« Mes cartes ») and a table with
+# its NPCs, its enemies and a map with their tokens.
 
 # ==========================================
 # Clean database before seeding
@@ -40,6 +42,32 @@ luara = User.create!(email: "user@example.com", password: "password1234", userna
 brannoc, isolde, fennick, yrsa, oden = %w[Brannoc Isolde Fennick Yrsa Oden].map do |username|
   User.create!(email: "#{username.downcase}@example.com", password: "password1234", username: username, locale: "fr")
 end
+
+# ==========================================
+# Friends of othna
+# ==========================================
+
+# Two friends (proposed first when othna invites a player), a request to answer (the bell counts it) and a request
+# sent, waiting for Oden
+Friendship.create!(requester: othna, addressee: luara, status: "accepted")
+Friendship.create!(requester: brannoc, addressee: othna, status: "accepted")
+Friendship.create!(requester: isolde, addressee: othna)
+Friendship.create!(requester: othna, addressee: oden)
+
+# ==========================================
+# Maps of othna (« Mes cartes »)
+# ==========================================
+
+# Two maps ready to use of the editor, named as its tab Templates names them, and one still empty
+def create_map_from_preset(owner, preset_key)
+  preset = MapPresets.find(preset_key)
+  owner.map_templates.create!(name: I18n.t("map_templates.presets.#{preset_key}.name", locale: owner.locale),
+                              columns: preset.columns, rows: preset.rows, layout: preset.layout.deep_dup)
+end
+
+inn_map = create_map_from_preset(othna, "inn")
+create_map_from_preset(othna, "camp")
+othna.map_templates.create!(name: "Nouvelle carte", columns: 28, rows: 21)
 
 # ==========================================
 # Templates of othna
@@ -83,8 +111,12 @@ def add_player(game_table, user)
 end
 
 # The first choices of a fantasy character, with the effects of its options (saving throws, skills, speed)
-def fantasy_sheet(game_table, class_name:, background:, species:, size: "Moyenne")
-  chosen_values = { "class" => class_name, "background" => background, "species" => species, "size" => size }
+# choices: class_name, background, species, and size (« Moyenne » when not given) and subclass (asked from level 3
+# only) when they are
+def fantasy_sheet(game_table, **choices)
+  chosen_values = { "class" => choices.fetch(:class_name), "subclass" => choices[:subclass],
+                    "background" => choices.fetch(:background), "species" => choices.fetch(:species),
+                    "size" => choices.fetch(:size, "Moyenne") }.compact
   CharacterSheets::ChoiceEffectsApplier.new(fields: game_table.character_sheet_fields, previous_sheet: {})
                                        .call(game_table.character_values_from_table.merge(chosen_values))
 end
@@ -148,17 +180,35 @@ valdoria = create_game_table(
   description: "Un vaste continent composé de royaumes rivaux, de forêts enchantées et de montagnes mystérieuses. " \
                "Les aventuriers devront naviguer entre intrigues politiques, magie ancienne et dangers oubliés."
 )
-add_player_with_character(valdoria, luara, name: "Elowen", class_name: "Druide", background: "Sage", species: "Elfe",
+add_player_with_character(valdoria, luara, name: "Elowen", class_name: "Druide", subclass: "Cercle de la Terre",
+                                           background: "Sage", species: "Elfe",
                                            spell_keys: %w[guidance druidcraft goodberry speak-with-animals])
-add_player_with_character(valdoria, brannoc, name: "Grom", class_name: "Barbare", background: "Soldat",
-                                             species: "Goliath")
-add_player_with_character(valdoria, isolde, name: "Mirelle", class_name: "Clerc", background: "Acolyte",
-                                            species: "Humain", spell_keys: %w[guidance sacred-flame light bless])
-add_player_with_character(valdoria, fennick, name: "Pip", class_name: "Barde", background: "Criminel",
-                                             species: "Halfelin", size: "Petite")
+add_player_with_character(valdoria, brannoc, name: "Grom", class_name: "Barbare", subclass: "Voie du Berserker",
+                                             background: "Soldat", species: "Goliath")
+add_player_with_character(valdoria, isolde, name: "Mirelle", class_name: "Clerc", subclass: "Domaine de la Vie",
+                                            background: "Acolyte", species: "Humain",
+                                            spell_keys: %w[guidance sacred-flame light shield-of-faith])
+add_player_with_character(valdoria, fennick, name: "Pip", class_name: "Barde", subclass: "Collège du Savoir",
+                                             background: "Criminel", species: "Halfelin", size: "Petite")
 invite_player(valdoria, yrsa)
 # Changed after Elowen and Mirelle chose it: the step "Spells and items" offers to apply it to their sheets
 customize_spell(valdoria, "guidance", range: "9 mètres")
+
+# NPCs and enemies: a band of three goblins and a wolf from the bestiary (numbered), and an NPC of the table
+creature_copier = Catalogs::CreatureCopier.new(valdoria)
+goblins = Array.new(3) { creature_copier.call("goblin-warrior") }
+wolf = creature_copier.call("wolf")
+innkeeper = valdoria.characters.create!(kind: :npc, name: "Maître Hobb", gm_notes: "L'aubergiste. Il sait où " \
+                                                                                   "se cachent les gobelins.")
+
+# The inn of « Mes cartes » copied into the table, the tokens where the game begins and two blocked cells
+inn = MapTemplates::TableCopier.new(inn_map, valdoria).call
+stone_cells = inn.layout["floors"].select { |_cell, floor| floor == "stone" }.keys
+token_cells = stone_cells.first(goblins.size + 2).map { |cell| cell.split(",").map(&:to_i) }
+tokens = [*goblins, wolf, innkeeper].zip(token_cells).map do |character, (column, row)|
+  { "character_id" => character.id, "column" => column, "row" => row }
+end
+inn.update!(layout: inn.layout.merge("tokens" => tokens, "blocked" => stone_cells.last(2)))
 
 # Ready, nobody has joined yet
 create_game_table(
@@ -253,3 +303,5 @@ puts "- #{User.count} users created"
 puts "- #{GameTable.count} game tables created"
 puts "- #{Participation.count} participations created"
 puts "- #{Character.count} characters created"
+puts "- #{Friendship.count} friendships created"
+puts "- #{MapTemplate.count} maps created, #{GameMap.count} copied into a table"
