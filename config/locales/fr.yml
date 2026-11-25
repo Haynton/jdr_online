@@ -1085,6 +1085,7 @@ fr:
           long_rest_one: "Vous pourrez en remplacer un après chaque repos long."
         chosen: "%{chosen} sur %{allowed} choisis"
         chosen_only: "Mes choix"
+        close_details: "Fermer les détails du sort"
         components: "Composantes : %{list}"
         concentration: "Concentration"
         details: "Détails"

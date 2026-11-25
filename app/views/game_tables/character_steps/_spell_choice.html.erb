@@ -1,9 +1,12 @@
 <%# One spell to choose: its box and name (on one line, cut with its whole name as a tooltip: every card keeps the same
     height), what it costs to cast, then "Details" under the box, aligned with it, and Concentration and Ritual on the
-    right of that line (decision: on the line of the name, a long name pushed them onto a second line). The details
-    sit beside the label, never inside it: a click on "Details" must not tick the box. data-level, -school and
-    -casting are read by the filters (spell_choices_controller.js). A spell always prepared (always_prepared) has its
-    box ticked and disabled: it is never sent, the server copies it %>
+    right of that line (decision: on the line of the name, a long name pushed them onto a second line). "Details" opens
+    the window of the step with the details of the spell (decision: a window rather than a fold, which made the card
+    grow; spell_details_controller.js copies them into it). The button is rendered hidden and shown by the controller,
+    which hides the fold instead: without JavaScript, the details still open under the card. Never inside the label: a
+    click on "Details" must not tick the box. data-level, -school and -casting are read by the filters
+    (spell_choices_controller.js). A spell always prepared (always_prepared) has its box ticked and disabled: it is
+    never sent, the server copies it %>
 <% box_id = spell_box_id(spell) %>
 <%= tag.li class: CharacterSheets::SpellChoicesHelper::SPELL_ROW_CLASSES, data: spell_card_data(spell) do %>
   <div class="flex items-start gap-2.5">
@@ -22,12 +25,20 @@
     </div>
   </div>
   <div class="relative mt-2">
-    <details class="group">
+    <button type="button" hidden aria-haspopup="dialog"
+            class="flex h-5 w-fit cursor-pointer items-center gap-1 rounded text-xs font-medium text-link hover:underline"
+            data-spell-details-target="opener" data-action="spell-details#open"
+            data-spell-details-name-param="<%= spell.name %>" data-spell-details-summary-param="<%= spell_summary_line(spell) %>">
+      <%= render "shared/icons/info", css_class: "size-3.5" %>
+      <%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.details") %>
+      <span class="sr-only"><%= spell.name %></span>
+    </button>
+    <details class="group" data-spell-details-target="fold">
       <summary class="flex h-5 w-fit cursor-pointer list-none items-center gap-1 rounded text-xs font-medium text-link hover:underline [&::-webkit-details-marker]:hidden">
         <%= render "shared/icons/chevron_right", css_class: "size-3.5 transition-transform group-open:rotate-90 motion-reduce:transition-none" %>
         <%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.details") %>
       </summary>
-      <div class="mt-2 flex flex-col gap-2 text-sm text-ink">
+      <div class="mt-2 flex flex-col gap-2 text-sm text-ink" data-spell-details-content>
         <% if (trigger = spell_casting_trigger(spell)) %>
           <p class="text-xs text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.casting_time", text: trigger) %></p>
         <% end %>
