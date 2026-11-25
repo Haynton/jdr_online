@@ -1,7 +1,9 @@
 <%# The panel of a map played on a picture of one's own (Anthony's decision: the picture alone, the drawing kept for
-    when the game master goes back to Draw). Send the picture (a form: the page comes back with it), then set the grid
-    on it: its width in cells, its offset, its opacity, changed live by the editor and undone like a stroke
-    (map_editor_controller.js). These controls have no name: they are not sent, the editor saves the layout %>
+    when the game master goes back to Draw). Send the picture (a form: the page comes back with it): the grid follows
+    it (Anthony's request), the number of cells across chosen with « Grille » over the board, the rows following its
+    proportions, the picture over the whole grid (map_editor_controller.js#changeGridSize). Here, how big a cell is in
+    pixels of the picture (written by the editor) and its opacity, changed live and undone like a stroke. These
+    controls have no name: they are not sent, the editor saves the layout %>
 <h2 class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".title") %></h2>
 <p class="mb-3 text-xs leading-normal text-muted"><%= t(".intro") %></p>
 
@@ -31,34 +33,15 @@
   <section class="mt-6 grid gap-4" aria-labelledby="map-picture-grid-title">
     <h2 id="map-picture-grid-title" class="text-[11px] font-bold tracking-widest text-brass uppercase"><%= t(".grid_title") %></h2>
 
-    <div class="grid gap-1.5">
-      <label for="map-picture-width" class="text-[13px] font-semibold text-ink"><%= t(".width_label") %></label>
-      <div class="flex items-center gap-2">
-        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#narrowPicture"
-                aria-label="<%= t(".narrower") %>" title="<%= t(".narrower") %>"><%= render "shared/icons/minus", css_class: "size-3.5" %></button>
-        <input type="number" id="map-picture-width" min="<%= MapLayouts::PictureCheck::CELLS_WIDE.min %>"
-               max="<%= MapLayouts::PictureCheck::CELLS_WIDE.max %>" class="<%= MapTemplatesHelper::MAP_COLUMNS_FIELD_CLASSES %>"
-               aria-describedby="map-picture-width-hint" data-map-editor-target="pictureWidth"
-               data-action="input->map-editor#changePictureSetting change->map-editor#keepPictureSetting">
-        <button type="button" class="<%= MapTemplatesHelper::MAP_SIZE_BUTTON_CLASSES %>" data-action="map-editor#widenPicture"
-                aria-label="<%= t(".wider") %>" title="<%= t(".wider") %>"><%= render "shared/icons/plus", css_class: "size-3.5" %></button>
-        <span class="text-xs text-muted"><%= t(".cells") %></span>
-      </div>
-      <p id="map-picture-width-hint" class="text-xs leading-normal text-muted"><%= t(".width_hint") %></p>
-    </div>
+    <p class="text-xs leading-normal text-muted"><%= t(".grid_hint") %></p>
+    <p hidden class="text-[13px] font-semibold text-ink" data-map-editor-target="cellPixels"
+       data-template="<%= t(".cell_pixels", pixels: "%{pixels}") %>"></p>
 
-    <% [["offset_x", t(".offset_x")], ["offset_y", t(".offset_y")], ["opacity", t(".opacity")]].each do |setting, label| %>
-      <div class="grid gap-1">
-        <label for="map-picture-<%= setting %>" class="text-[13px] font-semibold text-ink"><%= label %></label>
-        <input type="range" id="map-picture-<%= setting %>" class="w-full accent-brass"
-               data-map-editor-target="pictureSlider" data-setting="<%= setting %>"
-               data-action="input->map-editor#changePictureSetting change->map-editor#keepPictureSetting">
-      </div>
-    <% end %>
-
-    <div class="grid grid-cols-2 gap-2">
-      <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="map-editor#centerPicture"><%= t(".center") %></button>
-      <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="map-editor#fitPicture"><%= t(".fit") %></button>
+    <div class="grid gap-1">
+      <label for="map-picture-opacity" class="text-[13px] font-semibold text-ink"><%= t(".opacity") %></label>
+      <input type="range" id="map-picture-opacity" class="w-full accent-brass"
+             data-map-editor-target="pictureSlider" data-setting="opacity"
+             data-action="input->map-editor#changePictureSetting change->map-editor#keepPictureSetting">
     </div>
 
     <%= button_to t(".remove"), polymorphic_path([*map_editor_record(map_template), :picture]), method: :delete,

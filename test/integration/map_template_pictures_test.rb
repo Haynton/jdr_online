@@ -26,7 +26,9 @@ class MapTemplatePicturesTest < ActionDispatch::IntegrationTest
 
     assert_select "header input[name=map-making][value=picture][checked]"
     assert_select "[data-map-editor-target=drawingPanel][hidden]"
-    assert_select "[data-map-editor-target=picturePanel]:not([hidden]) input#map-picture-width"
+    assert_select "[data-map-editor-target=picturePanel]:not([hidden]) input#map-picture-opacity"
+    assert_select "[data-map-editor-target=cellPixels][data-template*=?]", "Une case fait environ"
+    assert_select "#map-picture-offset_x", count: 0
     assert_select "main[data-map-editor-picture-url-value*=?]", "map.png"
     assert_select "[data-map-editor-target=picturePanel] form[action=?] button[data-turbo-confirm]",
                   map_template_picture_path(@map_template)

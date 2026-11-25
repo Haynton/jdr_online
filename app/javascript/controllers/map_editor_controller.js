@@ -9,7 +9,7 @@ import { renderBlockedCells, renderNaturalBlocks } from "map_editor/blocked_rend
 import { naturalBlocks } from "map_editor/passage"
 import { renderTokens, drawToken } from "map_editor/token_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
-import { defaultPicture, withCellsWide, centered, sliders } from "map_editor/picture_settings"
+import { defaultPicture, fittedPicture, isFitted, rowsOverPicture, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
@@ -70,7 +70,7 @@ export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
-                     "drawingTools", "pictureWidth", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
+                     "drawingTools", "cellPixels", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
                      "tokenTemplate", "brushSize"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
@@ -96,14 +96,22 @@ export default class extends Controller {
 
   // The proportions of the picture of the map, known once it is loaded: it is drawn then. Also when a new picture
   // comes back with the page refreshed by morphing (sent from the tab Image), which does not connect the editor again
+  // A picture sent while the editor is open (the page refreshed by morphing) lays the grid over it at once
   pictureUrlValueChanged() {
     this.pictureRatio = null
+    this.pictureWidthInPixels = null
     if (!this.pictureUrlValue) return this.layout && this.render()
 
+    const isNewPicture = Boolean(this.layout)
     const picture = new Image()
     picture.addEventListener("load", () => {
       this.pictureRatio = picture.naturalHeight / picture.naturalWidth
-      if (this.layout) this.render()
+      this.pictureWidthInPixels = picture.naturalWidth
+      if (!this.layout) return
+      if (isNewPicture && this.pictureFollowsGrid()) return this.changeGridSize(this.grid.columns)
+
+      this.render()
+      this.showPictureSettings()
     })
     picture.src = this.pictureUrlValue
   }
@@ -416,13 +424,22 @@ export default class extends Controller {
     this.showWholeMap()
   }
 
-  // Drawn or on a picture: the drawing is kept either way, the change is undone like a stroke
-  chooseMaking(event) {
+  // Drawn or on a picture: the drawing is kept either way, the change is undone like a stroke. On a picture, the grid
+  // is laid over it, in the same step
+  async chooseMaking(event) {
     const before = this.layout.snapshot()
     this.layout.mode = event.target.value
     if (this.layout.isPicture() && !this.layout.picture) this.layout.picture = defaultPicture(this.grid)
+    if (this.pictureFollowsGrid() && (await this.changeGridSize(this.grid.columns, before))) return
+
     this.render()
     this.keepChange(before)
+  }
+
+  // On a map played on a picture whose proportions are known, the grid follows the picture (Anthony's request): the
+  // rows follow its proportions, the picture covers the whole grid, the number of cells across is all one chooses
+  pictureFollowsGrid() {
+    return this.layout.isPicture() && Boolean(this.pictureRatio)
   }
 
   // The switch of the bar, the panel and the tools of the drawing follow the way the map is made (after an undo too)
@@ -438,27 +455,32 @@ export default class extends Controller {
 
   showPictureSettings() {
     const picture = this.layout.picture
-    if (!picture || !this.hasPictureWidthTarget) return
+    if (!picture) return
 
-    if (document.activeElement !== this.pictureWidthTarget) this.pictureWidthTarget.value = picture.cells_wide
     this.pictureSliderTargets.forEach((slider) => {
       const { bounds, toSlider } = sliders[slider.dataset.setting]
       const [lowest, highest] = bounds(this.grid)
       Object.assign(slider, { min: lowest, max: highest })
       slider.value = toSlider(picture[slider.dataset.setting])
     })
+    this.showCellPixels()
+  }
+
+  // "Une case fait environ 71 px de l'image.": the measure the makers of battle maps give (70 px per cell)
+  showCellPixels() {
+    if (!this.hasCellPixelsTarget) return
+
+    const pixels = this.pictureWidthInPixels && Math.round(this.pictureWidthInPixels / this.grid.columns)
+    this.cellPixelsTarget.hidden = !pixels
+    if (pixels) this.cellPixelsTarget.textContent = this.cellPixelsTarget.dataset.template.replace("%{pixels}", pixels)
   }
 
   // A setting moved: drawn at once, kept as one step of the history once let go (keepPictureSetting)
   changePictureSetting(event) {
     this.pictureBefore ??= this.layout.snapshot()
-    const field = event.target
-    if (field === this.pictureWidthTarget) {
-      this.layout.picture = withCellsWide(this.layout.picture, Number(field.value))
-    } else {
-      this.layout.picture = { ...this.layout.picture,
-                              [field.dataset.setting]: sliders[field.dataset.setting].fromSlider(Number(field.value)) }
-    }
+    const slider = event.target
+    this.layout.picture = { ...this.layout.picture,
+                            [slider.dataset.setting]: sliders[slider.dataset.setting].fromSlider(Number(slider.value)) }
     this.render()
   }
 
@@ -468,32 +490,6 @@ export default class extends Controller {
     this.keepChange(this.pictureBefore)
     this.pictureBefore = null
     this.showPictureSettings()
-  }
-
-  narrowPicture() {
-    this.changePicture((picture) => withCellsWide(picture, picture.cells_wide - 1))
-  }
-
-  widenPicture() {
-    this.changePicture((picture) => withCellsWide(picture, picture.cells_wide + 1))
-  }
-
-  centerPicture() {
-    if (!this.pictureRatio) return
-
-    this.changePicture((picture) => centered(picture, this.grid, this.pictureRatio))
-  }
-
-  // As wide as the grid, from its top left corner (its opacity kept)
-  fitPicture() {
-    this.changePicture((picture) => ({ ...defaultPicture(this.grid), opacity: picture.opacity }))
-  }
-
-  changePicture(change) {
-    const before = this.layout.snapshot()
-    this.layout.picture = change(this.layout.picture)
-    this.render()
-    this.keepChange(before)
   }
 
   // Asked first in the window of the app (Anthony's request), though Undo brings it all back
@@ -517,30 +513,47 @@ export default class extends Controller {
     this.resizeGrid()
   }
 
-  // The columns typed, the rows following the proportions, both within the bounds of a grid. The drawing stays in
-  // the middle: the grid grows, or shrinks, on every side
-  async resizeGrid() {
-    const { columns, rows } = this.sizeFor(Number.parseInt(this.columnsInputTarget.value, 10))
-    if (columns === this.grid.columns && rows === this.grid.rows) return this.showSize()
+  resizeGrid() {
+    this.changeGridSize(Number.parseInt(this.columnsInputTarget.value, 10))
+  }
 
-    const shift = this.layout.shiftFor(columns, rows)
-    const losesSomething = this.layout.hasSomethingOutside(columns, rows, shift)
-    if (losesSomething && !(await confirmWithDialog(this.shrinkQuestionValue, this.columnsInputTarget))) {
-      return this.showSize()
+  // The columns given, the rows following the proportions, both within the bounds of a grid. A drawing stays in the
+  // middle: the grid grows, or shrinks, on every side, and something that would go out is asked first. On a picture,
+  // the grid grows from its top left corner and the picture with it, over the whole grid: nothing asked (Anthony's
+  // request: the picture is never cut), what goes out (tokens, painted zones, the drawing kept for Draw) is taken out
+  // all the same, Undo brings it back. before: the state the step starts from (choosing to play on a picture lays the
+  // grid in the same step). Whether the grid was changed
+  async changeGridSize(typedColumns, before = this.layout.snapshot()) {
+    const { columns, rows } = this.sizeFor(typedColumns)
+    const pictureToFit = this.pictureFollowsGrid() && !isFitted(this.layout.picture, columns)
+    if (columns === this.grid.columns && rows === this.grid.rows && !pictureToFit) {
+      this.showSize()
+      return false
     }
-    const before = this.layout.snapshot()
+    const shift = this.pictureFollowsGrid() ? [0, 0] : this.layout.shiftFor(columns, rows)
+    const asksFirst = !this.pictureFollowsGrid() && this.layout.hasSomethingOutside(columns, rows, shift)
+    if (asksFirst && !(await confirmWithDialog(this.shrinkQuestionValue, this.columnsInputTarget))) {
+      this.showSize()
+      return false
+    }
     this.layout.moveBy(shift)
     this.layout.cropTo(new SquareGrid(columns, rows))
+    if (this.pictureFollowsGrid()) this.layout.picture = fittedPicture(this.layout.picture, columns)
     this.useGridSize({ columns, rows })
     this.render()
     this.keepChange(before)
+    return true
   }
 
   sizeFor(typedColumns) {
-    const fewestColumns = Math.max(smallestGridSize, Math.ceil(smallestGridSize / this.gridRatio))
-    const mostColumns = Math.min(largestGridSize, Math.floor(largestGridSize / this.gridRatio))
+    const ratio = this.pictureFollowsGrid() ? this.pictureRatio : this.gridRatio
+    const rowsFor = (columns) => {
+      return this.pictureFollowsGrid() ? rowsOverPicture(columns, ratio) : Math.round(columns * ratio)
+    }
+    const fewestColumns = Math.max(smallestGridSize, Math.ceil(smallestGridSize / ratio))
+    const mostColumns = Math.min(largestGridSize, Math.floor(largestGridSize / ratio))
     const columns = Math.min(mostColumns, Math.max(fewestColumns, typedColumns || this.grid.columns))
-    return { columns, rows: Math.round(columns * this.gridRatio) }
+    return { columns, rows: rowsFor(columns) }
   }
 
   // A new grid (resized, or given back by undo): the whole map shown again
@@ -557,6 +570,7 @@ export default class extends Controller {
   showSize() {
     this.columnsInputTarget.value = this.grid.columns
     this.rowsCountTarget.textContent = this.grid.rows
+    this.showCellPixels()
   }
 
   // Ctrl or Cmd + Z undoes, with Shift (or Ctrl + Y) redoes. Not while typing: a field undoes its own text
