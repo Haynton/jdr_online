@@ -1,0 +1,24 @@
+<%# An invitation to a table that is ready (Notification). Accepting leads to the table in "My tables" (_top: the whole
+    page). Declining is asked first, like on "My tables", and the window stays open %>
+<% game_table = source.game_table %>
+<% game_master = game_table.game_master %>
+<li class="flex gap-3 py-4">
+  <%= render "shared/avatar", user: game_master %>
+  <div class="min-w-0 flex-1">
+    <p class="text-sm text-ink">
+      <%= notification_text("notifications.table_invitation.text_html", username: game_master.username,
+                                                                         name: game_table.name) %>
+    </p>
+    <p class="mt-0.5 text-xs text-muted"><%= t("notifications.received_ago", time: time_ago_in_words(source.created_at)) %></p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%= button_to t("game_tables.invitation_answers.accept"), game_table_invitation_answer_path(game_table),
+                    method: :patch, class: button_classes(:attention, size: :compact),
+                    form: { data: { turbo_frame: "_top" } } %>
+      <%= button_to t("game_tables.invitation_answers.decline"), game_table_invitation_answer_path(game_table),
+                    method: :delete, class: button_classes(:secondary, size: :compact),
+                    form: { data: { turbo_confirm: t("game_tables.invitation_answers.decline_confirmation",
+                                                     name: game_table.name),
+                                    confirm_button: t("game_tables.invitation_answers.decline") } } %>
+    </div>
+  </div>
+</li>

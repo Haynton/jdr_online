@@ -36,11 +36,6 @@ class User < ApplicationRecord
     where("lower(username) LIKE ?", "#{sanitize_sql_like(typed_text.downcase)}%")
   }
 
-  # Shown on "My tables" in the navigation: invitations waiting for an answer
-  def pending_invitations_count
-    participations.invitations_to_ready_tables.count
-  end
-
   # Shown in the avatar
   def initials
     username.to_s.scan(/[[:alnum:]]/).first(2).join.upcase

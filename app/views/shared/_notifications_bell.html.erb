@@ -1,0 +1,7 @@
+<%# The bell of the navigation (shared/_account_nav), on a phone and from 768 px alike: what waits for an answer
+    (friend requests, invitations to a table), with a gold dot and its number (decision: the bell replaces the dot of
+    "My tables"). It loads the notifications into their window (shared/_notifications_dialog). Its id lets the window
+    refresh it once a notification is answered (notifications/show) %>
+<div id="notifications-bell" class="contents">
+  <%= notifications_bell_link %>
+</div>

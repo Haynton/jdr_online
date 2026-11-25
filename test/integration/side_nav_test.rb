@@ -43,7 +43,8 @@ class SideNavTest < ActionDispatch::IntegrationTest
                   game_tables_path, text: "Mes tables"
     assert_select "#side-nav > div.md\\:mt-auto > a[href=?] + a[href=?] + a[href=?] + a[href=?]", game_tables_path,
                   characters_path, sheet_templates_path, map_templates_path
-    assert_select "#side-nav > div.md\\:mt-auto + div.md\\:hidden + div.hidden.md\\:flex"
+    # The bell, right before the account entries
+    assert_select "#side-nav > div.md\\:mt-auto + div#notifications-bell + div.md\\:hidden + div.hidden.md\\:flex"
   end
 
   test "on my tables page, my tables is the current link of the navigation" do

@@ -23,7 +23,8 @@ module NavigationHelper
 
   SIDE_NAV_LABEL_CLASSES = "text-[15px] #{SIDE_NAV_FADING_TEXT_CLASSES}".freeze
 
-  # Something waits for the user behind a link (an invitation): a gold dot with the number, on the corner of the icon.
+  # Something waits for the user behind a link (the bell, shared/_notifications_bell): a gold dot with the number,
+  # on the corner of the icon.
   # brass with page text, like the "+" of the create card. The ring of the bar color sets it apart from the icon.
   # It stays inside the link (40 px wide while folded), which cuts what overflows
   SIDE_NAV_COUNT_CLASSES = %w[
@@ -63,26 +64,9 @@ module NavigationHelper
     end
   end
 
-  # A link of the side navigation where something waits for the user (invitations). The number shows on the icon;
-  # screen readers and the tooltip get count_label instead ("1 invitation waiting"). Nothing waiting: a plain link
-  def side_nav_link_with_count_to(label, path, icon:, count:, count_label:)
-    return side_nav_link_to(label, path, icon: icon) unless count.positive?
-
-    link_to path, class: SIDE_NAV_LINK_CLASSES, title: "#{label} (#{count_label})",
-                  aria: current_page_aria(current_page?(path)) do
-      tag.span(nav_icon(icon) + side_nav_count(count), class: "relative flex") +
-        tag.span(label, class: SIDE_NAV_LABEL_CLASSES) + tag.span(", #{count_label}", class: "sr-only")
-    end
-  end
-
   def side_nav_count(count)
     shown_count = count > SIDE_NAV_COUNT_MAX ? "#{SIDE_NAV_COUNT_MAX}+" : count
     tag.span(shown_count, class: SIDE_NAV_COUNT_CLASSES, aria: { hidden: true })
-  end
-
-  # Counted once per page, for the navigation
-  def pending_invitations_count
-    @pending_invitations_count ||= current_user.pending_invitations_count
   end
 
   # A form button of the side navigation (log out), shaped like its links. A <button> takes the width of its content,

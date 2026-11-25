@@ -89,6 +89,9 @@ Rails.application.routes.draw do
     # and their order stay: its computing rules rely on them)
   end
 
+  # What waits for an answer (the bell of the navigation): friend requests, invitations to a table
+  resource :notifications, only: :show
+
   # Settings: one address per section, so the section menu is made of plain links
   get "settings", to: "settings/sections#index", as: :settings
   namespace :settings do

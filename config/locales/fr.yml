@@ -315,6 +315,18 @@ fr:
   locale_names:
     en: "English"
     fr: "Français"
+  notifications:
+    friend_request:
+      accept: "Accepter"
+      refuse: "Refuser"
+      text_html: "%{username} veut devenir votre ami."
+    received_ago: "Il y a %{time}"
+    show:
+      close: "Fermer les notifications"
+      empty: "Rien en attente pour l'instant."
+      title: "Notifications"
+    table_invitation:
+      text_html: "%{username} vous invite à la table « %{name} »."
   pages:
     home:
       create_account: "Créer un compte"
@@ -430,6 +442,11 @@ fr:
       sending: "Envoi de l'image…"
       stage_label: "Image à cadrer : faites-la glisser, ou déplacez-la avec les flèches du clavier"
       zoom: "Agrandir l'image"
+    notifications_bell:
+      label: "Notifications"
+      waiting:
+        one: "1 notification en attente"
+        other: "%{count} notifications en attente"
     navbar:
       label: "Navigation principale"
     navbar_visitor_links:
@@ -463,9 +480,6 @@ fr:
       my_characters: "Mes personnages"
       my_templates: "Mes modèles"
       my_maps: "Mes cartes"
-      pending_invitations:
-        one: "1 invitation en attente"
-        other: "%{count} invitations en attente"
       collapse: "Replier le menu"
       expand: "Déplier le menu"
     account_nav:

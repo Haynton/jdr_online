@@ -344,6 +344,18 @@ en:
   locale_names:
     en: "English"
     fr: "Français"
+  notifications:
+    friend_request:
+      accept: "Accept"
+      refuse: "Refuse"
+      text_html: "%{username} wants to be your friend."
+    received_ago: "%{time} ago"
+    show:
+      close: "Close the notifications"
+      empty: "Nothing waiting for now."
+      title: "Notifications"
+    table_invitation:
+      text_html: "%{username} invites you to the table “%{name}”."
   pages:
     home:
       create_account: "Create an account"
@@ -459,6 +471,11 @@ en:
       sending: "Sending the picture…"
       stage_label: "Picture to frame: drag it, or move it with the arrow keys"
       zoom: "Enlarge the picture"
+    notifications_bell:
+      label: "Notifications"
+      waiting:
+        one: "1 notification waiting"
+        other: "%{count} notifications waiting"
     navbar:
       label: "Main navigation"
     navbar_visitor_links:
@@ -492,9 +509,6 @@ en:
       my_characters: "My characters"
       my_templates: "My templates"
       my_maps: "My maps"
-      pending_invitations:
-        one: "1 invitation waiting"
-        other: "%{count} invitations waiting"
       collapse: "Collapse the menu"
       expand: "Expand the menu"
     account_nav:

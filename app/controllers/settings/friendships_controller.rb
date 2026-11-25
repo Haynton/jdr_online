@@ -28,8 +28,10 @@ module Settings
 
     private
 
+    # Answered from the window of the bell (notifications/_friend_request), the window shows the notifications again
     def redirect_to_friends(message)
-      redirect_to settings_friends_path, flash: { screen_reader_notice: message }
+      return_path = turbo_frame_request_id == NotificationsHelper::FRAME ? notifications_path : settings_friends_path
+      redirect_to return_path, flash: { screen_reader_notice: message }
     end
 
     def created_message(friend_request)

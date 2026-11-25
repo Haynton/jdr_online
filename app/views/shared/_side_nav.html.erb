@@ -35,10 +35,8 @@
   <%# md:mt-auto: from here on, pushed to the foot of the bar. Side by side in the floating bar of a phone, with the
       same gaps as the bar itself; one under the other from 768 px %>
   <div class="flex items-center gap-1 md:mt-auto md:flex-col md:items-stretch md:gap-1.5">
-    <%# The invitations waiting for an answer show on "My tables", where the player answers them %>
-    <%= side_nav_link_with_count_to t(".my_tables"), game_tables_path, icon: "scroll_text",
-                                    count: pending_invitations_count,
-                                    count_label: t(".pending_invitations", count: pending_invitations_count) %>
+    <%# The invitations waiting for an answer show on the bell (shared/_notifications_bell), not here (decision) %>
+    <%= side_nav_link_to t(".my_tables"), game_tables_path, icon: "scroll_text" %>
     <%# The characters of the player, on all their tables, current on the page of one of them too %>
     <%= side_nav_link_to t(".my_characters"), characters_path, icon: "venetian_mask",
                          current: characters_page? %>
