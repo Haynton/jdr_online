@@ -101,6 +101,20 @@ module MapTemplatesHelper
     MapFloors.keys.map { |key| [key, t("map_templates.floors.#{key}")] }
   end
 
+  # The sides of the square a floor paints at each cell (Anthony's request: floors only, walls stay one side at a time)
+  FLOOR_BRUSH_SIZES = [1, 2, 3, 5].freeze
+  # A square per size, under the word « Pinceau »; pressed in the tonal gold of the filter pills
+  MAP_BRUSH_SIZE_CLASSES = %w[
+    inline-flex size-11 items-center justify-center rounded-lg border border-line text-[13px] font-medium text-ink
+    transition-colors hover:bg-surface-raised
+    aria-pressed:border-primary-soft-ink/50 aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+  ].join(" ").freeze
+
+  def map_floor_brush_sizes
+    FLOOR_BRUSH_SIZES
+  end
+
   def map_edge_tools
     MapEdges.keys.map { |key| [key, t("map_templates.edges.#{key}")] }
   end

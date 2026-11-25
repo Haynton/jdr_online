@@ -483,7 +483,7 @@ fr:
           one: "%{count} mur"
           other: "%{count} murs"
       hand: "Main (H)"
-      help_html: "<b>Sols</b> : glissez pour peindre. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : la main (<kbd>H</kbd>) puis glisser, deux doigts sur le pavé tactile ou l'écran, <kbd>Espace</kbd> enfoncée et glisser, ou clic du milieu. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler.<br><b>Objets</b> : <kbd>R</kbd> choisit le sens, un clic sur un objet posé le tourne. <b>Retirer</b> : clic droit ou <kbd>Suppr</kbd> sur un objet ou un mur."
+      help_html: "<b>Sols</b> : glissez pour peindre, <b>Pinceau</b> choisit la taille du carré peint. <b>Murs et portes</b> : visez le bord entre deux cases, repassez dessus pour l'enlever. <b>Gomme</b> : près d'un bord, enlève son mur ; sinon, le sol de la case.<br><b>Zoom</b> : molette ou pincement, autour du pointeur. <b>Déplacer</b> : la main (<kbd>H</kbd>) puis glisser, deux doigts sur le pavé tactile ou l'écran, <kbd>Espace</kbd> enfoncée et glisser, ou clic du milieu. <kbd>Ctrl</kbd> <kbd>Z</kbd> pour annuler.<br><b>Objets</b> : <kbd>R</kbd> choisit le sens, un clic sur un objet posé le tourne. <b>Retirer</b> : <kbd>Suppr</kbd> sur un objet ou un mur. <b>Clic droit</b> : lâche l'outil en main."
       more_columns: "Une colonne de plus"
       objects_tab: "Objets"
       presets_tab: "Modèles"
@@ -529,6 +529,10 @@ fr:
       stone: "Pierre"
       water: "Eau"
     floor_tools:
+      brush_size:
+        one: "Pinceau d'une case"
+        other: "Pinceau de %{count} × %{count} cases"
+      brush_title: "Pinceau"
       edges_title: "Murs"
       floors_title: "Sols"
       walls_note: "Une salle, la pierre et un enclos se murent seuls du côté du vide. Une porte se pose aussi entre un sol et le vide."
