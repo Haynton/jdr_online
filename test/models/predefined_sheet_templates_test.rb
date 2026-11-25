@@ -69,7 +69,7 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal [3, 4, 1], wizard["spellcasting"].values_at("cantrips", "prepared", "max_spell_level").map(&:first)
   end
 
-  # The table of the SRD 5.2: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
+  # The table of the SRD 5.2.1: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
   # all of one level
   test "the spell slots of the 2024 heroic fantasy follow the levels of each class" do
     classes = heroic_fantasy_classes
@@ -83,7 +83,7 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
-  test "every class of the heroic fantasy has its subclass of the SRD 5.2, asked from level 3" do
+  test "every class of the heroic fantasy has its subclass of the SRD 5.2.1, asked from level 3" do
     %w[fr en].each do |locale|
       template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))
       fields = template.dig("character_fields", "fields").index_by { |field| field["key"] }

@@ -3,7 +3,7 @@
   "locale": "en",
   "icon": "swords",
   "banner_color": "gold",
-  "description": "Heroes, spells and monsters: classes, backgrounds and species, abilities, spells and starting equipment, based on the SRD 5.2.",
+  "description": "5E compatible · SRD 5.2.1 license.",
   "character_fields": {
     "ability_methods": [
       { "type": "roll", "label": "Dice roll", "help": "Roll 4d6 for each ability and keep the 3 highest dice. You may also roll real dice and type your scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
@@ -314,9 +314,9 @@
       "properties": { "category": "Weapon", "damage": "1d6 piercing, range 80/320 ft", "weight": 2, "value": 25 } },
     { "name": "Leather armor", "description": "A breastplate and shoulder guards of boiled leather.",
       "properties": { "category": "Armor", "armor_class": "11 + Dexterity modifier", "weight": 10, "value": 10 } },
-    { "name": "Hempen rope (50 ft)", "description": "Strong, but heavy to carry.",
-      "properties": { "category": "Gear", "weight": 10, "value": 1 } },
-    { "name": "Torch", "description": "Sheds bright light in a 20-foot radius for one hour.",
+    { "name": "Rope", "description": "You tie a knot with it on a DC 10 Dexterity (Sleight of Hand) check.",
+      "properties": { "category": "Gear", "weight": 5, "value": 1 } },
+    { "name": "Torch", "description": "Sheds bright light in a 20-foot radius, and dim light for 20 more feet, for one hour.",
       "properties": { "category": "Gear", "weight": 1, "value": 0.01 } }
   ]
 }

@@ -1,0 +1,51 @@
+<%# The legal notice, shared by its page (legal_notices/show) and the settings (settings/legal_notices/show).
+    heading_level: the level of its section titles (2 on the page, 3 in the settings).
+    The credits of the game rules are written as their licenses ask, in English, word for word: keep them in step
+    with db/seeds/sheet_templates/LICENSES.md %>
+<% subsection_level = heading_level + 1 %>
+<div class="flex max-w-3xl flex-col gap-10 text-sm leading-relaxed text-ink">
+  <section class="flex flex-col gap-3">
+    <%= legal_heading t(".publisher_title"), level: heading_level %>
+    <p><%= t(".publisher") %></p>
+    <p><%= t(".publication_director") %></p>
+    <p><%= t(".contact") %> <%= mail_to LegalNoticesHelper::CONTACT_EMAIL, class: "font-medium text-link hover:underline" %></p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <%= legal_heading t(".hosting_title"), level: heading_level %>
+    <ul class="flex list-disc flex-col gap-1 pl-5">
+      <li><%= t(".hosting_site") %></li>
+      <li><%= t(".hosting_images") %></li>
+      <li><%= t(".hosting_emails") %></li>
+    </ul>
+  </section>
+
+  <section class="flex flex-col gap-6">
+    <%= legal_heading t(".game_rules_title"), level: heading_level %>
+
+    <div class="flex flex-col gap-3">
+      <%= legal_heading t(".fantasy_title"), level: subsection_level, kind: :subsection %>
+      <p><%= t(".fantasy_intro") %></p>
+      <blockquote lang="en" class="border-l-2 border-line pl-4 text-muted"><%= t(".fantasy_attribution") %></blockquote>
+      <p><%= t(".fantasy_changes") %></p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <%= legal_heading t(".horror_title"), level: subsection_level, kind: :subsection %>
+      <p><%= t(".horror_intro") %></p>
+      <blockquote lang="en" class="flex flex-col gap-2 border-l-2 border-line pl-4 text-muted">
+        <p><%= t(".horror_license") %></p>
+        <p><%= t(".horror_licensed_material") %></p>
+      </blockquote>
+      <p><%= t(".horror_changes") %></p>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <%= legal_heading t(".assets_title"), level: heading_level %>
+    <ul class="flex list-disc flex-col gap-1 pl-5">
+      <li><%= t(".font") %></li>
+      <li><%= t(".icons") %></li>
+    </ul>
+  </section>
+</div>

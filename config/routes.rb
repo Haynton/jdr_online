@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
   root to: "pages#home"
+  get "legal", to: "legal_notices#show", as: :legal_notice
   resources :game_tables, only: %i[index new create show edit destroy] do
     # The steps of the creation of a draft (app/controllers/game_tables/). The first one of a new table is
     # GameTablesController#new; the maps come with their milestone
@@ -99,6 +100,7 @@ Rails.application.routes.draw do
     resource :email, only: :update
     resource :security, only: :show
     resource :password, only: :update
+    resource :legal_notice, only: :show
   end
 
   # Component gallery to review the design system in both themes. Never routed in production

@@ -1,0 +1,7 @@
+<%# The foot of the home page: the link to the legal notice. css_class: where it sits on its page %>
+<footer class="<%= css_class %>">
+  <nav aria-label="<%= t(".label") %>" class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+    <span><%= t(".copyright") %></span>
+    <%= link_to t(".legal_notice"), legal_notice_path, class: "hover:text-ink hover:underline" %>
+  </nav>
+</footer>
