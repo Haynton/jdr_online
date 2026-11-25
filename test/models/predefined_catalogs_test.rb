@@ -73,6 +73,19 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
+  test "every spell an option always prepares is in the catalog of spells of its template" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "spell" }.each do |catalog_file|
+      spell_keys = read_json(catalog_file)["entries"].pluck("key")
+      template = create_template_of(catalog_file)
+      template.character_fields["fields"].each do |field|
+        field["effects"].to_h.each do |option, effects|
+          missing = effects["always_prepared_spells"].to_h.values.flatten - spell_keys
+          assert_empty missing, "#{catalog_file.basename} #{option}"
+        end
+      end
+    end
+  end
+
   test "every item of a starting equipment is in the catalog, and every group of your choice has items" do
     CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }.each do |catalog_file|
       items = read_json(catalog_file)["entries"]

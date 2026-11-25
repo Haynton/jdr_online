@@ -33,6 +33,12 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "spell_groups") || []
   end
 
+  # The spell slots of a character, declared once by the template (character_fields.spell_slots: label, help, the
+  # table of each class that counts them; CharacterSheets::SpellSlots), nil without them
+  def spell_slots
+    template_snapshot.to_h.dig("character_fields", "spell_slots")
+  end
+
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each
   def level_thresholds
     template_snapshot.to_h["level_thresholds"] || []

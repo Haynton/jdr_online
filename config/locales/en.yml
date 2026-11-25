@@ -72,6 +72,7 @@ en:
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
         starting_equipment_method_choice: "Starting equipment"
+        limit_skill_choices: "Limit skills to the class choice"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -96,6 +97,10 @@ en:
         outside_point_buy: "from %{minimum} to %{maximum} with point buy"
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
+        skill_not_offered: "%{skill} is not offered by your choices: untick it"
+        too_many_skills:
+          one: "too many skills ticked: %{count} at most among those offered"
+          other: "too many skills ticked: %{count} at most among those offered"
       models:
         map_template:
           attributes:
@@ -178,10 +183,14 @@ en:
           invalid_equipment_line: "%{part} › %{field} › %{option}: a line of the option %{letter} must be an item or a choice, not both nor none"
           invalid_key: "%{part}: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_label: "%{part} › %{field}: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_level_entries: "%{part} › %{field} › %{option}: the effect “%{effect}” must give a list for each level, from 1 to 20"
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
+          invalid_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” must give, for each of the 20 levels, a list of whole numbers, 0 or more"
           invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_spell_group_label: "The group of spells “%{group}”: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_spell_slots_label: "The spell slots: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_class_slots_label: "%{part} › %{field} › %{option}: the label of the spell slots must be filled in, on one line, in %{count} characters at most"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
           min_above_max: "%{part} › %{field}: the minimum (%{min}) is above the maximum (%{max})"
@@ -189,6 +198,8 @@ en:
           missing_parameter: "%{part} › %{field}: the setting “%{parameter}” is required"
           missing_spell_group_parameter: "The group of spells “%{group}”: the setting “%{parameter}” is required"
           missing_spell_table: "%{part} › %{field} › %{option}: the spell table “%{table}” is missing, the group “%{group}” reads it"
+          missing_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” is missing"
+          missing_spell_slots_parameter: "The spell slots: the setting “%{parameter}” is required"
           name_step_count: "One step, and only one, must ask the name of the character"
           several_damage_fields: "%{part}: only one field can receive the damage"
           unknown_effect: "%{part} › %{field} › %{option}: the effect “%{effect}” is unknown"
@@ -200,10 +211,12 @@ en:
           unknown_option: "%{part} › %{field}: “%{setting}” describes an option that does not exist (%{option})"
           unknown_parameter: "%{part} › %{field}: the setting “%{parameter}” is unknown for this type of field"
           unknown_parameter_value: "%{part} › %{field}: the value “%{value}” of the setting “%{parameter}” is unknown"
+          unknown_parent_option: "%{part} › %{field}: “options_by” names an option that does not exist in “%{parent}” (%{option})"
           unknown_rule: "%{part} › %{field}: the computing rule “%{rule}” is unknown"
           unknown_section: "The step “%{step}” names a section that does not exist: %{section}"
           unknown_spell_group_changes: "The group of spells “%{group}”: the change rule “%{changes}” is unknown"
           unknown_spell_group_parameter: "The group of spells “%{group}”: the setting “%{parameter}” is unknown"
+          unknown_spell_slots_parameter: "The spell slots: the setting “%{parameter}” is unknown"
           unknown_step_effect: "The step “%{step}” depends on an unknown effect: %{effect}"
           unknown_step_parameter: "The step “%{step}”: the setting “%{parameter}” is unknown"
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
@@ -783,6 +796,9 @@ en:
       from:
         hint: "The list whose option picked gives this field (the background, the class)."
         label: "Source list"
+      from_level:
+        hint: "The level of the character from which the list is asked (the subclass, at level 3)."
+        label: "From level"
       from_table:
         hint: "Filled by a setting of the table, never asked to the player."
         label: "Given by the table"
@@ -836,6 +852,9 @@ en:
       options:
         hint: "One option per line, in the order of the list."
         label: "Options"
+      options_from:
+        hint: "The list whose option picked gives the options of this one (the class, for the subclass)."
+        label: "Depends on"
       proficiency:
         hint: "The computed field that gives the proficiency bonus."
         label: "Proficiency bonus"
@@ -1024,6 +1043,8 @@ en:
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
       spell_choices:
+        always_prepared: "Always prepared spells"
+        always_prepared_hint: "Given by %{sources}: they do not count among the spells to choose."
         casting_time: "Casting time: %{text}"
         changes:
           level_up_one: "You can replace one of them each time you gain a level."
@@ -1100,10 +1121,13 @@ en:
       facts:
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"
+        hit_points_per_level: "Hit points"
         origin_feat: "Origin feat"
         proficient: "Proficiencies"
         skill_choices: "Skills"
         spellcasting: "Spellcasting ability"
+      features_level: "Level %{level}"
+      hit_points_per_level_value: "+%{points} per level"
       label: "Summary of your choices"
       nothing_picked: "Nothing picked yet."
       skill_choices_value:
@@ -1284,6 +1308,7 @@ en:
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
+        limit_skill_choices_hint: "A player ticks no more skills than their class offers, and only among them. Off: the number is only a guide."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."

@@ -58,6 +58,30 @@ class TableSettingsStepTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a template whose class offers skills asks whether they are limited, on by default, and saves it" do
+    skill_fields = [
+      { "key" => "class", "label" => "Classe", "type" => "choice", "section" => "Identité", "options" => ["Rôdeur"],
+        "effects" => { "Rôdeur" => { "skill_choices" => { "count" => 1, "from" => ["stealth"] } } } },
+      { "key" => "stealth", "label" => "Discrétion", "type" => "bonus", "section" => "Compétences" }
+    ]
+    @game_table.update!(template_snapshot: { "character_fields" => { "fields" => LEVELLED_FIELDS + skill_fields } })
+    get edit_game_table_settings_path(@game_table)
+
+    assert_select "label[for=game_table_limit_skill_choices]", text: "Limiter les compétences au choix de la classe"
+    assert_select "input[type=checkbox][role=switch][checked]#game_table_limit_skill_choices" \
+                  "[aria-describedby=limit-skill-choices-hint]"
+
+    patch game_table_settings_path(@game_table),
+          params: { game_table: { starting_level: "1", limit_skill_choices: "0" } }
+    assert_not @game_table.reload.limit_skill_choices
+  end
+
+  test "a template without skills to pick does not ask whether they are limited" do
+    get edit_game_table_settings_path(@game_table)
+
+    assert_select "#game_table_limit_skill_choices", count: 0
+  end
+
   test "the switch is saved with the level" do
     patch game_table_settings_path(@game_table), params: { game_table: { starting_level: "2", players_choose_level: "1" } }
 

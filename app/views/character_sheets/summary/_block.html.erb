@@ -56,7 +56,7 @@
         <h3 class="mt-5 text-sm font-semibold text-ink"><%= section %></h3>
       <% end %>
       <% fields = fields + summary_table_fields(character) if header && section == sections.keys.first %>
-      <% summary_groups(fields).each do |group, group_fields| %>
+      <% summary_groups(fields, character.sheet).each do |group, group_fields| %>
         <%= render summary_group_partial(group), character: character, fields: group_fields,
                                                                   computed: computed, wide: header %>
       <% end %>

@@ -28,7 +28,8 @@ module SheetTemplates
       return [[:unknown_type, context(part, field).merge(type: field["type"].to_s)]] unless type
 
       name_errors(part, field) + parameter_errors(part, field, type) + value_errors(part, field, type) +
-        reference_errors(part, field, type, fields) + rule_errors(part, field, fields) + option_errors(part, field)
+        reference_errors(part, field, type, fields) + rule_errors(part, field, fields) + option_errors(part, field) +
+        type.settings_errors(field, fields).map { |error, options| [error, context(part, field).merge(options)] }
     end
 
     def name_errors(part, field)
@@ -119,11 +120,9 @@ module SheetTemplates
       return false unless field["type"] == "computed" && ComputedRules.of(field).reads_hit_die?
 
       class_list = fields.find { |candidate| candidate["key"] == field["class_from"] }
-      class_list && class_list["options"].to_a.any? { |option| !gives_hit_die?(class_list, option) }
-    end
-
-    def gives_hit_die?(class_list, option)
-      class_list.dig("effects", option, "hit_die").is_a?(Integer)
+      class_list && class_list["options"].to_a.any? do |option|
+        !class_list.dig("effects", option, "hit_die").is_a?(Integer)
+      end
     end
 
     # The descriptions and effects of a list are given for its own options

@@ -111,6 +111,27 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil armor_class.call("class" => "Moine")
   end
 
+  test "the effects of a subclass add to those of its class: hit points per level, unarmored defense" do
+    class_effects = { "Ensorceleur" => { "hit_die" => 6 } }
+    subclass_effects = { "Sorcellerie draconique" => { "hit_points_per_level" => 1, "unarmored_defense" => "strength" } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },
+                       { "key" => "subclass", "type" => "choice", "options_from" => "class", "effects" => subclass_effects },
+                       { "key" => "max_hp", "type" => "computed", "rule" => "hit_points_by_level", "based_on" => "dexterity",
+                         "level_from" => "level", "class_from" => "class" },
+                       { "key" => "base_armor_class", "type" => "computed", "rule" => "unarmored_armor_class",
+                         "class_from" => "class", "based_on" => "dexterity" }]
+    sorcerer = { "class" => "Ensorceleur", "level" => 3, "dexterity" => 14, "strength" => 16 }
+    values = lambda do |sheet|
+      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: []).call[:values]
+    end
+
+    # 6 + 2, then 2 levels of 4 + 2, then 3 points of the draconic resilience
+    assert_equal "23", values.call(sorcerer.merge("subclass" => "Sorcellerie draconique"))["max_hp"]
+    assert_equal "20", values.call(sorcerer)["max_hp"]
+    assert_equal "15", values.call(sorcerer.merge("subclass" => "Sorcellerie draconique"))["base_armor_class"]
+    assert_equal "12", values.call(sorcerer)["base_armor_class"]
+  end
+
   test "the bonus of the background raises the score, and the modifier follows the score raised" do
     fields = FIELDS + [{ "key" => "ability_bonuses", "type" => "ability_bonuses", "from" => "background" }]
     computed = CharacterSheets::Calculator.new(fields: fields, sheet: { "strength" => 13, "dexterity" => 14,

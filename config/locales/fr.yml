@@ -43,6 +43,7 @@ fr:
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
         starting_equipment_method_choice: "Équipement de départ"
+        limit_skill_choices: "Limiter les compétences au choix de la classe"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -67,6 +68,10 @@ fr:
         outside_point_buy: "de %{minimum} à %{maximum} en achat de points"
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
+        skill_not_offered: "%{skill} n'est pas proposée par vos choix : décochez-la"
+        too_many_skills:
+          one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
+          other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
       models:
         map_template:
           attributes:
@@ -149,10 +154,14 @@ fr:
           invalid_equipment_line: "%{part} › %{field} › %{option} : une ligne de l'option %{letter} doit être un objet ou un choix, pas les deux ni aucun"
           invalid_key: "%{part} : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_label: "%{part} › %{field} : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_level_entries: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit donner une liste pour chaque niveau, de 1 à 20"
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
+          invalid_slot_table: "%{part} › %{field} › %{option} : la table « %{table} » des emplacements de sorts doit donner, pour chacun des 20 niveaux, une liste de nombres entiers positifs ou nuls"
           invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_spell_group_label: "Le groupe de sorts « %{group} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_spell_slots_label: "Les emplacements de sorts : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_class_slots_label: "%{part} › %{field} › %{option} : le libellé des emplacements de sorts doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
@@ -160,6 +169,8 @@ fr:
           missing_parameter: "%{part} › %{field} : le réglage « %{parameter} » est obligatoire"
           missing_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est obligatoire"
           missing_spell_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts manque, le groupe « %{group} » la lit"
+          missing_slot_table: "%{part} › %{field} › %{option} : la table « %{table} » des emplacements de sorts manque"
+          missing_spell_slots_parameter: "Les emplacements de sorts : le réglage « %{parameter} » est obligatoire"
           name_step_count: "Une étape, et une seule, doit demander le nom du personnage"
           several_damage_fields: "%{part} : un seul champ peut recevoir les dégâts"
           unknown_effect: "%{part} › %{field} › %{option} : l'effet « %{effect} » est inconnu"
@@ -171,10 +182,12 @@ fr:
           unknown_option: "%{part} › %{field} : « %{setting} » décrit une option qui n'existe pas (%{option})"
           unknown_parameter: "%{part} › %{field} : le réglage « %{parameter} » est inconnu pour ce type de champ"
           unknown_parameter_value: "%{part} › %{field} : la valeur « %{value} » du réglage « %{parameter} » est inconnue"
+          unknown_parent_option: "%{part} › %{field} : « options_by » cite une option qui n'existe pas dans « %{parent} » (%{option})"
           unknown_rule: "%{part} › %{field} : la règle de calcul « %{rule} » est inconnue"
           unknown_section: "L'étape « %{step} » cite une section qui n'existe pas : %{section}"
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
           unknown_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est inconnu"
+          unknown_spell_slots_parameter: "Les emplacements de sorts : le réglage « %{parameter} » est inconnu"
           unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
           unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
@@ -754,6 +767,9 @@ fr:
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
+      from_level:
+        hint: "Le niveau du personnage à partir duquel la liste est demandée (la sous-classe, au niveau 3)."
+        label: "À partir du niveau"
       from_table:
         hint: "Rempli par un réglage de la table, jamais demandé au joueur."
         label: "Donné par la table"
@@ -807,6 +823,9 @@ fr:
       options:
         hint: "Une option par ligne, dans l'ordre de la liste."
         label: "Options"
+      options_from:
+        hint: "La liste dont l'option choisie donne les options de celle-ci (la classe, pour la sous-classe)."
+        label: "Dépend de"
       proficiency:
         hint: "Le champ calculé qui donne le bonus de maîtrise."
         label: "Bonus de maîtrise"
@@ -995,6 +1014,8 @@ fr:
         submit: "Créer mon personnage"
         subtitle: "Votre personnage pour la table « %{name} »."
       spell_choices:
+        always_prepared: "Sorts toujours préparés"
+        always_prepared_hint: "Donnés par %{sources} : ils ne comptent pas dans les sorts à choisir."
         casting_time: "Incantation : %{text}"
         changes:
           level_up_one: "Vous pourrez en remplacer un à chaque niveau gagné."
@@ -1071,10 +1092,13 @@ fr:
       facts:
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
+        hit_points_per_level: "Points de vie"
         origin_feat: "Don d'origine"
         proficient: "Maîtrises"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+      features_level: "Niveau %{level}"
+      hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"
       nothing_picked: "Rien de choisi pour l'instant."
       skill_choices_value:
@@ -1255,6 +1279,7 @@ fr:
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
+        limit_skill_choices_hint: "Un joueur ne coche pas plus de compétences que sa classe n'en propose, et seulement parmi elles. Éteint : le nombre reste une aide."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."

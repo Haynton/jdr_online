@@ -77,6 +77,38 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_parameter
   end
 
+  test "a list that depends on another names its options, for options of that list" do
+    template = build_template { |fields| fields << subclass_field }
+    assert_predicate template, :valid?
+
+    template = build_template do |fields|
+      fields << subclass_field.merge("options_by" => { "Barde" => ["Champion"], "Guerrier" => ["Voleur"] })
+    end
+    assert_error template, :unknown_parent_option,
+                 "Fiche du personnage › Sous-classe\u00A0: «\u00A0options_by\u00A0» cite une option qui n'existe pas " \
+                 "dans «\u00A0Classe\u00A0» (Barde)"
+    assert_error template, :unknown_option
+  end
+
+  test "the settings of a list that depends on another go together, and name fields of the right type" do
+    assert_error build_template { |fields| fields << subclass_field.except("options_from") }, :missing_parameter
+    assert_error build_template { |fields| fields << subclass_field.except("level_from") }, :missing_parameter
+    assert_error build_template { |fields| fields << subclass_field.merge("options_from" => "strength") },
+                 :wrong_reference
+  end
+
+  test "a subclass may give hit points per level, always prepared spells and named features" do
+    effects = { "hit_points_per_level" => 1, "always_prepared_spells" => { "3" => ["bless"] },
+                "features_by_level" => { "3" => [{ "key" => "improved-critical", "name" => "Critique amélioré" }] } }
+    template = build_template { |fields| fields << subclass_field.merge("effects" => { "Champion" => effects }) }
+    assert_predicate template, :valid?
+
+    effects = { "always_prepared_spells" => { "30" => ["bless"] }, "hit_points_per_level" => "un" }
+    template = build_template { |fields| fields << subclass_field.merge("effects" => { "Champion" => effects }) }
+    assert_error template, :invalid_level_entries
+    assert_error template, :unknown_effect_value
+  end
+
   test "a setting the type needs is asked" do
     template = build_template { |fields| field(fields, "class").delete("options") }
 
@@ -183,6 +215,39 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  "manque, le groupe «\u00A0Sorts préparés\u00A0» la lit"
   end
 
+  test "a spell slot table gives a list of whole numbers for each of the 20 levels" do
+    template = build_template { |fields| class_effects(fields)["spellcasting"]["slots"] = [[2], [3, -1]] }
+
+    assert_error template, :invalid_slot_table
+  end
+
+  test "the spell slots have a label, their table and known settings" do
+    template = build_template(spell_slots: { "label" => "", "color" => "red" })
+
+    assert_error template, :invalid_spell_slots_label
+    assert_error template, :unknown_spell_slots_parameter
+    assert_error template, :missing_spell_slots_parameter
+  end
+
+  test "every class that casts spells has the slot table, and a label of one line of its own" do
+    template = build_template do |fields|
+      spellcasting = class_effects(fields)["spellcasting"]
+      spellcasting.delete("slots")
+      spellcasting["slots_label"] = "Faveurs\ndu dieu"
+    end
+
+    assert_error template, :missing_slot_table,
+                 "Fiche du personnage › Classe › Guerrier\u00A0: la table «\u00A0slots\u00A0» des emplacements " \
+                 "de sorts manque"
+    assert_error template, :invalid_class_slots_label
+  end
+
+  test "a template without spell slots needs no slot table" do
+    template = build_template(spell_slots: nil) { |fields| class_effects(fields)["spellcasting"].delete("slots") }
+
+    assert_predicate template, :valid?
+  end
+
   test "a template without groups of spells needs no spell table" do
     assert_predicate build_template(spell_groups: []), :valid?
   end
@@ -262,13 +327,15 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
   end
 
-  def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS)
+  def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS,
+                     spell_slots: EquipmentSpellsTemplateBuilder::SPELL_SLOTS)
     fields = character_fields
     yield fields if block_given?
     SheetTemplate.new(
       name: "Petit jeu", locale: "fr",
       character_fields: { "fields" => fields, "creation_steps" => steps.map(&:dup),
-                          "spell_groups" => spell_groups.map(&:dup) },
+                          "spell_groups" => spell_groups.map(&:dup),
+                          "spell_slots" => spell_slots&.dup }.compact,
       item_fields: { "fields" => [{ "key" => "group", "label" => "Groupe", "type" => "choice",
                                     "options" => ["weapon"] }] }
     )
@@ -296,9 +363,16 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   def guerrier_effects
     { "hit_die" => 10, "proficient" => ["athletics"],
       "spellcasting" => { "ability" => "strength", "cantrips" => [0] * 20, "prepared" => [0] * 20,
-                          "max_spell_level" => [0] * 20, "prepared_changes" => "long_rest" },
+                          "max_spell_level" => [0] * 20, "prepared_changes" => "long_rest",
+                          "slots" => [[]] * 20 },
       "starting_equipment" => { "options" => [{ "key" => "a", "items" => [{ "choose" => ["weapon"] }] },
                                               { "key" => "b", "gold" => 50 }] } }
+  end
+
+  def subclass_field
+    { "key" => "subclass", "label" => "Sous-classe", "type" => "choice", "section" => "Identité",
+      "options" => ["Champion"], "options_from" => "class", "options_by" => { "Guerrier" => ["Champion"] },
+      "from_level" => 3, "level_from" => "level" }
   end
 
   def field(fields, key)

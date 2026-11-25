@@ -3,7 +3,8 @@
 # way the page does with app/javascript/choice_effects: the effects of the option picked before are taken back, those
 # of the new one applied (decision: replaced). Needed on the server since the creation is in steps: the background,
 # on its step, ticks skills of another step. A list whose option did not change applies nothing: what the player
-# changed by hand stays
+# changed by hand stays. The values the others no longer offer are taken out first (CharacterSheets
+# ::UnofferedValuesRemover: the subclass of a class changed), so that their effects are taken back too
 module CharacterSheets
   class ChoiceEffectsApplier
     def initialize(fields:, previous_sheet:)
@@ -12,7 +13,8 @@ module CharacterSheets
     end
 
     def call(sheet)
-      @fields.select { |field| field["effects"] }.each_with_object(sheet.dup) do |field, applied_sheet|
+      kept_sheet = CharacterSheets::UnofferedValuesRemover.new(fields: @fields).call(sheet)
+      @fields.select { |field| field["effects"] }.each_with_object(kept_sheet) do |field, applied_sheet|
         previous_option = @previous_sheet[field["key"]]
         picked_option = applied_sheet[field["key"]]
         next if previous_option == picked_option

@@ -1,0 +1,22 @@
+<%# The spell slots of the character (CharacterSheets::SpellSlots, decision: shown only, their use in the game comes
+    with the game sheet), in small boxes as the boxes of the combat (decision): one box per level of spell that has
+    slots, "Niveau 1" at the top and the count under it, then the help in the words of the template (the pact slots
+    of a class say theirs). Rendered on the summary, in the Spells block, and at the top of the Spells step
+    (title_classes: the size of the titles of the page it is on) %>
+<% title_classes = local_assigns.fetch(:title_classes, "mt-5 text-sm font-semibold text-ink") %>
+<section aria-labelledby="spell-slots-title">
+  <h3 id="spell-slots-title" class="<%= title_classes %>"><%= slots.label %></h3>
+  <dl class="mt-3 flex flex-wrap gap-2">
+    <% slots.counts.each do |spell_level, count| %>
+      <div class="flex w-[4.5rem] flex-col items-center gap-0.5 rounded-lg border border-line bg-surface px-1.5 py-2 text-center">
+        <dt class="text-[10px] leading-tight font-semibold tracking-wider text-muted uppercase">
+          <%= t("game_tables.character_steps.spell_choices.level", level: spell_level) %>
+        </dt>
+        <dd class="text-base font-bold text-ink tabular-nums"><%= count %></dd>
+      </div>
+    <% end %>
+  </dl>
+  <% if slots.help.present? %>
+    <p class="mt-2 text-xs text-muted"><%= slots.help %></p>
+  <% end %>
+</section>

@@ -51,6 +51,29 @@ module FieldTypes
       nil
     end
 
+    # The choices of the list on this sheet: a list that depends on another offers only part of them
+    # (FieldTypes::Choice)
+    def sheet_list_choices(field, _sheet)
+      list_choices(field)
+    end
+
+    # Whether this sheet asks the field: a list that depends on another or on a level waits for them
+    def asked_on?(_field, _sheet)
+      true
+    end
+
+    # Whether its value stays on this sheet after the others changed (CharacterSheets::UnofferedValuesRemover): the
+    # subclass goes with its class
+    def kept_on?(_value, _field, _sheet)
+      true
+    end
+
+    # The errors of its own settings beside those every type shares, [[error_type, options]]
+    # (SheetTemplates::FieldsCheck adds where they are)
+    def settings_errors(_field, _fields)
+      []
+    end
+
     # Its group in a free layout (CharacterSheets::LayoutHelper::FLOW_GROUPS)
     def flow_group(_field)
       :boxes

@@ -67,6 +67,12 @@ class GameTable < ApplicationRecord
     character_sheet_fields.any? { |field| field["from_table"] == "starting_level" }
   end
 
+  # Some option of the template offers skills to pick (skill_choices: the class): the step Settings then asks whether
+  # they are limited to what it offers (limit_skill_choices)
+  def asks_skill_choices?
+    CharacterSheets::SkillChoices.new(fields: character_sheet_fields, sheet: {}).skill_keys.any?
+  end
+
   # The fields asked when a player makes their character: all but the states of the game (at_creation: false,
   # decision: the inspiration or the temporary hit points only change during the game) and the values given by the
   # table (from_table: the level, set by the game master)

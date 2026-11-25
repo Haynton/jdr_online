@@ -13,7 +13,7 @@ import { modifierOf } from "modifier_rules"
 export default class extends Controller {
   static targets = ["score", "modifier", "computed", "bonus", "effectChoice", "bonusRow", "skillChoices", "abilityBonus",
     "finalScore", "bonusNote"]
-  static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object }
+  static values = { levelThresholds: Array, sheet: Object, effects: Object, calculated: Object, refinements: Object }
 
   connect() {
     this.appliedOptions = Object.fromEntries(this.effectChoiceTargets.map((select) => [select.id, select.value]))
@@ -70,13 +70,30 @@ export default class extends Controller {
     paragraph.hidden = offers.length === 0
     if (paragraph.hidden) return
 
-    const tickedCount = [...offeredKeys].filter((fieldKey) => {
-      return this.element.querySelector(`#character_sheet_${fieldKey}`)?.checked
-    }).length
+    const tickedCount = [...offeredKeys].filter((fieldKey) => this.isTicked(fieldKey)).length
+    const allowedCount = offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0)
     paragraph.textContent = paragraph.dataset.template
       .replace("%{option}", offers.map(({ option }) => option).join(", "))
-      .replaceAll("%{count}", offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0))
+      .replaceAll("%{count}", allowedCount)
       .replace("%{chosen}", tickedCount)
+    const isPastLimit = tickedCount > allowedCount || this.notOfferedTicked(offeredKeys)
+    paragraph.toggleAttribute("data-invalid", paragraph.hasAttribute("data-limited") && isPastLimit)
+  }
+
+  // A skill some option of the template may offer, ticked, that the options picked neither offer nor give: refused
+  // by the server when the table limits the skills (CharacterSheets::SkillChoices#not_offered_keys)
+  notOfferedTicked(offeredKeys) {
+    const grantedKeys = new Set(this.pickedEffects().flatMap(({ effects }) => effects.proficient ?? []))
+    const skillKeys = Object.values(this.effectsValue).flatMap((effectsByOption) => {
+      return Object.values(effectsByOption).flatMap((effects) => effects.skill_choices?.from ?? [])
+    })
+    return skillKeys.some((fieldKey) => {
+      return !offeredKeys.has(fieldKey) && !grantedKeys.has(fieldKey) && this.isTicked(fieldKey)
+    })
+  }
+
+  isTicked(fieldKey) {
+    return this.element.querySelector(`#character_sheet_${fieldKey}`)?.checked ?? false
   }
 
   // [{ option: "Magicien", effects: { ... } }] for each list with effects, once an option is picked
@@ -168,9 +185,16 @@ export default class extends Controller {
     return computedValue(output.dataset.rule, output.dataset, this.sheetReader({})) ?? 0
   }
 
+  // The effects of the option chosen in a list, with those of the lists that depend on it (refinements: the subclass
+  // adds to its class), as CharacterSheets::SheetReader#class_effects
+  classEffects(fieldKey) {
+    return [fieldKey, ...(this.refinementsValue[fieldKey] ?? [])]
+      .reduce((effects, listKey) => ({ ...effects, ...this.pickedEffectsOf(listKey) }), {})
+  }
+
   // The effects of the option chosen in a list ({} before a choice): from the list on the page, or from the value
   // saved on another step
-  classEffects(fieldKey) {
+  pickedEffectsOf(fieldKey) {
     const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
     if (select) return JSON.parse(select.dataset.effects || "{}")[select.value] ?? {}
 

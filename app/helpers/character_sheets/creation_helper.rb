@@ -39,6 +39,7 @@ module CharacterSheets
         character_sheet_level_thresholds_value: character.game_table.level_thresholds.to_json,
         character_sheet_sheet_value: character.sheet.to_json,
         character_sheet_effects_value: choice_effects(character.sheet_fields).to_json,
+        character_sheet_refinements_value: choice_refinements(character.sheet_fields).to_json,
         character_sheet_calculated_value: computed.to_json }
     end
 
@@ -59,6 +60,12 @@ module CharacterSheets
 
     def choice_effects(fields)
       fields.select { |field| field["effects"] }.to_h { |field| [field["key"], field["effects"]] }
+    end
+
+    # { "class" => ["subclass"] }: the lists whose effects add to those of the list they depend on (options_from)
+    def choice_refinements(fields)
+      fields.select { |field| field["options_from"] }.group_by { |field| field["options_from"] }
+            .transform_values { |refining_fields| refining_fields.pluck("key") }
     end
   end
 end
