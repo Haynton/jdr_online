@@ -46,6 +46,14 @@
       { "key": "stunned", "label": "Étourdi", "description": "Vous êtes neutralisé et ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Les jets d'attaque contre vous ont l'avantage." },
       { "key": "unconscious", "label": "Inconscient", "description": "Vous êtes neutralisé et à terre, et vous lâchez ce que vous tenez. Votre vitesse est de 0, vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité, les jets d'attaque contre vous ont l'avantage et un coup porté à 1,50 mètre ou moins est un coup critique. Vous ne savez rien de ce qui vous entoure." }
     ],
+    "dice_rolls": {
+      "modes": [
+        { "key": "advantage", "label": "Avantage", "help": "Lancez deux d20 et gardez le meilleur.", "dice": 2, "keep": "highest" },
+        { "key": "disadvantage", "label": "Désavantage", "help": "Lancez deux d20 et gardez le pire.", "dice": 2, "keep": "lowest" }
+      ],
+      "modes_on_sides": 20,
+      "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
+    },
     "spell_slots": { "label": "Emplacements de sorts", "help": "Un sort de niveau 1 ou plus en dépense un de son niveau ou plus. Tous rendus après un repos long.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [

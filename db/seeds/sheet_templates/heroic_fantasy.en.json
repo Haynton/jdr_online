@@ -46,6 +46,14 @@
       { "key": "stunned", "label": "Stunned", "description": "You have the Incapacitated condition and automatically fail Strength and Dexterity saving throws. Attack rolls against you have Advantage." },
       { "key": "unconscious", "label": "Unconscious", "description": "You have the Incapacitated and Prone conditions, and you drop what you're holding. Your Speed is 0, you automatically fail Strength and Dexterity saving throws, attack rolls against you have Advantage, and any hit from within 5 feet is a Critical Hit. You're unaware of your surroundings." }
     ],
+    "dice_rolls": {
+      "modes": [
+        { "key": "advantage", "label": "Advantage", "help": "Roll two d20 and keep the higher.", "dice": 2, "keep": "highest" },
+        { "key": "disadvantage", "label": "Disadvantage", "help": "Roll two d20 and keep the lower.", "dice": 2, "keep": "lowest" }
+      ],
+      "modes_on_sides": 20,
+      "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
+    },
     "spell_slots": { "label": "Spell slots", "help": "A spell of level 1 or higher spends one of its level or higher. All regained after a long rest.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [

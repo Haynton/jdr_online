@@ -89,6 +89,21 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal 6, conditions.first.find { |condition| condition["key"] == "exhaustion" }["levels"]
   end
 
+  MODE_RULES = %w[key dice keep].freeze
+
+  test "the heroic fantasy rolls with advantage, disadvantage and a d20 of initiative, the same in both languages" do
+    dice_rolls = %w[fr en].map do |locale|
+      read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))["character_fields"]["dice_rolls"]
+    end
+
+    assert_equal %w[advantage disadvantage], dice_rolls.first["modes"].pluck("key")
+    dice_rolls.each do |declared|
+      assert_equal dice_rolls.first["modes"].pluck(*MODE_RULES), declared["modes"].pluck(*MODE_RULES)
+      assert_equal 20, declared["modes_on_sides"]
+      assert_equal dice_rolls.first["initiative"].except("label"), declared["initiative"].except("label")
+    end
+  end
+
   test "the spell slots of the 2024 heroic fantasy follow the levels of each class" do
     classes = heroic_fantasy_classes
 
