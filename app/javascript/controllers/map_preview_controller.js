@@ -18,7 +18,7 @@ export default class extends Controller {
                     showNaturalBlocks: Boolean }
 
   connect() {
-    if (!document.getElementById("map-pattern-wood")) addMapPatterns(this.element)
+    addSharedPatternsOnce()
     this.element.style.backgroundColor = voidGround
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
     this.drawing = createSvgElement("g", {}, this.element)
@@ -62,4 +62,13 @@ export default class extends Controller {
     })
     picture.src = this.pictureUrlValue
   }
+}
+
+function addSharedPatternsOnce() {
+  if (document.getElementById("map-pattern-wood")) return
+
+  const patternsHolder = createSvgElement("svg", { id: "map-patterns", width: 0, height: 0, "aria-hidden": "true",
+                                                   style: "position: absolute", "data-turbo-permanent": "" },
+                                          document.body)
+  addMapPatterns(patternsHolder)
 }

@@ -16,9 +16,6 @@
          data-room-board-hint-value="<%= t("game_rooms.board.hint", name: "__NAME__") %>"
          data-action="keydown.esc->game-room-panels#close keydown.esc->room-board#dropCreatureWithKeys">
       <%= game_table_stream_from(@game_room.game_table) %>
-      <% if @game_room.game_master? %>
-        <%= game_table_stream_from(@game_room.game_table, game_master_only: true) %>
-      <% end %>
       <main class="absolute inset-0">
         <%= render "shared/flashes" %>
         <%= yield %>

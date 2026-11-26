@@ -62,11 +62,11 @@ class BoardMapTest < ActionDispatch::IntegrationTest
     assert_nil @game_table.reload.board_game_map
   end
 
-  test "the new board goes live to the players and to the game master" do
+  test "the new board goes live to the players only: the game master gets it in his answer" do
     sign_in @game_master
 
     assert_turbo_stream_broadcasts(@game_table, count: 1) do
-      assert_turbo_stream_broadcasts([@game_table, GameTableChannel::GAME_MASTER_AUDIENCE], count: 1) do
+      assert_no_turbo_stream_broadcasts([@game_table, GameTableChannel::GAME_MASTER_AUDIENCE]) do
         patch game_table_board_map_path(@game_table), params: { game_map_id: @tavern.id }, as: :turbo_stream
       end
     end
@@ -123,14 +123,12 @@ class BoardMapTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-board-game-master p", text: /Placez une carte sur le plateau/
   end
 
-  test "the room listens to the stream of the table, and the game master to his own too" do
+  test "the room listens to the stream of the table once, outside the chat" do
     sign_in @player
     get game_table_path(@game_table)
-    assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 1
 
-    sign_in @game_master
-    get game_table_path(@game_table)
-    assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 2
+    assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 1
+    assert_select "#game-room-chat-body turbo-cable-stream-source", count: 0
   end
 
   private
