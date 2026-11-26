@@ -14,7 +14,11 @@ class GameRoomTest < ActionDispatch::IntegrationTest
       "on_rest" => "reset_to_max", "at_creation" => false, "section" => "Notes" },
     { "key" => "temp_hp", "label" => "PV temporaires", "type" => "resource", "absorbs_damage_for" => "hp",
       "at_creation" => false, "section" => "Notes" },
-    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" }
+    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" },
+    { "key" => "armor_class_bonus", "label" => "Bonus de CA", "type" => "number", "at_creation" => false,
+      "game_master_adjusts" => true, "min" => -10, "max" => 10, "section" => "Notes" },
+    { "key" => "armor_class", "label" => "Classe d'armure", "type" => "computed", "rule" => "worn_armor_class",
+      "based_on" => "intelligence", "bonus_from" => "armor_class_bonus", "section" => "Notes" }
   ].freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
@@ -265,6 +269,41 @@ class GameRoomTest < ActionDispatch::IntegrationTest
 
     post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
     assert_equal 12, @character.reload.sheet.dig("hp", "current")
+  end
+
+  test "the game master adjusts the bonus to the armour class of a player, and the armour class is shared at once" do
+    @character.update_columns(sheet: @character.sheet.merge("intelligence" => 14, "hp" => { "current" => 10, "max" => 12 }))
+    @character.inventory_items.create!(name: "Cotte de mailles", equipped: true,
+                                       properties: { "armor_base" => 16, "armor_dexterity_cap" => 0 })
+    sign_in @game_master
+    get game_table_path(@game_table)
+
+    assert_select "section#combat-sheet-character-#{@character.id}" do
+      assert_select "#character-#{@character.id}-armor-class", text: "16"
+      assert_select "form[action=?] input[name=adjust][value=armor_class_bonus]",
+                    game_table_character_vital_path(@game_table, @character)
+    end
+
+    assert_turbo_stream_broadcasts @game_table do
+      patch game_table_character_vital_path(@game_table, @character),
+            params: { adjust: "armor_class_bonus", adjust_delta: 2 }, as: :turbo_stream
+    end
+    assert_equal 2, @character.reload.sheet["armor_class_bonus"]
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-armor-class", text: "18"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-adjusted-armor_class_bonus",
+                  text: "+2"
+  end
+
+  test "a player never adjusts the bonus to the armour class, and does not see it in their panel" do
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-character input[name=adjust]", count: 0
+
+    patch game_table_character_vital_path(@game_table, @character),
+          params: { adjust: "armor_class_bonus", adjust_delta: 2 }, as: :turbo_stream
+
+    assert_response :not_found
+    assert_nil @character.reload.sheet["armor_class_bonus"]
   end
 
   test "a player changes the hit points of their own character only, and never takes a long rest" do

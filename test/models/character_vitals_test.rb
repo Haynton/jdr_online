@@ -10,12 +10,28 @@ class CharacterVitalsTest < ActiveSupport::TestCase
       "at_creation" => false },
     { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false,
       "on_rest" => "turn_off" },
-    { "key" => "notes", "label" => "Notes", "type" => "text" }
+    { "key" => "notes", "label" => "Notes", "type" => "text" },
+    { "key" => "armor_class_bonus", "label" => "Bonus de CA", "type" => "number", "at_creation" => false,
+      "game_master_adjusts" => true, "min" => -2, "max" => 3 }
   ].freeze
 
   setup do
     @character = Character.new(kind: :pc, name: "Aria", sheet: { "hp" => { "current" => 10, "max" => 12 } })
     @character.define_singleton_method(:sheet_fields) { FIELDS }
+  end
+
+  test "a number adjusted by the game master stays within its bounds, and goes from the sheet back at 0" do
+    @character.adjust("armor_class_bonus", 5)
+    assert_equal 3, @character.sheet["armor_class_bonus"]
+
+    @character.adjust("armor_class_bonus", -3)
+    assert_not @character.sheet.key?("armor_class_bonus")
+
+    @character.adjust("armor_class_bonus", -9)
+    assert_equal(-2, @character.sheet["armor_class_bonus"])
+
+    @character.adjust("notes", 1)
+    assert_nil @character.sheet["notes"]
   end
 
   test "hit points stay between 0 and their maximum" do

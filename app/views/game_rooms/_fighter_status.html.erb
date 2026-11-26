@@ -12,7 +12,8 @@
 <div data-controller="fighter-card" data-fighter-card-group-key-value="<%= group_key %>"
      data-fighter-card-name-value="<%= name %>">
   <% if fighter.side == :player %>
-    <%= render "game_rooms/vitals/character_vitals", character: fighter.character %>
+    <%= render "game_rooms/vitals/character_vitals", character: fighter.character,
+                                                    game_master_view: local_assigns.fetch(:game_master_view, false) %>
   <% elsif fighter.gauge %>
     <div class="flex items-center gap-2">
       <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>

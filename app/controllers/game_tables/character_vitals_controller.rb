@@ -1,6 +1,7 @@
 # What changes on a player's character during the game, saved (decision of 26 November): its hit points, its temporary
 # hit points and its switches granted in play (the inspiration), changed by the game master from the quick sheet of
-# any player, or by a player on their own panel « Ma fiche »; a long rest, by the game master only (CharacterVitals).
+# any player, or by a player on their own panel « Ma fiche »; a number the template lets the game master adjust (the
+# bonus to the armour class) and a long rest, by the game master only (CharacterVitals).
 # Anyone else gets a 404. The new values go to the whole table at once (GameTableChannel): the hit points and the
 # temporary ones, the bar, the ring of the portrait, the switches (game_tables/character_vitals/_streams)
 module GameTables
@@ -36,6 +37,14 @@ module GameTables
         @character.change_temporary_hit_points(params[:temporary_hit_points_delta].to_i)
       end
       @character.switch(params[:switch], params[:switched_on] == "true") if params[:switch]
+      adjust_for_game_master if params[:adjust]
+    end
+
+    # Only the game master adjusts a number (the bonus to the armour class)
+    def adjust_for_game_master
+      raise ActiveRecord::RecordNotFound unless @participation.game_master?
+
+      @character.adjust(params[:adjust], params[:adjust_delta].to_i)
     end
 
     def save_and_share

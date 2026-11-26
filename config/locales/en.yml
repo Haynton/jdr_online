@@ -823,6 +823,7 @@ en:
         spell_save_dc: "8, plus the %{proficiency}, plus the modifier of the spellcasting ability of the class (%{class})."
         starting_gold: "The gold of the starting equipment the player chose."
         unarmored_armor_class: "10 plus the modifier of %{ability}, plus the unarmored defense of the class (%{class}) if it has one."
+        worn_armor_class: "The armor class of the armor equipped plus the modifier of %{ability}, at most what the armor allows; without armor, 10 plus that modifier and the unarmored defense of the class (%{class}). Then the bonus of the shield equipped and %{bonus}."
     duplicates:
       copy_name: "%{name} (copy)"
       create:
@@ -929,6 +930,9 @@ en:
       based_on:
         hint: "The ability whose modifier goes into the value."
         label: "Ability"
+      bonus_from:
+        hint: "The number added at the end of the calculation (a bonus given by the game master in play)."
+        label: "Field of the bonus"
       class_from:
         hint: "The list whose option picked gives the hit die and the spells."
         label: "Class field"
@@ -943,6 +947,9 @@ en:
       filter:
         hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
         label: "Search filter"
+      game_master_adjusts:
+        hint: "A number the game master changes in play, from the quick sheet of the character (an AC bonus)."
+        label: "Adjusted by the game master"
       from:
         hint: "The list whose option picked gives this field (the background, the class)."
         label: "Source list"
@@ -1026,6 +1033,7 @@ en:
           spell_save_dc: "Spell save DC"
           starting_gold: "Gold of the starting equipment"
           unarmored_armor_class: "Armour class without armour"
+          worn_armor_class: "Armour class of the equipment"
       section:
         hint: "The group of the sheet where the field shows."
         label: "Section"

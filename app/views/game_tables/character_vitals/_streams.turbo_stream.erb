@@ -9,4 +9,8 @@
 <% character.play_switch_fields.each do |field| %>
   <%= turbo_stream.replace "character-#{id}-switch-#{field["key"]}", partial: "game_rooms/vitals/switch", locals: { character:, field: } %>
 <% end %>
+<%= turbo_stream.replace "character-#{id}-armor-class", partial: "game_rooms/vitals/armor_class", locals: { character: } %>
+<% character.adjusted_fields.each do |field| %>
+  <%= turbo_stream.replace "character-#{id}-adjusted-#{field["key"]}", partial: "game_rooms/vitals/adjusted_value", locals: { character:, field: } %>
+<% end %>
 <%= turbo_stream.replace "combat-ring-character-#{id}", partial: "game_rooms/combat_ring", locals: { group_key: "character-#{id}", percent: character.hit_points_percent } %>

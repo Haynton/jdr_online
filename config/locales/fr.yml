@@ -794,6 +794,7 @@ fr:
         spell_save_dc: "8, plus le %{proficiency}, plus le modificateur de la caractéristique des sorts de la classe (%{class})."
         starting_gold: "L'or de l'équipement de départ choisi par le joueur."
         unarmored_armor_class: "10 plus le modificateur de %{ability}, plus la défense sans armure de la classe (%{class}) si elle en a une."
+        worn_armor_class: "La classe d'armure de l'armure équipée plus le modificateur de %{ability}, au plus ce que l'armure permet ; sans armure, 10 plus ce modificateur et la défense sans armure de la classe (%{class}). Puis le bonus du bouclier équipé et %{bonus}."
     duplicates:
       copy_name: "%{name} (copie)"
       create:
@@ -900,6 +901,9 @@ fr:
       based_on:
         hint: "La caractéristique dont le modificateur entre dans le calcul."
         label: "Caractéristique"
+      bonus_from:
+        hint: "Le nombre ajouté à la fin du calcul (un bonus donné par le MJ en jeu)."
+        label: "Champ du bonus"
       class_from:
         hint: "La liste dont l'option choisie donne le dé de vie et les sorts."
         label: "Champ de la classe"
@@ -914,6 +918,9 @@ fr:
       filter:
         hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
         label: "Filtre de la recherche"
+      game_master_adjusts:
+        hint: "Un nombre que le MJ change en jeu, depuis la fiche rapide du personnage (un bonus de CA)."
+        label: "Ajusté par le MJ"
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
@@ -997,6 +1004,7 @@ fr:
           spell_save_dc: "DD des sorts"
           starting_gold: "Or de l'équipement de départ"
           unarmored_armor_class: "Classe d'armure sans armure"
+          worn_armor_class: "Classe d'armure de l'équipement"
       section:
         hint: "Le groupe de la fiche où le champ s'affiche."
         label: "Section"

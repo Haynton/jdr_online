@@ -1,0 +1,2 @@
+<%# A number the game master adjusts in play (the bonus to the armour class), replaced at once when it changes %>
+<span id="character-<%= character.id %>-adjusted-<%= field["key"] %>" class="w-14 text-center text-sm font-medium text-ink tabular-nums" aria-live="polite"><%= format_bonus(character.adjusted_value(field)) %></span>
