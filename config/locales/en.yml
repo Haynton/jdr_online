@@ -268,6 +268,11 @@ en:
           unknown_spell_group_changes: "The group of spells “%{group}”: the change rule “%{changes}” is unknown"
           unknown_spell_group_parameter: "The group of spells “%{group}”: the setting “%{parameter}” is unknown"
           unknown_spell_slots_parameter: "The spell slots: the setting “%{parameter}” is unknown"
+          invalid_weapon_attacks: "The weapon attacks: the setting must declare its abilities"
+          invalid_weapon_attacks_field: "The weapon attacks: “%{parameter}” must name a field %{type} of the character sheet"
+          invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
+          missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
+          unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
           unknown_step_effect: "The step “%{step}” depends on an unknown effect: %{effect}"
           unknown_step_parameter: "The step “%{step}”: the setting “%{parameter}” is unknown"
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
@@ -286,6 +291,8 @@ en:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
     summary:
+      weapon_attacks:
+        title: "Attacks"
       inventory:
         title: "Inventory"
         empty: "Nothing in the inventory."
@@ -1235,6 +1242,8 @@ en:
         equipped: "Equipped"
       inventory:
         amount: "Amount to take out of %{label}"
+        bag: "In the bag"
+        gear: "Gear"
         remove: "Remove"
         remove_confirm: "Remove “%{name}” from the inventory? It is the last one."
         take_one: "Take away 1 %{name}"

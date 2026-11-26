@@ -83,6 +83,17 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_parameter
   end
 
+  test "the weapon attacks name an ability, the proficiency bonus and the list of the class of the character sheet" do
+    attacks = { "melee_ability" => "strength", "ranged_ability" => "strength", "proficiency" => "proficiency_bonus",
+                "training_from" => "class", "two_handed_label" => "à deux mains" }
+    assert_predicate template_with_weapon_attacks(attacks), :valid?
+
+    assert_error template_with_weapon_attacks(attacks.merge("ranged_ability" => "class")), :invalid_weapon_attacks_field
+    assert_error template_with_weapon_attacks(attacks.merge("reach" => 2)), :unknown_weapon_attacks_parameter
+    assert_error template_with_weapon_attacks(attacks.except("melee_ability")), :missing_weapon_attacks_parameter
+    assert_error template_with_weapon_attacks(attacks.merge("two_handed_label" => "")), :invalid_weapon_attacks_label
+  end
+
   test "a list with labels gives a name to each of its options" do
     named_list = { "key" => "rank", "label" => "Rang", "type" => "choice", "options" => %w[low high],
                    "labels" => %w[Bas Haut], "section" => "Identité" }
@@ -438,6 +449,10 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
       item_fields: { "fields" => [{ "key" => "group", "label" => "Groupe", "type" => "choice",
                                     "options" => ["weapon"] }] }
     )
+  end
+
+  def template_with_weapon_attacks(attacks)
+    build_template.tap { |template| template.character_fields["weapon_attacks"] = attacks }
   end
 
   def character_fields

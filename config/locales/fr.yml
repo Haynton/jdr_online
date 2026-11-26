@@ -239,6 +239,11 @@ fr:
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
           unknown_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est inconnu"
           unknown_spell_slots_parameter: "Les emplacements de sorts : le réglage « %{parameter} » est inconnu"
+          invalid_weapon_attacks: "Les attaques d'arme : le réglage doit déclarer ses caractéristiques"
+          invalid_weapon_attacks_field: "Les attaques d'arme : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
+          missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
+          unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
           unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
           unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
@@ -257,6 +262,8 @@ fr:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
     summary:
+      weapon_attacks:
+        title: "Attaques"
       inventory:
         title: "Inventaire"
         empty: "Rien dans l'inventaire."
@@ -1206,6 +1213,8 @@ fr:
         equipped: "Équipé"
       inventory:
         amount: "Somme à retirer de %{label}"
+        bag: "Dans le sac"
+        gear: "Équipement"
         remove: "Retirer"
         remove_confirm: "Retirer « %{name} » de l'inventaire ? C'est le dernier exemplaire."
         take_one: "Retirer 1 %{name}"

@@ -53,6 +53,7 @@
       ],
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
+    "weapon_attacks": { "melee_ability": "strength", "ranged_ability": "dexterity", "proficiency": "proficiency_bonus", "training_from": "class", "two_handed_label": "à deux mains" },
     "spell_slots": { "label": "Emplacements de sorts", "help": "Un sort de niveau 1 ou plus en dépense un de son niveau ou plus. Tous rendus après un repos long.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [

@@ -19,12 +19,17 @@ module CharacterEquipment
     items.tap { InventoryItem.equip_starting(items) }
   end
 
-  # What it wears and holds, for the rules (the armour class): its inventory once complete; while a draft, its
-  # starting equipment as it will be equipped. Nothing for a creature of the game master
-  def equipped_item_properties
+  # What it wears and holds: its inventory once complete; while a draft, its starting equipment as it will be
+  # equipped. Nothing for a creature of the game master
+  def equipped_items
     return [] unless pc?
 
     items = complete? ? inventory_items.to_a : starting_inventory
-    items.select(&:equipped).map(&:properties)
+    items.select(&:equipped)
+  end
+
+  # The values of what it wears and holds, for the rules (the armour class)
+  def equipped_item_properties
+    equipped_items.map(&:properties)
   end
 end

@@ -89,7 +89,11 @@ class CombatStrip
     { current: value["current"].to_i, max: value["max"].to_i }
   end
 
+  # A player's character attacks with the weapons it holds (CharacterSheets::WeaponAttacks); a creature with the
+  # attacks of its sheet
   def attacks_of(character, fields)
+    return CharacterSheets::WeaponAttacks.new(character).call if character.pc?
+
     field = fields.find { |candidate| candidate["type"] == "attacks" }
     Array(character.sheet.to_h[field["key"]]) if field
   end

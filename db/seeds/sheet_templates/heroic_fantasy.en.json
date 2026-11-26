@@ -53,6 +53,7 @@
       ],
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
+    "weapon_attacks": { "melee_ability": "strength", "ranged_ability": "dexterity", "proficiency": "proficiency_bonus", "training_from": "class", "two_handed_label": "two-handed" },
     "spell_slots": { "label": "Spell slots", "help": "A spell of level 1 or higher spends one of its level or higher. All regained after a long rest.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [
