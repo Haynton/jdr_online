@@ -71,6 +71,15 @@ class GameMap < ApplicationRecord
     tokens_copied_at.present?
   end
 
+  def numbered_board_tokens
+    tokens = board_tokens.includes(:character).to_a
+    tokens_by_character = tokens.group_by(&:character_id)
+    tokens.map do |token|
+      band = tokens_by_character.fetch(token.character_id)
+      [token, (band.index(token) + 1 if band.size > 1)]
+    end
+  end
+
   # A character of the table deleted: its tokens leave the maps (unchecked: only a list is shortened)
   def take_away_tokens_of(character)
     tokens = layout.to_h.fetch("tokens", [])

@@ -5,6 +5,7 @@
     <svg viewBox="<%= game_map_view_box(board_map) %>" role="img" aria-label="<%= board_map.name %>"
          class="absolute inset-0 size-full touch-none cursor-grab active:cursor-grabbing in-data-placing:cursor-crosshair"
          <%= tag.attributes(data: board_map_data(board_map, game_master:)) %>></svg>
+    <%= render "game_rooms/board_tokens", game_map: board_map, game_master: %>
     <div hidden role="group" aria-label="<%= t("game_rooms.board.zoom_label") %>"
          class="absolute bottom-4 left-4 z-10 flex gap-2 max-md:hidden" data-board-zoom-target="zoomButtons">
       <%= render "game_rooms/board_zoom_button", action: "zoomIn", label: t("game_rooms.board.zoom_in"), icon: "plus" %>

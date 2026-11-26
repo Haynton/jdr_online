@@ -25,6 +25,30 @@ export function renderTokens(group, tokens, characters) {
   })
 }
 
+const hiddenTokenOpacity = 0.5
+
+export function renderBoardTokens(layer, tokens) {
+  layer.replaceChildren()
+  tokens.forEach((token) => {
+    const tokenGroup = createSvgElement("g", { "data-board-token-id": token.id, "data-hidden": token.hidden,
+                                               "data-name": token.name }, layer)
+    const centerX = (token.column + 0.5) * cellSize
+    const centerY = (token.row + 0.5) * cellSize
+    const drawing = createSvgElement("g", { opacity: token.hidden ? hiddenTokenOpacity : 1 }, tokenGroup)
+    drawToken(drawing, centerX, centerY, token, token.number)
+    if (token.hidden) drawHiddenMark(tokenGroup, centerX - tokenRadius * 0.75, centerY + tokenRadius * 0.75)
+  })
+}
+
+export function drawHiddenMark(group, centerX, centerY) {
+  createSvgElement("circle", { cx: centerX, cy: centerY, r: 4.2, fill: ink, stroke: tokenLetters, "stroke-width": 0.8 },
+                   group)
+  createSvgElement("ellipse", { cx: centerX, cy: centerY, rx: 2.4, ry: 1.4, fill: "none", stroke: tokenLetters,
+                                "stroke-width": 0.7 }, group)
+  createSvgElement("line", { x1: centerX - 2.4, y1: centerY + 2.2, x2: centerX + 2.4, y2: centerY - 2.2,
+                             stroke: tokenLetters, "stroke-width": 0.8, "stroke-linecap": "round" }, group)
+}
+
 export function drawToken(group, centerX, centerY, { name, kind }, number = null) {
   createSvgElement("circle", { cx: centerX, cy: centerY + 1, r: tokenRadius, fill: ink, opacity: 0.25 }, group)
   createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius, fill: kind === "monster" ? enemyToken : npcToken,

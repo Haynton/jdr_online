@@ -21,7 +21,8 @@ export default class extends Controller {
     addSharedPatternsOnce()
     this.element.style.backgroundColor = voidGround
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
-    this.drawing = createSvgElement("g", {}, this.element)
+    this.drawing = createSvgElement("g", {})
+    this.element.prepend(this.drawing)
     if (this.layoutValue.mode === "picture") return this.drawPicture()
 
     const floors = new Map(Object.entries(this.layoutValue.floors))

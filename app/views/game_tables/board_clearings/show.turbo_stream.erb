@@ -1,0 +1,3 @@
+<%= turbo_stream.replace BoardTokensSender::GAME_MASTER_TOKENS_ID,
+                         partial: "game_rooms/board_tokens", locals: { game_map: @board_map, game_master: true } %>
+<%= turbo_stream.replace "game-room-map-list", partial: "game_rooms/panels/map_list", locals: { game_room: @game_room } %>
