@@ -11,17 +11,23 @@ module GameTables
     end
 
     # On a draft, its message is for screen readers only: the next step shows. On a table ready, it floats: nothing
-    # else says the settings were saved
+    # else says the settings were saved. Sent from the panel of the game room (back_to), back to the room
     def update
       @game_table.assign_attributes(settings_params)
       return render :edit, status: :unprocessable_content unless @game_table.save
-      return redirect_to edit_game_table_settings_path(@game_table), notice: t(".saved") unless @game_table.draft?
+      return redirect_to ready_table_settings_path, notice: t(".saved") unless @game_table.draft?
 
       @game_table.reach_creation_step(GameTable.next_creation_step("settings"))
       redirect_to edit_game_table_catalog_path(@game_table), flash: { screen_reader_notice: t(".saved") }
     end
 
     private
+
+    def ready_table_settings_path
+      return edit_game_table_settings_path(@game_table) unless params[:back_to] == "game_room"
+
+      game_table_path(@game_table, settings: "rules")
+    end
 
     # Nothing sent by a template without settings: the table keeps what it has
     def settings_params

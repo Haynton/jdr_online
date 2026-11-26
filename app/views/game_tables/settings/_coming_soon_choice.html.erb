@@ -3,7 +3,7 @@
     is sent. scope and setting: its texts (game_tables.settings.<scope>.<setting>, choices in its options) and its ids %>
 <div class="<%= setting_line_classes %>">
   <%= render "game_tables/settings/coming_soon_label", scope: scope, setting: setting %>
-  <span class="relative block w-full shrink-0 sm:w-64">
+  <span class="relative block w-full shrink-0 @md:w-64">
     <%= select_tag nil, options_for_select(t("game_tables.settings.#{scope}.#{setting}.options")), id: nil, disabled: true,
                    aria: { labelledby: "#{scope}-#{setting}-label", describedby: "#{scope}-#{setting}-hint" },
                    class: coming_soon_choice_classes %>

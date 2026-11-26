@@ -25,10 +25,12 @@ module GameTableCreationHelper
     cancel_link + submit_button
   end
 
-  # A line of the list of settings (step Settings): its name and help on the left, its control on the right, under
-  # them on a phone. 72 px high at least, so that a line with a short help keeps the height of the others
+  # A line of the list of settings (step Settings, panel of the game room): its name and help on the left, its control
+  # on the right once its group is 448 px wide (container query: in the panel of the game room, 360 px wide on a large
+  # screen, the control goes under them, as on a phone). 72 px high at least, so that a line with a short help keeps
+  # the height of the others
   SETTING_LINE_CLASSES = %w[
-    flex min-h-18 flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8
+    flex min-h-18 flex-col gap-3 py-4 @md:flex-row @md:items-center @md:justify-between @md:gap-8
   ].join(" ").freeze
 
   def setting_line_classes
@@ -41,7 +43,7 @@ module GameTableCreationHelper
   end
 
   def settings_group_lines_classes
-    "mt-3 divide-y divide-line border-y border-line"
+    "@container mt-3 divide-y divide-line border-y border-line"
   end
 
   # The functions of the AI, announced on the step Settings but not working yet: their switches will be stored in

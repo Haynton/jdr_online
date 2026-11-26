@@ -26,7 +26,10 @@ export default class extends Controller {
 
   moveWithKeys(event) {
     const lastIndex = this.tabTargets.length - 1
-    const nextIndexByKey = { ArrowRight: this.selectedIndex + 1, ArrowLeft: this.selectedIndex - 1, Home: 0,
+    // Up and down too, for a list of tabs one under the other (aria-orientation="vertical": the window of the
+    // settings of the game room)
+    const nextIndexByKey = { ArrowRight: this.selectedIndex + 1, ArrowLeft: this.selectedIndex - 1,
+                             ArrowDown: this.selectedIndex + 1, ArrowUp: this.selectedIndex - 1, Home: 0,
                              End: lastIndex }
     if (!(event.key in nextIndexByKey)) return
 
