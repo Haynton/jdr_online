@@ -2,7 +2,9 @@
 # creature ({ name, to_hit, damage }: FieldTypes::Attacks), so that the room shows them the same way. The template
 # says how they are worked out (character_fields.weapon_attacks, checked by SheetTemplates::WeaponAttacksCheck): a
 # melee weapon uses melee_ability (Strength), a ranged one ranged_ability (Dexterity), a finesse one the better of the
-# two; the bonus to hit adds the proficiency bonus when the class (training_from) has the training the weapon needs;
+# two; the bonus to hit adds the proficiency bonus when the class (training_from) has the training the weapon needs,
+# and the bonus of its fighting style to a ranged weapon (Archery); a kind of weapon it has the mastery of names its
+# mastery property# (its category, or its kind: the shortswords of a rogue);
 # the damage is its dice plus the same modifier. A versatile weapon gives a second line, with two hands, while no
 # shield is equipped (decision: the player takes the line that fits how they hold it)
 module CharacterSheets
@@ -24,7 +26,7 @@ module CharacterSheets
 
     def lines_of(weapon, holds_shield)
       modifier = modifier_for(weapon.properties)
-      to_hit = modifier + proficiency_for(weapon.properties)
+      to_hit = modifier + proficiency_for(weapon.properties) + style_bonus(weapon.properties)
       lines = [attack_line(weapon.name, to_hit, weapon.properties["damage_dice"], modifier, weapon.properties)]
       two_handed_dice = weapon.properties["versatile_dice"]
       return lines if two_handed_dice.blank? || holds_shield
@@ -34,7 +36,20 @@ module CharacterSheets
 
     def attack_line(name, to_hit, dice, modifier, properties)
       damage = ["#{dice}#{signed(modifier) unless modifier.zero?}", properties["damage_type"]].compact_blank.join(" ")
-      { "name" => name, "to_hit" => to_hit, "damage" => damage }
+      { "name" => name, "to_hit" => to_hit, "damage" => damage, "mastery" => mastery_of(properties) }.compact
+    end
+
+    # The bonus of the fighting style to a ranged weapon (Archery)
+    def style_bonus(properties)
+      properties["ranged"] ? @character.fighting_style_effects["ranged_attack_bonus"].to_i : 0
+    end
+
+    # The mastery property of a kind of weapon the character has the mastery of
+    def mastery_of(properties)
+      kind = properties["weapon_kind"]
+      return unless kind && @character.weapon_masteries.to_a.include?(kind)
+
+      @character.weapon_mastery_choices.offered_kinds.find { |offered| offered.key == kind }&.mastery
     end
 
     def two_handed_name(name)
@@ -50,17 +65,19 @@ module CharacterSheets
     end
 
     def proficiency_for(properties)
-      return 0 unless trained_with?(properties["training"])
+      return 0 unless trained_with?(properties)
 
       computed[:values][@settings["proficiency"]].to_i
     end
 
-    def trained_with?(training)
-      return false if training.blank? || @settings["training_from"].blank?
+    # The class names the category of the weapon (martial-weapons) or its kind (shortswords: the rogue, the monk)
+    def trained_with?(properties)
+      return false if @settings["training_from"].blank?
 
       reader = SheetReader.new(fields: @character.sheet_fields, sheet: @character.sheet, level_thresholds: [],
                                modifiers: {})
-      Array(reader.class_effects(@settings["training_from"])["training"]).include?(training)
+      training = Array(reader.class_effects(@settings["training_from"])["training"])
+      properties.values_at("training", "weapon_kind").compact.intersect?(training)
     end
 
     def modifiers

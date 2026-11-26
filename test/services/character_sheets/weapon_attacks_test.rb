@@ -49,6 +49,16 @@ class WeaponAttacksTest < ActiveSupport::TestCase
     assert_equal [{ "name" => "Épée longue", "to_hit" => 3, "damage" => "1d8+3 tranchants" }], attacks
   end
 
+  test "a class trained in the kind of a weapon adds its proficiency, as a rogue with a shortsword" do
+    @character.update!(sheet: @character.sheet.merge("class" => "Magicien"))
+    snapshot = @game_table.template_snapshot.deep_dup
+    snapshot["character_fields"]["fields"].first["effects"]["Magicien"]["training"] = %w[simple-weapons shortswords]
+    @game_table.update!(template_snapshot: snapshot)
+    hold("Épée courte", { "damage_dice" => "1d6", "training" => "martial-weapons", "weapon_kind" => "shortswords" })
+
+    assert_equal 5, attacks.first["to_hit"]
+  end
+
   test "a template without weapon attacks gives none" do
     @game_table.update!(template_snapshot: @game_table.template_snapshot.deep_merge(
       "character_fields" => { "weapon_attacks" => nil }

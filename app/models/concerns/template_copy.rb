@@ -45,6 +45,12 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "death_saves")
   end
 
+  # The fighting styles a class may offer (character_fields.fighting_styles, CharacterSheets::WeaponMasteries), [] for
+  # a template without: in its copy, like the class that offers them
+  def fighting_styles
+    template_snapshot.to_h.dig("character_fields", "fighting_styles") || []
+  end
+
   # How the weapons of a character attack (character_fields.weapon_attacks, CharacterSheets::WeaponAttacks), nil for a
   # template without: in its copy, like the fields of the sheet they read
   def weapon_attacks

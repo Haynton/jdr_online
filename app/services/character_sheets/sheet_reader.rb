@@ -26,6 +26,11 @@ module CharacterSheets
       @play_state.equipped_items
     end
 
+    # The effects of its fighting style ({ "armored_armor_class_bonus" => 1 }), {} for none
+    def fighting_style_effects
+      @play_state.fighting_style_effects
+    end
+
     # nil while the ability has no score
     def modifier(ability_key)
       @modifiers[ability_key]

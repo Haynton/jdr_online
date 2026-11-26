@@ -73,7 +73,8 @@ class Character < ApplicationRecord
   # in a list applies its effects to the other steps too, and a value the others no longer offer goes (the subclass of
   # a class changed: CharacterSheets::ChoiceEffectsApplier), and the starting equipment and the spells its new
   # class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
-  def fill_step(step, sheet_values:, name: nil, spell_keys: nil)
+  # choices: what the behaviors of the step get (spell_keys, fighting_style, weapon_mastery_keys)
+  def fill_step(step, sheet_values:, name: nil, **choices)
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
                                                       .call(sheet.except(*step.field_keys).merge(filled_values))
@@ -81,14 +82,14 @@ class Character < ApplicationRecord
     self.required_sheet_fields = step.required_fields
     self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }
     self.checks_skill_choices = step.field_keys.intersect?(skill_choices.skill_keys)
-    fill_behaviors(step, spell_keys: spell_keys)
+    fill_behaviors(step, **choices)
   end
 
   # Each behavior of the creation (CreationStepBehaviors) keeps what was picked on its own step, and on the other steps
   # drops what a class changed no longer offers (the starting equipment, the spells)
-  def fill_behaviors(step, spell_keys:)
+  def fill_behaviors(step, **choices)
     CreationStepBehaviors.all.each do |behavior|
-      step.behaviors.include?(behavior) ? behavior.fill(self, spell_keys: spell_keys) : behavior.keep_offered(self)
+      step.behaviors.include?(behavior) ? behavior.fill(self, **choices) : behavior.keep_offered(self)
     end
   end
 
@@ -123,9 +124,11 @@ class Character < ApplicationRecord
 
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)
   def computed_sheet_values
-    CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, hit_point_rolls: hit_point_rolls_for_rules,
-                                    level_thresholds: game_table.level_thresholds,
-                                    equipped_items: equipped_item_properties).call
+    play_state = CharacterSheets::PlayState.new(hit_point_rolls: hit_point_rolls_for_rules,
+                                                equipped_items: equipped_item_properties,
+                                                fighting_style_effects: fighting_style_effects)
+    CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, level_thresholds: game_table.level_thresholds,
+                                    play_state: play_state).call
   end
 
   # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options

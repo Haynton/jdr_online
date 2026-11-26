@@ -1,0 +1,17 @@
+<%# The fighting style and the weapon masteries on the summary sheet and the sheet of « Mes personnages » (decision of
+    26 November): the style and its rule, then each kind of weapon with its mastery property and its rule %>
+<% choices = character.weapon_mastery_choices %>
+<% style = choices.fighting_styles.find { |candidate| candidate.key == character.fighting_style } %>
+<% kinds = choices.offered_kinds.select { |kind| character.weapon_masteries.to_a.include?(kind.key) } %>
+<% if style %>
+  <h3 class="mt-5 text-sm font-semibold text-ink"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.style") %></h3>
+  <p class="mt-1 text-sm text-ink"><%= style.label %> <span class="text-xs text-muted">· <%= style.help %></span></p>
+<% end %>
+<% if kinds.any? %>
+  <h3 class="mt-5 text-sm font-semibold text-ink"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.masteries") %></h3>
+  <ul class="mt-2 flex flex-col gap-1.5 text-sm">
+    <% kinds.each do |kind| %>
+      <li title="<%= kind.rule %>"><span class="text-ink"><%= kind.label %></span> <span class="text-xs text-brass">· <%= kind.mastery %></span></li>
+    <% end %>
+  </ul>
+<% end %>

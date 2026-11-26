@@ -22,8 +22,7 @@ module GameTables
       return complete_character if @step.summary?
 
       @character.choose_ability_method(step_params[:ability_method])
-      @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
-                                  spell_keys: step_params[:spell_keys])
+      @character.fill_step(@step, sheet_values: step_params[:sheet], name: step_params[:name], **behavior_choices)
       next_step = @character.creation_steps.after(@step)
       @character.reach_creation_step(next_step.key) if params[:go_to].blank?
       return render_step_again unless @character.save
@@ -37,7 +36,7 @@ module GameTables
       unless @step.summary?
         @character.choose_ability_method(step_params[:ability_method])
         @character.save_draft_step(@step, sheet_values: step_params[:sheet], name: step_params[:name],
-                                          spell_keys: step_params[:spell_keys])
+                                          **behavior_choices)
       end
       head :no_content
     end
@@ -90,7 +89,13 @@ module GameTables
 
     # Nothing sent on the summary, whose button only confirms
     def step_params
-      params.fetch(:character, {}).permit(:name, :ability_method, sheet: {}, spell_keys: [])
+      params.fetch(:character, {}).permit(:name, :ability_method, :fighting_style, sheet: {}, spell_keys: [],
+                                                                                   weapon_mastery_keys: [])
+    end
+
+    # What the behaviors of the step get beside the sheet (CreationStepBehaviors: the spells, the style, the masteries)
+    def behavior_choices
+      step_params.slice(:spell_keys, :fighting_style, :weapon_mastery_keys).to_h.symbolize_keys
     end
   end
 end
