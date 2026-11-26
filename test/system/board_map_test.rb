@@ -1,6 +1,6 @@
 require "application_system_test_case"
 
-class BoardMapTest < ApplicationSystemTestCase
+class BoardMapLiveTest < ApplicationSystemTestCase
   setup do
     @game_master = create_user("maitre")
     @player = create_user("joueur")

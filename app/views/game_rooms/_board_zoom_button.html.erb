@@ -1,0 +1,4 @@
+<button type="button" class="<%= MapTemplatesHelper::MAP_FLOATING_BUTTON_CLASSES %>" data-action="board-zoom#<%= action %>"
+        aria-label="<%= label %>" title="<%= label %>">
+  <%= render MapTemplatesHelper::ZOOM_ICON_PARTIALS.fetch(icon), css_class: "size-4" %>
+</button>
