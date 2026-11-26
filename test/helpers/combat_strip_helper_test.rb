@@ -1,24 +1,52 @@
 require "test_helper"
 
-# The panel « Ma fiche » of a player shows the saving throws and skills they are proficient in: the bonus fields
-# ticked on their sheet, by the section of the template
+# The panel « Ma fiche » of a player: the saving throws go into the tiles of the abilities (the section with one bonus
+# per ability), the other bonus fields ticked show as chips by section, and the values of a fight beside the armour
+# class
 class CombatStripHelperTest < ActionView::TestCase
+  include CharacterSheets::ValuesHelper
+
   SheetOwner = Struct.new(:sheet_fields, :sheet)
 
-  FIELDS = [
-    { "key" => "strength_save", "label" => "Sauvegarde de Force", "type" => "bonus",
+  ABILITIES = [{ "key" => "strength", "label" => "Force", "type" => "ability" },
+               { "key" => "dexterity", "label" => "Dextérité", "type" => "ability" }].freeze
+  FIELDS = ABILITIES + [
+    { "key" => "strength_save", "label" => "Sauvegarde de Force", "type" => "bonus", "based_on" => "strength",
       "section" => "Jets de sauvegarde" },
-    { "key" => "arcana", "label" => "Arcanes", "type" => "bonus", "section" => "Compétences" },
-    { "key" => "stealth", "label" => "Discrétion", "type" => "bonus", "section" => "Compétences" },
-    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "section" => "Combat" }
+    { "key" => "dexterity_save", "label" => "Sauvegarde de Dextérité", "type" => "bonus", "based_on" => "dexterity",
+      "section" => "Jets de sauvegarde" },
+    { "key" => "arcana", "label" => "Arcanes", "type" => "bonus", "based_on" => "dexterity",
+      "section" => "Compétences" },
+    { "key" => "stealth", "label" => "Discrétion", "type" => "bonus", "based_on" => "dexterity",
+      "section" => "Compétences" },
+    { "key" => "speed", "label" => "Vitesse (m)", "abbreviation" => "Vit. (m)", "type" => "number" },
+    { "key" => "proficiency_bonus", "label" => "Bonus de maîtrise", "type" => "computed" },
+    { "key" => "spell_save_dc", "label" => "DD des sorts", "type" => "computed" }
   ].freeze
 
-  test "only the bonus fields ticked, by section, in the order of the template" do
-    character = SheetOwner.new(FIELDS, { "strength_save" => true, "arcana" => true, "stealth" => false,
-                                         "inspiration" => true })
+  setup do
+    @character = SheetOwner.new(FIELDS, { "strength_save" => true, "arcana" => true, "stealth" => false, "speed" => 9 })
+    @sections = own_bonus_sections(@character)
+  end
 
-    sections = own_proficiency_sections(character).transform_values { |fields| fields.pluck("label") }
+  test "the section with one bonus per ability goes into the tiles" do
+    section, saves = own_tile_bonus_section(@sections, ABILITIES)
 
-    assert_equal({ "Jets de sauvegarde" => ["Sauvegarde de Force"], "Compétences" => ["Arcanes"] }, sections)
+    assert_equal "Jets de sauvegarde", section
+    assert_equal "strength_save", saves["strength"]["key"]
+  end
+
+  test "the other sections show only their ticked fields" do
+    chips = own_ticked_chip_sections(@character, @sections, "Jets de sauvegarde")
+
+    assert_equal({ "Compétences" => ["Arcanes"] }, chips.transform_values { |fields| fields.pluck("label") })
+  end
+
+  test "the values of a fight beside the armour class, none for a value the character has not" do
+    stats = own_quick_stats(@character, { values: { "proficiency_bonus" => 2, "spell_save_dc" => nil } })
+
+    shown = stats.map { |stat| [stat[:short_label], stat[:value]] }
+
+    assert_equal [["Vit. (m)", "9"], ["Bonus de maîtrise", "+2"]], shown
   end
 end
