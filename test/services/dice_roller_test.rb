@@ -42,6 +42,12 @@ class DiceRollerTest < ActiveSupport::TestCase
     assert_raises(DiceRoller::InvalidRoll) { DiceRoller.new(count: 1, sides: 6, bonus: 51).call }
   end
 
+  test "the notation of a roll is the same in every language" do
+    assert_equal "3d6", DiceRoller.new(count: 3, sides: 6).call.notation
+    assert_equal "1d20+5", DiceRoller.new(count: 1, sides: 20, bonus: 5).call.notation
+    assert_equal "1d8-1", DiceRoller.new(count: 1, sides: 8, bonus: -1).call.notation
+  end
+
   test "a mode is refused on more than one die" do
     assert_raises(DiceRoller::InvalidRoll) { DiceRoller.new(count: 2, sides: 20, mode: ADVANTAGE).call }
   end

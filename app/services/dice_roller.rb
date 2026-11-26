@@ -9,7 +9,18 @@ class DiceRoller
   BONUSES = -50..50
   KEPT_DIE = { "highest" => :max, "lowest" => :min }.freeze
 
-  Result = Data.define(:count, :sides, :bonus, :mode_key, :dice, :kept, :total)
+  Result = Data.define(:count, :sides, :bonus, :mode_key, :dice, :kept, :total) do
+    # The same in every language: 1d20+5, 3d6, 1d8-1
+    def notation
+      "#{count}d#{sides}#{bonus_notation}"
+    end
+
+    def bonus_notation
+      return "+#{bonus}" if bonus.positive?
+
+      bonus.to_s if bonus.negative?
+    end
+  end
 
   # random: given by the tests, to know the dice in advance
   def initialize(count:, sides:, bonus: 0, mode: nil, random: Random.new)
