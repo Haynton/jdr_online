@@ -122,6 +122,7 @@ en:
         board_token:
           attributes:
             base:
+              cell_blocked: "A token cannot stand on this cell"
               cell_taken: "A token is already on this cell"
               outside_grid: "The token must be on a cell of the map"
             character:

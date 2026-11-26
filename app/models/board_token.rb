@@ -5,9 +5,22 @@ class BoardToken < ApplicationRecord
   validates :column, :row, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :cell_inside_the_grid
   validate :cell_free
+  validate :cell_not_blocked, on: :create
   validate :creature_of_the_table
 
+  before_save :note_first_revelation
+
   private
+
+  def note_first_revelation
+    self.revealed_at ||= Time.current unless hidden?
+  end
+
+  def cell_not_blocked
+    return unless game_map&.drawn? && column && row
+
+    errors.add(:base, :cell_blocked) if game_map.passage.blocked_cells.include?([column, row])
+  end
 
   def cell_free
     return unless game_map

@@ -28,6 +28,8 @@ class GameMap < ApplicationRecord
   validates_with MapLayoutValidator, if: :drawn?
   validate :image_is_a_picture
 
+  after_update_commit :drop_board_tokens_outside_the_grid, if: -> { saved_change_to_columns? || saved_change_to_rows? }
+
   # A copy of a map of « Mes cartes », drawn in the editor (or played on its picture), rather than an image alone
   def drawn?
     !layout.nil?
@@ -73,11 +75,8 @@ class GameMap < ApplicationRecord
 
   def numbered_board_tokens
     tokens = board_tokens.includes(:character).to_a
-    tokens_by_character = tokens.group_by(&:character_id)
-    tokens.map do |token|
-      band = tokens_by_character.fetch(token.character_id)
-      [token, (band.index(token) + 1 if band.size > 1)]
-    end
+    numbers = tokens.group_by(&:character_id).values.flat_map { |band| numbers_by_revelation(band) }.to_h
+    tokens.map { |token| [token, numbers.fetch(token.id)] }
   end
 
   # A character of the table deleted: its tokens leave the maps (unchecked: only a list is shortened)
@@ -88,6 +87,19 @@ class GameMap < ApplicationRecord
   end
 
   private
+
+  def numbers_by_revelation(band)
+    revealed, never_shown = band.partition(&:revealed_at)
+    ordered = revealed.sort_by { |token| [token.revealed_at, token.id] } + never_shown.sort_by(&:id)
+    ordered.each_with_index.map { |token, index| [token.id, index + 1] }
+  end
+
+  def drop_board_tokens_outside_the_grid
+    outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))
+    return if outside.delete_all.zero?
+
+    BoardTokensSender.new(game_table).call if game_table.board_game_map_id == id
+  end
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet
   def image_is_a_picture

@@ -32,12 +32,23 @@ module BoardHelper
       board_zoom_columns_value: board_map.columns, board_zoom_rows_value: board_map.rows }
   end
 
+  def board_tokens_data(game_map, game_master:)
+    data = { room_board_target: "tokens", tokens: board_tokens_json(game_map, game_master:) }
+    game_master ? data.merge(blocked_cells: board_blocked_cells_json(game_map)) : data
+  end
+
   def board_tokens_json(game_map, game_master:)
-    seen_tokens = game_map.numbered_board_tokens.reject { |token, _number| token.hidden? && !game_master }
-    seen_tokens.map do |token, number|
-      { id: token.id, name: token.character.name, kind: token.character.kind, column: token.column, row: token.row,
-        number:, hidden: token.hidden? }
+    numbered_tokens = game_map.numbered_board_tokens
+    band_sizes = board_band_sizes(numbered_tokens.map(&:first), game_master:)
+    numbered_tokens.filter_map do |token, number|
+      next if token.hidden? && !game_master
+
+      board_token_data(token, (number if band_sizes[token.character_id] > 1))
     end.to_json
+  end
+
+  def board_blocked_cells_json(game_map)
+    (game_map.drawn? ? game_map.passage.blocked_cells : []).to_json
   end
 
   def empty_board_text(game_master:)
@@ -54,6 +65,16 @@ module BoardHelper
   end
 
   private
+
+  def board_band_sizes(tokens, game_master:)
+    counted_tokens = game_master ? tokens : tokens.select(&:revealed_at)
+    counted_tokens.map(&:character_id).tally.tap { |sizes| sizes.default = 0 }
+  end
+
+  def board_token_data(token, number)
+    { id: token.id, name: token.character.name, kind: token.character.kind, column: token.column, row: token.row,
+      number:, hidden: token.hidden? }
+  end
 
   def game_master_board_data(board_map)
     shared_board_data(board_map, KEPT_FROM_GAME_MASTER).merge(action: "#{ZOOM_ACTIONS} #{GAME_MASTER_ACTIONS}",

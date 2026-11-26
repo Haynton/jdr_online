@@ -6,7 +6,9 @@ class BoardTokenTest < ActiveSupport::TestCase
     sheet_template = SheetTemplate.create!(name: "Fantasy", locale: "fr")
     @game_table = GameTableCreator.new(user: owner, attributes: { name: "La Crypte" }, sheet_template:).call
     @goblin = @game_table.characters.create!(kind: :monster, name: "Gobelin")
-    @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10, layout: MapTemplate::BLANK_LAYOUT)
+    floors = (0..9).to_a.product((0..9).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }
+    @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
+                                            layout: MapTemplate::BLANK_LAYOUT.merge("floors" => floors))
   end
 
   test "an enemy of the table stands on a cell of the map, hidden from the players at first" do
@@ -21,6 +23,33 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert @tavern.board_tokens.build(character: @goblin, column: 2, row: 2).tap(&:validate)
                   .errors.of_kind?(:base, :cell_taken)
     assert @tavern.board_tokens.build(character: @goblin, column: 3, row: 2).valid?
+  end
+
+  test "a token is never put on the empty ground nor on a blocked zone, but one already there may change" do
+    @tavern.layout["floors"].delete("5,5")
+    @tavern.layout["blocked"] = ["6,6"]
+    @tavern.save!
+
+    [[5, 5], [6, 6]].each do |column, row|
+      token = BoardToken.new(game_map: @tavern, character: @goblin, column:, row:)
+      assert token.tap(&:validate).errors.of_kind?(:base, :cell_blocked), [column, row]
+    end
+    token = @tavern.board_tokens.create!(character: @goblin, column: 7, row: 7)
+    @tavern.update!(layout: @tavern.layout.merge("blocked" => %w[6,6 7,7]))
+    assert token.update(hidden: false)
+  end
+
+  test "a token notes when it is shown for the first time, and keeps it when hidden again" do
+    token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
+    assert_nil token.revealed_at
+
+    token.update!(hidden: false)
+    first_revelation = token.revealed_at
+    assert first_revelation
+
+    token.update!(hidden: true)
+    token.update!(hidden: false)
+    assert_equal first_revelation, token.reload.revealed_at
   end
 
   test "a cell outside the grid is refused" do

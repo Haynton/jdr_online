@@ -93,6 +93,7 @@ fr:
         board_token:
           attributes:
             base:
+              cell_blocked: "Un jeton ne peut pas se tenir sur cette case"
               cell_taken: "Un jeton est déjà sur cette case"
               outside_grid: "Le jeton doit être sur une case de la carte"
             character:

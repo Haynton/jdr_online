@@ -15,6 +15,6 @@ class BoardTokenCopier
   private
 
   def copy(placed_token)
-    @game_map.board_tokens.create!(placed_token.slice(:character, :column, :row, :hidden))
+    BoardToken.new(game_map: @game_map, **placed_token.slice(:character, :column, :row, :hidden)).save
   end
 end

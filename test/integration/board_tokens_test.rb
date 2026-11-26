@@ -15,7 +15,7 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Aria")
     @goblin = @game_table.characters.create!(kind: :monster, name: "Gobelin", visible_to_players: false)
     @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
-                                            layout: MapTemplate::BLANK_LAYOUT.merge("floors" => { "1,1" => "room" }))
+                                            layout: MapTemplate::BLANK_LAYOUT.merge("floors" => room_floors))
     BoardMapChanger.new(@game_table, @tavern).call
   end
 
@@ -100,6 +100,9 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     post game_table_board_tokens_path(@game_table), params: { character_id: @goblin.id, column: 5, row: 5 }
     assert_response :unprocessable_content
     @tavern.board_tokens.delete_all
+    @tavern.update!(layout: @tavern.layout.merge("blocked" => ["6,6"]))
+    post game_table_board_tokens_path(@game_table), params: { character_id: @goblin.id, column: 6, row: 6 }
+    assert_response :unprocessable_content
 
     BoardMapChanger.new(@game_table, nil).call
     sign_in @game_master
@@ -123,7 +126,33 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-board-tokens-game-master[data-tokens*=Aubergiste][data-tokens*=Gobelin]"
   end
 
+  test "a player sees the numbers of the tokens shown, given when they were shown, never a hidden one" do
+    hidden, first, second = [1, 2, 3].map { |column| @tavern.board_tokens.create!(character: @goblin, column:, row: 1) }
+    first.update!(hidden: false)
+    sign_in @player
+
+    get game_table_path(@game_table)
+    assert_equal [nil], player_token_numbers
+
+    second.update!(hidden: false)
+    get game_table_path(@game_table)
+    assert_equal [1, 2], player_token_numbers
+    assert_not_includes player_tokens.pluck("id"), hidden.id
+  end
+
   private
+
+  def player_tokens
+    JSON.parse(css_select("#game-room-board-tokens-player").first["data-tokens"])
+  end
+
+  def player_token_numbers
+    player_tokens.pluck("number")
+  end
+
+  def room_floors
+    (0..9).to_a.product((0..9).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }
+  end
 
   def create_user(username)
     User.create!(email: "#{username}@example.com", username: username, password: TEST_PASSWORD, locale: "fr")

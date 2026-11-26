@@ -109,10 +109,15 @@ export default class extends Controller {
 
   placeCreature(event) {
     const [column, row] = this.cellAt(event)
-    if (column < 0 || row < 0 || this.cellTaken(column, row)) return
+    if (column < 0 || row < 0 || this.cellTaken(column, row) || this.cellBlocked(column, row)) return
 
     this.sendTokenRequest(this.tokensUrlValue, "POST", { character_id: this.creature.id, column, row })
     if (!event.shiftKey) this.dropCreature()
+  }
+
+  cellBlocked(column, row) {
+    const blockedCells = JSON.parse(this.tokensTarget.dataset.blockedCells ?? "[]")
+    return blockedCells.some(([blockedColumn, blockedRow]) => blockedColumn === column && blockedRow === row)
   }
 
   cellTaken(column, row) {

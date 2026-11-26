@@ -9,8 +9,10 @@ class BoardTokenCopierTest < ActiveSupport::TestCase
     @innkeeper = @game_table.characters.create!(kind: :npc, name: "Aubergiste")
     editor_tokens = [{ "character_id" => @goblin.id, "column" => 1, "row" => 1 },
                      { "character_id" => @innkeeper.id, "column" => 2, "row" => 1, "hidden" => false }]
+    floors = (0..9).to_a.product((0..9).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }
     @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
-                                            layout: MapTemplate::BLANK_LAYOUT.merge("tokens" => editor_tokens))
+                                            layout: MapTemplate::BLANK_LAYOUT.merge("floors" => floors,
+                                                                                    "tokens" => editor_tokens))
   end
 
   test "the tokens of the editor go on the board with their starting state" do
@@ -28,6 +30,15 @@ class BoardTokenCopierTest < ActiveSupport::TestCase
     BoardTokenCopier.new(@tavern.reload).call
 
     assert_empty @tavern.board_tokens
+  end
+
+  test "a token of the editor left on the empty ground is not copied, and the others are" do
+    @tavern.layout["floors"].delete("1,1")
+    @tavern.save!
+
+    BoardTokenCopier.new(@tavern).call
+
+    assert_equal [@innkeeper], @tavern.board_tokens.map(&:character)
   end
 
   test "putting a map on the board for the first time copies its tokens" do
