@@ -1073,6 +1073,10 @@ fr:
       place_map: "Placer %{name} sur le plateau"
       remove: "Retirer"
       remove_map: "Retirer %{name} du plateau"
+      whole_map: "Afficher toute la carte"
+      zoom_in: "Zoomer"
+      zoom_label: "Zoom de la carte"
+      zoom_out: "Dézoomer"
     chat:
       events:
         item_given:

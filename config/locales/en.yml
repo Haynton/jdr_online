@@ -1102,6 +1102,10 @@ en:
       place_map: "Place %{name} on the board"
       remove: "Take off"
       remove_map: "Take %{name} off the board"
+      whole_map: "Show the whole map"
+      zoom_in: "Zoom in"
+      zoom_label: "Map zoom"
+      zoom_out: "Zoom out"
     chat:
       events:
         item_given:

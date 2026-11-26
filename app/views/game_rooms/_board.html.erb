@@ -1,15 +1,24 @@
 <% board_map = game_table.board_game_map %>
-<div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0">
-  <% if board_map %>
+<% if board_map %>
+  <div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0"
+       <%= tag.attributes(data: board_zoom_data(board_map)) %>>
     <svg viewBox="<%= game_map_view_box(board_map) %>" role="img" aria-label="<%= board_map.name %>"
-         class="absolute inset-0 size-full in-data-placing:cursor-crosshair"
+         class="absolute inset-0 size-full touch-none cursor-grab active:cursor-grabbing in-data-placing:cursor-crosshair"
          <%= tag.attributes(data: board_map_data(board_map, game_master:)) %>></svg>
-  <% else %>
+    <div hidden role="group" aria-label="<%= t("game_rooms.board.zoom_label") %>"
+         class="absolute bottom-4 left-4 z-10 flex gap-2 max-md:hidden" data-board-zoom-target="zoomButtons">
+      <%= render "game_rooms/board_zoom_button", action: "zoomIn", label: t("game_rooms.board.zoom_in"), icon: "plus" %>
+      <%= render "game_rooms/board_zoom_button", action: "zoomOut", label: t("game_rooms.board.zoom_out"), icon: "minus" %>
+      <%= render "game_rooms/board_zoom_button", action: "showWholeMap", label: t("game_rooms.board.whole_map"), icon: "maximize" %>
+    </div>
+  </div>
+<% else %>
+  <div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0">
     <div class="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
       <span class="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-ink" aria-hidden="true">
         <%= render "shared/icons/map", css_class: "size-7" %>
       </span>
       <p class="max-w-md text-sm text-muted"><%= empty_board_text(game_master:) %></p>
     </div>
-  <% end %>
-</div>
+  </div>
+<% end %>

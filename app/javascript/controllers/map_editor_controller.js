@@ -11,6 +11,7 @@ import { renderTokens, drawToken } from "map_editor/token_renderer"
 import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, fittedPicture, isFitted, rowsOverPicture, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
+import { isTouchpadSlide, wheelPixels, pinchShape } from "map_editor/gestures"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
 import { edgeOf, doorKey } from "map_edges"
@@ -63,8 +64,6 @@ const zoomStep = 1.25
 const deletingKeys = ["Delete", "Backspace"]
 // The room kept between the floating pieces and the map, in pixels
 const floatingRoom = 8
-// A line of a wheel turned by lines, in pixels
-const pixelsPerWheelLine = 40
 
 export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
@@ -606,22 +605,16 @@ export default class extends Controller {
   startPinch() {
     this.finishStroke()
     this.hidePointer()
-    this.pinch = this.pinchShape()
+    this.pinch = pinchShape(this.activePointers)
   }
 
   continuePinch() {
-    const shape = this.pinchShape()
+    const shape = pinchShape(this.activePointers)
     this.view.zoomAround(this.boardPoint({ clientX: shape.middle[0], clientY: shape.middle[1] }),
                          shape.distance / this.pinch.distance)
     this.view.moveByPixels(shape.middle[0] - this.pinch.middle[0], shape.middle[1] - this.pinch.middle[1])
     this.pinch = shape
     this.showView()
-  }
-
-  pinchShape() {
-    const [first, second] = [...this.activePointers.values()]
-    return { distance: Math.hypot(second[0] - first[0], second[1] - first[1]) || 1,
-             middle: [(first[0] + second[0]) / 2, (first[1] + second[1]) / 2] }
   }
 
   render() {
@@ -906,22 +899,6 @@ export default class extends Controller {
       headers: jsonHeaders()
     })
   }
-}
-
-// A touchpad slides in pixels, often sideways too, and Chrome and Safari give it a wheelDeltaY of exactly -3 times its
-// deltaY; a mouse wheel turns by lines (Firefox) or by notches that do not follow that rule. Firefox gives no
-// wheelDeltaY: in pixels there, it is a touchpad
-function isTouchpadSlide(event) {
-  if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return false
-  if (event.deltaX !== 0) return true
-  if (event.wheelDeltaY === undefined) return true
-
-  return event.wheelDeltaY === -3 * event.deltaY
-}
-
-// How far the wheel turned, in pixels: Firefox counts a mouse wheel in lines (about 3 a notch), which hardly zoomed
-function wheelPixels(event) {
-  return event.deltaMode === WheelEvent.DOM_DELTA_LINE ? event.deltaY * pixelsPerWheelLine : event.deltaY
 }
 
 // The size of the grid and the drawing of a map ready to use, carried by its item (map_templates/_preset_tools)
