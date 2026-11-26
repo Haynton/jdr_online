@@ -48,6 +48,7 @@ fr:
         name: "Nom du personnage"
         spells: "Sorts"
       game_table:
+        board_game_map: "Carte du plateau"
         cover_image: "Couverture"
         description: "Description"
         name: "Nom"
@@ -148,6 +149,9 @@ fr:
               too_many_spells: "Trop de sorts choisis dans « %{group} » : %{count} au plus."
         game_table:
           attributes:
+            board_game_map:
+              not_drawn: "doit être une carte dessinée dans l'éditeur"
+              not_on_table: "doit être une carte de cette table"
             sheet_template:
               blank: "choisissez un modèle de fiche pour continuer"
             starting_level:
@@ -1060,6 +1064,8 @@ fr:
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
     board:
+      empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
+      empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
       hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
@@ -1076,11 +1082,16 @@ fr:
       field: "Message à la table"
       fold: "Replier le chat"
       former_player: "Ancien joueur"
+      hint: "Entrée pour envoyer, Maj + Entrée pour aller à la ligne"
+      new_messages: "Nouveaux messages"
       placeholder: "Écrire à la table…"
       resize: "Changer la hauteur du chat"
       send: "Envoyer"
       title: "Chat"
       unfold: "Déplier le chat"
+      unread:
+        one: "%{count} nouveau message"
+        other: "%{count} nouveaux messages"
     coming_soon: "Bientôt"
     combat_strip:
       add_condition: "Ajouter un état"
@@ -1719,8 +1730,6 @@ fr:
     new:
       subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"
-    show:
-      board_coming_soon: "Le plateau arrive bientôt : la carte, les jetons des personnages et des ennemis se joueront ici."
     stage:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"

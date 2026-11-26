@@ -1,18 +1,25 @@
 <%# A line of the feed (ChatMessage), the same for everyone at the table: it is also sent live by the channel, so it
-    knows nothing of who reads it. Their own lines are marked by chat_feed_controller.js (data-own), which also
-    writes the time in the time zone of the reader (the server one stays without JavaScript) %>
-<li id="<%= dom_id(line) %>" class="group" data-chat-feed-target="line" data-author-id="<%= line.user_id %>">
-  <% if line.event? %>
-    <p class="flex gap-2 text-sm text-muted">
-      <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
-      <span><%= chat_event_text(line) %></span>
-    </p>
-  <% else %>
-    <p class="flex items-baseline gap-2">
-      <span class="truncate text-sm font-semibold text-ink group-data-own:text-brass"><%= chat_author_name(line) %></span>
-      <time datetime="<%= line.created_at.iso8601 %>" class="shrink-0 text-xs text-muted tabular-nums"
+    knows nothing of who reads it. chat_feed_controller.js marks the lines of the reader (data-own: on the right, in
+    gold, their name kept for screen readers only) and a message that follows one of the same author by less than five
+    minutes (data-continued: no header again), and writes the time in the time zone of the reader (the server one
+    stays without JavaScript). The text keeps its line breaks (whitespace-pre-wrap). An event: a framed line on the
+    whole width, to stand out from the messages %>
+<% if line.event? %>
+  <li id="<%= dom_id(line) %>" class="<%= GameRoomChatHelper::EVENT_CLASSES %>" data-chat-feed-target="line"
+      data-kind="event" data-line-id="<%= line.id %>">
+    <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
+    <span><%= chat_event_text(line) %></span>
+  </li>
+<% else %>
+  <li id="<%= dom_id(line) %>" class="group flex flex-col items-start data-continued:-mt-2 data-own:items-end"
+      data-chat-feed-target="line" data-kind="message" data-line-id="<%= line.id %>"
+      data-author-id="<%= line.user_id %>"
+      data-created-at="<%= line.created_at.iso8601 %>">
+    <p class="mb-1 flex items-baseline gap-2 px-1 text-xs group-data-continued:sr-only">
+      <span class="truncate font-semibold text-ink group-data-own:sr-only"><%= chat_author_name(line) %></span>
+      <time datetime="<%= line.created_at.iso8601 %>" class="shrink-0 text-muted tabular-nums"
             data-chat-feed-target="time"><%= l(line.created_at, format: :chat_time) %></time>
     </p>
-    <p class="text-sm break-words whitespace-pre-line text-ink"><%= line.body %></p>
-  <% end %>
-</li>
+    <p class="<%= GameRoomChatHelper::BUBBLE_CLASSES %>"><%= line.body %></p>
+  </li>
+<% end %>

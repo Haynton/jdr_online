@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -150,6 +150,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
     t.jsonb "disabled_catalog_keys", default: {}, null: false
     t.jsonb "rules", default: {}, null: false
     t.boolean "limit_skill_choices", default: true, null: false
+    t.bigint "board_game_map_id"
+    t.index ["board_game_map_id"], name: "index_game_tables_on_board_game_map_id"
     t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"
     t.check_constraint "starting_level >= 1 AND starting_level <= 20", name: "game_tables_starting_level_check"
@@ -192,7 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying::text, 'player'::character varying::text])", name: "participations_role_check"
     t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 
@@ -414,6 +416,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
   add_foreign_key "friendships", "users", column: "requester_id"
   add_foreign_key "game_maps", "game_tables"
   add_foreign_key "game_maps", "map_templates", on_delete: :nullify
+  add_foreign_key "game_tables", "game_maps", column: "board_game_map_id", on_delete: :nullify
   add_foreign_key "game_tables", "sheet_templates", on_delete: :nullify
   add_foreign_key "inventory_items", "characters"
   add_foreign_key "map_templates", "users", column: "owner_id"

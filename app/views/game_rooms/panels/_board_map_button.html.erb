@@ -1,0 +1,10 @@
+<% game_table = game_room.game_table %>
+<% if board_map?(game_room, game_map) %>
+  <%= button_to t("game_rooms.board.remove"), game_table_board_map_path(game_table), method: :delete,
+                class: board_map_button_classes, form_class: "shrink-0",
+                aria: { pressed: true, label: t("game_rooms.board.remove_map", name: game_map.name) } %>
+<% else %>
+  <%= button_to t("game_rooms.board.place"), game_table_board_map_path(game_table), method: :patch,
+                params: { game_map_id: game_map.id }, class: board_map_button_classes, form_class: "shrink-0",
+                aria: { pressed: false, label: t("game_rooms.board.place_map", name: game_map.name) } %>
+<% end %>

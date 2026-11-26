@@ -49,8 +49,12 @@ class GameTable < ApplicationRecord
   has_many :chat_messages, dependent: :delete_all
   # Its maps, in the order they were added (step Maps)
   has_many :game_maps, -> { order(:id) }, dependent: :destroy, inverse_of: :game_table
+  # The map on the board of the game room, put there by the game master and seen by everyone at the table. Emptied by
+  # the database when that map is deleted
+  belongs_to :board_game_map, class_name: "GameMap", optional: true
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
+  validate :board_game_map_is_a_drawn_map_of_the_table
   validates :cover_image, inclusion: { in: COVER_IMAGES }
   validates :starting_level, inclusion: { in: STARTING_LEVELS }
   # Asked on the first step of the creation (save(context: :details)), not for the tables made before it
@@ -149,5 +153,16 @@ class GameTable < ApplicationRecord
   # Every invited player, pending or accepted, in the order they were invited (summary of the creation)
   def player_participations
     participations.select(&:player?).sort_by(&:created_at)
+  end
+
+  private
+
+  # Only one of its own maps, drawn in the editor (or played on its picture): a map sent as an image alone, before the
+  # editor, has no grid to play on. The id of a map of another table is refused, never only hidden in the page
+  def board_game_map_is_a_drawn_map_of_the_table
+    return unless board_game_map
+
+    errors.add(:board_game_map, :not_on_table) unless board_game_map.game_table_id == id
+    errors.add(:board_game_map, :not_drawn) unless board_game_map.drawn?
   end
 end
