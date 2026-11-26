@@ -4,8 +4,8 @@
     of their sides is rolled, refused by the server anyway), « Jet caché » for the game master, « Lancer ». Then the
     initiative of the template (its own button, which sends the same form with dice_roll[initiative]: the mode and
     the hidden roll apply to it, not the die, the count nor the bonus): a player rolls for their character, the game
-    master chooses for whom. The roll goes to the chat; the last roll of the reader shows under the form (replaced by
-    the answer) %>
+    master chooses for whom. The roll goes to the chat; the last roll of the reader shows under « Lancer », in sight
+    after a roll of the dice as after an initiative (replaced by the answer) %>
 <% game_table = game_room.game_table %>
 <% modes = dice_modes(game_table) %>
 <%= form_with url: game_table_dice_roll_path(game_table), scope: :dice_roll, id: "dice-roll-form",
@@ -71,6 +71,7 @@
     <%= render "shared/icons/dices", css_class: "size-4" %>
     <%= t(".roll") %>
   <% end %>
+  <%= render "game_rooms/panels/dice_result", line: nil %>
 
   <% if (initiative = initiative_rule(game_room)) %>
     <section aria-labelledby="dice-roll-initiative-title" class="flex flex-col gap-3 border-t border-line pt-5">
@@ -93,4 +94,3 @@
     </section>
   <% end %>
 <% end %>
-<%= render "game_rooms/panels/dice_result", line: nil %>
