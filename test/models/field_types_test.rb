@@ -38,6 +38,16 @@ class FieldTypesTest < ActiveSupport::TestCase
     assert_not FieldTypes.find("number").wide_in_summary?
   end
 
+  test "a bonus keeps its proficiency, or an expertise sent as 2" do
+    skill = { "key" => "stealth", "type" => "bonus", "based_on" => "dexterity" }
+    type = FieldTypes.of(skill)
+
+    assert_equal ["expertise", true, false], %w[2 1 0].map { |typed| type.convert(typed, skill) }
+    assert_nil type.error_for("expertise", skill)
+    assert_equal [:inclusion], type.error_for("double", skill)
+    assert_equal [2, 1, 0], ["expertise", true, false].map { |value| FieldTypes::Bonus.proficiency_factor(value) }
+  end
+
   test "a list with labels shows a name for each option, its value still the option" do
     training = { "key" => "training", "type" => "choice", "options" => %w[simple-weapons martial-weapons],
                  "labels" => ["Armes courantes", "Armes de guerre"] }

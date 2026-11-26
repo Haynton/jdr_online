@@ -7,6 +7,7 @@
 module ChoiceEffects
   ALL = [
     ChoiceEffects::HitDie, ChoiceEffects::HitPointsPerLevel, ChoiceEffects::Proficient, ChoiceEffects::SkillChoices,
+    ChoiceEffects::ExpertiseChoices,
     ChoiceEffects::Spellcasting, ChoiceEffects::AlwaysPreparedSpells, ChoiceEffects::AbilityBonusChoices,
     ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense,
     ChoiceEffects::UnarmoredDefenseWithoutShield, ChoiceEffects::Training,
