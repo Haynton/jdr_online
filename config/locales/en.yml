@@ -1111,11 +1111,16 @@ en:
       field: "Message to the table"
       fold: "Fold the chat"
       former_player: "Former player"
+      hint: "Enter to send, Shift + Enter for a new line"
+      new_messages: "New messages"
       placeholder: "Write to the table…"
       resize: "Change the height of the chat"
       send: "Send"
       title: "Chat"
       unfold: "Unfold the chat"
+      unread:
+        one: "%{count} new message"
+        other: "%{count} new messages"
     coming_soon: "Soon"
     combat_strip:
       add_condition: "Add a condition"

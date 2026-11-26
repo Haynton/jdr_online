@@ -21,6 +21,7 @@ export default class extends Controller {
     this.toggleTarget.hidden = false
     const savedHeight = Number(this.read(HEIGHT_KEY))
     if (savedHeight) this.setHeight(savedHeight)
+    this.element.setAttribute("data-chat-island-ready", "")
     this.setFolded(this.read(FOLDED_KEY) === "true")
     this.showOrHide()
   }
@@ -80,6 +81,8 @@ export default class extends Controller {
     const label = folded ? this.unfoldLabelValue : this.foldLabelValue
     this.toggleTarget.setAttribute("aria-label", label)
     this.toggleTarget.title = label
+    // The feed counts what comes while the chat is folded (chat_feed_controller.js, on the same element)
+    this.dispatch("folded", { detail: { folded } })
   }
 
   saveHeight() {

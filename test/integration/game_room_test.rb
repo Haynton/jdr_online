@@ -75,7 +75,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-settings [data-controller=chat-visibility][hidden]", text: /Afficher le chat/ do
       assert_select "[role=switch][aria-labelledby=game-room-chat-shown-label]"
     end
-    assert_select "aside[data-controller=chat-island][data-action*='game-room-chat:change@window']"
+    assert_select "aside[data-controller~=chat-island][data-action*='game-room-chat:change@window']"
   end
 
   test "the game master places a creature from its panel, a player has no such button" do
@@ -106,7 +106,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     sign_in @player
     get game_table_path(@game_table)
 
-    assert_select "aside[data-controller=chat-island]" do
+    assert_select "aside[data-controller~=chat-island]" do
       assert_select "[role=separator][hidden][aria-controls=game-room-chat-body]"
       assert_select "button[hidden][aria-expanded=true][aria-controls=game-room-chat-body]"
     end

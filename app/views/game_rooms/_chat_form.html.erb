@@ -1,17 +1,21 @@
-<%# The field of the chat, under the feed. A message refused (empty, too long) comes back with its error and the text
-    typed (refused_message); sent, the form comes back empty and keeps the focus (chat_feed_controller.js) %>
+<%# The field of the chat, under the feed: a text area of one line that grows with its text up to six lines
+    (chat_feed_controller.js). Enter sends, Shift + Enter goes to the line (said to screen readers only: decision, the sentence under the field was in the way); without JavaScript,
+    Enter goes to the line and the button sends. A message refused (empty, too long) comes back with its error and the
+    text typed (refused_message); sent, the form comes back empty and keeps the focus %>
 <% refused_message = local_assigns[:refused_message] %>
 <%= form_with url: game_table_chat_messages_path(game_table), scope: :chat_message, id: "game-room-chat-form",
               class: "shrink-0 border-t border-line p-3",
               data: { chat_feed_target: "form", action: "turbo:submit-end->chat-feed#sent" } do |form| %>
-  <div class="flex gap-2">
-    <%= form.text_field :body, value: refused_message&.body, required: true, maxlength: ChatMessage::BODY_MAX_LENGTH,
-                               autocomplete: "off", "aria-label": t("game_rooms.chat.field"),
-                               placeholder: t("game_rooms.chat.placeholder"),
-                               "aria-invalid": refused_message.present? || nil,
-                               "aria-describedby": (refused_message ? "game-room-chat-error" : nil),
-                               class: "#{SimpleFormFieldClasses::INPUT} min-w-0 flex-1", data: { chat_feed_target: "field" } %>
-    <button type="submit" class="<%= button_classes(:secondary, size: :compact_icon) %>"
+  <div class="flex items-end gap-2">
+    <%= form.text_area :body, value: refused_message&.body, rows: 1, required: true,
+                              maxlength: ChatMessage::BODY_MAX_LENGTH, autocomplete: "off",
+                              "aria-label": t("game_rooms.chat.field"), placeholder: t("game_rooms.chat.placeholder"),
+                              "aria-invalid": refused_message.present? || nil,
+                              "aria-describedby": chat_field_described_by(refused_message),
+                              class: GameRoomChatHelper::FIELD_CLASSES,
+                              data: { chat_feed_target: "field",
+                                      action: "keydown->chat-feed#sendOnEnter input->chat-feed#fitField" } %>
+    <button type="submit" class="<%= button_classes(:secondary, size: :compact_icon) %> shrink-0"
             aria-label="<%= t("game_rooms.chat.send") %>" title="<%= t("game_rooms.chat.send") %>">
       <%= render "shared/icons/send_horizontal" %>
     </button>
@@ -21,4 +25,5 @@
       <%= refused_message.errors.messages_for(:body).first %>
     </p>
   <% end %>
+  <p id="game-room-chat-hint" class="sr-only"><%= t("game_rooms.chat.hint") %></p>
 <% end %>
