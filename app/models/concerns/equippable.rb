@@ -9,6 +9,8 @@ module Equippable
   # The fields of the item sheet that say what an item is (the heroic fantasy declares them)
   ARMOR_FIELD = "armor_base".freeze
   SHIELD_FIELD = "armor_bonus".freeze
+  # The most of the Dexterity modifier an armour lets count (none: all of it, a light armour)
+  DEXTERITY_CAP_FIELD = "armor_dexterity_cap".freeze
   WEAPON_FIELD = "damage_dice".freeze
   # Worn one at a time: equipping one takes the other off
   WORN_FIELDS = [ARMOR_FIELD, SHIELD_FIELD].freeze
