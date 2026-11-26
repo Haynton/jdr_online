@@ -1,7 +1,7 @@
 <%# The armour class of a fighter in a box that stands out, its initiative beside it (simulated: shown only with
     GameRoom.preview_features?), then, in the panel « Ma fiche », the values a player looks at in a fight
-    (stats: CombatStripHelper#own_quick_stats, speed, proficiency, spell save DC...), in boxes of the same size that
-    go to the line. In the quick sheet of the strip of the fighters and in the panel « Ma fiche » %>
+    (stats: CombatStripHelper#own_quick_stats, speed, proficiency), in boxes of the same size (game_rooms/
+    _stat_box) that go to the line. In the quick sheet of the strip of the fighters and in the panel « Ma fiche » %>
 <% stats = local_assigns.fetch(:stats, []) %>
 <dl class="flex flex-wrap gap-2 text-center">
   <% if fighter.armor_class %>
@@ -17,11 +17,6 @@
     </div>
   <% end %>
   <% stats.each do |stat| %>
-    <div class="flex min-w-14 max-w-24 flex-col items-center justify-center rounded-lg bg-field px-2 py-1" title="<%= stat[:label] %>">
-      <dt class="line-clamp-2 text-[10px] leading-tight font-semibold tracking-wider text-muted uppercase">
-        <span aria-hidden="true"><%= stat[:short_label] %></span><span class="sr-only"><%= stat[:label] %></span>
-      </dt>
-      <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= stat[:value] %></dd>
-    </div>
+    <%= render "game_rooms/stat_box", stat: stat %>
   <% end %>
 </dl>

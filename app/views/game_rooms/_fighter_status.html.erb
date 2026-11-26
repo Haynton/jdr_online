@@ -1,7 +1,8 @@
 <%# What serves in a fight on the card of a fighter, in its quick sheet (game_rooms/_combat_sheet) and in the panel
     « Ma fiche » (game_rooms/panels/_character): its hit points and a bar, its conditions (the template's,
     game_table.conditions) added from the window of the conditions and removed by a click, for a player who casts
-    spells their spell slots by level (CharacterSheets::SpellSlots), and its attacks with their dice and their damage.
+    spells their spell slots (game_rooms/_spell_slots; not in the panel « Ma fiche », spell_slots: false: they are in
+    the panel « Sorts »), and its attacks with their dice and their damage.
     The hit points change with − and +, a slot is ticked once used (fighter_card_controller.js): simulated, nothing
     saved, so these controls and the conditions show only with GameRoom.preview_features?; online, the values alone %>
 <% live = GameRoom.preview_features? %>
@@ -47,30 +48,10 @@
     </div>
   <% end %>
 
-  <% if fighter.spell_slots %>
-    <section class="mt-4 border-t border-line pt-4" aria-label="<%= fighter.spell_slots.label %>">
-      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase" title="<%= fighter.spell_slots.help %>"><%= fighter.spell_slots.label %></h3>
-      <ul class="mt-2 flex flex-col gap-1.5">
-        <% fighter.spell_slots.counts.each do |spell_level, count| %>
-          <li class="flex items-center gap-3 text-xs">
-            <span class="w-14 text-muted"><%= t("game_rooms.combat_strip.spell_level", level: spell_level) %></span>
-            <span class="flex gap-1.5">
-              <% count.times do |index| %>
-                <% if live %>
-                  <button type="button" aria-pressed="false"
-                          aria-label="<%= t("game_rooms.combat_strip.slot", level: spell_level, number: index + 1) %>"
-                          class="size-5 cursor-pointer rounded-full border-2 border-brass transition-colors aria-pressed:bg-brass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
-                          data-action="fighter-card#toggleSlot"></button>
-                <% else %>
-                  <span class="size-5 rounded-full border-2 border-brass" aria-hidden="true"></span>
-                <% end %>
-              <% end %>
-              <% unless live %><span class="sr-only"><%= count %></span><% end %>
-            </span>
-          </li>
-        <% end %>
-      </ul>
-    </section>
+  <% if fighter.spell_slots && local_assigns.fetch(:spell_slots, true) %>
+    <div class="mt-4 border-t border-line pt-4">
+      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots %>
+    </div>
   <% end %>
 
   <% if fighter.attacks.present? %>

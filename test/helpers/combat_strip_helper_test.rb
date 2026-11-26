@@ -49,4 +49,11 @@ class CombatStripHelperTest < ActionView::TestCase
 
     assert_equal [["Vit. (m)", "9"], ["Bonus de maîtrise", "+2"]], shown
   end
+
+  test "the values of a caster are apart, for the panel of the spells" do
+    stats = own_quick_stats(@character, { values: { "spell_save_dc" => "13" } },
+                            keys: CombatStripHelper::SPELL_STAT_FIELD_KEYS)
+
+    assert_equal([["DD des sorts", "13"]], stats.map { |stat| [stat[:short_label], stat[:value]] })
+  end
 end

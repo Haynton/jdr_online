@@ -1,10 +1,11 @@
 <%# The character of a player, opened by the tool « Ma fiche » or by their own portrait in the strip of the fighters
-    (decision of 26 November): their picture, name and choices, their armour class and initiative, their abilities
-    (modifier, the score raised by the bonus of the background, and the saving throw beside it when proficient: the
-    section of the template with one bonus per ability), the skills they are proficient in, as chips, the values
-    they look at in a fight beside the armour class (speed, proficiency...), then what serves in a fight (hit points,
-    conditions, spell slots, attacks: game_rooms/_fighter_status, the card of the quick sheets), and their whole sheet
-    in the window of the room. A player always has one here: the room sends them to make it first %>
+    (decision of 26 November). In the order they are looked at during a fight (Anthony's request: the spell slots of a
+    caster high in the panel, the picture small): their picture, name and choices; their armour class, initiative
+    and the values of a fight (speed, proficiency...: CombatStripHelper#own_quick_stats); what changes in a fight (hit
+    points, conditions, spell slots, attacks: game_rooms/_fighter_status, the card of the quick sheets); their
+    abilities (modifier, the score raised by the bonus of the background, and the saving throw beside it when
+    proficient: the section of the template with one bonus per ability); the skills they are proficient in, as chips;
+    their whole sheet in the window of the room. A player always has one here: the room sends them to make it first %>
 <% character = game_room.own_character %>
 <% group = combat_own_group(game_room) %>
 <% fighter = group&.fighters&.first %>
@@ -13,16 +14,19 @@
 <% bonus_sections = own_bonus_sections(character) %>
 <% tile_section, tile_bonuses = own_tile_bonus_section(bonus_sections, ability_fields) %>
 <div class="flex flex-col gap-5">
-  <div class="flex items-center gap-4">
-    <%= render "characters/avatar", character: character, css_class: "size-20 shrink-0" %>
+  <div class="flex items-center gap-3">
+    <%= render "characters/avatar", character: character, css_class: "size-12 shrink-0", icon_class: "size-5" %>
     <div class="min-w-0 flex-1">
-      <p class="truncate text-lg font-semibold text-ink"><%= character_display_name(character) %></p>
-      <p class="line-clamp-2 text-sm text-muted"><%= character_card_choices(character) %></p>
+      <p class="truncate text-base font-semibold text-ink"><%= character_display_name(character) %></p>
+      <p class="line-clamp-2 text-xs text-muted"><%= character_card_choices(character) %></p>
     </div>
   </div>
 
   <% if fighter %>
     <%= render "game_rooms/fighter_badges", fighter: fighter, group: group, stats: own_quick_stats(character, computed) %>
+    <section class="border-b border-line pb-4" aria-label="<%= t(".fight") %>">
+      <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key, spell_slots: false %>
+    </section>
   <% end %>
 
   <% if ability_fields.any? %>
@@ -71,11 +75,6 @@
     </section>
   <% end %>
 
-  <% if fighter %>
-    <section class="border-t border-line pt-4" aria-label="<%= t(".fight") %>">
-      <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key %>
-    </section>
-  <% end %>
 
   <%= link_to game_table_character_sheet_path(game_room.game_table, character),
               class: button_classes(:primary, full_width: true), data: character_sheet_dialog_link_data do %>

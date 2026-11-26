@@ -11,7 +11,9 @@
       never moves (game_room_panels_controller.js), at the bottom right the chat. On a phone (simplified, decision),
       the bar runs along the bottom and a panel takes the screen above it; the chat waits for a wider screen %>
   <body class="h-dvh overflow-hidden bg-well text-ink">
-    <div class="group/room relative h-full" data-controller="game-room-panels room-board"
+    <%# A player's spells and items open their details in one window (shared/_details_dialog, below), the room the
+        scope of its controller %>
+    <div class="group/room relative h-full" data-controller="game-room-panels room-board<%= " details-dialog" unless @game_room.game_master? %>"
          data-game-room-panels-settings-open-value="<%= game_room_settings_open?(@game_room) %>"
          data-room-board-hint-value="<%= t("game_rooms.board.hint", name: "__NAME__") %>"
          data-action="keydown.esc->game-room-panels#close keydown.esc->room-board#dropCreatureWithKeys">
@@ -29,6 +31,7 @@
       <%= render "game_rooms/video", game_room: @game_room %>
       <%= render "game_rooms/chat", game_room: @game_room %>
       <%= render "game_rooms/settings_dialog", game_room: @game_room %>
+      <%= render "shared/details_dialog" unless @game_room.game_master? %>
     </div>
 
     <%= render "game_rooms/sheet_dialog" %>

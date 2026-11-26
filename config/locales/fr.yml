@@ -1137,6 +1137,8 @@ fr:
           game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
           player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
         title: "Dés"
+      inventory:
+        title: "Inventaire"
       items:
         give: "Donner"
         give_item: "Donner %{item}"
@@ -1158,6 +1160,8 @@ fr:
       npcs:
         empty: "Cette table n'a encore ni PNJ ni ennemi."
         title: "PNJ et ennemis"
+      spells:
+        title: "Sorts"
     settings:
       display:
         chat_shown: "Afficher le chat"

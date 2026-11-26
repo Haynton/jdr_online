@@ -1,0 +1,34 @@
+<%# The inventory of a player's character (decision of 26 November): the values of the game kept with it first (the
+    gold), then one line per item, by name, with how many and its damage or armour class; each opens its description
+    in the window of the details of the room (summary/_entry_details, shared/_details_dialog in layouts/game_room). A
+    character made before the inventory existed has none: the panel says so %>
+<% character = game_room.own_character %>
+<% items = character.inventory_items.sort_by(&:name) %>
+<% play_fields = own_inventory_play_fields(character) %>
+<% if items.empty? && play_fields.empty? %>
+  <p class="text-sm text-muted"><%= t("character_sheets.summary.inventory.empty") %></p>
+<% else %>
+  <% if play_fields.any? %>
+    <ul class="mb-4 flex flex-wrap gap-2">
+      <% play_fields.each do |field| %>
+        <li class="inline-flex h-7 items-center rounded-full bg-primary-soft px-3 text-xs font-semibold text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset">
+          <%= t("character_sheets.summary.inventory.play_value", label: field["label"],
+                                                                 value: FieldTypes.of(field).summary_text(character.sheet[field["key"]], field)) %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  <ul class="flex flex-col gap-1.5">
+    <% items.each do |item| %>
+      <li>
+        <%= render layout: "character_sheets/summary/entry_details",
+                   locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
+          <span class="text-ink"><%= inventory_item_text(item) %></span>
+          <% if (detail = inventory_item_detail(item)) %>
+            <span class="text-xs text-muted"><%= detail %></span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

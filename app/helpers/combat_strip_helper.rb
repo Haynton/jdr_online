@@ -48,12 +48,15 @@ module CombatStripHelper
   # The values a player looks at in a fight, beside the armour class of the panel « Ma fiche ». First version,
   # written for D&D like the armour class (CombatStrip): the template will declare them (decision: the room keeps its
   # shape, the template decides what fills it)
-  QUICK_STAT_FIELD_KEYS = %w[speed proficiency_bonus spell_save_dc spell_attack_bonus].freeze
+  QUICK_STAT_FIELD_KEYS = %w[speed proficiency_bonus].freeze
+  # Those of a caster, at the top of the panel « Sorts » with the spell slots (decision of 26 November: they are looked
+  # at while casting a spell)
+  SPELL_STAT_FIELD_KEYS = %w[spell_save_dc spell_attack_bonus].freeze
 
   # Each with its short label (the abbreviation of the template, else its label), its label and its value; none for a
   # value the character has not (the spell save DC of a class without spells)
-  def own_quick_stats(character, computed)
-    character.sheet_fields.select { |field| QUICK_STAT_FIELD_KEYS.include?(field["key"]) }.filter_map do |field|
+  def own_quick_stats(character, computed, keys: QUICK_STAT_FIELD_KEYS)
+    character.sheet_fields.select { |field| keys.include?(field["key"]) }.filter_map do |field|
       value = own_stat_value(character, field, computed)
       next if value.blank? || value == "—"
 
@@ -72,6 +75,15 @@ module CombatStripHelper
     ability_keys = ability_fields.pluck("key").sort
     section, fields = bonus_sections.find { |_, candidates| candidates.pluck("based_on").sort == ability_keys }
     [section, fields.index_by { |field| field["based_on"] }] if section
+  end
+
+  # The values of the game kept with the inventory (the gold): those of the step that chooses the equipment, as on
+  # the summary sheet (summary_play_fields); none for a template without that step
+  def own_inventory_play_fields(character)
+    step = character.creation_steps.summary_blocks.find do |candidate|
+      candidate.behaviors.any?(CreationStepBehaviors::ChoosesEquipment)
+    end
+    step ? summary_play_fields(character, step) : []
   end
 
   # A bonus field ticked on the sheet: the character is proficient in it

@@ -1,0 +1,43 @@
+<%# The spells of a player's character (decision of 26 November), only when it has some (GameRoom#tool_groups): by
+    group, as on the summary sheet (summary_spell_groups: the spells always prepared, then by level), each with its
+    school; each opens its whole details in the window of the details of the room (summary/_entry_details,
+    shared/_details_dialog in layouts/game_room). At the top, what is looked at while casting (decision of
+    26 November): the save DC and the spell attack (CombatStripHelper::SPELL_STAT_FIELD_KEYS), then the spell slots,
+    ticked once used (fighter_card_controller.js) %>
+<% character = game_room.own_character %>
+<% spell_stats = own_quick_stats(character, character.computed_sheet_values, keys: CombatStripHelper::SPELL_STAT_FIELD_KEYS) %>
+<% slots = CharacterSheets::SpellSlots.new(character).call %>
+<div class="flex flex-col gap-5">
+  <% if spell_stats.any? || slots %>
+    <div class="flex flex-col gap-4 border-b border-line pb-4" data-controller="fighter-card">
+      <% if spell_stats.any? %>
+        <dl class="flex flex-wrap gap-2 text-center">
+          <% spell_stats.each do |stat| %>
+            <%= render "game_rooms/stat_box", stat: stat %>
+          <% end %>
+        </dl>
+      <% end %>
+      <% if slots %>
+        <%= render "game_rooms/spell_slots", slots: slots %>
+      <% end %>
+    </div>
+  <% end %>
+  <% summary_spell_groups(character).each do |title, spells| %>
+    <section aria-label="<%= title %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= title %></h3>
+      <ul class="mt-2 flex flex-col gap-1.5">
+        <% spells.each do |spell| %>
+          <li>
+            <% entry = summary_spell_entry(spell) %>
+            <%= render layout: "character_sheets/summary/entry_details",
+                       locals: { title: entry.name, subtitle: spell_summary_line(entry), description: entry.description,
+                                 details: render("game_tables/character_steps/spell_details", spell: entry) } do %>
+              <span class="text-ink"><%= spell["name"] %></span>
+              <span class="text-xs text-muted"><%= spell.dig("properties", "school") %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>

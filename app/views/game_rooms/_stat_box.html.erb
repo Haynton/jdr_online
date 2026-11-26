@@ -1,0 +1,9 @@
+<%# One value of a fight in a small box (CombatStripHelper#own_quick_stats): its short label (the abbreviation of the
+    template, else its label on two lines at most) above it, its whole label for screen readers and in its tooltip.
+    Beside the armour class (game_rooms/_fighter_badges) and at the top of the panel « Sorts » %>
+<div class="flex min-w-14 max-w-24 flex-col items-center justify-center rounded-lg bg-field px-2 py-1" title="<%= stat[:label] %>">
+  <dt class="line-clamp-2 text-[10px] leading-tight font-semibold tracking-wider text-muted uppercase">
+    <span aria-hidden="true"><%= stat[:short_label] %></span><span class="sr-only"><%= stat[:label] %></span>
+  </dt>
+  <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= stat[:value] %></dd>
+</div>
