@@ -1,7 +1,10 @@
 # The characters of a player on all their tables (« Mes personnages »): the list, the sheet of one of them, and its
-# identity and description changed once it is complete (CharacterDescription). A draft is still made in its steps:
-# its sheet leads back to them. Only the player's own characters: 404 for anyone else's
+# identity and description changed once it is complete (CharacterDescription), also from the window of its sheet in
+# the game room. A draft is still made in its steps: its sheet leads back to them. Only the player's own characters:
+# 404 for anyone else's
 class CharactersController < ApplicationController
+  include VariesOnTurboFrame
+
   before_action :set_own_character, only: %i[show edit update]
   before_action :redirect_draft_to_its_steps, only: %i[show edit update]
 
@@ -20,10 +23,17 @@ class CharactersController < ApplicationController
     @character.fill_description(name: description_params[:name], sheet_values: description_params[:sheet])
     return render(:edit, status: :unprocessable_content) unless @character.save
 
-    redirect_to character_path(@character), flash: { screen_reader_notice: t(".saved") }
+    redirect_to sheet_after_saving, flash: { screen_reader_notice: t(".saved") }
   end
 
   private
+
+  # Saved from the window of the sheet in the game room: back to the sheet in that window, never out of the game
+  def sheet_after_saving
+    return character_path(@character) unless turbo_frame_request_id == GameRoomHelper::SHEET_FRAME
+
+    game_table_character_sheet_path(@character.game_table, @character)
+  end
 
   def set_own_character
     @character = current_user.characters.find(params[:id])

@@ -1,0 +1,42 @@
+<%# The form of the identity and the description of a complete character (CharacterDescription), on the page
+    « Modifier » of « Mes personnages » and in the window of the sheet in the game room (in_dialog: its fields scroll
+    between the title bar and its buttons, which stay at its foot). cancel_path: back to the sheet, where it was opened.
+    Its picture on the left of the first section only, sent on its own (shared/_avatar_picker): its forms are written
+    outside this one (detached), at the end of the page or, in the window, at the end of its frame (characters/edit) %>
+<% in_dialog = local_assigns.fetch(:in_dialog, false) %>
+<%= simple_form_for character, url: character_path(character), method: :patch,
+                               html: { class: in_dialog ? "flex min-h-0 flex-1 flex-col" : "flex flex-1 flex-col" } do |form| %>
+  <div class="<%= in_dialog ? "min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-8" : "contents" %>">
+    <%= form_error_notification(form) %>
+    <% name_input = capture { form.input :name, required: true, input_html: { autocomplete: "off" } } %>
+    <% first_section, *other_sections = sheet_sections(character.description_fields).to_a %>
+    <div class="flex flex-col gap-8 md:flex-row md:gap-12">
+      <div class="w-32 shrink-0 self-start md:w-44 lg:w-48">
+        <%= render "shared/avatar_picker", picker: character_avatar_picker(character), detached: true %>
+      </div>
+      <div class="min-w-0 flex-1">
+        <% if first_section %>
+          <%= render "character_sheets/sections/section", section: first_section.first, fields: first_section.last,
+                                                      character: character, all_fields: character.sheet_fields,
+                                                      computed: character.computed_sheet_values, lead: name_input %>
+        <% else %>
+          <div class="max-w-sm"><%= name_input %></div>
+        <% end %>
+      </div>
+    </div>
+    <%# mt-10: the space between two sections (the first one of a block has none, first-of-type:mt-0) %>
+    <% if other_sections.any? %>
+      <div class="mt-10">
+        <% other_sections.each do |section, fields| %>
+          <%= render "character_sheets/sections/section", section: section, fields: fields, character: character,
+                                                      all_fields: character.sheet_fields,
+                                                      computed: character.computed_sheet_values %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <div class="<%= in_dialog ? "flex shrink-0 flex-wrap justify-end gap-3 border-t border-line px-6 py-4" : "mt-auto flex flex-wrap justify-end gap-3 pt-10" %>">
+    <%= form.button :submit, t("characters.edit.save"), class: "#{button_classes(:primary)} order-last" %>
+    <%= link_to t("characters.edit.cancel"), cancel_path, class: button_classes(:secondary) %>
+  </div>
+<% end %>
