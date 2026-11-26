@@ -522,7 +522,7 @@ fr:
       back: "Mes personnages"
     edit:
       title: "Modifier %{name}"
-      subtitle: "Son nom, son identité et sa description, pour la table « %{name} ». La classe, les caractéristiques, les sorts et l'équipement restent ceux de la création."
+      subtitle: "Son nom, son identité et sa description, pour la table « %{name} ». La classe et les caractéristiques restent celles de la création ; les sorts et l'inventaire se changent dans la salle de jeu."
       save: "Enregistrer"
       cancel: "Annuler"
     update:

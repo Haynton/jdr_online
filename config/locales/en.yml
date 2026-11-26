@@ -551,7 +551,7 @@ en:
       back: "My characters"
     edit:
       title: "Change %{name}"
-      subtitle: "Its name, identity and description, for the table “%{name}”. The class, abilities, spells and equipment stay those of the creation."
+      subtitle: "Its name, identity and description, for the table “%{name}”. The class and abilities stay those of the creation; spells and inventory change in the game room."
       save: "Save"
       cancel: "Cancel"
     update:
