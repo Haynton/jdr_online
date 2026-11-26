@@ -21,7 +21,7 @@ class GameRoomChatTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_select "#game-room-chat-feed[role=log] li", text: /Bonsoir à tous/
-    assert_select "#game-room-chat-body turbo-cable-stream-source[channel=GameTableChannel]"
+    assert_select "turbo-cable-stream-source[channel=GameTableChannel]"
     assert_select "form#game-room-chat-form[action=?] textarea[name='chat_message[body]'][maxlength='1000']",
                   game_table_chat_messages_path(@game_table)
   end

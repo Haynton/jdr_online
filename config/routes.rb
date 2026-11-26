@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       # the map editor (its drawing and its picture saved like those of a map of « Mes cartes »), or, sent as an image
       # before the editor, in a window
       resource :map_list, only: %i[edit update]
+      resource :board_map, only: %i[update destroy]
       resources :game_maps, only: %i[new create edit update destroy], path: "maps" do
         resource :layout, only: :update, module: :game_maps
         resource :picture, only: %i[create destroy], module: :game_maps

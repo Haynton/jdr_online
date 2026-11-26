@@ -37,7 +37,6 @@
     </button>
   </header>
   <div id="game-room-chat-body" class="flex h-64 flex-col border-t border-line" data-chat-island-target="body">
-    <%= game_table_stream_from(game_room.game_table) %>
     <div class="relative flex min-h-0 flex-1 flex-col">
       <div class="relative min-h-0 flex-1 overflow-y-auto px-4 py-3" data-chat-feed-target="scroller"
            data-action="scroll->chat-feed#scrolled">

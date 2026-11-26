@@ -5,7 +5,8 @@ import { renderPicture } from "map_editor/picture_renderer"
 import { addMapPatterns } from "map_editor/patterns"
 import { createSvgElement } from "map_editor/svg"
 import { voidGround } from "map_editor/palette"
-import { renderBlockedCells } from "map_editor/blocked_renderer"
+import { renderBlockedCells, renderNaturalBlocks } from "map_editor/blocked_renderer"
+import { naturalBlocks } from "map_editor/passage"
 import { renderTokens } from "map_editor/token_renderer"
 
 // The preview of a map on its card of « Mes cartes » (Anthony's request): its drawing, drawn like in the editor, or
@@ -13,18 +14,22 @@ import { renderTokens } from "map_editor/token_renderer"
 // they are). The textures of the floors are added once to the page, shared by every preview. The map shown on the
 // board of the game room takes the tokens put on it (placeToken)
 export default class extends Controller {
-  static values = { layout: Object, columns: Number, rows: Number, pictureUrl: String, tokenCharacters: Object }
+  static values = { layout: Object, columns: Number, rows: Number, pictureUrl: String, tokenCharacters: Object,
+                    showNaturalBlocks: Boolean }
 
   connect() {
-    if (!document.getElementById("map-pattern-wood")) addMapPatterns(this.element)
+    addSharedPatternsOnce()
     this.element.style.backgroundColor = voidGround
     this.grid = new SquareGrid(this.columnsValue, this.rowsValue)
     this.drawing = createSvgElement("g", {}, this.element)
     if (this.layoutValue.mode === "picture") return this.drawPicture()
 
-    renderMap(this.drawing, { grid: this.grid, floors: new Map(Object.entries(this.layoutValue.floors)),
-                              edges: new Map(Object.entries(this.layoutValue.edges)),
-                              objects: this.layoutValue.objects || [] })
+    const floors = new Map(Object.entries(this.layoutValue.floors))
+    const edges = new Map(Object.entries(this.layoutValue.edges))
+    renderMap(this.drawing, { grid: this.grid, floors, edges, objects: this.layoutValue.objects || [] })
+    if (this.showNaturalBlocksValue) {
+      renderNaturalBlocks(this.drawing, this.grid, naturalBlocks({ grid: this.grid, floors, edges }))
+    }
     this.drawWhatIsPut()
   }
 
@@ -57,4 +62,13 @@ export default class extends Controller {
     })
     picture.src = this.pictureUrlValue
   }
+}
+
+function addSharedPatternsOnce() {
+  if (document.getElementById("map-pattern-wood")) return
+
+  const patternsHolder = createSvgElement("svg", { id: "map-patterns", width: 0, height: 0, "aria-hidden": "true",
+                                                   style: "position: absolute", "data-turbo-permanent": "" },
+                                          document.body)
+  addMapPatterns(patternsHolder)
 }
