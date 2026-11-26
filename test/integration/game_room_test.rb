@@ -123,9 +123,14 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-inventory input[role=switch][aria-label=?]:not([checked])", "Équiper « Cotte de mailles »"
     assert_select "#game-room-inventory input[role=switch][aria-label=?]", "Équiper « Corde »", count: 0
 
-    patch game_table_inventory_item_path(@game_table, chain_mail), params: { equipped: "1" }, as: :turbo_stream
+    @character.update_columns(sheet: @character.sheet.merge("intelligence" => 14))
+    assert_turbo_stream_broadcasts @game_table do
+      patch game_table_inventory_item_path(@game_table, chain_mail), params: { equipped: "1" }, as: :turbo_stream
+    end
 
     assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-armor-class", text: "16"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-attacks"
     assert chain_mail.reload.equipped
     assert_not leather.reload.equipped
 

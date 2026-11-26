@@ -3,7 +3,7 @@
 # the shield one at a time, Equippable), or takes one of an item out (destroy; decision of 26 November: one at a time,
 # an arrow shot or a potion drunk; the last one, asked first, removes the line). Saved: only a player accepted at the
 # table, and only an item of their own character; anyone else gets a 404. The answer redraws the panel in place, which
-# stays open
+# stays open, and the armour class and the attacks it changes go to the whole table
 module GameTables
   class InventoryItemsController < ApplicationController
     before_action :set_participation_and_item
@@ -28,10 +28,17 @@ module GameTables
       raise ActiveRecord::RecordNotFound unless @inventory_item
     end
 
+    # The panel in place, and what the equipment changes (the armour class, the attacks) for the whole table, as the
+    # hit points are (game_tables/character_vitals/_streams)
     def redraw_inventory
       game_room = GameRoom.new(@participation)
-      render turbo_stream: turbo_stream.replace("game-room-inventory", partial: "game_rooms/panels/inventory",
-                                                                       locals: { game_room: game_room })
+      character = @participation.character.reload
+      shared = render_to_string(partial: "game_tables/character_vitals/streams", formats: [:turbo_stream],
+                                locals: { character: character })
+      Turbo::StreamsChannel.broadcast_stream_to(@participation.game_table, content: shared)
+      inventory = turbo_stream.replace("game-room-inventory", partial: "game_rooms/panels/inventory",
+                                                              locals: { game_room: game_room })
+      render turbo_stream: [inventory, shared].join
     end
   end
 end

@@ -1,0 +1,7 @@
+<%# The attacks of a fighter (its name and bonus to hit, then its damage), on its card (game_rooms/_fighter_status) %>
+<ul class="mt-4 flex flex-col gap-1.5 border-t border-line pt-4 text-xs">
+  <% attacks.each do |attack| %>
+    <% name_and_bonus, *details = combat_attack_text(attack) %>
+    <li class="flex justify-between gap-3"><span class="font-medium text-ink"><%= name_and_bonus %></span><span class="text-right text-muted"><%= details.join(" · ") %></span></li>
+  <% end %>
+</ul>
