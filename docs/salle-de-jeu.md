@@ -10,7 +10,7 @@ Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'
 
 - le **tour par tour** (« Lancer le tour par tour », la question sur l'initiative, la préparation, les tours, la réorganisation) ;
 - la **fiche rapide** (PV, états, emplacements cochés) : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage, dans sa fenêtre ;
-- le **plateau** et les boutons **« Placer »** (cartes et créatures) : en ligne, l'écran d'attente du plateau.
+- les boutons **« Placer »** des créatures (leurs jetons sur la carte). La carte du plateau, elle, est enregistrée et partagée depuis `feature/p1-board-map` : elle est en ligne.
 
 En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat (messages en direct et fil de jeu, depuis `feature/p1-game-room-chat`) ; les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
 
@@ -52,7 +52,7 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 
 ### Cartes
 - Une carte par carte de la table : aperçu (dessin, jetons, zones bloquantes), nom, taille de grille.
-- **« Placer »** (carte dessinée) : affiche la carte sur le plateau ; le bouton devient **« Retirer »** (doré, enfoncé), qui la retire. Une seule carte sur le plateau à la fois.
+- **« Placer »** (carte dessinée) : affiche la carte sur le plateau ; le bouton devient **« Retirer »** (doré, enfoncé), qui la retire. Une seule carte sur le plateau à la fois. **Enregistré** (`game_tables.board_game_map_id`) et vu de toute la table en direct. Serveur : MJ de la table, une de ses cartes dessinées, sinon 404 (`GameTables::BoardMapsController`). Une carte envoyée en image seule, avant l'éditeur, n'a pas de bouton : elle n'a pas de grille.
 - Crayon : ouvre la carte dans l'éditeur (page entière).
 - **« Ajouter une carte »** : ouvre **dans la salle** la fenêtre « Importer depuis Mes cartes » ; la carte choisie est copiée dans la table, la salle se rafraîchit, le panneau reste ouvert.
 
@@ -71,13 +71,19 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 
 ## Plateau
 
-- **La carte posée prend tout l'écran**, sous les îlots, aussi grande qu'elle tient sans être coupée ; le reste de l'écran prend la couleur du fond de la carte. Sans carte : un écran d'attente au centre.
+- **La carte posée prend tout l'écran**, sous les îlots, aussi grande qu'elle tient sans être coupée ; le reste de l'écran prend la couleur du fond de la carte. Sans carte : un écran d'attente au centre, qui dit au MJ de placer une carte depuis le panneau Cartes, et aux joueurs que le MJ n'en a pas encore posé.
+- **Chacun voit la carte posée**, joueurs compris, et la voit changer en direct quand le MJ en pose une autre ou la retire (`BoardMapChanger`, par `GameTableChannel`). **Deux versions, préparées par le serveur** (`BoardHelper`) : les joueurs ne reçoivent ni les jetons de l'éditeur (ils diraient où attendent des ennemis cachés), ni les zones bloquantes ; le MJ voit en plus, en rouge, **ce que les joueurs ne peuvent pas atteindre** : les zones peintes, le vide et les murs qui arrêtent un pion (`map_editor/passage.js`). Chaque page n'a que le plateau de son public (`#game-room-board-player`, `#game-room-board-game-master`) ; le MJ écoute aussi son propre flux.
+- **Le plateau en trois couches** (décision de Julien, 26 novembre) : le fond (la carte, dessinée une fois ; changée seulement quand le MJ pose une autre carte), la grille et ce qui bloque, les jetons (seule couche que touchent les coups de la partie).
 - **Placer une créature** :
   1. « Placer » sur la créature (panneau PNJ et ennemis) → elle devient l'outil ; une bulle en haut : « Cliquez sur la carte pour placer « Gobelin ». Échap ou clic droit pour arrêter. » ; curseur en croix sur la carte.
   2. Chaque clic sur la carte pose son jeton **dans la case visée**, une par case (une case occupée refuse).
   3. L'outil reste en main pour poser une bande ; Échap ou le clic droit le lâchent ; retirer la carte le lâche aussi.
 - Jeton : rond, rouge (ennemi) ou vert (PNJ), initiales, numéro quand plusieurs jetons du même personnage.
-- **Simulé** : la carte posée et les jetons ne sont ni enregistrés ni vus des joueurs. **À brancher (plateau de Julien)** : enregistrer la carte du plateau et chaque jeton posé, les montrer aux joueurs en temps réel (sauf pendant la préparation, voir plus bas), refuser une case bloquée (zones peintes, vide), déplacer un jeton, le retirer.
+- **Simulé** : les jetons posés dans la salle ne sont ni enregistrés ni vus des joueurs. **À brancher (plateau de Julien)**, une branche chacun :
+  1. `feature/p1-board-tokens` : les jetons en jeu, dans une table `board_tokens` (qui portera aussi l'état de chaque combattant). Les jetons de l'éditeur y sont recopiés la première fois que la carte va sur le plateau, puis gardés là où la partie les a laissés (« Remettre au départ » les recopie, demandé d'abord). Une créature posée est **cachée aux joueurs** jusqu'à ce que le MJ la montre. Plusieurs jetons sur une même case sont permis pour l'instant ;
+  2. `feature/p1-board-player-tokens` : les jetons des personnages des joueurs, posés par le MJ dans la salle **ou** à l'avance dans l'éditeur de la carte ;
+  3. `feature/p1-board-moves` : déplacer un jeton en le glissant, case par case. Le MJ déplace tout et passe partout ; un joueur déplace seulement son personnage et ne peut pas finir sur une case bloquée (les murs viendront ensuite) ;
+  4. `feature/p1-board-map-tools` : le MJ modifie la carte en direct depuis « Outils de carte » (murs, portes, zones bloquantes).
 
 ## Barre des combattants (bas)
 
@@ -124,7 +130,7 @@ Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. L
 
 1. **La bibliothèque** : le catalogue (bestiaire, objets) et les PNJ créés par le MJ ; la fiche complète, pour préparer.
 2. **La fiche d'un PNJ ou d'un ennemi de la table** : sa copie dans `characters`.
-3. **Le combattant en jeu** : un jeton du plateau, avec **ses** PV, **ses** états, **son** initiative. Seulement ce qui sert pendant un combat. L'état d'un combattant vit avec le jeton (à décider avec Julien).
+3. **Le combattant en jeu** : un jeton du plateau, avec **ses** PV, **ses** états, **son** initiative. Seulement ce qui sert pendant un combat. L'état d'un combattant vit avec le jeton (décidé avec Julien : une ligne de `board_tokens` par jeton en jeu).
 
 ## Caméras (visio)
 
