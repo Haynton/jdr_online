@@ -7,10 +7,12 @@
 module ChoiceEffects
   ALL = [
     ChoiceEffects::HitDie, ChoiceEffects::HitPointsPerLevel, ChoiceEffects::Proficient, ChoiceEffects::SkillChoices,
+    ChoiceEffects::ExpertiseChoices,
     ChoiceEffects::Spellcasting, ChoiceEffects::AlwaysPreparedSpells, ChoiceEffects::AbilityBonusChoices,
     ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense,
     ChoiceEffects::UnarmoredDefenseWithoutShield, ChoiceEffects::Training,
-    ChoiceEffects::Tools, ChoiceEffects::FeaturesByLevel, ChoiceEffects::Traits, ChoiceEffects::StartingEquipment
+    ChoiceEffects::Tools, ChoiceEffects::FeaturesByLevel, ChoiceEffects::Resources, ChoiceEffects::Traits,
+    ChoiceEffects::StartingEquipment
   ].freeze
 
   def self.all

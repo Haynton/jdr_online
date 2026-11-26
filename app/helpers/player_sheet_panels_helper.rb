@@ -61,7 +61,7 @@ module PlayerSheetPanelsHelper
 
   # A bonus field ticked on the sheet: the character is proficient in it
   def own_ticked?(character, field)
-    character.sheet.to_h[field["key"]] == true
+    FieldTypes::Bonus.proficient?(character.sheet.to_h[field["key"]])
   end
 
   # The values of the game kept with the inventory (the gold): those of the step that chooses the equipment, as on

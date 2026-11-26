@@ -61,7 +61,8 @@ module CharacterSheets
     def bonus_values(modifiers, computed_values)
       @fields.select { |field| field["type"] == "bonus" }.to_h do |field|
         modifier = modifiers[field["based_on"]]
-        proficiency = @sheet[field["key"]] == true ? computed_values[field["proficiency"]].to_i : 0
+        factor = FieldTypes::Bonus.proficiency_factor(@sheet[field["key"]])
+        proficiency = factor * computed_values[field["proficiency"]].to_i
         [field["key"], modifier && (modifier + proficiency)]
       end
     end

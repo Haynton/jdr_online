@@ -77,7 +77,7 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     line = @game_table.chat_messages.last
     assert line.game_master_only?
     assert_equal "dice_rolled_by_game_master", line.event_key
-    assert_select "turbo-stream li", text: /Jet caché, vu par vous seul · Le MJ lance 1d20 :/
+    assert_select "turbo-stream li", text: /Vu par vous seul · Le MJ lance 1d20 :/
     assert_equal [line], ChatMessage.feed_of(@game_table, game_master: true)
     assert_empty ChatMessage.feed_of(@game_table)
   end

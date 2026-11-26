@@ -112,6 +112,10 @@ en:
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
         skill_not_offered: "%{skill} is not offered by your choices: untick it"
+        expertise_not_offered: "%{skill} cannot take expertise: untick it"
+        too_many_expertise:
+          one: "too much expertise: %{count} at most"
+          other: "too much expertise: %{count} at most"
         too_many_skills:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"
@@ -241,6 +245,7 @@ en:
           invalid_spell_group_label: "The group of spells “%{group}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_spell_slots_label: "The spell slots: the label must be filled in, on one line, in %{count} characters at most"
           invalid_class_slots_label: "%{part} › %{field} › %{option}: the label of the spell slots must be filled in, on one line, in %{count} characters at most"
+          invalid_class_slots_recovery: "%{part} › %{field} › %{option}: the slots come back in one of these ways: %{recoveries}"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           labels_not_matching_options: "%{part} › %{field}: “labels” must give a name to each option (%{count})"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
@@ -1152,6 +1157,10 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
+        hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
+        resource_used: "%{character} uses %{resource}: %{left} of %{total} left."
+        resource_pool_used: "%{character} spends %{count} of %{resource}: %{left} of %{total} left."
         death_save_success: "%{character} · death save: %{roll}, a success (%{successes} of %{needed})."
         death_save_failure: "%{character} · death save: %{roll}, a failure (%{failures} of %{needed})."
         death_save_critical_failure: "%{character} · death save: %{roll}, two failures (%{failures} of %{needed})."
@@ -1171,7 +1180,7 @@ en:
       field: "Message to the table"
       fold: "Fold the chat"
       former_player: "Former player"
-      hidden_roll: "Hidden roll, seen by you only"
+      game_master_only: "Seen by you only"
       hint: "Enter to send, Shift + Enter for a new line"
       new_messages: "New messages"
       placeholder: "Write to the table…"
@@ -1186,6 +1195,8 @@ en:
     combat_strip:
       long_rest: "Long rest"
       long_rest_confirm: "Long rest for %{name}? Their hit points come back to the maximum."
+      short_rest: "Short rest"
+      short_rest_confirm: "Short rest for %{name}? Their resources come back as the template says."
       passive: "Passive perception"
       passive_short: "Passive perc."
       add_condition: "Add a condition"
@@ -1217,6 +1228,7 @@ en:
       roll_question_hint: "With the roll, the order follows the results. Without, the order stays the one of the strip."
       round: "Round %{count}"
       slot: "Level %{level} slot %{number} used"
+      slots_left: "%{left} of %{total}"
       spell_level: "Level %{level}"
       start_turns: "Start turn by turn"
       with_rolls: "Initiative roll"
@@ -1352,6 +1364,18 @@ en:
       settings: "Settings"
       signed_in_as: "Signed in: %{username}"
     vitals:
+      resources:
+        amount: "Amount of %{resource}"
+        restore: "Give back a use of %{resource} to %{name}"
+        restore_short: "Give back"
+        spend: "Use %{resource} of %{name}"
+        spend_short: "Spend"
+        title: "Resources"
+      hit_dice:
+        left: "%{left} of %{total} · d%{sides}"
+        spend: "Spend"
+        spend_for: "Spend a hit die of %{name}"
+        title: "Hit dice"
       death_saves:
         count: "%{count} of %{needed}"
         dead: "Dead"
@@ -1548,6 +1572,9 @@ en:
         place_value: "Place"
         points_spent: "%{spent} points spent out of %{points}"
         proficient: "(proficient)"
+        expertise: "Expertise"
+        expertise_for: "Expertise in %{skill}"
+        expertise_hint: "The proficiency bonus counts twice."
         reroll: "Roll again"
         resource_hint: "Maximum value: the character starts full."
         roll: "Roll the dice"
@@ -1562,13 +1589,16 @@ en:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        expertise: "Expertise"
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"
         hit_points_per_level: "Hit points"
         origin_feat: "Origin feat"
         proficient: "Proficiencies"
+        resources: "Resources"
         skill_choices: "Skills"
         spellcasting: "Spellcasting ability"
+      expertise_value: "%{count} at level %{level}"
       features_level: "Level %{level}"
       hit_points_per_level_value: "+%{points} per level"
       label: "Summary of your choices"

@@ -55,7 +55,7 @@
 
   <% if fighter.spell_slots && local_assigns.fetch(:spell_slots, true) %>
     <div class="mt-4 border-t border-line pt-4">
-      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots %>
+      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots, character: fighter.character %>
     </div>
   <% end %>
 

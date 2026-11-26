@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // What serves in a fight on the card of one fighter (game_rooms/_fighter_status): its hit points changed by − and +,
-// its spell slots ticked once used, its conditions added from their window and removed by a click. The same card is
+// its conditions added from their window and removed by a click. The same card is
 // in a quick sheet of the strip of the fighters and in the panel « Ma fiche », which is out of the strip: it tells the
 // strip by events (the ring of the portrait, the window of the conditions, combat_strip_controller.js). Nothing is
 // saved, nothing reaches the others: it all stays in this page
@@ -27,11 +27,5 @@ export default class extends Controller {
 
   removeCondition(event) {
     event.currentTarget.remove()
-  }
-
-  // A spell slot ticked once used, unticked when it comes back
-  toggleSlot(event) {
-    const slot = event.currentTarget
-    slot.setAttribute("aria-pressed", String(slot.getAttribute("aria-pressed") !== "true"))
   }
 }

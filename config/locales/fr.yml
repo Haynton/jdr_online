@@ -83,6 +83,10 @@ fr:
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
         skill_not_offered: "%{skill} n'est pas proposée par vos choix : décochez-la"
+        expertise_not_offered: "%{skill} ne peut pas recevoir l'expertise : décochez-la"
+        too_many_expertise:
+          one: "trop d'expertises : %{count} au plus"
+          other: "trop d'expertises : %{count} au plus"
         too_many_skills:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
@@ -212,6 +216,7 @@ fr:
           invalid_spell_group_label: "Le groupe de sorts « %{group} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_spell_slots_label: "Les emplacements de sorts : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_class_slots_label: "%{part} › %{field} › %{option} : le libellé des emplacements de sorts doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_class_slots_recovery: "%{part} › %{field} › %{option} : les emplacements reviennent d'une de ces façons : %{recoveries}"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           labels_not_matching_options: "%{part} › %{field} : « labels » doit donner un nom à chaque option (%{count})"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
@@ -1123,6 +1128,10 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
+        hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
+        resource_used: "%{character} utilise %{resource} : il en reste %{left} sur %{total}."
+        resource_pool_used: "%{character} dépense %{count} de %{resource} : il en reste %{left} sur %{total}."
         death_save_success: "%{character} · jet contre la mort : %{roll}, une réussite (%{successes} sur %{needed})."
         death_save_failure: "%{character} · jet contre la mort : %{roll}, un échec (%{failures} sur %{needed})."
         death_save_critical_failure: "%{character} · jet contre la mort : %{roll}, deux échecs (%{failures} sur %{needed})."
@@ -1142,7 +1151,7 @@ fr:
       field: "Message à la table"
       fold: "Replier le chat"
       former_player: "Ancien joueur"
-      hidden_roll: "Jet caché, vu par vous seul"
+      game_master_only: "Vu par vous seul"
       hint: "Entrée pour envoyer, Maj + Entrée pour aller à la ligne"
       new_messages: "Nouveaux messages"
       placeholder: "Écrire à la table…"
@@ -1157,6 +1166,8 @@ fr:
     combat_strip:
       long_rest: "Repos long"
       long_rest_confirm: "Repos long pour %{name} ? Ses points de vie reviennent au maximum."
+      short_rest: "Repos court"
+      short_rest_confirm: "Repos court pour %{name} ? Ses ressources reviennent comme le modèle le dit."
       passive: "Perception passive"
       passive_short: "Perc. passive"
       add_condition: "Ajouter un état"
@@ -1188,6 +1199,7 @@ fr:
       roll_question_hint: "Avec le jet, l'ordre se range d'après les résultats. Sans, l'ordre reste celui de la barre."
       round: "Tour %{count}"
       slot: "Emplacement %{number} de niveau %{level} utilisé"
+      slots_left: "%{left} sur %{total}"
       spell_level: "Niveau %{level}"
       start_turns: "Lancer le tour par tour"
       with_rolls: "Jet d'initiative"
@@ -1323,6 +1335,18 @@ fr:
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
     vitals:
+      resources:
+        amount: "Montant de %{resource}"
+        restore: "Rendre une utilisation de %{resource} à %{name}"
+        restore_short: "Rendre"
+        spend: "Utiliser %{resource} de %{name}"
+        spend_short: "Dépenser"
+        title: "Ressources"
+      hit_dice:
+        left: "%{left} sur %{total} · d%{sides}"
+        spend: "Dépenser"
+        spend_for: "Dépenser un dé de vie de %{name}"
+        title: "Dés de vie"
       death_saves:
         count: "%{count} sur %{needed}"
         dead: "Mort"
@@ -1519,6 +1543,9 @@ fr:
         place_value: "Placer"
         points_spent: "%{spent} points dépensés sur %{points}"
         proficient: "(maîtrise)"
+        expertise: "Expertise"
+        expertise_for: "Expertise en %{skill}"
+        expertise_hint: "Le bonus de maîtrise compte double."
         reroll: "Relancer les dés"
         resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
@@ -1533,13 +1560,16 @@ fr:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        expertise: "Expertise"
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
         hit_points_per_level: "Points de vie"
         origin_feat: "Don d'origine"
         proficient: "Maîtrises"
+        resources: "Ressources"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+      expertise_value: "%{count} au niveau %{level}"
       features_level: "Niveau %{level}"
       hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"

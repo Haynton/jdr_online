@@ -9,6 +9,7 @@ module CharacterSkillChoices
     attr_accessor :checks_skill_choices
 
     validates_with CharacterSkillChoicesValidator
+    validates_with CharacterExpertiseValidator
   end
 
   def skill_choices

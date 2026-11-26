@@ -13,6 +13,11 @@
 <% character.play_switch_fields.each do |field| %>
   <%= turbo_stream.replace "character-#{id}-switch-#{field["key"]}", partial: "game_rooms/vitals/switch", locals: { character:, field: } %>
 <% end %>
+<%= turbo_stream.replace "character-#{id}-hit-dice", partial: "game_rooms/vitals/hit_dice", locals: { character: } %>
+<% if (slots = character.spell_slots) %>
+  <%= turbo_stream.replace "character-#{id}-spell-slots", partial: "game_rooms/spell_slots", locals: { character:, slots: } %>
+<% end %>
+<%= turbo_stream.replace "character-#{id}-resources", partial: "game_rooms/vitals/resources", locals: { character: } %>
 <%= turbo_stream.replace "character-#{id}-armor-class", partial: "game_rooms/vitals/armor_class", locals: { character: } %>
 <%= turbo_stream.replace "character-#{id}-attacks", partial: "game_rooms/vitals/attacks", locals: { character: } %>
 <% character.adjusted_fields.each do |field| %>
