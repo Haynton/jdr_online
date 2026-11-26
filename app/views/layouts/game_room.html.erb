@@ -20,6 +20,7 @@
       </main>
 
       <%= render "game_rooms/top_bar", game_room: @game_room %>
+      <%= render "game_rooms/combat_strip" %>
       <%= render "game_rooms/toolbar", game_room: @game_room %>
       <% @game_room.panels.each do |panel| %>
         <%= render "game_rooms/panel", game_room: @game_room, panel: panel %>

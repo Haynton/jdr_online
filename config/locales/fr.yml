@@ -1063,6 +1063,31 @@ fr:
       title: "Chat"
       unfold: "Déplier le chat"
     coming_soon: "Bientôt"
+    combat_strip:
+      add_condition: "Ajouter un état"
+      armor_class_label: "CA"
+      cancel_preparation: "Annuler"
+      close_conditions: "Fermer les états"
+      conditions_title: "Ajouter un état à %{name}"
+      decrease: "Retirer 1 PV à %{name}"
+      end_fight: "Fin du combat"
+      end_fight_confirm: "Mettre fin au combat ? L'ordre d'initiative et les tours seront effacés, les PV et les états restent."
+      full_sheet: "Voir la fiche complète"
+      hit_points: "Points de vie"
+      increase: "Rendre 1 PV à %{name}"
+      initiative_label: "Init."
+      label: "Combattants"
+      next_turn: "Tour suivant"
+      portrait: "%{name}, initiative %{initiative}"
+      preparing_rolled: "Préparation · initiatives lancées"
+      preparing_waiting:
+        one: "Préparation · 1 joueur en attente"
+        other: "Préparation · %{count} joueurs en attente"
+      ready: "Prêt"
+      round: "Tour %{count}"
+      slot: "Emplacement %{number} de niveau %{level} utilisé"
+      spell_level: "Niveau %{level}"
+      start_fight: "Lancer un combat"
     panel:
       close: "Fermer %{name}"
     panels:
@@ -1093,10 +1118,6 @@ fr:
       npcs:
         empty: "Cette table n'a encore ni PNJ ni ennemi."
         title: "PNJ et ennemis"
-    party:
-      draft: "En création"
-      gauge: "%{label} : %{current} sur %{max}"
-      open_sheet: "ouvrir sa fiche"
     settings:
       display:
         toolbar_hover: "Déplier la barre au survol"
@@ -1122,7 +1143,6 @@ fr:
         dice: "Dés"
         library: "Biblio."
         map: "Carte"
-        players: "Joueurs"
         sheet: "Fiche"
       label: "Outils de la partie"
     top_bar:

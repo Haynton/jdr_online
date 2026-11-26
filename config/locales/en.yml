@@ -1092,6 +1092,31 @@ en:
       title: "Chat"
       unfold: "Unfold the chat"
     coming_soon: "Soon"
+    combat_strip:
+      add_condition: "Add a condition"
+      armor_class_label: "AC"
+      cancel_preparation: "Cancel"
+      close_conditions: "Close the conditions"
+      conditions_title: "Add a condition to %{name}"
+      decrease: "Take 1 HP from %{name}"
+      end_fight: "End the fight"
+      end_fight_confirm: "End the fight? The initiative order and the rounds are cleared, hit points and conditions stay."
+      full_sheet: "See the whole sheet"
+      hit_points: "Hit points"
+      increase: "Give 1 HP back to %{name}"
+      initiative_label: "Init."
+      label: "Fighters"
+      next_turn: "Next turn"
+      portrait: "%{name}, initiative %{initiative}"
+      preparing_rolled: "Preparing · initiative rolled"
+      preparing_waiting:
+        one: "Preparing · waiting for 1 player"
+        other: "Preparing · waiting for %{count} players"
+      ready: "Ready"
+      round: "Round %{count}"
+      slot: "Level %{level} slot %{number} used"
+      spell_level: "Level %{level}"
+      start_fight: "Start a fight"
     panel:
       close: "Close %{name}"
     panels:
@@ -1122,10 +1147,6 @@ en:
       npcs:
         empty: "This table has no NPC or enemy yet."
         title: "NPCs and enemies"
-    party:
-      draft: "In progress"
-      gauge: "%{label}: %{current} of %{max}"
-      open_sheet: "open the sheet"
     settings:
       display:
         toolbar_hover: "Unfold the bar on hover"
@@ -1151,7 +1172,6 @@ en:
         dice: "Dice"
         library: "Library"
         map: "Map"
-        players: "Players"
         sheet: "Sheet"
       label: "Tools of the game"
     top_bar:

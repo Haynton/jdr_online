@@ -81,35 +81,6 @@ module GameRoomHelper
       confirm_button: t("game_rooms.top_bar.leave") }
   end
 
-  # The current value and the maximum of the gauge of the party (the hit points) on the sheet of a character, nil
-  # while it has none (a character still being made)
-  def party_gauge(character, field)
-    value = character.sheet.to_h[field["key"]] if field
-    return unless value.is_a?(Hash) && value["max"].to_i.positive?
-
-    { current: value["current"].to_i.clamp(0, value["max"].to_i), max: value["max"].to_i }
-  end
-
-  # How much of the gauge is left, from 0 to 100: the length of the ring around the avatar of a player (pathLength
-  # 100) and of the bar beside their name, computed values written in an inline style (never a class built by
-  # interpolation)
-  def party_gauge_percent(gauge)
-    (100.0 * gauge[:current] / gauge[:max]).round
-  end
-
-  # The name of a player in the bar, for screen readers: their name, their gauge if any, and what a click does
-  def party_member_name(game_room, character, gauge)
-    parts = [character_display_name(character)]
-    parts << party_gauge_text(game_room, gauge) if gauge
-    parts << t("game_rooms.party.draft") if character.draft?
-    parts << t("game_rooms.party.open_sheet") if game_room.may_read_sheet?(character)
-    parts.join(", ")
-  end
-
-  def party_gauge_text(game_room, gauge)
-    t("game_rooms.party.gauge", label: game_room.party_gauge_field["label"], current: gauge[:current], max: gauge[:max])
-  end
-
   # Into the window of the room, never prefetched (an answer laid out for the window must not serve the whole page)
   def character_sheet_dialog_link_data
     { turbo_frame: SHEET_FRAME, turbo_prefetch: false }

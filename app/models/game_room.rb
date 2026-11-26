@@ -41,21 +41,8 @@ class GameRoom
   end
 
   # The characters of the players, finished or still being made, by name: the party, seen by everyone at the table
-  # (its island, bottom left)
   def party
     game_table.characters.pc.includes(participation: :user, avatar_attachment: :blob).order(:name)
-  end
-
-  # The game master reads the sheet of any player, a player only their own (checked again by the server,
-  # GameTables::CharacterSheetsController)
-  def may_read_sheet?(character)
-    game_master? || character.participation_id == participation.id
-  end
-
-  # The field of the sheet that takes the damage and that the others see (receives_damage and visible_to_others,
-  # declared by the template: the hit points), shown as a bar in the party; nil for a template without one
-  def party_gauge_field
-    game_table.character_sheet_fields.find { |field| field["receives_damage"] && field["visible_to_others"] }
   end
 
   # The character of a player, nil while they have none

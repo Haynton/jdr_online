@@ -27,30 +27,32 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#side-nav", count: 0
     assert_select "h1", text: "La Crypte"
     assert_equal GAME_MASTER_TOOLS, tool_names
-    assert_equal %w[Carte Biblio. Dés Joueurs], css_select("nav [role=group] > span[id^=game-room-tool-group]").map(&:text)
+    assert_equal %w[Carte Biblio. Dés], css_select("nav [role=group] > span[id^=game-room-tool-group]").map(&:text)
     assert_select "#game-room-panel-npcs", text: /Gobelin/
   end
 
-  test "the players are at the foot of the bar, with their hit points, the sheet only for who may read it" do
-    add_hit_points_to_the_copy_of_the_template
-    @character.update_columns(sheet: { "class" => "Mage", "hp" => { "current" => 7, "max" => 12 } })
+  test "the strip of the fighters shows the players out of a fight, the game master may start one" do
     sign_in @game_master
     get game_table_path(@game_table)
 
-    assert_select "nav [role=group][aria-labelledby=game-room-tool-group-players]" do
-      assert_select "a[href=?][data-turbo-frame=character_sheet_dialog][aria-label=?]",
-                    game_table_character_sheet_path(@game_table, @character),
-                    "Aria, Points de vie : 7 sur 12, ouvrir sa fiche"
-      assert_select "a[href=?]", game_table_character_sheet_path(@game_table, @other_character)
-      assert_select "circle[style=?]", "stroke-dasharray: 58 100"
+    assert_select "[data-controller=combat-strip]" do
+      assert_select "li[data-side=player]", count: 2
+      assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
+      assert_select "button[data-action='combat-strip#startFight']", text: /Lancer un combat/
+      assert_select "button[data-action^='combat-strip#endFight'][data-confirm-question^=?]", "Mettre fin au combat ?"
+      assert_select "section[data-combat-strip-target=sheet]", count: 2
     end
+  end
 
+  test "a player sees the strip, opens only their own quick sheet and starts no fight" do
     sign_in @player
     get game_table_path(@game_table)
-    assert_select "nav [role=group][aria-labelledby=game-room-tool-group-players]" do
-      assert_select "a[href=?]", game_table_character_sheet_path(@game_table, @character)
-      assert_select "a[href=?]", game_table_character_sheet_path(@game_table, @other_character), count: 0
-      assert_select "[role=img][aria-label=?]", "Borin"
+
+    assert_select "[data-controller=combat-strip]" do
+      assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
+      assert_select "[role=img][data-combat-strip-target=portrait][aria-label^=?]", "Borin"
+      assert_select "section[data-combat-strip-target=sheet]", count: 1
+      assert_select "button[data-action='combat-strip#startFight']", count: 0
     end
   end
 
@@ -180,15 +182,6 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     participation = @game_table.participations.create!(user: user, role: :player)
     participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: name,
                                     sheet: { "class" => "Mage" })
-  end
-
-  # The field that takes the damage, shown to the others, as the templates of the app declare it
-  def add_hit_points_to_the_copy_of_the_template
-    hit_points = { "key" => "hp", "label" => "Points de vie", "type" => "resource", "at_creation" => false,
-                   "receives_damage" => true, "visible_to_others" => true }
-    snapshot = @game_table.template_snapshot.deep_dup
-    snapshot["character_fields"]["fields"] << hit_points
-    @game_table.update_column(:template_snapshot, snapshot)
   end
 
   def tool_names
