@@ -1,0 +1,33 @@
+<%# « Lancer le tour par tour » first asks the game master whether the whole table rolls its initiative (decision): with
+    a roll, the order follows the rolls; without (the players go another way, the game master sets the order), the
+    order stays the one of the strip and can be changed. Annuler, the cross, Escape or a click beside it leave things
+    as they are (combat_strip_controller.js). Under the question, how to change the order afterwards (Anthony's
+    request: say it before the turns begin) %>
+<dialog aria-labelledby="turn-start-title" aria-describedby="turn-start-question" tabindex="-1"
+        class="m-auto w-[min(440px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-combat-strip-target="startDialog" data-action="click->combat-strip#closeStartDialogOnBackdrop">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="turn-start-title" class="text-base font-semibold text-ink"><%= t("game_rooms.combat_strip.start_turns") %></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t("game_rooms.combat_strip.cancel_preparation") %>" title="<%= t("game_rooms.combat_strip.cancel_preparation") %>"
+            data-action="combat-strip#closeStartDialog">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <div class="px-6 py-5">
+    <p id="turn-start-question" class="text-sm text-ink"><%= t("game_rooms.combat_strip.roll_question") %></p>
+    <p class="mt-1 text-sm text-muted"><%= t("game_rooms.combat_strip.roll_question_hint") %></p>
+    <p class="mt-4 flex gap-2.5 rounded-lg bg-field px-3 py-2.5 text-sm text-ink">
+      <%= render "shared/icons/hand", css_class: "mt-0.5 size-4 shrink-0 text-muted" %>
+      <span><%= t("game_rooms.combat_strip.reorder_hint") %></span>
+    </p>
+  </div>
+  <div class="flex flex-col-reverse gap-2 border-t border-line px-6 py-4 sm:flex-row sm:justify-end">
+    <button type="button" class="<%= button_classes(:secondary) %>" data-action="combat-strip#startWithoutRolls">
+      <%= t("game_rooms.combat_strip.without_rolls") %>
+    </button>
+    <button type="button" class="<%= button_classes(:primary) %>" data-action="combat-strip#startWithRolls">
+      <%= t("game_rooms.combat_strip.with_rolls") %>
+    </button>
+  </div>
+</dialog>

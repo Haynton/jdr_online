@@ -10,7 +10,8 @@ import { renderTokens } from "map_editor/token_renderer"
 
 // The preview of a map on its card of « Mes cartes » (Anthony's request): its drawing, drawn like in the editor, or
 // its picture under its grid. A map of a table shows its blocked zones and its tokens over it (tokenCharacters: who
-// they are). The textures of the floors are added once to the page, shared by every preview
+// they are). The textures of the floors are added once to the page, shared by every preview. The map shown on the
+// board of the game room takes the tokens put on it (placeToken)
 export default class extends Controller {
   static values = { layout: Object, columns: Number, rows: Number, pictureUrl: String, tokenCharacters: Object }
 
@@ -29,7 +30,21 @@ export default class extends Controller {
 
   drawWhatIsPut() {
     renderBlockedCells(this.drawing, new Set(this.layoutValue.blocked || []))
-    renderTokens(this.drawing, this.layoutValue.tokens || [], this.tokenCharactersValue)
+    this.tokensLayer = createSvgElement("g", {}, this.drawing)
+    renderTokens(this.tokensLayer, this.layoutValue.tokens || [], this.tokenCharactersValue)
+  }
+
+  // A token put on the map shown on the board of the game room (room_board_controller.js), one per cell; nothing is
+  // saved yet (the board comes with its own branch). False when the cell already holds one
+  placeToken({ id, name, kind }, column, row) {
+    const tokens = this.layoutValue.tokens || []
+    if (tokens.some((token) => token.column === column && token.row === row)) return false
+
+    this.tokenCharactersValue = { ...this.tokenCharactersValue, [id]: { name, kind } }
+    this.layoutValue = { ...this.layoutValue, tokens: [...tokens, { character_id: id, column, row }] }
+    this.tokensLayer.replaceChildren()
+    renderTokens(this.tokensLayer, this.layoutValue.tokens, this.tokenCharactersValue)
+    return true
   }
 
   // Its proportions known once it is loaded

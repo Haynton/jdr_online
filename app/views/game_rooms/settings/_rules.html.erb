@@ -1,0 +1,37 @@
+<%# The rules of the game, for the game master, in the window of the settings: the same settings as the step
+    « Réglages » (the starting level and the ways to play the rules of the template, its own partials), saved by the
+    same action, which brings back to the room with the window open on them (back_to: game_room). Only with a template
+    that has them (GameRoom#settings_sections); the rules to come (progression, rests, encumbrance) stay on the step.
+    Each control beside its name once the section is wide enough (container query of the lines), under it on a phone %>
+<% game_table = game_room.game_table %>
+<%= simple_form_for game_table, url: game_table_settings_path(game_table), method: :patch do |form| %>
+  <%= hidden_field_tag :back_to, "game_room" %>
+  <div class="<%= settings_group_lines_classes %>">
+    <div class="<%= setting_line_classes %>">
+      <div class="min-w-0">
+        <%= form.label :starting_level, class: "text-sm font-semibold text-ink" %>
+        <p id="starting-level-hint" class="mt-1 text-sm text-muted"><%= t("game_tables.settings.edit.starting_level_hint") %></p>
+      </div>
+      <%= render "character_sheets/fields/stepper", field: { "label" => GameTable.human_attribute_name(:starting_level) },
+                                                     input: starting_level_input(form) %>
+    </div>
+    <%= render "game_tables/settings/switch", form: form, attribute: :players_choose_level,
+                                               hint: t("game_tables.settings.edit.players_choose_level_hint") %>
+    <% if game_table.ability_methods.any? %>
+      <%= render "game_tables/settings/rule_choice", form: form, attribute: "ability_method_choice",
+                                                      methods: game_table.ability_methods %>
+    <% end %>
+    <% %w[hit_point_method starting_equipment_method].each do |rule| %>
+      <% next if game_table.rule_methods(rule).empty? %>
+      <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
+                                                      methods: game_table.rule_methods(rule) %>
+    <% end %>
+    <% if game_table.asks_skill_choices? %>
+      <%= render "game_tables/settings/switch", form: form, attribute: :limit_skill_choices,
+                                                 hint: t("game_tables.settings.edit.limit_skill_choices_hint") %>
+    <% end %>
+  </div>
+  <div class="mt-4 flex justify-end">
+    <%= form.button :submit, t(".save"), class: button_classes(:secondary) %>
+  </div>
+<% end %>

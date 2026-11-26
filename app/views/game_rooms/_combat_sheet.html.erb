@@ -1,0 +1,105 @@
+<%# The quick sheet of a fighter in the strip of the fighters: only what serves in a fight. Its name and, under
+    it, what it is (the class of a player, NPC or enemy for a creature), then its
+    armour class in a box that stands out and its initiative beside it; its hit points with − and + and a bar; its
+    conditions (the template's, game_table.conditions) added from the window of the conditions (game_rooms/
+    _combat_strip) and removed by a click; for a player who
+    casts spells, their spell slots by level (CharacterSheets::SpellSlots), each ticked once used; its attacks with
+    their dice and their damage; its whole sheet in its window. Changes stay in this page for now (nothing saved yet) %>
+<% fighter = group.fighters.first %>
+<% name = fighter.character.name %>
+<section id="combat-sheet-<%= group.key %>" hidden aria-label="<%= name %>"
+         class="<%= GameRoomHelper::ISLAND_CLASSES %> mb-3 max-h-[calc(100dvh-8rem)] w-96 overflow-y-auto p-4 shadow-xl"
+         data-combat-strip-target="sheet" data-group-key="<%= group.key %>">
+  <header class="flex items-start justify-between gap-3">
+    <div class="min-w-0 pt-1">
+      <h2 class="truncate text-base font-semibold text-ink"><%= name %></h2>
+      <% subtitle = combat_fighter_subtitle(fighter) %>
+      <p class="mt-0.5 line-clamp-2 text-xs text-muted" title="<%= subtitle %>"><%= subtitle %></p>
+    </div>
+    <dl class="flex shrink-0 gap-2 text-center">
+      <% if fighter.armor_class %>
+        <div class="flex min-w-14 flex-col items-center rounded-lg border border-brass/60 bg-primary-soft px-2.5 py-1">
+          <dt class="text-[10px] font-semibold tracking-wider text-primary-soft-ink uppercase"><%= t("game_rooms.combat_strip.armor_class_label") %></dt>
+          <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= fighter.armor_class %></dd>
+        </div>
+      <% end %>
+      <div class="flex min-w-14 flex-col items-center rounded-lg bg-field px-2.5 py-1">
+        <dt class="text-[10px] font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.initiative_label") %></dt>
+        <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= group.initiative %></dd>
+      </div>
+    </dl>
+  </header>
+
+  <div class="mt-4" data-combat-member data-group-key="<%= group.key %>">
+    <% if fighter.gauge %>
+      <div class="flex items-center gap-2">
+        <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact_icon) %> size-8"
+                aria-label="<%= t("game_rooms.combat_strip.decrease", name: name) %>"
+                data-action="combat-strip#changeHitPoints" data-combat-strip-delta-param="-1">
+          <%= render "shared/icons/minus", css_class: "size-4" %>
+        </button>
+        <span class="w-14 text-center text-sm font-medium text-ink tabular-nums" aria-live="polite">
+          <span data-combat-hit-points data-max="<%= fighter.gauge[:max] %>"><%= fighter.gauge[:current] %></span>/<%= fighter.gauge[:max] %>
+        </span>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact_icon) %> size-8"
+                aria-label="<%= t("game_rooms.combat_strip.increase", name: name) %>"
+                data-action="combat-strip#changeHitPoints" data-combat-strip-delta-param="1">
+          <%= render "shared/icons/plus", css_class: "size-4" %>
+        </button>
+      </div>
+      <span class="mt-3 block h-1.5 overflow-hidden rounded-full bg-field" aria-hidden="true">
+        <span class="block h-full rounded-full bg-success-ink" data-combat-bar
+              style="width: <%= combat_gauge_percent(fighter.gauge) %>%"></span>
+      </span>
+    <% end %>
+
+    <div class="mt-4 flex flex-col items-start" data-combat-conditions>
+      <% if room_combat_strip.conditions.any? %>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact) %> h-7 gap-1 px-2.5 text-xs"
+                aria-haspopup="dialog" data-action="combat-strip#openConditions"
+                data-combat-strip-name-param="<%= name %>">
+          <%= render "shared/icons/plus", css_class: "size-3.5" %>
+          <%= t("game_rooms.combat_strip.add_condition") %>
+        </button>
+        <%# The conditions added, under the button (decision), out of the page while there are none %>
+        <div class="mt-3 flex flex-wrap gap-2 empty:hidden" data-combat-condition-chips></div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if fighter.spell_slots %>
+    <section class="mt-4 border-t border-line pt-4" aria-label="<%= fighter.spell_slots.label %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase" title="<%= fighter.spell_slots.help %>"><%= fighter.spell_slots.label %></h3>
+      <ul class="mt-2 flex flex-col gap-1.5">
+        <% fighter.spell_slots.counts.each do |spell_level, count| %>
+          <li class="flex items-center gap-3 text-xs">
+            <span class="w-14 text-muted"><%= t("game_rooms.combat_strip.spell_level", level: spell_level) %></span>
+            <span class="flex gap-1.5">
+              <% count.times do |index| %>
+                <button type="button" aria-pressed="false"
+                        aria-label="<%= t("game_rooms.combat_strip.slot", level: spell_level, number: index + 1) %>"
+                        class="size-5 cursor-pointer rounded-full border-2 border-brass transition-colors aria-pressed:bg-brass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+                        data-action="combat-strip#toggleSlot"></button>
+              <% end %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if fighter.attacks.present? %>
+    <ul class="mt-4 flex flex-col gap-1.5 border-t border-line pt-4 text-xs">
+      <% fighter.attacks.each do |attack| %>
+        <% name_and_bonus, *details = combat_attack_text(attack) %>
+        <li class="flex justify-between gap-3"><span class="font-medium text-ink"><%= name_and_bonus %></span><span class="text-right text-muted"><%= details.join(" · ") %></span></li>
+      <% end %>
+    </ul>
+  <% end %>
+  <p class="mt-4 border-t border-line pt-3 text-xs"><%= combat_full_sheet_link(game_room, fighter) %></p>
+  <template data-combat-strip-target="conditionChip">
+    <button type="button" class="inline-flex h-7 items-center rounded-full bg-primary-soft px-2.5 text-xs font-medium text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset hover:line-through"
+            data-action="combat-strip#removeCondition"></button>
+  </template>
+</section>

@@ -54,6 +54,8 @@ class TableNpcsStepTest < ActionDispatch::IntegrationTest
 
     assert_equal "text/vnd.turbo-stream.html", response.media_type
     assert_includes response.body, %(target="cast-list")
+    # The list of the panel of the game room too, when the bestiary is opened from the game
+    assert_includes response.body, %(target="game-room-npc-list")
     assert_includes response.body, "Ajouté à la table : Guerrier gobelin 2."
     goblins = @game_table.npcs.to_a
     assert_equal ["Guerrier gobelin", "Guerrier gobelin 2"], goblins.map(&:name)

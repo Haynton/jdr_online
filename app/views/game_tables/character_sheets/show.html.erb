@@ -1,0 +1,30 @@
+<%# The sheet of a character seen from the game room: in its window, a title bar (name, who plays them, the cross) and
+    the sheet, which scrolls; opened directly or without JavaScript, a page with « Retour à la partie » %>
+<%# Only its owner gets « Modifier » (their identity and description, in « Mes personnages ») %>
+<% editable = @character.participation.user_id == current_user.id %>
+<% if character_sheet_in_dialog? %>
+  <%= turbo_frame_tag GameRoomHelper::SHEET_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="character-sheet-dialog-title" class="truncate text-lg font-semibold text-ink"><%= t(".title") %></h2>
+        <p class="text-sm text-muted"><%= t(".played_by", username: @character.participation.user.username) %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+              aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <div class="min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-8">
+      <%= render "character_sheets/summary/sheet", character: @character, read_only: true, editable: editable %>
+    </div>
+  <% end %>
+<% else %>
+  <% content_for :full_width_page do %>
+    <main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
+      <%= render "character_sheets/summary/sheet", character: @character, read_only: true, editable: editable %>
+      <div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+        <%= link_to t(".back"), game_table_path(@game_table), class: button_classes(:secondary) %>
+      </div>
+    </main>
+  <% end %>
+<% end %>

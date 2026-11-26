@@ -245,15 +245,16 @@ class TablesTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a participant opens the temporary page of their table" do
+  test "a participant opens the game room of their table" do
     user = create_user(locale: "fr")
     game_table = create_table_for(user, name: "Les Marches du Nord", cover_image: "wolf")
     sign_in user
     get game_table_path(game_table)
 
     assert_response :success
-    assert_select "main h1", text: "Les Marches du Nord"
-    assert_select "main a[href=?]", game_tables_path(table: game_table.id), text: "Retour à mes tables"
+    assert_select "h1", text: "Les Marches du Nord"
+    assert_select "form[action=?][method=get][data-turbo-confirm] button[aria-label=?]", game_tables_path,
+                  "Quitter la partie"
   end
 
   test "someone who is not at a table cannot open it" do

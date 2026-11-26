@@ -1,0 +1,33 @@
+<%# The two islands at the top of the room, 60 px high like the strip of the fighters at the bottom (decision: one
+    height for the islands), the cameras between them (game_rooms/_video). On the left, 288 px wide at most to leave
+    the cameras their room, the d20 (not a link: « Quitter la partie » is the only way out, decision), the name of the
+    table (the title of the page) and the role of who plays. On the right,
+    « Paramètres » (the window of the settings of the game; rendered hidden, shown by the controller: without
+    JavaScript a window cannot open), « Quitter la partie » (asked first in the confirmation window) and who plays,
+    their name in the tooltip of their avatar (from 768 px: on a phone, the name of the table needs the room) %>
+<div class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute top-3 left-3 z-20 flex h-15 max-w-[calc(100%-9rem)] items-center gap-3 pr-4 pl-2 md:top-4 md:left-4 md:max-w-72">
+  <%= render "shared/logo", mark_only: true %>
+  <div class="min-w-0">
+    <h1 class="truncate text-sm font-semibold text-ink" title="<%= game_room.game_table.name %>"><%= game_room.game_table.name %></h1>
+    <p class="text-xs font-medium text-brass"><%= table_role_label(game_room.participation) %></p>
+  </div>
+</div>
+
+<div class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute top-3 right-3 z-20 flex h-15 items-center gap-1 px-1.5 md:top-4 md:right-4">
+  <button type="button" hidden class="<%= GameRoomHelper::TOOL_CLASSES %>" aria-label="<%= t(".settings") %>"
+          aria-haspopup="dialog" data-game-room-panels-target="settingsOpener" data-action="game-room-panels#openSettings">
+    <%= render "shared/icons/settings", css_class: "size-5" %>
+    <span class="<%= GameRoomHelper::TOOLTIP_CLASSES %>" aria-hidden="true"><%= t(".settings") %></span>
+  </button>
+  <%= button_to game_tables_path, method: :get, params: { table: game_room.game_table.id },
+                class: "#{GameRoomHelper::TOOL_CLASSES} cursor-pointer", aria: { label: t(".leave") },
+                form: { data: leave_game_form_data(game_room) } do %>
+    <%= render "shared/icons/log_out", css_class: "size-5" %>
+    <span class="<%= GameRoomHelper::TOOLTIP_CLASSES %>" aria-hidden="true"><%= t(".leave") %></span>
+  <% end %>
+  <span class="mx-1 hidden h-6 w-px bg-line md:block" aria-hidden="true"></span>
+  <span class="group relative hidden size-11 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring md:flex" role="img" tabindex="0" aria-label="<%= t(".signed_in_as", username: current_user.username) %>">
+    <%= render "shared/avatar", user: current_user %>
+    <span class="<%= GameRoomHelper::TOOLTIP_CLASSES %>" aria-hidden="true"><%= current_user.username %></span>
+  </span>
+</div>

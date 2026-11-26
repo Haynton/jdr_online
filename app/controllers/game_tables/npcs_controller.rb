@@ -72,7 +72,9 @@ module GameTables
       params.fetch(:npc, {}).permit(:name, :kind, :gm_notes, sheet: {})
     end
 
-    # The bestiary stays open: the list behind is replaced, and the window says what was added (for screen readers)
+    # The bestiary stays open: the list behind is replaced, and the window says what was added (for screen readers).
+    # The list of the step or the one of the panel of the game room, whichever the page has: Turbo leaves out a target
+    # the page does not hold
     def add_from_bestiary
       npc = Catalogs::CreatureCopier.new(@game_table).call(params[:catalog_key])
       notice = t(".added", name: npc.name)
@@ -80,6 +82,8 @@ module GameTables
 
       render turbo_stream: [
         turbo_stream.replace("cast-list", partial: "game_tables/casts/list", locals: { npcs: @game_table.npcs }),
+        turbo_stream.replace("game-room-npc-list", partial: "game_rooms/panels/npc_list",
+                                                   locals: { game_table: @game_table, npcs: @game_table.npcs }),
         turbo_stream.update("bestiary-status", notice)
       ]
     end

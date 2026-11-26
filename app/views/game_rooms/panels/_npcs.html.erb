@@ -1,0 +1,18 @@
+<%# The NPCs and enemies of the table, for the game master, without leaving the room (decision): « Ajouter depuis le
+    bestiaire » and « Créer un PNJ » open the windows of the step « PNJ et ennemis » here (game_tables/bestiaries,
+    game_tables/npcs, rendered by layouts/game_room), and each line opens its own window, to see or change it. Saved
+    in its window, the room is refreshed (the panel comes back open); added from the bestiary, the list below is
+    replaced (game_rooms/panels/npc_list) and the bestiary stays open. Placing their tokens comes with the board %>
+<div class="flex flex-col gap-2">
+  <%= link_to game_table_bestiary_path(game_room.game_table), class: "#{button_classes(:primary, full_width: true)} gap-2",
+                                                              data: bestiary_dialog_link_data do %>
+    <%= render "shared/icons/library_big" %>
+    <%= t("game_tables.casts.edit.add_from_bestiary") %>
+  <% end %>
+  <%= link_to new_game_table_npc_path(game_room.game_table), class: "#{button_classes(:secondary, full_width: true)} gap-2",
+                                                             data: npc_dialog_link_data do %>
+    <%= render "shared/icons/plus" %>
+    <%= t("game_tables.casts.edit.create") %>
+  <% end %>
+</div>
+<%= render "game_rooms/panels/npc_list", game_table: game_room.game_table, npcs: game_room.npcs.to_a %>

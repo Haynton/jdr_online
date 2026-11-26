@@ -1,0 +1,71 @@
+<%# The video call of the game, at the top, centred on the screen, its top on the top of the islands beside it
+    (decision of 26 November: on a line at the top, not in a card), 320 px kept on each side for the name of the table
+    (288 px at most) and the settings. One place per person of the table (GameRoom#video_participations: the game
+    master, then the players), each a small island of its own, their avatar and their name until the call comes
+    (Jitsi); who plays is marked « Vous ». Three sizes: the places 60 px high (as high as the islands), 90 or 135 px,
+    16:9 (107, 160 or 240 px wide); when they do not fit, they all shrink together, keeping their shape (decision: a
+    line of cameras never scrolls), and under 60 px high the line folds by itself into a button « Visio », which opens
+    the call in the middle (decision). Hovered or reached with the keyboard, a small pill under the line makes them
+    smaller or larger, opens the call in the middle, and folds them; folded, the button « Visio » unfolds them.
+    In the middle (data-size="stage"), the cameras take the screen between the bar of tools, the islands at the top
+    and the strip of the fighters, straight on the board, in centred rows, until « Revenir en haut » or Escape. The size, folded or not, in the
+    middle or not, and shown or not (Paramètres › Visio et son) are kept in this browser (video_island_controller.js;
+    the buttons rendered hidden and shown by it). From 768 px. The list of places keeps a fixed id and
+    data-turbo-permanent: the container of the call must never be removed or reloaded (rule of the project) %>
+<section class="<%= GameRoomHelper::VIDEO_CLASSES %>"
+         aria-labelledby="game-room-video-title" data-size="small" data-controller="video-island"
+         data-action="game-room-video:change@window->video-island#refresh resize@window->video-island#refresh keydown.esc@window->video-island#leaveStage">
+  <h2 id="game-room-video-title" class="sr-only"><%= t(".title") %> (<%= t("game_rooms.coming_soon") %>)</h2>
+  <ul id="game-room-video-places" data-turbo-permanent class="<%= GameRoomHelper::VIDEO_PLACES_CLASSES %>"
+      data-video-island-target="places">
+    <% game_room.video_participations.each do |participation| %>
+      <% you = participation == game_room.participation %>
+      <li class="<%= GameRoomHelper::ISLAND_CLASSES %> <%= GameRoomHelper::VIDEO_PLACE_CLASSES %>">
+        <%= render "shared/avatar", user: participation.user,
+                                    css_class: "size-8 text-[11px] group-data-[size=stage]/video:size-16 group-data-[size=stage]/video:text-lg" %>
+        <span class="absolute bottom-1 left-1 flex max-w-[calc(100%-0.5rem)] items-center gap-1 rounded bg-well/80 px-1 text-[11px] leading-4 font-medium text-ink group-data-[size=stage]/video:bottom-2 group-data-[size=stage]/video:left-2 group-data-[size=stage]/video:text-sm">
+          <span class="truncate"><%= you ? t(".you") : participation.user.username %></span>
+          <% if participation.game_master? %>
+            <span class="shrink-0 font-semibold text-brass"><%= t("game_tables.roles.game_master") %></span>
+          <% end %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+  <button type="button" hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> flex h-15 items-center gap-2 px-4 text-sm font-medium text-ink hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          aria-controls="game-room-video-places" title="<%= t(".unfold") %>"
+          data-video-island-target="unfold" data-action="video-island#unfold">
+    <%= render "shared/icons/monitor", css_class: "size-4 text-muted" %>
+    <%= t(".title") %>
+    <span class="<%= badge_classes(:pending) %>"><%= t("game_rooms.coming_soon") %></span>
+  </button>
+  <span hidden data-video-island-target="controls"
+        class="<%= GameRoomHelper::ISLAND_CLASSES %> mt-1 flex items-center gap-0.5 p-0.5 opacity-0 transition-opacity group-hover/video:opacity-100 group-focus-within/video:opacity-100 group-data-[size=stage]/video:mt-4 group-data-[size=stage]/video:opacity-100">
+    <span class="px-2 text-xs font-medium text-muted"><%= t(".title") %> · <%= t("game_rooms.coming_soon") %></span>
+    <span class="contents group-data-[size=stage]/video:hidden">
+      <button type="button" class="<%= GameRoomHelper::ISLAND_HEADER_BUTTON_CLASSES %>"
+              aria-label="<%= t(".smaller") %>" title="<%= t(".smaller") %>"
+              data-video-island-target="smaller" data-action="video-island#smaller">
+        <%= render "shared/icons/minus", css_class: "size-4" %>
+      </button>
+      <button type="button" class="<%= GameRoomHelper::ISLAND_HEADER_BUTTON_CLASSES %>"
+              aria-label="<%= t(".larger") %>" title="<%= t(".larger") %>"
+              data-video-island-target="larger" data-action="video-island#larger">
+        <%= render "shared/icons/plus", css_class: "size-4" %>
+      </button>
+      <button type="button" class="<%= GameRoomHelper::ISLAND_HEADER_BUTTON_CLASSES %>"
+              aria-label="<%= t(".stage") %>" title="<%= t(".stage") %>" data-action="video-island#enterStage">
+        <%= render "shared/icons/maximize", css_class: "size-4" %>
+      </button>
+      <button type="button" class="<%= GameRoomHelper::ISLAND_HEADER_BUTTON_CLASSES %>"
+              aria-expanded="true" aria-controls="game-room-video-places" aria-label="<%= t(".fold") %>"
+              title="<%= t(".fold") %>" data-action="video-island#toggle">
+        <%= render "shared/icons/chevron_down", css_class: "size-4 rotate-180" %>
+      </button>
+    </span>
+    <button type="button" class="hidden h-7 items-center rounded-md px-2.5 text-xs font-medium text-ink hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring group-data-[size=stage]/video:inline-flex"
+            data-action="video-island#leaveStage">
+      <%= t(".leave_stage") %>
+    </button>
+  </span>
+</section>

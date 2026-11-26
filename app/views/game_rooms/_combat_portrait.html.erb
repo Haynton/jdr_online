@@ -1,0 +1,52 @@
+<%# One place in the strip of the fighters: the avatar of a player or the initials of a creature, in the ring of
+    what is left of its hit points (never for a player looking at an NPC or an enemy), its number for a
+    numbered creature (« Guerrier gobelin 2 »), a crossed eye on a creature while the fight is prepared (hidden
+    from the players). A button when who plays may open its quick sheet; outside development
+    (GameRoom.preview_features?: the quick sheet is simulated), a link to the whole sheet of the character in the
+    window of the room %>
+<% percent = combat_group_percent(group) if combat_gauge_shown?(game_room, group) %>
+<% previews = GameRoom.preview_features? %>
+<% label = previews ? t("game_rooms.combat_strip.portrait", name: group.name, initiative: group.initiative) : group.name %>
+<% portrait = capture do %>
+  <span class="relative flex size-10 items-center justify-center">
+    <% if group.side == :player %>
+      <%= render "characters/avatar", character: group.fighters.first.character, css_class: "size-8 rounded-full!", icon_class: "size-4" %>
+    <% else %>
+      <span class="flex size-8 items-center justify-center rounded-full text-xs font-semibold <%= combat_portrait_classes(group) %>" aria-hidden="true"><%= combat_initials(group.name) %></span>
+    <% end %>
+    <% if percent %>
+      <svg viewBox="0 0 40 40" class="absolute inset-0 size-10 -rotate-90" aria-hidden="true">
+        <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" class="stroke-field"></circle>
+        <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" stroke-linecap="round" pathLength="100"
+                class="stroke-success-ink" style="stroke-dasharray: <%= percent %> 100"
+                data-combat-strip-target="ring" data-group-key="<%= group.key %>"></circle>
+      </svg>
+    <% end %>
+    <% unless group.side == :player %>
+      <%# Hidden from the players while the game master prepares the fight (data-preparing on the strip) %>
+      <span class="absolute -top-1 -left-1.5 hidden size-4 items-center justify-center rounded-full border border-line bg-surface text-muted in-data-preparing:flex"
+            aria-hidden="true">
+        <%= render "shared/icons/eye_off", css_class: "size-2.5" %>
+      </span>
+    <% end %>
+    <% if (number = combat_fighter_number(group)) %>
+      <span class="absolute -right-1.5 -bottom-1 rounded-md border border-line bg-surface px-1 text-[11px] font-semibold text-ink" aria-hidden="true"><%= number %></span>
+    <% end %>
+  </span>
+<% end %>
+<% portrait_classes = "flex in-data-reordering:touch-none rounded-full outline-offset-2 transition-opacity select-none data-current:outline-2 data-current:outline-brass data-waiting:opacity-35 in-data-reordering:cursor-grab in-data-dragged:opacity-50" %>
+<% if previews && combat_sheet_openable?(game_room, group) %>
+  <button type="button" class="<%= portrait_classes %> cursor-pointer focus-visible:outline-2 focus-visible:outline-focus-ring"
+          aria-label="<%= label %>" title="<%= label %>" aria-expanded="false" aria-controls="combat-sheet-<%= group.key %>"
+          <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
+          data-action="combat-strip#toggleSheet keydown->combat-strip#moveWithKeys"><%= portrait %></button>
+<% elsif combat_sheet_openable?(game_room, group) %>
+  <%# Outside development: the whole sheet of the character, in the window of the room (the quick sheet is simulated) %>
+  <%= link_to portrait, game_table_character_sheet_path(game_room.game_table, group.fighters.first.character),
+              class: "#{portrait_classes} focus-visible:outline-2 focus-visible:outline-focus-ring",
+              aria: { label: t("game_rooms.combat_strip.open_sheet", name: group.name) }, title: group.name,
+              data: character_sheet_dialog_link_data %>
+<% else %>
+  <span class="<%= portrait_classes %>" role="img" aria-label="<%= label %>" title="<%= label %>"
+        <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"><%= portrait %></span>
+<% end %>

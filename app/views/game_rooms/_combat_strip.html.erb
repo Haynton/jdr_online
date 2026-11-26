@@ -1,0 +1,96 @@
+<%# The strip of the fighters (first version, tried on the local branch style/testing-combat-strip: nothing saved or
+    shared yet): an island at the bottom, left of the chat (decision: it holds the players, no more in the bar of
+    tools), from 768 px (on the right edge until the chat shows, from 1024 px), always there, 60 px high like the
+    islands at the top; its quick sheets open above it (game_rooms/_combat_sheet: the game master any, a player only
+    their own). Its portraits (40 px, their gold ring 4 px around, inside the 6 px margin of the list) scroll when
+    they do not fit.
+    - Out of the turns (the start): the players alone, without an order (CombatStrip#resting_groups; decision: the
+      creatures join at the preparation) and, for the game master, « Lancer le tour par tour » (decision: turns are
+      not only for a fight).
+    - It first asks whether the whole table rolls its initiative (game_rooms/_turn_start_dialog): with a roll, the
+      order follows the rolls (simulated for now: the creatures at once, the players one after the other, each
+      portrait faded until it has rolled, the count of those awaited in the strip); without, it stays the one of the
+      strip.
+    - Then the preparation: the game master sets the board; the creatures join the strip, hidden from the players
+      (a crossed eye) until « Prêt » (a player who has not rolled is rolled for, by the server in the real version);
+      « Annuler » goes back.
+    - The turns: the order (CombatStrip#groups, each goblin its own place), the round, the place whose turn it is
+      ringed in gold, « Tour suivant », and « Fin du tour par tour » (asked first in the confirmation window), which
+      brings the strip back out of the turns (decision: the strip stays, only the turns go). The game master changes
+      the order (during the turns, and from the preparation without a roll) by dragging a portrait, or Alt and an
+      arrow on it; the new order is asked first in the confirmation
+      window, the one before comes back when it is refused (decision).
+    Everything changes in this page only (combat_strip_controller.js). The turns and the quick sheets are shown in
+    development and in the tests only (GameRoom.preview_features?): online, the strip shows the players, each
+    opening their whole sheet %>
+<% groups = room_combat_strip.groups %>
+<% if groups.any? %>
+  <% initiative_ranks = groups.each_with_index.to_h { |group, index| [group.key, index] } %>
+  <div class="absolute right-4 bottom-4 z-30 hidden max-w-[calc(100%-6.5rem)] flex-col-reverse items-end md:flex lg:right-88 lg:max-w-[calc(100%-29rem)]"
+       data-controller="combat-strip" data-combat-strip-round-text-value="<%= t(".round", count: "__ROUND__") %>"
+       data-combat-strip-conditions-title-value="<%= t(".conditions_title", name: "__NAME__") %>"
+       data-combat-strip-waiting-one-value="<%= t(".preparing_waiting", count: 1) %>"
+       data-combat-strip-waiting-other-value="<%= t(".preparing_waiting", count: "__COUNT__") %>"
+       data-combat-strip-rolled-value="<%= t(".preparing_rolled") %>"
+       data-combat-strip-preparing-value="<%= t(".preparing") %>"
+       data-combat-strip-reorder-question-value="<%= t(".reorder_confirm") %>"
+       data-combat-strip-reorder-button-value="<%= t(".reorder_button") %>"
+       data-combat-strip-reorderable-value="<%= @game_room.game_master? %>"
+       data-action="keydown.esc->combat-strip#closeSheets click@window->combat-strip#closeOnOutsideClick">
+    <div class="<%= GameRoomHelper::ISLAND_CLASSES %> flex h-15 max-w-full items-center gap-5 px-2" role="group"
+         aria-label="<%= t(".label") %>">
+      <%# Digits of one width and room for « Tour 99 »: the strip never moves when the round changes %>
+      <span hidden class="min-w-14 shrink-0 pl-2 text-xs font-semibold whitespace-nowrap text-ink tabular-nums" data-combat-strip-target="round"><%= t(".round", count: 1) %></span>
+      <ol class="flex min-w-0 items-center gap-3 overflow-x-auto p-1.5 no-scrollbar" data-combat-strip-target="order"
+          data-action="pointerdown->combat-strip#pointerDown">
+        <% room_combat_strip.resting_groups.each_with_index do |group, index| %>
+          <li data-initiative-rank="<%= initiative_ranks.fetch(group.key) %>" data-rest-rank="<%= index %>"
+              data-side="<%= group.side %>" <%= "hidden" unless group.side == :player %>>
+            <%= render "game_rooms/combat_portrait", game_room: @game_room, group: group, current: false %>
+          </li>
+        <% end %>
+      </ol>
+      <% if @game_room.game_master? && GameRoom.preview_features? %>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact) %> shrink-0 gap-1.5 whitespace-nowrap"
+                aria-haspopup="dialog" data-combat-strip-target="startButton" data-action="combat-strip#askInitiative">
+          <%= render "shared/icons/swords", css_class: "size-4" %>
+          <%= t(".start_turns") %>
+        </button>
+        <span hidden class="flex shrink-0 items-center gap-2" data-combat-strip-target="preparationButtons">
+          <button type="button" class="<%= button_classes(:attention, size: :compact) %> gap-1.5 whitespace-nowrap"
+                  data-action="combat-strip#ready">
+            <%= render "shared/icons/check", css_class: "size-4" %>
+            <%= t(".ready") %>
+          </button>
+          <button type="button" class="<%= button_classes(:secondary, size: :compact) %> whitespace-nowrap"
+                  data-action="combat-strip#cancelPreparation">
+            <%= t(".cancel_preparation") %>
+          </button>
+        </span>
+        <span hidden class="flex shrink-0 items-center gap-2" data-combat-strip-target="fightButtons">
+          <button type="button" class="<%= button_classes(:secondary, size: :compact) %> gap-1 whitespace-nowrap"
+                  data-action="combat-strip#nextTurn">
+            <%= t(".next_turn") %>
+            <%= render "shared/icons/chevron_right", css_class: "size-4" %>
+          </button>
+          <button type="button" class="<%= button_classes(:secondary, size: :compact) %> whitespace-nowrap"
+                  data-action="combat-strip#endFight" data-confirm-button="<%= t(".end_turns") %>"
+                  data-confirm-question="<%= t(".end_turns_confirm") %>">
+            <%= t(".end_turns") %>
+          </button>
+        </span>
+      <% end %>
+    </div>
+    <% groups.each do |group| %>
+      <% if GameRoom.preview_features? && combat_sheet_openable?(@game_room, group) %>
+        <%= render "game_rooms/combat_sheet", game_room: @game_room, group: group %>
+      <% end %>
+    <% end %>
+    <% if @game_room.game_master? && GameRoom.preview_features? %>
+      <%= render "game_rooms/turn_start_dialog" %>
+    <% end %>
+    <% if GameRoom.preview_features? && room_combat_strip.conditions.any? %>
+      <%= render "game_rooms/conditions_dialog", conditions: room_combat_strip.conditions %>
+    <% end %>
+  </div>
+<% end %>

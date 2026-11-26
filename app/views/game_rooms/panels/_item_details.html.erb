@@ -1,0 +1,15 @@
+<%# What the window of an item shows in the game room: its values, those the template declares for an item and the
+    item has (catégorie, dégâts, propriétés, poids, valeur), written as on a sheet, then its description %>
+<% values = fields.filter_map do |field|
+     value = item.properties[field["key"]]
+     [field["label"], FieldTypes.of(field).summary_text(value, field)] if value.present?
+   end %>
+<dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
+  <% values.each do |label, text| %>
+    <dt class="text-muted"><%= label %></dt>
+    <dd class="text-ink"><%= text %></dd>
+  <% end %>
+</dl>
+<% if item.description.present? %>
+  <p class="mt-4 whitespace-pre-line text-sm leading-relaxed text-ink"><%= item.description %></p>
+<% end %>

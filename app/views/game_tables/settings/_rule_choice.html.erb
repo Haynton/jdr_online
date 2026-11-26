@@ -9,7 +9,7 @@
     <p id="<%= hint_id %>" class="mt-1 text-sm text-muted"><%= t("game_tables.settings.edit.#{attribute}_hint") %></p>
     <%= form.error attribute, class: "mt-1 text-sm text-error-ink first-letter:uppercase" %>
   </div>
-  <span class="relative block w-full shrink-0 sm:w-64">
+  <span class="relative block w-full shrink-0 @md:w-64">
     <%= form.select attribute, rule_method_options(attribute.delete_suffix("_choice"), methods), {}, aria: { describedby: hint_id },
                     class: coming_soon_choice_classes %>
     <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>

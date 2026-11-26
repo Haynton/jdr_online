@@ -1,0 +1,36 @@
+<%# The people of the table, in the window of the settings: the game master, then the players (avatar, username, their
+    character, the badge of the summary: MJ, Joueur, En attente). For the game master, the invitation link to copy (a
+    late player): a new link and an invitation by username stay on the page « Invitation et participants » %>
+<% game_table = game_room.game_table %>
+<ul class="divide-y divide-line border-y border-line">
+  <% table_participants(game_table).each do |participation| %>
+    <li class="flex min-h-14 items-center gap-3 py-2">
+      <%= render "shared/avatar", user: participation.user %>
+      <span class="min-w-0 flex-1">
+        <span class="block truncate text-sm font-medium text-ink"><%= participation.user.username %></span>
+        <% if participation.character&.name.present? %>
+          <span class="block truncate text-xs text-muted"><%= participation.character.name %></span>
+        <% end %>
+      </span>
+      <span class="<%= participant_badge_classes(participation) %>"><%= participant_badge_label(participation) %></span>
+    </li>
+  <% end %>
+</ul>
+
+<% if game_room.game_master? %>
+  <div class="mt-6 max-w-md" data-controller="clipboard"
+       data-clipboard-copied-text-value="<%= t("game_tables.summaries.invitation.copied") %>"
+       data-clipboard-failed-text-value="<%= t("game_tables.summaries.invitation.copy_failed") %>">
+    <label for="game-room-invitation-link" class="<%= field_label_classes %>"><%= t(".invitation_link") %></label>
+    <div class="flex gap-2">
+      <input id="game-room-invitation-link" type="text" readonly value="<%= invitation_url(game_table.invite_token) %>"
+             class="<%= read_only_field_classes %>" data-clipboard-target="source" data-action="focus->clipboard#selectAll">
+      <button type="button" hidden class="<%= button_classes(:secondary) %> shrink-0" title="<%= t("game_tables.summaries.invitation.copy") %>"
+              data-clipboard-target="button" data-action="clipboard#copy">
+        <%= render "shared/icons/link" %>
+        <span class="max-sm:sr-only"><%= t("game_tables.summaries.invitation.copy") %></span>
+      </button>
+    </div>
+    <p class="mt-1.5 text-sm font-medium text-ink" role="status" data-clipboard-target="status"></p>
+  </div>
+<% end %>

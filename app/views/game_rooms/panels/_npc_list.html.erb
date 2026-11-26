@@ -1,0 +1,33 @@
+<%# The NPCs and enemies in the panel of the game room: name, then what it is and its listed values (« Ennemi · FP 1/4
+    · CA 15 · PV 10 »), each line opening its window, and « Placer », which takes it as the tool of the board
+    (room_board_controller.js; only once a map is on the board, it says so before). Replaced as a whole when a creature is added from the bestiary
+    (id game-room-npc-list, GameTables::NpcsController#add_from_bestiary) %>
+<div id="game-room-npc-list">
+  <% if npcs.empty? %>
+    <p class="mt-4 text-sm text-muted"><%= t("game_rooms.panels.npcs.empty") %></p>
+  <% else %>
+    <h3 class="mt-5 text-xs font-semibold tracking-wider text-brass uppercase"><%= t("game_tables.casts.edit.count", count: npcs.size) %></h3>
+    <ul class="mt-1 -mx-2 flex flex-col">
+      <% npcs.each do |npc| %>
+        <li class="flex items-center gap-2">
+          <%= link_to edit_game_table_npc_path(game_table, npc), data: npc_dialog_link_data,
+                      class: "block min-w-0 flex-1 rounded-lg px-2 py-2 transition-colors hover:bg-surface-raised" do %>
+            <span class="block truncate text-sm font-semibold text-ink" title="<%= npc.name %>"><%= npc.name %></span>
+            <span class="block truncate text-xs text-muted"><%= npc_facts(game_table, npc) %></span>
+          <% end %>
+          <% if GameRoom.preview_features? %>
+          <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %> h-7 shrink-0 px-2.5 text-xs select-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+                  aria-label="<%= t("game_rooms.board.place_creature", name: npc.name) %>"
+                  data-place-label="<%= t("game_rooms.board.place_creature", name: npc.name) %>"
+                  data-needs-map-label="<%= t("game_rooms.board.needs_map") %>"
+                  data-room-board-target="creaturePlacer" data-action="room-board#takeCreature"
+                  data-room-board-id-param="<%= npc.id %>" data-room-board-name-param="<%= npc.name %>"
+                  data-room-board-kind-param="<%= npc.kind %>">
+            <%= t("game_rooms.board.place") %>
+          </button>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

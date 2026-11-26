@@ -37,6 +37,9 @@ class GameTablesController < ApplicationController
     return redirect_to new_game_table_character_path(participation.game_table) if participation.needs_character?
 
     @game_table = participation.game_table
+    @game_room = GameRoom.new(participation)
+    # The game room replaces the navigation of the app with its own bar, by role (decision)
+    render layout: "game_room"
   end
 
   # Temporary settings page of a table. Only its game master reaches it: a player gets a 404 too

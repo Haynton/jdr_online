@@ -1,0 +1,15 @@
+<%# The character of a player: their picture, name and choices, then their whole sheet (abilities, combat, spells,
+    inventory) in the window of the room. A player always has one here: the room sends them to make it first %>
+<% character = game_room.own_character %>
+<div class="flex flex-col items-center gap-3 text-center">
+  <%= render "characters/avatar", character: character, css_class: "size-28" %>
+  <div class="min-w-0">
+    <p class="text-lg font-semibold text-ink"><%= character_display_name(character) %></p>
+    <p class="text-sm text-muted"><%= character_card_choices(character) %></p>
+  </div>
+  <%= link_to game_table_character_sheet_path(game_room.game_table, character),
+              class: button_classes(:primary, full_width: true), data: character_sheet_dialog_link_data do %>
+    <%= render "shared/icons/venetian_mask" %>
+    <%= t(".open_sheet") %>
+  <% end %>
+</div>

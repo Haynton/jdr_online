@@ -1,0 +1,40 @@
+<%# The video and the sound of the game, in the window of the settings, laid out like the display: one line per
+    setting. The cameras (game_rooms/_video): shown or not, and their size, kept in this browser like the buttons of
+    their island (video_settings_controller.js, the lines rendered hidden and shown by it: without JavaScript there
+    is nothing to set). The call itself (camera, microphone, sound) comes with Jitsi %>
+<div class="<%= settings_group_lines_classes %>" data-controller="video-settings"
+     data-action="game-room-video:change@window->video-settings#refresh switch:change->video-settings#showCameras">
+  <div hidden class="<%= setting_line_classes %>" data-video-settings-target="line">
+    <div class="min-w-0">
+      <p id="game-room-video-shown-label" class="text-sm font-semibold text-ink"><%= t(".shown") %></p>
+      <p class="mt-1 text-sm text-muted"><%= t(".shown_hint") %></p>
+    </div>
+    <span class="contents" data-video-settings-target="switch">
+      <%= render "shared/switch", labelled_by: "game-room-video-shown-label", checked: true %>
+    </span>
+  </div>
+
+  <div hidden class="<%= setting_line_classes %>" data-video-settings-target="line">
+    <div class="min-w-0">
+      <p id="game-room-video-size-label" class="text-sm font-semibold text-ink"><%= t(".size") %></p>
+      <p class="mt-1 text-sm text-muted"><%= t(".size_hint") %></p>
+    </div>
+    <div role="group" aria-labelledby="game-room-video-size-label" class="inline-flex shrink-0 gap-1 rounded-lg bg-field p-1">
+      <% %w[small medium large].each do |size| %>
+        <button type="button" aria-pressed="false"
+                class="inline-flex h-8 items-center rounded-md px-3 text-sm text-ink transition-colors hover:bg-surface/60 aria-pressed:bg-surface aria-pressed:font-semibold aria-pressed:shadow-sm"
+                data-video-settings-target="size" data-video-settings-size-param="<%= size %>"
+                data-action="video-settings#chooseSize">
+          <%= t(".sizes.#{size}") %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= setting_line_classes %>">
+    <div class="min-w-0">
+      <p class="text-sm font-semibold text-ink"><%= t(".call") %> <span class="<%= badge_classes(:pending) %> ml-1"><%= t("game_rooms.coming_soon") %></span></p>
+      <p class="mt-1 text-sm text-muted"><%= t(".description") %></p>
+    </div>
+  </div>
+</div>

@@ -95,6 +95,7 @@ module NavigationHelper
   # The name of the logo always stays in the page, so that a logo link keeps its name for screen readers.
   # compact_on_phone: only the d20 on a phone. with_side_nav: only the d20 while the side navigation is folded
   def logo_name_visibility_classes(options)
+    return "sr-only" if options[:mark_only]
     return SIDE_NAV_FADING_TEXT_CLASSES if options[:with_side_nav]
     return "sr-only sm:not-sr-only" if options[:compact_on_phone]
 

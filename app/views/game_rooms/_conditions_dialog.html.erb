@@ -1,0 +1,31 @@
+<%# The window of the conditions, opened by « Ajouter un état » in a quick sheet (decision: a window rather
+    than a list, to read the short rule of each): the conditions of the template (game_table.conditions), each a
+    button with its label and its rule; a click adds it to the fighter of that sheet and closes the window. Escape,
+    the cross or a click beside it close it (combat_strip_controller.js) %>
+<dialog aria-labelledby="combat-conditions-title" tabindex="-1"
+        class="m-auto max-h-[calc(100dvh-4rem)] w-[min(640px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-combat-strip-target="conditionsDialog"
+        data-action="click->combat-strip#closeConditionsOnBackdrop">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="combat-conditions-title" class="truncate text-base font-semibold text-ink" data-combat-strip-target="conditionsTitle"></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t("game_rooms.combat_strip.close_conditions") %>" title="<%= t("game_rooms.combat_strip.close_conditions") %>"
+            data-action="combat-strip#closeConditions">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <ul class="grid min-h-0 grid-cols-1 gap-2 overflow-y-auto p-4 sm:grid-cols-2">
+    <% conditions.each do |condition| %>
+      <li>
+        <button type="button" class="flex h-full w-full cursor-pointer flex-col items-start gap-1 rounded-lg border border-line px-3 py-2.5 text-left transition-colors hover:border-brass hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+                data-action="combat-strip#pickCondition" data-combat-strip-label-param="<%= condition["label"] %>"
+                data-combat-strip-description-param="<%= condition["description"] %>">
+          <span class="text-sm font-semibold text-ink"><%= condition["label"] %></span>
+          <% if condition["description"].present? %>
+            <span class="text-xs leading-snug text-muted"><%= condition["description"] %></span>
+          <% end %>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+</dialog>

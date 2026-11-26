@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <%= render "layouts/head" %>
+  </head>
+
+  <%# The game room of a table, a tool on the whole screen (decision): the navigation of the app gives way to a board
+      that fills the screen, with islands floating over it (maquette C, decision of 26 November). At the top left the
+      name of the table, at the top right the settings and the way out (game_rooms/_top_bar), on the left the bar of
+      tools and, at its foot, the players (game_rooms/_toolbar), whose panels open beside it, over the board, which
+      never moves (game_room_panels_controller.js), at the bottom right the chat. On a phone (simplified, decision),
+      the bar runs along the bottom and a panel takes the screen above it; the chat waits for a wider screen %>
+  <body class="h-dvh overflow-hidden bg-well text-ink">
+    <div class="group/room relative h-full" data-controller="game-room-panels room-board"
+         data-game-room-panels-settings-open-value="<%= game_room_settings_open?(@game_room) %>"
+         data-room-board-hint-value="<%= t("game_rooms.board.hint", name: "__NAME__") %>"
+         data-action="keydown.esc->game-room-panels#close keydown.esc->room-board#dropCreatureWithKeys">
+      <main class="absolute inset-0">
+        <%= render "shared/flashes" %>
+        <%= yield %>
+      </main>
+
+      <%= render "game_rooms/top_bar", game_room: @game_room %>
+      <%= render "game_rooms/combat_strip" %>
+      <%= render "game_rooms/toolbar", game_room: @game_room %>
+      <% @game_room.panels.each do |panel| %>
+        <%= render "game_rooms/panel", game_room: @game_room, panel: panel %>
+      <% end %>
+      <%= render "game_rooms/video", game_room: @game_room %>
+      <%= render "game_rooms/chat" %>
+      <%= render "game_rooms/settings_dialog", game_room: @game_room %>
+    </div>
+
+    <%= render "game_rooms/sheet_dialog" %>
+    <%# The windows of the steps « PNJ et ennemis », « Sorts et objets » and « Cartes », opened from the panels of the
+        game master: adding an NPC, an enemy, an item or a map never leaves the game (decision) %>
+    <% if @game_room.game_master? %>
+      <%= render "game_tables/npcs/dialog" %>
+      <%= render "game_tables/bestiaries/dialog" %>
+      <%= render "game_tables/catalogs/dialog" %>
+      <%= render "game_tables/game_maps/dialog" %>
+    <% end %>
+    <%= render "shared/confirm_dialog" %>
+    <%= yield :detached_forms %>
+  </body>
+</html>

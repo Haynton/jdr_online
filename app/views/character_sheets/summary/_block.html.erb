@@ -7,9 +7,11 @@
     A block with nothing to fill in (summary_only: combat) has no "Change": no page leads to it. The block of the step
     that chooses the spells lists them (summary_spells), the one of the hit points their hit dice (summary/_hit_dice).
     read_only: the sheet of a complete character: the header names the page (h1, its table in gold above it) and its
-    "Change" opens the identity and description; the other blocks have none (fixed once complete, decision) %>
+    "Change" opens the identity and description; the other blocks have none (fixed once complete, decision).
+    editable: false hides that "Change" (the game master reading the sheet of a player in the game room) %>
 <% header = local_assigns[:header] %>
 <% read_only = local_assigns[:read_only] %>
+<% editable = local_assigns.fetch(:editable, true) %>
 <% sections = step.fields.group_by { |field| field["section"] }
                          .reject { |_section, fields| summary_section_empty?(character, fields) } %>
 <section class="<%= "mt-10" unless local_assigns[:in_grid] || header %> <%= "flex items-start gap-4 sm:gap-6" if header %> min-w-0"
@@ -34,7 +36,7 @@
         <h2 id="summary_<%= step.key %>" class="text-xs font-semibold tracking-wider text-brass uppercase"><%= character_step_label(step) %></h2>
       <% end %>
       <% if read_only %>
-        <% if header %>
+        <% if header && editable %>
           <%= link_to edit_character_path(character), class: "#{button_classes(:secondary, size: :compact)} shrink-0" do %>
             <%= render "shared/icons/pencil" %>
             <%= t("characters.show.edit") %>

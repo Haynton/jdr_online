@@ -1054,7 +1054,153 @@ fr:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
+  # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
+  game_rooms:
+    board:
+      hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
+      needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
+      place: "Placer"
+      place_creature: "Placer %{name} sur la carte"
+      place_map: "Placer %{name} sur le plateau"
+      remove: "Retirer"
+      remove_map: "Retirer %{name} du plateau"
+    chat:
+      description: "Le chat de la partie arrive bientôt : messages, jets de dés et actions de chacun, en direct."
+      fold: "Replier le chat"
+      resize: "Changer la hauteur du chat"
+      title: "Chat"
+      unfold: "Déplier le chat"
+    coming_soon: "Bientôt"
+    combat_strip:
+      add_condition: "Ajouter un état"
+      armor_class_label: "CA"
+      cancel_preparation: "Annuler"
+      close_conditions: "Fermer les états"
+      conditions_title: "Ajouter un état à %{name}"
+      decrease: "Retirer 1 PV à %{name}"
+      end_turns: "Fin du tour par tour"
+      end_turns_confirm: "Mettre fin au tour par tour ? L'ordre et les tours seront effacés, les PV et les états restent."
+      full_sheet: "Voir la fiche complète"
+      hit_points: "Points de vie"
+      increase: "Rendre 1 PV à %{name}"
+      initiative_label: "Init."
+      label: "Combattants"
+      next_turn: "Tour suivant"
+      open_sheet: "Ouvrir la fiche de %{name}"
+      portrait: "%{name}, initiative %{initiative}"
+      preparing: "Préparation"
+      preparing_rolled: "Préparation · initiatives lancées"
+      preparing_waiting:
+        one: "Préparation · 1 joueur en attente"
+        other: "Préparation · %{count} joueurs en attente"
+      ready: "Prêt"
+      reorder_button: "Valider l'ordre"
+      reorder_confirm: "Valider le nouvel ordre ? Il remplace l'ordre du tour par tour."
+      reorder_hint: "Dans les deux cas, vous pourrez changer l'ordre : faites glisser un portrait de la barre à sa nouvelle place (ou Alt + ← / → au clavier), puis validez."
+      roll_question: "Demander un jet d'initiative à toute la table ?"
+      roll_question_hint: "Avec le jet, l'ordre se range d'après les résultats. Sans, l'ordre reste celui de la barre."
+      round: "Tour %{count}"
+      slot: "Emplacement %{number} de niveau %{level} utilisé"
+      spell_level: "Niveau %{level}"
+      start_turns: "Lancer le tour par tour"
+      with_rolls: "Jet d'initiative"
+      without_rolls: "Sans jet"
+    item_gift_dialog:
+      cancel: "Annuler"
+      close: "Fermer"
+      give: "Donner"
+      quantity: "Quantité"
+      receiver: "À qui ?"
+    panel:
+      close: "Fermer %{name}"
+    panels:
+      character:
+        open_sheet: "Ouvrir ma fiche"
+        title: "Ma fiche"
+      dice:
+        coming_soon:
+          game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
+          player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
+        title: "Dés"
+      items:
+        give: "Donner"
+        give_item: "Donner %{item}"
+        give_title: "Donner « %{item} »"
+        no_category: "Autres"
+        no_match: "Aucun objet ne correspond à cette recherche."
+        search: "Rechercher un objet"
+        title: "Objets"
+      map_tools:
+        coming_soon:
+          game_master: "Sélectionner, mesurer, retirer des objets de la carte, poser du brouillard de guerre et des zones bloquantes, pendant la partie."
+          player: "Sélectionner, mesurer, retirer des objets de la carte, poser du brouillard de guerre et des zones bloquantes, pendant la partie."
+        title: "Outils de carte"
+      maps:
+        empty: "Cette table n'a pas encore de carte."
+        manage: "Ajouter une carte"
+        open: "Modifier %{name}"
+        title: "Cartes"
+      npcs:
+        empty: "Cette table n'a encore ni PNJ ni ennemi."
+        title: "PNJ et ennemis"
+    settings:
+      display:
+        chat_shown: "Afficher le chat"
+        chat_shown_hint: "Éteint, le chat de la partie disparaît de la salle. Gardé sur cet appareil."
+        toolbar_hover: "Déplier la barre au survol"
+        toolbar_hover_hint: "La barre d'outils montre le nom de chaque outil quand la souris passe dessus. Éteint, seulement au clavier. Gardé sur cet appareil."
+      participants:
+        invitation_link: "Lien d'invitation"
+      rules:
+        save: "Enregistrer les règles"
+      video:
+        call: "Caméra, micro et son"
+        description: "Caméra, micro et son de la visio de la partie."
+        shown: "Afficher les caméras"
+        shown_hint: "Les caméras de la table, en haut à droite. Gardé sur cet appareil."
+        size: "Taille des caméras"
+        size_hint: "Aussi réglable depuis les boutons − et + de la visio. Gardé sur cet appareil."
+        sizes:
+          large: "Grande"
+          medium: "Moyenne"
+          small: "Petite"
+    settings_dialog:
+      close: "Fermer les paramètres de la partie"
+      menu: "Rubriques des paramètres"
+      sections:
+        display: "Affichage"
+        participants: "Participants"
+        rules: "Règles de la partie"
+        video: "Visio et son"
+      title: "Paramètres de la partie"
+    toolbar:
+      coming_soon_label: "%{name} (bientôt)"
+      groups:
+        dice: "Dés"
+        library: "Biblio."
+        map: "Carte"
+        sheet: "Fiche"
+      label: "Outils de la partie"
+    top_bar:
+      leave: "Quitter la partie"
+      leave_confirm: "Quitter la partie « %{name} » ? Vous la retrouverez dans « Mes tables »."
+      settings: "Paramètres"
+      signed_in_as: "Connecté(e) : %{username}"
+    video:
+      fold: "Replier les caméras"
+      larger: "Agrandir les caméras"
+      leave_stage: "Revenir en haut"
+      smaller: "Réduire les caméras"
+      stage: "Visio au centre"
+      title: "Visio"
+      unfold: "Déplier les caméras"
+      you: "Vous"
   game_tables:
+    item_gifts:
+      create:
+        given:
+          one: "« %{item} » donné à %{character}."
+          other: "%{count} × « %{item} » donnés à %{character}."
     map_lists:
       edit:
         back: "Retour"
@@ -1109,6 +1255,12 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    character_sheets:
+      show:
+        back: "Retour à la partie"
+        close: "Fermer la fiche"
+        played_by: "Joué par %{username}"
+        title: "Fiche du personnage"
     character_steps:
       band_label: "Étapes de votre personnage"
       equipment_choices:
@@ -1266,7 +1418,7 @@ fr:
         count:
           one: "%{count} PNJ ou ennemi"
           other: "%{count} PNJ et ennemis"
-        create: "Créer un PNJ"
+        create: "Créer un PNJ ou un ennemi"
         empty: "Aucun PNJ pour l'instant. Ajoutez des créatures du bestiaire, ou créez vos propres personnages."
         intro: "Toutes les créatures du bestiaire de votre modèle restent disponibles : vous pourrez aussi les ajouter pendant la partie."
         purpose: "Cette étape sert surtout à préparer vos propres PNJ, et les ennemis que vous modifiez ou ajoutez pour cette table."
@@ -1549,8 +1701,7 @@ fr:
       subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"
     show:
-      back_to_tables: "Retour à mes tables"
-      coming_soon: "La page de la table arrive bientôt : plateau, chat et lancers de dés se joueront ici."
+      board_coming_soon: "Le plateau arrive bientôt : la carte, les jetons des personnages et des ennemis se joueront ici."
     stage:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"
