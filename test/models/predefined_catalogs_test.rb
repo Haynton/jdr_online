@@ -56,6 +56,21 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
   end
 
+  test "the weapons and armor of the heroic fantasy say what the rules read, the same in both languages" do
+    catalogs = %w[en fr].map do |locale|
+      read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_items.#{locale}.json"))["entries"]
+    end
+    rule_values = %w[training armor_base armor_dexterity_cap armor_bonus damage_dice finesse ranged]
+    weapons_and_armor = catalogs.first.select { |item| item.dig("properties", "training") }
+
+    assert_equal(*catalogs.map { |entries| entries.map { |item| item["properties"].slice(*rule_values) } })
+    assert_equal 20, weapons_and_armor.size
+    weapons_and_armor.select { |item| item.dig("properties", "training").end_with?("weapons") }.each do |weapon|
+      assert_match(/\A\d+d\d+\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
+      assert weapon.dig("properties", "damage").start_with?(weapon.dig("properties", "damage_dice")), weapon["key"]
+    end
+  end
+
   test "every class with spells has enough of them to choose from, at levels 1 to 4" do
     each_catalog do |catalog_file, catalog, sheet_template|
       next unless catalog["kind"] == "spell"
