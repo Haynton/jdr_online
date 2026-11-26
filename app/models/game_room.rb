@@ -12,6 +12,14 @@ class GameRoom
   PLAYER_TOOL_GROUPS = { "sheet" => %w[character], "dice" => %w[dice] }.freeze
   COMING_SOON_PANELS = %w[map_tools dice].freeze
 
+  # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
+  # board and its placing, the turn by turn, the quick sheet that changes hit points and conditions), shown in
+  # development and in the tests only (decision of 26 November: a player online never meets a feature that forgets
+  # what it did). docs/salle-de-jeu.md says what each one needs to be wired
+  def self.preview_features?
+    Rails.env.local?
+  end
+
   attr_reader :participation
 
   delegate :game_table, :game_master?, to: :participation

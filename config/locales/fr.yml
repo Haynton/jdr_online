@@ -1086,6 +1086,7 @@ fr:
       initiative_label: "Init."
       label: "Combattants"
       next_turn: "Tour suivant"
+      open_sheet: "Ouvrir la fiche de %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Préparation"
       preparing_rolled: "Préparation · initiatives lancées"

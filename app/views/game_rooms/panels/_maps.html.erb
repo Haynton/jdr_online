@@ -24,7 +24,7 @@
           <p class="truncate text-sm font-semibold text-ink"><%= game_map.name %></p>
           <p class="text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
         </div>
-        <% if game_map.drawn? %>
+        <% if game_map.drawn? && GameRoom.preview_features? %>
           <button type="button" hidden aria-pressed="false"
                   class="<%= button_classes(:secondary, size: :compact) %> h-7 shrink-0 px-2.5 text-xs select-none aria-pressed:border-brass aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink"
                   aria-label="<%= t("game_rooms.board.place_map", name: game_map.name) %>"

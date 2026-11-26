@@ -3,7 +3,7 @@
     each drawn like its preview and hidden until « Placer » in the panel « Cartes » shows it on the whole screen, under
     the islands, as large as it fits without being cut (decision), until « Retirer »;
     a creature taken by « Placer » in the panel « PNJ et ennemis » is put on it by a click, its name in the hint at the
-    top. Until a map is on the board, its place is kept. The name of the table is the title of the page, in the island
+    top, above the panel still open (z-40). In development and in the tests only (GameRoom.preview_features?) Until a map is on the board, its place is kept. The name of the table is the title of the page, in the island
     at the top left %>
 <% content_for :title, @game_table.name %>
 <div class="flex h-full flex-col items-center justify-center gap-3 px-6 text-center" data-room-board-target="placeholder">
@@ -12,7 +12,7 @@
   </span>
   <p class="max-w-md text-sm text-muted"><%= t(".board_coming_soon") %></p>
 </div>
-<% if @game_room.game_master? %>
+<% if @game_room.game_master? && GameRoom.preview_features? %>
   <% @game_room.game_maps.select(&:drawn?).each do |game_map| %>
     <svg hidden viewBox="<%= game_map_view_box(game_map) %>" role="img" aria-label="<%= game_map.name %>"
          class="absolute inset-0 size-full in-data-placing:cursor-crosshair"
@@ -20,7 +20,7 @@
          data-action="click->room-board#placeAtPointer contextmenu->room-board#dropCreatureWithRightClick"
          <%= tag.attributes(data: game_map_preview_data(game_map)) %>></svg>
   <% end %>
-  <p hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute top-22 left-1/2 z-20 -translate-x-1/2 px-4 py-2 text-sm text-ink"
+  <p hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute top-22 left-1/2 z-40 -translate-x-1/2 px-4 py-2 text-sm text-ink"
      role="status" data-room-board-target="hint">
     <span data-room-board-target="hintName"></span>
   </p>

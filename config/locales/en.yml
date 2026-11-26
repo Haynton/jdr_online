@@ -1115,6 +1115,7 @@ en:
       initiative_label: "Init."
       label: "Fighters"
       next_turn: "Next turn"
+      open_sheet: "Open the sheet of %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Preparing"
       preparing_rolled: "Preparing · initiative rolled"

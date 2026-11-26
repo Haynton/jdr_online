@@ -20,7 +20,9 @@
       the order (during the turns, and from the preparation without a roll) by dragging a portrait, or Alt and an
       arrow on it; the new order is asked first in the confirmation
       window, the one before comes back when it is refused (decision).
-    Everything changes in this page only (combat_strip_controller.js) %>
+    Everything changes in this page only (combat_strip_controller.js). The turns and the quick sheets are shown in
+    development and in the tests only (GameRoom.preview_features?): online, the strip shows the players, each
+    opening their whole sheet %>
 <% groups = room_combat_strip.groups %>
 <% if groups.any? %>
   <% initiative_ranks = groups.each_with_index.to_h { |group, index| [group.key, index] } %>
@@ -48,7 +50,7 @@
           </li>
         <% end %>
       </ol>
-      <% if @game_room.game_master? %>
+      <% if @game_room.game_master? && GameRoom.preview_features? %>
         <button type="button" class="<%= button_classes(:secondary, size: :compact) %> shrink-0 gap-1.5 whitespace-nowrap"
                 aria-haspopup="dialog" data-combat-strip-target="startButton" data-action="combat-strip#askInitiative">
           <%= render "shared/icons/swords", css_class: "size-4" %>
@@ -80,14 +82,14 @@
       <% end %>
     </div>
     <% groups.each do |group| %>
-      <% if combat_sheet_openable?(@game_room, group) %>
+      <% if GameRoom.preview_features? && combat_sheet_openable?(@game_room, group) %>
         <%= render "game_rooms/combat_sheet", game_room: @game_room, group: group %>
       <% end %>
     <% end %>
-    <% if @game_room.game_master? %>
+    <% if @game_room.game_master? && GameRoom.preview_features? %>
       <%= render "game_rooms/turn_start_dialog" %>
     <% end %>
-    <% if room_combat_strip.conditions.any? %>
+    <% if GameRoom.preview_features? && room_combat_strip.conditions.any? %>
       <%= render "game_rooms/conditions_dialog", conditions: room_combat_strip.conditions %>
     <% end %>
   </div>

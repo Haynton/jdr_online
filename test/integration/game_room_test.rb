@@ -88,6 +88,21 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "button[data-action='room-board#takeCreature']", count: 0
   end
 
+  test "online, the simulated parts are hidden: no turns, no quick sheets, no placing, each portrait opens the sheet" do
+    original_environment = Rails.env
+    Rails.env = "production"
+    sign_in @game_master
+    get game_table_path(@game_table)
+
+    assert_select "[data-action='combat-strip#askInitiative'], [data-combat-strip-target=sheet]", count: 0
+    assert_select "[data-room-board-target=creaturePlacer], [data-room-board-target=mapPlacer], [data-room-board-target=map]",
+                  count: 0
+    assert_select "[data-controller=combat-strip] a[href=?][data-turbo-frame=character_sheet_dialog]",
+                  game_table_character_sheet_path(@game_table, @character)
+  ensure
+    Rails.env = original_environment
+  end
+
   test "the chat has its handle and its button, shown by its controller" do
     sign_in @player
     get game_table_path(@game_table)
