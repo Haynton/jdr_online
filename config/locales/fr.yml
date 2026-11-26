@@ -751,11 +751,15 @@ fr:
       save: "Enregistrer"
       rename: "Renommer la carte"
     size: "%{columns} × %{rows} cases"
+    token_menu:
+      label: "Jeton"
+      starts_hidden: "Caché aux joueurs au départ"
+      starts_shown: "Montré aux joueurs au départ"
     token_tools:
       bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
       bestiary_title: "Bestiaire"
       empty: "Aucun pour l'instant."
-      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
       no_match: "Aucun personnage ni créature ne correspond à cette recherche."
       search: "Rechercher un personnage ou une créature"
       table_title: "PNJ et ennemis de la table"

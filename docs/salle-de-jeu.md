@@ -10,7 +10,7 @@ Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'
 
 - le **tour par tour** (« Lancer le tour par tour », la question sur l'initiative, la préparation, les tours, la réorganisation) ;
 - les **états** et les **emplacements de sorts cochés** (fiche rapide du MJ, « Ma fiche », « Sorts »), et les PV des **PNJ et ennemis** (un jeton n'a pas encore ses propres PV). **Les PV, les PV temporaires et l'Inspiration d'un joueur sont enregistrés** depuis le 26 novembre (voir « Fiche rapide »), en ligne aussi ;
-- les boutons **« Placer »** des créatures (leurs jetons sur la carte). La carte du plateau, elle, est enregistrée et partagée depuis `feature/p1-board-map` : elle est en ligne.
+- plus rien du plateau : la carte du plateau (depuis `feature/p1-board-map`) et ses jetons (depuis `feature/p1-board-tokens`) sont enregistrés et partagés, en ligne.
 
 En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat (messages en direct et fil de jeu, depuis `feature/p1-game-room-chat`) ; les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
 
@@ -101,14 +101,18 @@ Dans Inventaire et Sorts, chaque objet et chaque sort ouvre **ses détails dans 
 - **Le plateau en trois couches** (décision de Julien, 26 novembre) : le fond (la carte, dessinée une fois ; changée seulement quand le MJ pose une autre carte), la grille et ce qui bloque, les jetons (seule couche que touchent les coups de la partie).
 - **Placer une créature** :
   1. « Placer » sur la créature (panneau PNJ et ennemis) → elle devient l'outil ; une bulle en haut : « Cliquez sur la carte pour placer « Gobelin ». Échap ou clic droit pour arrêter. » ; curseur en croix sur la carte.
-  2. Chaque clic sur la carte pose son jeton **dans la case visée**, une par case (une case occupée refuse).
+  2. Chaque clic sur la carte pose son jeton **dans la case visée**, **enregistré** (`GameTables::BoardTokensController`, MJ seulement, 404 sinon). Plusieurs jetons sur une même case sont permis pour l'instant.
   3. L'outil reste en main pour poser une bande ; Échap ou le clic droit le lâchent ; retirer la carte le lâche aussi.
-- Jeton : rond, rouge (ennemi) ou vert (PNJ), initiales, numéro quand plusieurs jetons du même personnage.
-- **Simulé** : les jetons posés dans la salle ne sont ni enregistrés ni vus des joueurs. **À brancher (plateau de Julien)**, une branche chacun :
-  1. `feature/p1-board-tokens` : les jetons en jeu, dans une table `board_tokens` (qui portera aussi l'état de chaque combattant). Les jetons de l'éditeur y sont recopiés la première fois que la carte va sur le plateau, puis gardés là où la partie les a laissés (« Remettre au départ » les recopie, demandé d'abord). Une créature posée est **cachée aux joueurs** jusqu'à ce que le MJ la montre. Plusieurs jetons sur une même case sont permis pour l'instant ;
-  2. `feature/p1-board-player-tokens` : les jetons des personnages des joueurs, posés par le MJ dans la salle **ou** à l'avance dans l'éditeur de la carte ;
-  3. `feature/p1-board-moves` : déplacer un jeton en le glissant, case par case. Le MJ déplace tout et passe partout ; un joueur déplace seulement son personnage et ne peut pas finir sur une case bloquée (les murs viendront ensuite) ;
-  4. `feature/p1-board-map-tools` : le MJ modifie la carte en direct depuis « Outils de carte » (murs, portes, zones bloquantes).
+- Jeton : rond, rouge (ennemi) ou vert (PNJ), initiales, numéro quand plusieurs jetons du même personnage (compté sur tous ses jetons, cachés compris : le MJ et les joueurs parlent du même « Gobelin 2 »).
+- **Les jetons en jeu** vivent dans la table `board_tokens` (qui portera aussi l'état de chaque combattant : PV, états, initiative), à part du dessin de la carte. **Ceux de l'éditeur y sont recopiés une seule fois**, la première fois que la carte va sur le plateau, avec l'état de départ choisi dans l'éditeur (`game_maps.tokens_copied_at`, `BoardTokenCopier`) ; ensuite la partie les garde là où elle les a laissés.
+- **Une créature est cachée aux joueurs** à sa pose dans la salle, et par défaut dans l'éditeur. Chez le MJ, un jeton caché est estompé avec un œil barré. **Un clic sur un jeton**, sans outil en main, ouvre un petit menu à côté de lui : « Montrer aux joueurs » ou « Cacher aux joueurs », « Retirer du plateau ». **Dans l'éditeur d'une carte de table**, le même clic (l'outil lâché d'un clic droit) ouvre « Caché aux joueurs au départ » / « Montré aux joueurs au départ » (clé `hidden` de chaque jeton du dessin, annulable comme un trait). D'autres états s'y ajouteront (PV, « à terre »...).
+- **« Retirer tous les jetons »** (panneau Cartes, sous la carte du plateau, demandé d'abord) : ils ne reviennent pas sur cette carte.
+- **En direct, sans redessiner la carte** : seules les données des jetons sont remplacées (`#game-room-board-tokens-player`, sans les cachés, par le flux de la table, `BoardTokensSender` ; `#game-room-board-tokens-game-master` dans la réponse au MJ), et seule la couche des jetons se redessine (`room_board_controller.js`, `renderBoardTokens`). La barre des combattants écarte les créatures cachées pour un joueur, mais ne suit pas encore en direct (au prochain chargement).
+- **Limite connue** : un jeton ne se vise pas au clavier.
+- **À brancher (plateau de Julien)**, une branche chacun :
+  1. `feature/p1-board-player-tokens` : les jetons des personnages des joueurs, posés par le MJ dans la salle **ou** à l'avance dans l'éditeur de la carte ;
+  2. `feature/p1-board-moves` : déplacer un jeton en le glissant, case par case. Le MJ déplace tout et passe partout ; un joueur déplace seulement son personnage et ne peut pas finir sur une case bloquée (les murs viendront ensuite) ;
+  3. `feature/p1-board-map-tools` : le MJ modifie la carte en direct depuis « Outils de carte » (murs, portes, zones bloquantes).
 
 ## Barre des combattants (bas)
 

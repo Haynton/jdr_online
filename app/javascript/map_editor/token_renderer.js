@@ -6,6 +6,7 @@ import { createSvgElement } from "map_editor/svg"
 import { enemyToken, npcToken, ink, tokenLetters } from "map_editor/palette"
 
 const tokenRadius = cellSize * 0.4
+const hiddenTokenOpacity = 0.5
 
 // characters: { id: { name, kind } }, from the page
 export function renderTokens(group, tokens, characters) {
@@ -21,11 +22,14 @@ export function renderTokens(group, tokens, characters) {
 
     numbers.set(token.character_id, (numbers.get(token.character_id) ?? 0) + 1)
     const number = countByCharacter.get(token.character_id) > 1 ? numbers.get(token.character_id) : null
-    drawToken(layer, (token.column + 0.5) * cellSize, (token.row + 0.5) * cellSize, character, number)
+    const centerX = (token.column + 0.5) * cellSize
+    const centerY = (token.row + 0.5) * cellSize
+    const startsHidden = token.hidden !== false
+    drawToken(createSvgElement("g", { opacity: startsHidden ? hiddenTokenOpacity : 1 }, layer), centerX, centerY,
+              character, number)
+    if (startsHidden) drawHiddenMark(layer, centerX - tokenRadius * 0.75, centerY + tokenRadius * 0.75)
   })
 }
-
-const hiddenTokenOpacity = 0.5
 
 export function renderBoardTokens(layer, tokens) {
   layer.replaceChildren()

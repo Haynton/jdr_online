@@ -780,11 +780,15 @@ en:
       save: "Save"
       rename: "Rename the map"
     size: "%{columns} × %{rows} cells"
+    token_menu:
+      label: "Token"
+      starts_hidden: "Hidden from the players at first"
+      starts_shown: "Shown to the players at first"
     token_tools:
       bestiary_hint: "A creature is copied into your table when you put its first token."
       bestiary_title: "Bestiary"
       empty: "None yet."
-      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
+      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away. A token is hidden from the players at first: put the tool down with a right click, then click the token to show it from the start of the game."
       no_match: "No character or creature matches this search."
       search: "Search a character or a creature"
       table_title: "Non-player characters and enemies of the table"

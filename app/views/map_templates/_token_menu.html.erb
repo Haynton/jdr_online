@@ -1,0 +1,14 @@
+<div hidden role="menu" aria-label="<%= t("map_templates.token_menu.label") %>"
+     class="absolute z-20 flex w-64 flex-col rounded-xl border border-line bg-surface p-1.5 shadow-lg"
+     data-map-editor-target="tokenMenu" data-action="keydown.esc@window->map-editor#closeTokenMenu">
+  <p class="truncate px-2.5 pt-1 pb-1.5 text-xs font-semibold text-muted" data-map-editor-target="tokenMenuTitle"></p>
+  <% [[true, t("map_templates.token_menu.starts_hidden")], [false, t("map_templates.token_menu.starts_shown")]].each do |hidden, label| %>
+    <button type="button" role="menuitemradio" aria-checked="false"
+            class="<%= BoardHelper::TOKEN_MENU_ITEM_CLASSES %> flex items-center justify-between gap-2 text-ink aria-checked:font-semibold"
+            data-map-editor-target="tokenStateChoice" data-hidden="<%= hidden %>"
+            data-action="map-editor#chooseTokenState">
+      <%= label %>
+      <%= render "shared/icons/check", css_class: "size-4 text-brass invisible in-aria-checked:visible" %>
+    </button>
+  <% end %>
+</div>
