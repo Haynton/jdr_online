@@ -46,6 +46,7 @@ class GameTable < ApplicationRecord
   has_many :npcs, -> { of_game_master.order(:id) }, class_name: "Character", inverse_of: :game_table
   # Its own catalog entries: copies of entries of its template changed for it, entries added (Catalogs::TableCatalog)
   has_many :catalog_entries, dependent: :destroy
+  has_many :chat_messages, dependent: :delete_all
   # Its maps, in the order they were added (step Maps)
   has_many :game_maps, -> { order(:id) }, dependent: :destroy, inverse_of: :game_table
 
