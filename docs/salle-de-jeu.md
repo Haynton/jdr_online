@@ -12,7 +12,7 @@ Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'
 - la **fiche rapide** (PV, états, emplacements cochés) : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage, dans sa fenêtre ;
 - le **plateau** et les boutons **« Placer »** (cartes et créatures) : en ligne, l'écran d'attente du plateau.
 
-En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat, les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
+En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat (messages en direct et fil de jeu, depuis `feature/p1-game-room-chat`) ; les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
 
 ## Principes
 
@@ -137,9 +137,11 @@ Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. L
 
 ## Chat
 
-- Bas droite, à partir de 1024 px. Bas par défaut (192 px), **hauteur réglable** par la poignée du haut (glissée, ou flèches du clavier, Maj pour un grand pas), **repliable** (60 px de haut replié).
+- Bas droite, à partir de 1024 px. Bas par défaut (256 px avec son champ, 160 px au moins), **hauteur réglable** par la poignée du haut (glissée, ou flèches du clavier, Maj pour un grand pas), **repliable** (60 px de haut replié).
 - Paramètres › Affichage : « Afficher le chat » le cache entièrement.
-- **À brancher** : messages, jets de dés et actions de chacun en direct (fil de jeu). Le MJ pourra **annuler une action** depuis le fil (un « Tour suivant » de trop, un jet, des PV changés...) : chaque action devra être enregistrée avec ce qu'elle a changé.
+- **Fait** (`feature/p1-game-room-chat`) : **le fil de la table**, une seule table `chat_messages` (modèle `ChatMessage`) pour ce que la table lit dans son ordre : les **messages** tapés par chacun et les **événements** écrits par le serveur (pour l'instant « Le MJ a donné 3 × « Dague » à Aria. »). En arrivant, les **50 dernières lignes** ; ensuite, chaque ligne nouvelle arrive **en direct** chez tous (`GameTableChannel`). Ses propres messages ont le pseudo en doré ; l'heure est celle de l'appareil du lecteur. Un message : 1000 caractères au plus, écrit seulement par quelqu'un d'accepté à la table. Le fil ne se lit et ne s'écrit que par `ChatMessage.feed_of`, `.post` et `.record_event`.
+- **Un nouvel événement** : sa clé dans `ChatMessage::EVENT_KEYS`, son texte dans `GameRoomChatHelper::CHAT_EVENT_TEXTS` et `game_rooms.chat.events` (fr et en), et un `ChatMessage.record_event(table, :clé, valeurs)` là où l'action est faite. Un événement garde ses valeurs, pas son texte : chacun le lit dans sa langue en arrivant. **Limite connue** : une ligne reçue en direct est écrite dans la langue de celui qui a agi (rechargée, elle passe dans la sienne).
+- **À brancher** : les jets de dés et les actions de chacun (tour suivant, PV, états) comme événements. L'IA (commande /action, réponses) écrira aussi dans ce fil ; la vie technique d'un appel (statut, demande, JSON brut, vérification) ira dans une table à part, `ai_requests`, reliée à ses lignes du fil. Le MJ pourra **annuler une action** depuis le fil (un « Tour suivant » de trop, un jet, des PV changés...) : chaque action devra être enregistrée avec ce qu'elle a changé.
 
 ## Paramètres de la partie (fenêtre)
 

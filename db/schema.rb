@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_25_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_090000) do
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
     t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
+  end
+
+  create_table "chat_messages", force: :cascade do |t|
+    t.bigint "game_table_id", null: false
+    t.bigint "user_id"
+    t.string "author_name", limit: 60
+    t.string "kind", default: "message", null: false
+    t.text "body"
+    t.string "event_key"
+    t.jsonb "event_params", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_table_id", "created_at"], name: "index_chat_messages_on_game_table_id_and_created_at"
+    t.index ["user_id"], name: "index_chat_messages_on_user_id"
+    t.check_constraint "kind::text <> 'event'::text OR event_key IS NOT NULL", name: "chat_messages_event_key_check"
+    t.check_constraint "kind::text <> 'message'::text OR body IS NOT NULL", name: "chat_messages_message_body_check"
+    t.check_constraint "kind::text = ANY (ARRAY['message'::character varying, 'event'::character varying]::text[])", name: "chat_messages_kind_check"
   end
 
   create_table "friendships", force: :cascade do |t|
@@ -391,6 +408,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_25_090000) do
   add_foreign_key "catalog_entries", "sheet_templates"
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
+  add_foreign_key "chat_messages", "game_tables", on_delete: :cascade
+  add_foreign_key "chat_messages", "users", on_delete: :nullify
   add_foreign_key "friendships", "users", column: "addressee_id"
   add_foreign_key "friendships", "users", column: "requester_id"
   add_foreign_key "game_maps", "game_tables"

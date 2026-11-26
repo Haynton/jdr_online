@@ -65,6 +65,8 @@ Rails.application.routes.draw do
       resources :character_sheets, only: :show
       # The game master gives an item of the catalog of the table to a player, from the game room
       resource :item_gift, only: :create
+      # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
+      resources :chat_messages, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player

@@ -28,6 +28,11 @@ class GameRoom
     @participation = participation
   end
 
+  # The last lines of the feed of the table, the oldest first (the chat)
+  def chat_feed
+    ChatMessage.feed_of(game_table)
+  end
+
   def tool_groups
     game_master? ? GAME_MASTER_TOOL_GROUPS : PLAYER_TOOL_GROUPS
   end

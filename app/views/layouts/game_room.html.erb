@@ -27,7 +27,7 @@
         <%= render "game_rooms/panel", game_room: @game_room, panel: panel %>
       <% end %>
       <%= render "game_rooms/video", game_room: @game_room %>
-      <%= render "game_rooms/chat" %>
+      <%= render "game_rooms/chat", game_room: @game_room %>
       <%= render "game_rooms/settings_dialog", game_room: @game_room %>
     </div>
 
