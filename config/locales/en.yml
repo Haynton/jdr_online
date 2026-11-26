@@ -1093,6 +1093,8 @@ en:
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
     board:
+      empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
+      empty_for_players: "The game master has not put a map on the board yet."
       hint: "Click the map to place “%{name}”. Escape or right click to stop."
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
@@ -1744,8 +1746,6 @@ en:
     new:
       subtitle: "Give it a name, a cover and a sheet template. You will invite your players next."
       title: "Create a table"
-    show:
-      board_coming_soon: "The board is coming soon: the map and the tokens of the characters and enemies will be played here."
     stage:
       game_settings: "Game settings"
       create_character: "Create my character"

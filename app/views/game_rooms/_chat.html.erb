@@ -27,7 +27,6 @@
   </header>
   <div id="game-room-chat-body" class="flex h-64 flex-col border-t border-line" data-chat-island-target="body"
        data-controller="chat-feed" data-chat-feed-current-user-id-value="<%= current_user.id %>">
-    <%= game_table_stream_from(game_room.game_table) %>
     <div class="min-h-0 flex-1 overflow-y-auto px-4 py-3" data-chat-feed-target="scroller">
       <p class="text-sm text-muted [&:has(+ol>li)]:hidden"><%= t(".empty") %></p>
       <ol id="<%= ChatMessage::FEED_TARGET %>" class="space-y-3" role="log" aria-labelledby="game-room-chat-title">

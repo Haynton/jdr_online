@@ -1,0 +1,36 @@
+<% game_maps = game_room.game_maps.to_a %>
+<div id="game-room-map-list">
+  <% if game_maps.empty? %>
+    <p class="text-sm text-muted"><%= t("game_rooms.panels.maps.empty") %></p>
+  <% end %>
+  <ul class="flex flex-col gap-3">
+    <% game_maps.each do |game_map| %>
+      <li class="overflow-hidden rounded-xl border border-line">
+        <% if game_map.drawn? && map_preview?(game_map) %>
+          <svg viewBox="<%= game_map_view_box(game_map) %>" class="block aspect-video w-full bg-well" aria-hidden="true"
+               <%= tag.attributes(data: game_map_preview_data(game_map)) %>></svg>
+        <% elsif game_map.drawn? %>
+          <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+            <%= render "shared/icons/map", css_class: "size-8" %>
+          </span>
+        <% else %>
+          <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+        <% end %>
+        <div class="flex items-center justify-between gap-3 px-3 py-2.5">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-semibold text-ink"><%= game_map.name %></p>
+            <p class="text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
+          </div>
+          <% if game_map.drawn? %>
+            <%= render "game_rooms/panels/board_map_button", game_room:, game_map: %>
+          <% end %>
+          <%= link_to edit_game_table_game_map_path(game_room.game_table, game_map),
+                      class: button_classes(:secondary, size: :compact_icon), title: t("game_rooms.panels.maps.open", name: game_map.name),
+                      aria: { label: t("game_rooms.panels.maps.open", name: game_map.name) } do %>
+            <%= render "shared/icons/pencil" %>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+</div>

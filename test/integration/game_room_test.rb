@@ -95,8 +95,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_select "[data-action='combat-strip#askInitiative'], [data-combat-strip-target=sheet]", count: 0
-    assert_select "[data-room-board-target=creaturePlacer], [data-room-board-target=mapPlacer], [data-room-board-target=map]",
-                  count: 0
+    assert_select "[data-room-board-target=creaturePlacer]", count: 0
     assert_select "[data-controller=combat-strip] a[href=?][data-turbo-frame=character_sheet_dialog]",
                   game_table_character_sheet_path(@game_table, @character)
   ensure

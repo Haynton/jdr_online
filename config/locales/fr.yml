@@ -1064,6 +1064,8 @@ fr:
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
     board:
+      empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
+      empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
       hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
@@ -1715,8 +1717,6 @@ fr:
     new:
       subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"
-    show:
-      board_coming_soon: "Le plateau arrive bientôt : la carte, les jetons des personnages et des ennemis se joueront ici."
     stage:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"

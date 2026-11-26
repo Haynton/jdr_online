@@ -1,0 +1,15 @@
+<% board_map = game_table.board_game_map %>
+<div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0">
+  <% if board_map %>
+    <svg viewBox="<%= game_map_view_box(board_map) %>" role="img" aria-label="<%= board_map.name %>"
+         class="absolute inset-0 size-full in-data-placing:cursor-crosshair"
+         <%= tag.attributes(data: board_map_data(board_map, game_master:)) %>></svg>
+  <% else %>
+    <div class="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+      <span class="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+        <%= render "shared/icons/map", css_class: "size-7" %>
+      </span>
+      <p class="max-w-md text-sm text-muted"><%= empty_board_text(game_master:) %></p>
+    </div>
+  <% end %>
+</div>
