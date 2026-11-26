@@ -1,0 +1,17 @@
+<%# Everything else a player's character sheet shows (PlayerSheetPanelsHelper#own_detail_sections: whatever no other
+    panel shows, so that nothing of the sheet is missing from the panels, whatever the template): by section, in the
+    groups of the summary sheet, read only (summary/_facts, _boxes: the level, the size, the alignment, the languages,
+    the age, the eyes...). The long texts (appearance, story) are not here (decision: too long for the panel), they
+    are read and changed in « Modifier ma fiche » (panel « Ma fiche »), like everything that may change %>
+<% character = game_room.own_character %>
+<% computed = character.computed_sheet_values %>
+<div class="flex flex-col gap-6">
+  <% own_detail_sections(character).each do |section, groups| %>
+    <section aria-label="<%= section %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= section %></h3>
+      <% groups.each do |group, fields| %>
+        <%= render summary_group_partial(group), character: character, fields: fields, computed: computed, wide: false %>
+      <% end %>
+    </section>
+  <% end %>
+</div>

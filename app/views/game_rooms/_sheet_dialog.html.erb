@@ -1,6 +1,7 @@
 <%# The window of a character sheet in the game room: empty until « Voir la fiche » loads the sheet into its frame
-    (GameTables::CharacterSheetsController), then frame_dialog_controller.js opens it. Wide (1120 px at most): the sheet
-    keeps its columns, a panel of 360 px would be too narrow for it %>
+    (GameTables::CharacterSheetsController), or « Modifier ma fiche » the form of the character (characters/edit),
+    then frame_dialog_controller.js opens it. Wide (1120 px at most): the sheet keeps its columns, a panel of 360 px
+    would be too narrow for it %>
 <dialog id="character-sheet-dialog" aria-labelledby="character-sheet-dialog-title" tabindex="-1" data-turbo-prefetch="false"
         class="m-auto max-h-[calc(100dvh-2rem)] w-[min(1120px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
         data-controller="frame-dialog"

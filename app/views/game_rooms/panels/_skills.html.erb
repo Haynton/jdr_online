@@ -1,0 +1,14 @@
+<%# Every bonus row of a player's character, by the section of the template (« Jets de sauvegarde », « Compétences »:
+    PlayerSheetPanelsHelper#own_bonus_sections), as on the summary sheet (summary/_rows): a dot filled when
+    proficient, the name and its ability, the bonus on the right. All of them, not only the proficient ones: the game
+    master may ask for any roll (decision of 26 November). Only for a template that has some (GameRoom#tool_groups) %>
+<% character = game_room.own_character %>
+<% computed = character.computed_sheet_values %>
+<div class="flex flex-col gap-5">
+  <% own_bonus_sections(character).each do |section, fields| %>
+    <section aria-label="<%= section %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= section %></h3>
+      <%= render "character_sheets/summary/rows", character: character, fields: fields, computed: computed %>
+    </section>
+  <% end %>
+</div>

@@ -1,9 +1,9 @@
 <%# The identity and the description of a complete character (CharacterDescription, decision): its name and the fields
     that change nothing worked out, by section, drawn by the fields of the creation steps (characters/
     _description_form). Cancel goes back to its sheet without saving, Save saves and shows it. Refused, the errors show
-    under their fields. From the game room, « Modifier » of the sheet opens it in the same window (decision of
-    26 November: the player never leaves the game), with a title bar and the cross, and comes back to the sheet there;
-    the forms of the picture then stay in the frame. Elsewhere, a page %>
+    under their fields. From the game room, « Modifier ma fiche » (panel « Ma fiche ») opens it in the window of the
+    sheet (decision of 26 November: the player never leaves the game), with a title bar and the cross; saved, the
+    window closes and the room shows the change; the forms of the picture then stay in the frame. Elsewhere, a page %>
 <% name = @character.name_in_database.presence || t("game_tables.character_steps.summary.unnamed") %>
 <% if character_sheet_in_dialog? %>
   <%= turbo_frame_tag GameRoomHelper::SHEET_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
@@ -18,8 +18,7 @@
         <%= render "shared/icons/x", css_class: "size-5" %>
       </button>
     </header>
-    <%= render "characters/description_form", character: @character, in_dialog: true,
-                                              cancel_path: game_table_character_sheet_path(@character.game_table, @character) %>
+    <%= render "characters/description_form", character: @character, in_dialog: true %>
     <%= content_for :detached_forms %>
   <% end %>
 <% else %>

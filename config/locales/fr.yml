@@ -1078,6 +1078,7 @@ fr:
         item_given:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
+        spells_changed: "%{character} change ses sorts : %{changes}."
       empty: "Aucun message pour l'instant. Écrivez à la table : chacun le voit en direct."
       field: "Message à la table"
       fold: "Replier le chat"
@@ -1139,16 +1140,23 @@ fr:
     panels:
       character:
         abilities: "Caractéristiques"
+        edit_sheet: "Modifier ma fiche"
         fight: "Combat"
-        open_sheet: "Ouvrir ma fiche"
         score: "Score"
         title: "Ma fiche"
+      details:
+        title: "Détails"
       dice:
         coming_soon:
           game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
           player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
         title: "Dés"
       inventory:
+        amount: "Somme à retirer de %{label}"
+        remove: "Retirer"
+        remove_confirm: "Retirer « %{name} » de l'inventaire ? C'est le dernier exemplaire."
+        take_one: "Retirer 1 %{name}"
+        take_one_short: "−1"
         title: "Inventaire"
       items:
         give: "Donner"
@@ -1171,7 +1179,10 @@ fr:
       npcs:
         empty: "Cette table n'a encore ni PNJ ni ennemi."
         title: "PNJ et ennemis"
+      skills:
+        title: "Compétences"
       spells:
+        change: "Changer mes sorts"
         title: "Sorts"
     settings:
       display:
@@ -1285,6 +1296,18 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    spell_choices:
+      edit:
+        back: "Retour à la partie"
+        cancel: "Annuler"
+        close: "Fermer"
+        save: "Enregistrer"
+        subtitle: "Les sorts de %{name}, dans les nombres de sa classe et de son niveau. Le changement s'écrit dans le chat."
+        title: "Changer mes sorts"
+    inventory_values:
+      update:
+        invalid_amount: "Indiquez une somme de 1 à %{count}."
+        not_saved: "La somme n'a pas pu être retirée."
     character_sheets:
       show:
         back: "Retour à la partie"

@@ -23,16 +23,18 @@ class CharactersController < ApplicationController
     @character.fill_description(name: description_params[:name], sheet_values: description_params[:sheet])
     return render(:edit, status: :unprocessable_content) unless @character.save
 
-    redirect_to sheet_after_saving, flash: { screen_reader_notice: t(".saved") }
+    return render(turbo_stream: turbo_stream.refresh(request_id: nil)) if saved_from_game_room?
+
+    redirect_to character_path(@character), flash: { screen_reader_notice: t(".saved") }
   end
 
   private
 
-  # Saved from the window of the sheet in the game room: back to the sheet in that window, never out of the game
-  def sheet_after_saving
-    return character_path(@character) unless turbo_frame_request_id == GameRoomHelper::SHEET_FRAME
-
-    game_table_character_sheet_path(@character.game_table, @character)
+  # Saved from the window of the game room: the room is refreshed, so it shows the change (its panels, the strip of
+  # the fighters) and the window comes back closed; the player never leaves the game. A refresh with no request id:
+  # Turbo would ignore its own
+  def saved_from_game_room?
+    turbo_frame_request_id == GameRoomHelper::SHEET_FRAME
   end
 
   def set_own_character

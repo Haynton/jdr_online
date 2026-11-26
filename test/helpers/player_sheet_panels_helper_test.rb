@@ -1,9 +1,8 @@
 require "test_helper"
 
-# The panel « Ma fiche » of a player: the saving throws go into the tiles of the abilities (the section with one bonus
-# per ability), the other bonus fields ticked show as chips by section, and the values of a fight beside the armour
-# class
-class CombatStripHelperTest < ActionView::TestCase
+# The panels of a player's sheet: the saving throws go into the tiles of the abilities (the section with one bonus per
+# ability), the values of a fight beside the armour class, those of a caster apart for the panel « Sorts »
+class PlayerSheetPanelsHelperTest < ActionView::TestCase
   include CharacterSheets::ValuesHelper
 
   SheetOwner = Struct.new(:sheet_fields, :sheet)
@@ -36,12 +35,6 @@ class CombatStripHelperTest < ActionView::TestCase
     assert_equal "strength_save", saves["strength"]["key"]
   end
 
-  test "the other sections show only their ticked fields" do
-    chips = own_ticked_chip_sections(@character, @sections, "Jets de sauvegarde")
-
-    assert_equal({ "Compétences" => ["Arcanes"] }, chips.transform_values { |fields| fields.pluck("label") })
-  end
-
   test "the values of a fight beside the armour class, none for a value the character has not" do
     stats = own_quick_stats(@character, { values: { "proficiency_bonus" => 2, "spell_save_dc" => nil } })
 
@@ -52,7 +45,7 @@ class CombatStripHelperTest < ActionView::TestCase
 
   test "the values of a caster are apart, for the panel of the spells" do
     stats = own_quick_stats(@character, { values: { "spell_save_dc" => "13" } },
-                            keys: CombatStripHelper::SPELL_STAT_FIELD_KEYS)
+                            keys: PlayerSheetPanelsHelper::SPELL_STAT_FIELD_KEYS)
 
     assert_equal([["DD des sorts", "13"]], stats.map { |stat| [stat[:short_label], stat[:value]] })
   end

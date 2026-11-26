@@ -1,6 +1,6 @@
 <%# The form of the identity and the description of a complete character (CharacterDescription), on the page
     « Modifier » of « Mes personnages » and in the window of the sheet in the game room (in_dialog: its fields scroll
-    between the title bar and its buttons, which stay at its foot). cancel_path: back to the sheet, where it was opened.
+    between the title bar and its buttons, which stay at its foot; Cancel closes it). cancel_path: back to the sheet, on the page.
     Its picture on the left of the first section only, sent on its own (shared/_avatar_picker): its forms are written
     outside this one (detached), at the end of the page or, in the window, at the end of its frame (characters/edit) %>
 <% in_dialog = local_assigns.fetch(:in_dialog, false) %>
@@ -37,6 +37,10 @@
   </div>
   <div class="<%= in_dialog ? "flex shrink-0 flex-wrap justify-end gap-3 border-t border-line px-6 py-4" : "mt-auto flex flex-wrap justify-end gap-3 pt-10" %>">
     <%= form.button :submit, t("characters.edit.save"), class: "#{button_classes(:primary)} order-last" %>
-    <%= link_to t("characters.edit.cancel"), cancel_path, class: button_classes(:secondary) %>
+    <% if in_dialog %>
+      <button type="button" class="<%= button_classes(:secondary) %>" data-action="frame-dialog#close"><%= t("characters.edit.cancel") %></button>
+    <% else %>
+      <%= link_to t("characters.edit.cancel"), cancel_path, class: button_classes(:secondary) %>
+    <% end %>
   </div>
 <% end %>

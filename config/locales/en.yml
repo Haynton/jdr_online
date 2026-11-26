@@ -1107,6 +1107,7 @@ en:
         item_given:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
+        spells_changed: "%{character} changes their spells: %{changes}."
       empty: "No messages yet. Write to the table: everyone sees it live."
       field: "Message to the table"
       fold: "Fold the chat"
@@ -1168,16 +1169,23 @@ en:
     panels:
       character:
         abilities: "Abilities"
+        edit_sheet: "Edit my sheet"
         fight: "Fight"
-        open_sheet: "Open my sheet"
         score: "Score"
         title: "My sheet"
+      details:
+        title: "Details"
       dice:
         coming_soon:
           game_master: "Roll the dice of the game, in secret or in front of everyone, or have a player, the whole table or an NPC roll. Ask for the initiative roll too: the order of the fight sorts itself from the results. The results, rolled by the server, will go to the chat."
           player: "Roll your dice: the results, rolled by the server, will go to the chat of the game."
         title: "Dice"
       inventory:
+        amount: "Amount to take out of %{label}"
+        remove: "Remove"
+        remove_confirm: "Remove “%{name}” from the inventory? It is the last one."
+        take_one: "Take away 1 %{name}"
+        take_one_short: "−1"
         title: "Inventory"
       items:
         give: "Give"
@@ -1200,7 +1208,10 @@ en:
       npcs:
         empty: "This table has no NPC or enemy yet."
         title: "NPCs and enemies"
+      skills:
+        title: "Skills"
       spells:
+        change: "Change my spells"
         title: "Spells"
     settings:
       display:
@@ -1314,6 +1325,18 @@ en:
         rolled: "Hit dice rolled: %{results}."
     rules:
       former_roll: "Dice roll"
+    spell_choices:
+      edit:
+        back: "Back to the game"
+        cancel: "Cancel"
+        close: "Close"
+        save: "Save"
+        subtitle: "The spells of %{name}, within the numbers of their class and level. The change is written in the chat."
+        title: "Change my spells"
+    inventory_values:
+      update:
+        invalid_amount: "Enter an amount from 1 to %{count}."
+        not_saved: "The amount could not be taken out."
     character_sheets:
       show:
         back: "Back to the game"

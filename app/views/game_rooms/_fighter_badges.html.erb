@@ -1,7 +1,8 @@
-<%# The armour class of a fighter in a box that stands out, its initiative beside it (simulated: shown only with
-    GameRoom.preview_features?), then, in the panel « Ma fiche », the values a player looks at in a fight
-    (stats: CombatStripHelper#own_quick_stats, speed, proficiency), in boxes of the same size (game_rooms/
-    _stat_box) that go to the line. In the quick sheet of the strip of the fighters and in the panel « Ma fiche » %>
+<%# The armour class of a fighter in a box that stands out, its initiative rolled beside it (simulated: shown only
+    with GameRoom.preview_features?; not in « Ma fiche », initiative_roll: false, which shows the initiative bonus of
+    the sheet instead), then, in the panel « Ma fiche », the values a player looks at in a fight (stats:
+    PlayerSheetPanelsHelper#own_quick_stats), in boxes of the same size (game_rooms/_stat_box) that go to the line. In
+    the quick sheet of the strip of the fighters and in the panel « Ma fiche » %>
 <% stats = local_assigns.fetch(:stats, []) %>
 <dl class="flex flex-wrap gap-2 text-center">
   <% if fighter.armor_class %>
@@ -10,7 +11,7 @@
       <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= fighter.armor_class %></dd>
     </div>
   <% end %>
-  <% if GameRoom.preview_features? %>
+  <% if GameRoom.preview_features? && local_assigns.fetch(:initiative_roll, true) %>
     <div class="flex min-w-14 flex-col items-center justify-center rounded-lg bg-field px-2.5 py-1">
       <dt class="text-[10px] font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.initiative_label") %></dt>
       <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= group.initiative %></dd>
