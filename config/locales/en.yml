@@ -1105,6 +1105,7 @@ en:
       field: "Message to the table"
       fold: "Fold the chat"
       former_player: "Former player"
+      hint: "Enter to send, Shift + Enter for a new line"
       placeholder: "Write to the table…"
       resize: "Change the height of the chat"
       send: "Send"

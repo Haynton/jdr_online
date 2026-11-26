@@ -1076,6 +1076,7 @@ fr:
       field: "Message à la table"
       fold: "Replier le chat"
       former_player: "Ancien joueur"
+      hint: "Entrée pour envoyer, Maj + Entrée pour aller à la ligne"
       placeholder: "Écrire à la table…"
       resize: "Changer la hauteur du chat"
       send: "Envoyer"
