@@ -1,12 +1,12 @@
 <%# Equips an armour, a shield or a weapon of the inventory, or takes it off (GameTables::InventoryItemsController,
     Equippable): sent as soon as it is switched, the panel redrawn by the answer (another armour taken off). The
     invisible check box over the switch is sized like its track (size-full: Safari keeps a check box at its own 13 px).
-    Its name says the item, for screen readers and as a tooltip; « Équipé » written next to it %>
+    Its name says the item, for screen readers and as a tooltip; « Équipé » is written once, over the column of the
+    switches (game_rooms/panels/_inventory) %>
 <% switch_id = "equip-item-#{item.id}" %>
-<%= form_with url: game_table_inventory_item_path(game_table, item), method: :patch, class: "flex shrink-0 items-center gap-2",
+<%= form_with url: game_table_inventory_item_path(game_table, item), method: :patch, class: "flex shrink-0 items-center",
               data: { controller: "auto-submit", action: "change->auto-submit#submit" } do %>
   <%= hidden_field_tag :equipped, "0", id: nil %>
-  <label for="<%= switch_id %>" class="cursor-pointer text-xs text-muted"><%= t(".equipped") %></label>
   <span class="relative inline-flex shrink-0">
     <%= check_box_tag :equipped, "1", item.equipped, id: switch_id, role: "switch",
                       title: t(".equip", name: item.name), aria: { label: t(".equip", name: item.name) },

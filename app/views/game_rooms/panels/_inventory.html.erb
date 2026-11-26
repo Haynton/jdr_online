@@ -10,7 +10,8 @@
 <% character = game_room.own_character %>
 <% value_errors = local_assigns.fetch(:value_errors, {}) %>
 <div id="game-room-inventory">
-<% items = character.inventory_items.sort_by(&:name) %>
+<%# By name, without the accents: « Épée » with the E %>
+<% items = character.inventory_items.sort_by { |item| I18n.transliterate(item.name).downcase } %>
 <% play_fields = own_inventory_play_fields(character) %>
 <% if items.empty? && play_fields.empty? %>
   <p class="text-sm text-muted"><%= t("character_sheets.summary.inventory.empty") %></p>
@@ -49,27 +50,26 @@
       <% end %>
     </ul>
   <% end %>
-  <ul class="flex flex-col gap-1.5">
-    <% items.each do |item| %>
-      <li class="flex items-start gap-2">
-        <div class="min-w-0 flex-1">
-          <%= render layout: "character_sheets/summary/entry_details",
-                     locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
-            <span class="text-ink"><%= inventory_item_text(item) %></span>
-            <% if (detail = inventory_item_detail(item)) %>
-              <span class="text-xs text-muted"><%= detail %></span>
-            <% end %>
-          <% end %>
-        </div>
-        <% if item.equippable? %>
-          <%= render "game_rooms/panels/equip_switch", game_table: game_room.game_table, item: item %>
+  <%# Two groups (decision of 26 November: mixed, the gear and the small things read badly): what is worn and held
+      (an armour, a shield, a weapon: Equippable), with its switch under the one heading « Équipé », then the rest %>
+  <% gear, bag = items.partition(&:equippable?) %>
+  <% [["gear", gear], ["bag", bag]].each do |group, group_items| %>
+    <% next if group_items.empty? %>
+    <section class="mt-5 first:mt-0" aria-labelledby="game-room-inventory-<%= group %>">
+      <div class="mb-2 flex items-end gap-3">
+        <h3 id="game-room-inventory-<%= group %>" class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t(".#{group}") %></h3>
+        <% if group == "gear" %>
+          <%# The heading of the column of the switches; each switch says its own name to screen readers %>
+          <span aria-hidden="true" class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> text-center text-[10px] font-semibold tracking-wider whitespace-nowrap text-muted uppercase"><%= t("game_rooms.panels.equip_switch.equipped") %></span>
+          <span aria-hidden="true" class="w-10 shrink-0"></span>
         <% end %>
-        <%= button_to t(".take_one_short"), game_table_inventory_item_path(game_room.game_table, item), method: :delete,
-                      class: PlayerSheetPanelsHelper::TAKE_ONE_BUTTON_CLASSES, form_class: "shrink-0",
-                      title: t(".take_one", name: item.name), aria: { label: t(".take_one", name: item.name) },
-                      form: { data: own_inventory_removal_form_data(item) } %>
-      </li>
-    <% end %>
-  </ul>
+      </div>
+      <ul class="flex flex-col gap-2">
+        <% group_items.each do |item| %>
+          <%= render "game_rooms/panels/inventory_item", game_table: game_room.game_table, item: item %>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 <% end %>
 </div>
