@@ -48,6 +48,7 @@ fr:
         name: "Nom du personnage"
         spells: "Sorts"
       game_table:
+        board_game_map: "Carte du plateau"
         cover_image: "Couverture"
         description: "Description"
         name: "Nom"
@@ -148,6 +149,9 @@ fr:
               too_many_spells: "Trop de sorts choisis dans « %{group} » : %{count} au plus."
         game_table:
           attributes:
+            board_game_map:
+              not_drawn: "doit être une carte dessinée dans l'éditeur"
+              not_on_table: "doit être une carte de cette table"
             sheet_template:
               blank: "choisissez un modèle de fiche pour continuer"
             starting_level:

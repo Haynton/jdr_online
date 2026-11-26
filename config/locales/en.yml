@@ -77,6 +77,7 @@ en:
         name: "Character name"
         spells: "Spells"
       game_table:
+        board_game_map: "Map on the board"
         cover_image: "Cover"
         description: "Description"
         name: "Name"
@@ -177,6 +178,9 @@ en:
               too_many_spells: "Too many spells chosen in “%{group}”: %{count} at most."
         game_table:
           attributes:
+            board_game_map:
+              not_drawn: "must be a map drawn in the editor"
+              not_on_table: "must be a map of this table"
             sheet_template:
               blank: "choose a sheet template to go on"
             starting_level:
