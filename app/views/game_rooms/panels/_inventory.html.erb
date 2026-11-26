@@ -1,5 +1,5 @@
-<%# The inventory of a player's character (decision of 26 November): the values of the game kept with it first (the
-    gold), then one line per item, by name, with how many and its damage or armour class; each opens its description
+<%# The inventory of a player's character (decision of 26 November): its money first (game_rooms/panels/_purse: the
+    coins of its template, added or taken out), then the other values of the game kept with it, then one line per item, by name, with how many and its damage or armour class; each opens its description
     in the window of the details of the room (summary/_entry_details, shared/_details_dialog in layouts/game_room).
     Its « −1 » (a small button with its border, decision: a bare − read as an empty value) takes one away (GameTables::InventoryItemsController, saved; decision: one at a time, the last one asked
     first), and the server redraws this block in place (#game-room-inventory). An amount is taken out of a number kept
@@ -12,7 +12,11 @@
 <div id="game-room-inventory">
 <%# By name, without the accents: « Épée » with the E %>
 <% items = character.inventory_items.sort_by { |item| I18n.transliterate(item.name).downcase } %>
-<% play_fields = own_inventory_play_fields(character) %>
+<% play_fields = own_inventory_play_fields(character) - character.currency_fields %>
+<% if character.currency_fields.any? %>
+  <%= render "game_rooms/panels/purse", character: character, game_table: game_room.game_table,
+                                        error: local_assigns[:purse_error], coin: local_assigns[:purse_coin] %>
+<% end %>
 <% if items.empty? && play_fields.empty? %>
   <p class="text-sm text-muted"><%= t("character_sheets.summary.inventory.empty") %></p>
 <% else %>

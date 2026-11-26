@@ -951,6 +951,9 @@ en:
       count:
         hint: "How many options the player may tick at most."
         label: "Number of choices"
+      currency:
+        hint: "A coin of the money of the character: shown in its inventory, added or taken out by its player, given by the game master."
+        label: "Coin"
       filter:
         hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
         label: "Search filter"
@@ -1145,6 +1148,7 @@ en:
         item_given:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
+        money_given: "The GM gave %{count} %{coin} to %{character}."
         spells_changed: "%{character} changes their spells: %{changes}."
         dice_rolled: "%{roller} rolls %{notation}: %{dice} → %{total}"
         dice_rolled_by_game_master: "The GM rolls %{notation}: %{dice} → %{total}"
@@ -1209,6 +1213,14 @@ en:
       give: "Give"
       quantity: "Quantity"
       receiver: "To whom?"
+    money_gift_dialog:
+      amount: "Amount"
+      cancel: "Cancel"
+      close: "Close"
+      coin: "Coin"
+      give: "Give"
+      receiver: "To whom?"
+      title: "Give money"
     panel:
       close: "Close %{name}"
     panels:
@@ -1240,6 +1252,12 @@ en:
       equip_switch:
         equip: "Equip “%{name}”"
         equipped: "Equipped"
+      purse:
+        add: "Add"
+        amount: "Amount"
+        coin: "Coin"
+        remove: "Take out"
+        title: "Money"
       inventory:
         amount: "Amount to take out of %{label}"
         bag: "In the bag"
@@ -1253,6 +1271,7 @@ en:
         give: "Give"
         give_item: "Give %{item}"
         give_title: "Give “%{item}”"
+        give_money: "Give money"
         no_category: "Other"
         no_match: "No item matches this search."
         search: "Search an item"
@@ -1336,6 +1355,10 @@ en:
         given:
           one: "“%{item}” given to %{character}."
           other: "%{count} × “%{item}” given to %{character}."
+    money_gifts:
+      create:
+        given: "%{count} %{coin} given to %{character}."
+        too_much: "%{character} cannot have more than %{max} %{coin}."
     map_lists:
       edit:
         back: "Back"
@@ -1398,6 +1421,12 @@ en:
         save: "Save"
         subtitle: "The spells of %{name}, within the numbers of their class and level. The change is written in the chat."
         title: "Change my spells"
+    purses:
+      update:
+        invalid_amount: "Enter an amount of at least 1."
+        not_enough: "There are only %{count} %{coin} in the purse."
+        not_saved: "The amount could not be saved."
+        too_much: "At most %{max} %{coin}."
     inventory_values:
       update:
         invalid_amount: "Enter an amount from 1 to %{count}."

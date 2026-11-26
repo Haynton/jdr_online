@@ -18,7 +18,9 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     { "key" => "armor_class_bonus", "label" => "Bonus de CA", "type" => "number", "at_creation" => false,
       "game_master_adjusts" => true, "min" => -10, "max" => 10, "section" => "Notes" },
     { "key" => "armor_class", "label" => "Classe d'armure", "type" => "computed", "rule" => "worn_armor_class",
-      "based_on" => "intelligence", "bonus_from" => "armor_class_bonus", "section" => "Notes" }
+      "based_on" => "intelligence", "bonus_from" => "armor_class_bonus", "section" => "Notes" },
+    { "key" => "silver", "label" => "Pièces d'argent", "abbreviation" => "pa", "type" => "number", "min" => 0,
+      "max" => 100, "at_creation" => false, "currency" => true, "section" => "Notes" }
   ].freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
@@ -150,6 +152,57 @@ class GameRoomTest < ActionDispatch::IntegrationTest
       assert_response :not_found
     end
     assert_not sword.reload.equipped
+  end
+
+  test "a player adds coins to their purse or takes some out, never below 0 nor above the most of the coin" do
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-inventory form[action=?] select[name=coin] option[value=silver]",
+                  game_table_purse_path(@game_table)
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_equal 8, @character.reload.sheet["silver"]
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 3, direction: "remove" },
+                                              as: :turbo_stream
+    assert_equal 5, @character.reload.sheet["silver"]
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 9, direction: "remove" },
+                                              as: :turbo_stream
+    assert_response :unprocessable_content
+    assert_select "#game-room-purse-error", text: "Il n'y a que 5 pa dans la bourse."
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 200, direction: "add" }, as: :turbo_stream
+    assert_response :unprocessable_content
+    assert_equal 5, @character.reload.sheet["silver"]
+  end
+
+  test "nobody fills the purse of a coin the template does not declare, nor the game master their own" do
+    sign_in @player
+    patch game_table_purse_path(@game_table), params: { coin: "hp", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @game_master
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_response :not_found
+  end
+
+  test "the game master gives money to a player, written in the chat; a player never does" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_select "dialog form[action=?] select[name=coin]", game_table_money_gift_path(@game_table)
+
+    post game_table_money_gift_path(@game_table), params: { character_id: @character.id, coin: "silver", amount: 12 }
+
+    assert_redirected_to game_table_path(@game_table)
+    assert_equal 12, @character.reload.sheet["silver"]
+    assert_equal({ "count" => 12, "coin" => "pa", "character" => "Aria" }, ChatMessage.last.event_params)
+
+    sign_in @player
+    post game_table_money_gift_path(@game_table), params: { character_id: @character.id, coin: "silver", amount: 12 }
+    assert_response :not_found
+    assert_equal 12, @character.reload.sheet["silver"]
   end
 
   test "a player spends gold pieces, never more than they have" do

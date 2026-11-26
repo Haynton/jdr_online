@@ -2,7 +2,8 @@
 module GameRoomChatHelper
   # The text of each event, written once (a key per event, never built from its name)
   CHAT_EVENT_TEXTS = {
-    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed",
+    "item_given" => "game_rooms.chat.events.item_given", "money_given" => "game_rooms.chat.events.money_given",
+    "spells_changed" => "game_rooms.chat.events.spells_changed",
     "dice_rolled" => "game_rooms.chat.events.dice_rolled",
     "dice_rolled_by_game_master" => "game_rooms.chat.events.dice_rolled_by_game_master",
     "initiative_rolled" => "game_rooms.chat.events.initiative_rolled"

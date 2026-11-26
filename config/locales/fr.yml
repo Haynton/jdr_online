@@ -922,6 +922,9 @@ fr:
       count:
         hint: "Combien d'options le joueur peut cocher au plus."
         label: "Nombre de choix"
+      currency:
+        hint: "Une pièce de l'argent du personnage : montrée dans son inventaire, ajoutée ou retirée par son joueur, donnée par le MJ."
+        label: "Pièce de monnaie"
       filter:
         hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
         label: "Filtre de la recherche"
@@ -1116,6 +1119,7 @@ fr:
         item_given:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
+        money_given: "Le MJ a donné %{count} %{coin} à %{character}."
         spells_changed: "%{character} change ses sorts : %{changes}."
         dice_rolled: "%{roller} lance %{notation} : %{dice} → %{total}"
         dice_rolled_by_game_master: "Le MJ lance %{notation} : %{dice} → %{total}"
@@ -1180,6 +1184,14 @@ fr:
       give: "Donner"
       quantity: "Quantité"
       receiver: "À qui ?"
+    money_gift_dialog:
+      amount: "Somme"
+      cancel: "Annuler"
+      close: "Fermer"
+      coin: "Pièce"
+      give: "Donner"
+      receiver: "À qui ?"
+      title: "Donner de l'argent"
     panel:
       close: "Fermer %{name}"
     panels:
@@ -1211,6 +1223,12 @@ fr:
       equip_switch:
         equip: "Équiper « %{name} »"
         equipped: "Équipé"
+      purse:
+        add: "Ajouter"
+        amount: "Somme"
+        coin: "Pièce"
+        remove: "Retirer"
+        title: "Argent"
       inventory:
         amount: "Somme à retirer de %{label}"
         bag: "Dans le sac"
@@ -1224,6 +1242,7 @@ fr:
         give: "Donner"
         give_item: "Donner %{item}"
         give_title: "Donner « %{item} »"
+        give_money: "Donner de l'argent"
         no_category: "Autres"
         no_match: "Aucun objet ne correspond à cette recherche."
         search: "Rechercher un objet"
@@ -1307,6 +1326,10 @@ fr:
         given:
           one: "« %{item} » donné à %{character}."
           other: "%{count} × « %{item} » donnés à %{character}."
+    money_gifts:
+      create:
+        given: "%{count} %{coin} donnés à %{character}."
+        too_much: "%{character} ne peut pas avoir plus de %{max} %{coin}."
     map_lists:
       edit:
         back: "Retour"
@@ -1369,6 +1392,12 @@ fr:
         save: "Enregistrer"
         subtitle: "Les sorts de %{name}, dans les nombres de sa classe et de son niveau. Le changement s'écrit dans le chat."
         title: "Changer mes sorts"
+    purses:
+      update:
+        invalid_amount: "Indiquez une somme d'au moins 1."
+        not_enough: "Il n'y a que %{count} %{coin} dans la bourse."
+        not_saved: "La somme n'a pas pu être enregistrée."
+        too_much: "Au plus %{max} %{coin}."
     inventory_values:
       update:
         invalid_amount: "Indiquez une somme de 1 à %{count}."
