@@ -102,6 +102,7 @@ module CharacterVitals
       rest_effect = REST_EFFECTS[field["on_rest"]]
       send(rest_effect, field) if rest_effect
     end
+    give_back_resources
   end
 
   private
