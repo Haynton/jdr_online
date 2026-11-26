@@ -47,6 +47,13 @@ module TemplateCopy
     declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
   end
 
+  # The dice of the game room (character_fields.dice_rolls: its modes, the die they apply to, its initiative), read in
+  # the template as it is now like the conditions; none for a template that does not declare them
+  def dice_rolls
+    declared = sheet_template&.character_fields.to_h["dice_rolls"]
+    declared || template_snapshot.to_h.dig("character_fields", "dice_rolls") || {}
+  end
+
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each
   def level_thresholds
     template_snapshot.to_h["level_thresholds"] || []

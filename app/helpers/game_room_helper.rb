@@ -15,7 +15,8 @@ module GameRoomHelper
     "character" => "game_rooms/panels/character", "npcs" => "game_rooms/panels/npcs",
     "maps" => "game_rooms/panels/maps", "items" => "game_rooms/panels/items",
     "inventory" => "game_rooms/panels/inventory", "spells" => "game_rooms/panels/spells",
-    "skills" => "game_rooms/panels/skills", "details" => "game_rooms/panels/details"
+    "skills" => "game_rooms/panels/skills", "details" => "game_rooms/panels/details",
+    "dice" => "game_rooms/panels/dice"
   }.freeze
   # The sections of the window of the settings, written in full too (GameRoom#settings_sections)
   SETTINGS_PARTIALS = {

@@ -79,6 +79,8 @@ Rails.application.routes.draw do
       end
       # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
       resources :chat_messages, only: :create
+      # A roll of dice from the panel « Dés », rolled by the server and written in the feed (DiceRollRecorder)
+      resource :dice_roll, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player
