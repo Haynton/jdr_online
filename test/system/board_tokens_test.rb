@@ -24,7 +24,6 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     find("a[aria-label='PNJ et ennemis']").click
     find("button[aria-label='Placer Gobelin sur la carte']").click
     click_board_at_cell(4, 4)
-    find("#game-room-board-game-master svg[data-room-board-target=map]").right_click
     assert_no_selector "[data-room-board-target=hint]"
 
     assert_selector game_master_token("[data-hidden=true]"), visible: :all
@@ -41,6 +40,28 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
 
     assert_no_selector game_master_token, visible: :all
     using_session(:player) { assert_no_selector "[data-board-token-id]", visible: :all }
+  end
+
+  test "one click puts one token, Shift and click put several, never two on a cell, Escape or Placer again stop" do
+    open_room_as("maitre")
+    find("a[aria-label='PNJ et ennemis']").click
+    placer = find("button[aria-label='Placer Gobelin sur la carte']")
+
+    placer.click
+    assert_selector "button[aria-label='Placer Gobelin sur la carte'][aria-pressed=true]"
+    click_board_at_cell(1, 1, shift: true)
+    click_board_at_cell(1, 1, shift: true)
+    click_board_at_cell(2, 1, shift: true)
+    assert_selector game_master_token, visible: :all, count: 2
+    assert_selector "[data-room-board-target=hint]"
+
+    find("body").send_keys(:escape)
+    assert_no_selector "[data-room-board-target=hint]"
+    assert_selector "button[aria-label='Placer Gobelin sur la carte'][aria-pressed=false]"
+
+    placer.click
+    placer.click
+    assert_no_selector "[data-room-board-target=hint]"
   end
 
   private
@@ -64,13 +85,14 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     "#game-room-board-game-master [data-board-token-id]#{state}"
   end
 
-  def click_board_at_cell(column, row)
+  def click_board_at_cell(column, row, shift: false)
     board = find("#game-room-board-game-master svg[data-room-board-target=map]")
-    page.execute_script(<<~JS, board.native, column, row)
-      const [board, column, row] = arguments
+    page.execute_script(<<~JS, board.native, column, row, shift)
+      const [board, column, row, shiftKey] = arguments
       const point = new DOMPoint((column + 0.5) * 24, (row + 0.5) * 24).matrixTransform(board.getScreenCTM())
-      board.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: point.x, clientY: point.y }))
-      board.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: point.x, clientY: point.y }))
+      const position = { bubbles: true, clientX: point.x, clientY: point.y, shiftKey }
+      board.dispatchEvent(new PointerEvent("pointerdown", position))
+      board.dispatchEvent(new MouseEvent("click", position))
     JS
   end
 end

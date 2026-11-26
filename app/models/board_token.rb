@@ -4,9 +4,17 @@ class BoardToken < ApplicationRecord
 
   validates :column, :row, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :cell_inside_the_grid
+  validate :cell_free
   validate :creature_of_the_table
 
   private
+
+  def cell_free
+    return unless game_map
+
+    taken = game_map.board_tokens.where(column:, row:).where.not(id:).exists?
+    errors.add(:base, :cell_taken) if taken
+  end
 
   def cell_inside_the_grid
     return unless game_map && column && row

@@ -93,6 +93,7 @@ fr:
         board_token:
           attributes:
             base:
+              cell_taken: "Un jeton est déjà sur cette case"
               outside_grid: "Le jeton doit être sur une case de la carte"
             character:
               not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
@@ -1086,7 +1087,7 @@ fr:
       token_menu: "Jeton"
       empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
       empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
-      hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
+      hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"

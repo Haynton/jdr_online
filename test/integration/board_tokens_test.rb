@@ -96,6 +96,10 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     sign_in @game_master
     post game_table_board_tokens_path(@game_table), params: { character_id: @goblin.id, column: 10, row: 1 }
     assert_response :unprocessable_content
+    @tavern.board_tokens.create!(character: @goblin, column: 5, row: 5)
+    post game_table_board_tokens_path(@game_table), params: { character_id: @goblin.id, column: 5, row: 5 }
+    assert_response :unprocessable_content
+    @tavern.board_tokens.delete_all
 
     BoardMapChanger.new(@game_table, nil).call
     sign_in @game_master

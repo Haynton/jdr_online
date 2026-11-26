@@ -122,6 +122,7 @@ en:
         board_token:
           attributes:
             base:
+              cell_taken: "A token is already on this cell"
               outside_grid: "The token must be on a cell of the map"
             character:
               not_a_creature_of_the_table: "must be a non-player character or an enemy of this table"
@@ -1115,7 +1116,7 @@ en:
       token_menu: "Token"
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
-      hint: "Click the map to place “%{name}”. Escape or right click to stop."
+      hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"

@@ -53,9 +53,11 @@ export default class extends Controller {
 
   takeCreature(event) {
     if (!this.hasMapTarget) return
+    if (this.creature?.id === event.params.id) return this.dropCreature()
 
     this.closeTokenMenu()
     this.creature = { id: event.params.id, name: event.params.name }
+    this.pressCreaturePlacer(event.currentTarget)
     this.hintNameTarget.textContent = this.hintValue.replace("__NAME__", this.creature.name)
     this.hintTarget.hidden = false
     this.element.setAttribute("data-placing", "")
@@ -63,8 +65,13 @@ export default class extends Controller {
 
   dropCreature() {
     this.creature = null
+    this.pressCreaturePlacer(null)
     if (this.hasHintTarget) this.hintTarget.hidden = true
     this.element.removeAttribute("data-placing")
+  }
+
+  pressCreaturePlacer(pressedButton) {
+    this.creaturePlacerTargets.forEach((button) => button.setAttribute("aria-pressed", String(button === pressedButton)))
   }
 
   dropCreatureWithKeys() {
@@ -102,9 +109,14 @@ export default class extends Controller {
 
   placeCreature(event) {
     const [column, row] = this.cellAt(event)
-    if (column < 0 || row < 0) return
+    if (column < 0 || row < 0 || this.cellTaken(column, row)) return
 
     this.sendTokenRequest(this.tokensUrlValue, "POST", { character_id: this.creature.id, column, row })
+    if (!event.shiftKey) this.dropCreature()
+  }
+
+  cellTaken(column, row) {
+    return JSON.parse(this.tokensTarget.dataset.tokens).some((token) => token.column === column && token.row === row)
   }
 
   cellAt(event) {

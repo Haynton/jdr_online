@@ -15,10 +15,12 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert token.hidden?
   end
 
-  test "several tokens may stand on the same cell" do
+  test "a cell holds one token" do
     @tavern.board_tokens.create!(character: @goblin, column: 2, row: 2)
 
-    assert @tavern.board_tokens.build(character: @goblin, column: 2, row: 2).valid?
+    assert @tavern.board_tokens.build(character: @goblin, column: 2, row: 2).tap(&:validate)
+                  .errors.of_kind?(:base, :cell_taken)
+    assert @tavern.board_tokens.build(character: @goblin, column: 3, row: 2).valid?
   end
 
   test "a cell outside the grid is refused" do

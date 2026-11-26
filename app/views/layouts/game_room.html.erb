@@ -19,7 +19,7 @@
          data-room-board-tokens-url-value="<%= game_table_board_tokens_path(@game_room.game_table) %>"
          data-room-board-show-label-value="<%= t("game_rooms.board.show_token") %>"
          data-room-board-hide-label-value="<%= t("game_rooms.board.hide_token") %>"
-         data-action="keydown.esc->game-room-panels#close keydown.esc->room-board#dropCreatureWithKeys">
+         data-action="keydown.esc->game-room-panels#close keydown.esc@window->room-board#dropCreatureWithKeys">
       <%= game_table_stream_from(@game_room.game_table) %>
       <main class="absolute inset-0">
         <%= render "shared/flashes" %>
