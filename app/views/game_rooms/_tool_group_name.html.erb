@@ -3,7 +3,7 @@
     open, the one fading into the other (GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_*_CLASSES). On a phone, the separators
     alone split the groups %>
 <span id="<%= id %>" class="sr-only"><%= name %></span>
-<span class="hidden pt-2.5 pb-1.5 md:grid" aria-hidden="true">
+<span class="hidden grid-cols-[minmax(0,1fr)] pt-2.5 pb-1.5 md:grid" aria-hidden="true">
   <span class="<%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_CLASSES %> <%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_FOLDED_CLASSES %>"><%= name %></span>
   <span class="<%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_CLASSES %> <%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_OPEN_CLASSES %>"><%= name %></span>
 </span>

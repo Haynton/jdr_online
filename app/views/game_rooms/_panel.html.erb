@@ -1,11 +1,11 @@
 <%# One panel of the game room, opened by its tool (game_rooms/_toolbar): a floating card beside the bar from 768 px,
-    360 px wide, under the island of the name and down to the foot of the screen, laid over the board (it never moves
-    it) and over the party; on a phone, the screen above the bar. Its title, a cross that closes it, then its
-    content, which scrolls. Hidden until opened: by :target without JavaScript, by data-open with it
-    (game_room_panels_controller.js) %>
+    360 px wide, 12 px under the islands at the top (like the quick sheet under the strip) and 12 px beside the bar,
+    down to the foot of the screen, laid over the board (it never moves it); on a phone, the screen above the bar. Its
+    title, a cross that closes it, then its content, which scrolls. Hidden until opened: by :target without
+    JavaScript, by data-open with it (game_room_panels_controller.js) %>
 <% title = t("game_rooms.panels.#{panel}.title") %>
 <section id="<%= game_room_panel_id(panel) %>" aria-labelledby="<%= game_room_panel_id(panel) %>-title" tabindex="-1"
-         class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute inset-x-3 top-3 bottom-20 z-30 hidden flex-col overflow-hidden shadow-xl outline-none target:flex data-open:flex md:top-20 md:right-auto md:bottom-4 md:left-21 md:w-[360px]"
+         class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute inset-x-3 top-3 bottom-20 z-30 hidden flex-col overflow-hidden shadow-xl outline-none target:flex data-open:flex md:top-22 md:right-auto md:bottom-4 md:left-22 md:w-[360px]"
          data-game-room-panels-target="panel">
   <header class="flex shrink-0 items-center justify-between gap-3 border-b border-line py-2 pr-2 pl-5">
     <h2 id="<%= game_room_panel_id(panel) %>-title" class="truncate text-base font-semibold text-ink"><%= title %></h2>
