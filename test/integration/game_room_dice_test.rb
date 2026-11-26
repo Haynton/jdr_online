@@ -7,18 +7,22 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
   include Turbo::Broadcastable::TestHelper
 
   ADVANTAGE = { "key" => "advantage", "label" => "Avantage", "dice" => 2, "keep" => "highest" }.freeze
+  INITIATIVE = { "label" => "Initiative", "sides" => 20, "modifier_from" => "intelligence" }.freeze
 
   setup do
     @game_master = create_user("maitre")
     @player = create_user("joueur")
     sheet_template = EquipmentSpellsTemplateBuilder.create_template
-    sheet_template.character_fields["dice_rolls"] = { "modes" => [ADVANTAGE], "modes_on_sides" => 20 }
+    sheet_template.character_fields["dice_rolls"] = { "modes" => [ADVANTAGE], "modes_on_sides" => 20,
+                                                      "initiative" => INITIATIVE }
     sheet_template.save!
     @game_table = GameTable.create!(name: "La Crypte", status: GameTable::READY_STATUS, sheet_template: sheet_template,
                                     template_snapshot: sheet_template.snapshot)
     @game_table.participations.create!(user: @game_master, role: :game_master)
     participation = @game_table.participations.create!(user: @player, role: :player)
-    participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Aria")
+    @character = participation.create_character!(game_table: @game_table, kind: :pc, status: :complete,
+                                                 name: "Aria", sheet: { "intelligence" => 14 })
+    @goblin = @game_table.characters.create!(kind: :monster, status: :complete, name: "Gobelin")
   end
 
   test "a player rolls: the server rolls, the feed says it under the name of their character" do
@@ -100,7 +104,7 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_select "#game-room-panel-dice form[action=?]", game_table_dice_roll_path(@game_table) do
-      assert_select "input[type=radio][name='dice_roll[sides]']", count: DiceRoller::SIDES.size
+      assert_select "input[type=radio][name='dice_roll[sides]']", count: DiceRolls::Roller::SIDES.size
       assert_select "input[type=radio][name='dice_roll[sides]'][value='20'][checked]"
       assert_select "input[name='dice_roll[count]'][min='1'][max='20']"
       assert_select "input[name='dice_roll[bonus]'][min='-50'][max='50']"
@@ -134,7 +138,58 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_select "#game-room-panel-dice input[name='dice_roll[mode]']", count: 0
-    assert_select "#game-room-panel-dice input[name='dice_roll[sides]']", count: DiceRoller::SIDES.size
+    assert_select "#game-room-panel-dice input[name='dice_roll[sides]']", count: DiceRolls::Roller::SIDES.size
+  end
+
+  test "a player rolls the initiative of their character: the die of the template plus the value of its sheet" do
+    sign_in @player
+
+    roll(initiative: 1, mode: "advantage", count: 3, sides: 6, bonus: 9, character_id: @goblin.id)
+
+    params = @game_table.chat_messages.last.event_params
+    assert_equal "initiative_rolled", @game_table.chat_messages.last.event_key
+    assert_equal "Aria", params["character"]
+    assert_equal "1d20+2 (Avantage)", params["notation"]
+    assert_equal params["dice"].max + 2, params["total"]
+    assert_select "turbo-stream[target=game-room-chat-feed]", text: /Aria · Initiative : 1d20\+2 \(Avantage\)/
+  end
+
+  test "the game master rolls the initiative of an NPC, hidden if they wish" do
+    sign_in @game_master
+
+    roll(initiative: 1, character_id: @goblin.id, hidden: true)
+
+    line = @game_table.chat_messages.last
+    assert line.game_master_only?
+    assert_equal ["Gobelin", "1d20"], line.event_params.values_at("character", "notation")
+  end
+
+  test "the panel offers the initiative to who has someone to roll for" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-dice select[name='dice_roll[character_id]']" do
+      assert_select "optgroup[label=Joueurs] option[value=?]", @character.id.to_s, text: "Aria"
+      assert_select "optgroup[label=?] option[value=?]", "PNJ et ennemis", @goblin.id.to_s, text: "Gobelin"
+    end
+    assert_select "#game-room-panel-dice button[name='dice_roll[initiative]']", text: /Lancer « Initiative »/
+
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-dice button[name='dice_roll[initiative]']"
+    assert_select "#game-room-panel-dice select[name='dice_roll[character_id]']", count: 0
+  end
+
+  test "the initiative is refused without a finished character, or for a character of another table" do
+    @character.update!(status: :draft)
+    sign_in @player
+    assert_no_difference("ChatMessage.count") { roll(initiative: 1) }
+    assert_response :unprocessable_content
+
+    sign_in @game_master
+    stranger_table = GameTable.create!(name: "Ailleurs", status: GameTable::READY_STATUS)
+    stranger_npc = stranger_table.characters.create!(kind: :monster, status: :complete, name: "Loup")
+    assert_no_difference("ChatMessage.count") { roll(initiative: 1, character_id: stranger_npc.id) }
+    assert_response :unprocessable_content
   end
 
   test "someone who is not accepted at the table cannot roll" do

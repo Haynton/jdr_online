@@ -2,7 +2,7 @@ module SheetTemplates
   # The dice of the game room (character_fields.dice_rolls), when the template declares them: its modes (advantage,
   # disadvantage: `dice` dice rolled for one, keeping the highest or the lowest), on which die they apply
   # (modes_on_sides), and its roll of initiative (a die, plus the value of a field of the sheet of a character and of
-  # an NPC). The dice are those the roller knows (DiceRoller::SIDES)
+  # an NPC). The dice are those the roller knows (DiceRolls::Roller::SIDES)
   class DiceRollsCheck < Check
     PARAMETERS = %w[modes modes_on_sides initiative].freeze
     MODE_PARAMETERS = %w[key label help dice keep].freeze
@@ -57,7 +57,7 @@ module SheetTemplates
 
     def mode_dice_errors(mode, key)
       dice = mode["dice"]
-      return [] if dice.is_a?(Integer) && MODE_DICE.cover?(dice) && DiceRoller::KEPT_DIE.key?(mode["keep"])
+      return [] if dice.is_a?(Integer) && MODE_DICE.cover?(dice) && DiceRolls::Roller::KEPT_DIE.key?(mode["keep"])
 
       [[:invalid_dice_roll_mode, { mode: key, min: MODE_DICE.min, max: MODE_DICE.max }]]
     end
@@ -68,9 +68,9 @@ module SheetTemplates
     end
 
     def sides_errors(sides, error_type)
-      return [] if DiceRoller::SIDES.include?(sides)
+      return [] if DiceRolls::Roller::SIDES.include?(sides)
 
-      [[error_type, { sides: DiceRoller::SIDES.map { |side| "d#{side}" }.to_sentence }]]
+      [[error_type, { sides: DiceRolls::Roller::SIDES.map { |side| "d#{side}" }.to_sentence }]]
     end
 
     def initiative_errors(initiative)

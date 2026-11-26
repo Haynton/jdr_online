@@ -1,5 +1,5 @@
-# The panel « Dés » of the game room (game_rooms/panels/_dice): the dice the roller knows (DiceRoller), the modes the
-# template declares (TemplateCopy#dice_rolls) and the last roll of who is reading
+# The panel « Dés » of the game room (game_rooms/panels/_dice): the dice the roller knows (DiceRolls::Roller), the
+# modes and the initiative the template declares (TemplateCopy#dice_rolls) and the last roll of who is reading
 module GameRoomDiceHelper
   DEFAULT_SIDES = 20
   # One die among the seven, a real radio inside its label (the whole pill clickable, without JavaScript too); the one
@@ -33,6 +33,24 @@ module GameRoomDiceHelper
     form.number_field(attribute, value: value, min: range.min, max: range.max, required: true,
                                  id: "dice-roll-#{attribute}", class: CharacterSheets::FieldsHelper::STEPPER_INPUT_CLASSES,
                                  data: { number_stepper_target: "input", dice_panel_target: attribute.to_s })
+  end
+
+  SELECT_CLASSES = "#{SimpleFormFieldClasses::INPUT} #{CollectionSelectInput::SELECT_CLASSES}".freeze
+
+  # The rule of the template (a die, a label), when it declares one and someone may roll it
+  def initiative_rule(game_room)
+    rule = game_room.game_table.dice_rolls["initiative"]
+    rule if rule && game_room.initiative_characters.values.any?(&:present?)
+  end
+
+  # The characters the game master may roll for, in two groups of a list
+  def initiative_character_options(game_room)
+    game_room.initiative_characters.filter_map do |group, characters|
+      next if characters.empty?
+
+      options = characters.map { |character| [character.name, character.id] }
+      [t("game_rooms.panels.dice.initiative_groups.#{group}"), options]
+    end
   end
 
   # « 7, 15 » for the dice of the roll shown in the panel
