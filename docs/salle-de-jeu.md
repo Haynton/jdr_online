@@ -9,7 +9,7 @@ Les fichiers cités sont ceux de la première version. **La maquette, ce sont de
 Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'**en développement et dans les tests** (`GameRoom.preview_features?`, décision du 26 novembre : un joueur en ligne ne rencontre jamais une fonction qui oublie ce qu'elle a fait) :
 
 - le **tour par tour** (« Lancer le tour par tour », la question sur l'initiative, la préparation, les tours, la réorganisation) ;
-- la **fiche rapide** (PV, états, emplacements cochés) : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage, dans sa fenêtre ;
+- la **fiche rapide** du MJ (PV, états, emplacements cochés) et, dans le panneau « Ma fiche » d'un joueur, les − et + des PV, les états et les emplacements à cocher : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage pour le MJ, et le panneau « Ma fiche » (valeurs seules) pour un joueur ;
 - le **plateau** et les boutons **« Placer »** (cartes et créatures) : en ligne, l'écran d'attente du plateau.
 
 En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat (messages en direct et fil de jeu, depuis `feature/p1-game-room-chat`) ; les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
@@ -67,7 +67,12 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 - **« Donner »** : fenêtre « Donner « Arc court » » → à qui (personnages terminés des joueurs), combien (1 à 99) → « Donner ». **Enregistré** : une copie de l'objet entre dans l'inventaire du personnage ; bulle « 3 × « Dague » donnés à Aria. ». Serveur : MJ de la table, objet du catalogue de la table, personnage d'un de ses joueurs, sinon 404 (`GameTables::ItemGiftsController`).
 
 ### Ma fiche (joueur)
-- Avatar, nom, choix ; « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre.
+Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (décision du 26 novembre : le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert).
+- Avatar, nom, choix ; la **CA** dans sa case dorée et l'initiative.
+- **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique).
+- **Jets de sauvegarde et compétences maîtrisés** : seulement ceux qui sont cochés sur la fiche, rangés par section du modèle, chacun avec son bonus.
+- **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », emplacements de sorts, attaques.
+- « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre.
 
 ## Plateau
 
@@ -101,7 +106,7 @@ Toujours là, 60 px de haut, à gauche du chat (contre le bord droit de 768 à 1
 
 ### Fiche rapide (au clic sur un portrait)
 
-Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. Le MJ ouvre toutes les fiches, un joueur seulement la sienne.
+Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. **Le MJ seulement** : un joueur ouvre son panneau « Ma fiche » depuis son portrait, les autres portraits n'ouvrent rien.
 
 - En tête : le nom ; dessous, **classe et espèce** (« Druide · Elfe ») pour un joueur, « Ennemi » ou « PNJ » pour une créature ; à droite, **la CA dans une case dorée** (mise en avant) et l'initiative dans une case à côté.
 - **Points de vie** : − et +, « 21/21 », une barre (l'anneau du portrait suit).
@@ -182,6 +187,6 @@ Dans `docs/prototypes/salle-de-jeu/`, 1440 × 900, chacune en sombre (`-dark`) e
 | `10-mj-visio-au-centre` | La visio au centre, pendant les tours |
 | `11-mj-parametres-de-la-partie` | La fenêtre des paramètres de la partie |
 | `12-joueur-salle` | La salle d'un joueur (Fiche, Dés ; sa place « Vous ») |
-| `13-joueur-sa-fiche-rapide` | Sa propre fiche rapide |
+| `13-joueur-sa-fiche` | Son panneau « Ma fiche », ouvert depuis son portrait |
 
 Elles se refont par un script hors du dépôt (Selenium, Chrome sans fenêtre, sur le serveur local) ; à refaire quand la salle change.
