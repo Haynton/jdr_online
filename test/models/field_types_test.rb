@@ -32,6 +32,12 @@ class FieldTypesTest < ActiveSupport::TestCase
     assert_equal "character_sheets/fields/stat", type.partial_for(level.except("labels"))
   end
 
+  test "several options picked take the whole row of the summary, a single value its own box" do
+    assert FieldTypes.find("picks").wide_in_summary?
+    assert_not FieldTypes.find("choice").wide_in_summary?
+    assert_not FieldTypes.find("number").wide_in_summary?
+  end
+
   test "a list with labels shows a name for each option, its value still the option" do
     training = { "key" => "training", "type" => "choice", "options" => %w[simple-weapons martial-weapons],
                  "labels" => ["Armes courantes", "Armes de guerre"] }

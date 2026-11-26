@@ -95,6 +95,12 @@ module FieldTypes
       :facts
     end
 
+    # Its box takes the whole row among the read-only fields of the summary sheet (summary/_facts): a value that may
+    # run long, like several options picked
+    def wide_in_summary?
+      false
+    end
+
     # Tells who the character is, without changing what is worked out (a text, a list without effects): the player may
     # still change it once the character is complete, from « Mes personnages » (decision: identity and description only)
     def describes_character?(_field)
