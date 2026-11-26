@@ -32,6 +32,18 @@ class FieldTypesTest < ActiveSupport::TestCase
     assert_equal "character_sheets/fields/stat", type.partial_for(level.except("labels"))
   end
 
+  test "a list with labels shows a name for each option, its value still the option" do
+    training = { "key" => "training", "type" => "choice", "options" => %w[simple-weapons martial-weapons],
+                 "labels" => ["Armes courantes", "Armes de guerre"] }
+    type = FieldTypes.of(training)
+
+    assert_equal [["Armes courantes", "simple-weapons"], ["Armes de guerre", "martial-weapons"]],
+                 type.list_choices(training)
+    assert_equal "Armes de guerre", type.summary_text("martial-weapons", training)
+    assert_equal "martial-weapons", type.convert("martial-weapons", training)
+    assert_equal [:inclusion], type.error_for("Armes de guerre", training)
+  end
+
   test "a list that depends on another offers the options of the option picked there, from its level" do
     subclass = { "key" => "subclass", "type" => "choice", "options" => %w[Champion Voleur], "options_from" => "class",
                  "options_by" => { "Guerrier" => ["Champion"], "Roublard" => ["Voleur"] }, "from_level" => 3,

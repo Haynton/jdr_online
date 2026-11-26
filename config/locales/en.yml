@@ -242,6 +242,7 @@ en:
           invalid_spell_slots_label: "The spell slots: the label must be filled in, on one line, in %{count} characters at most"
           invalid_class_slots_label: "%{part} › %{field} › %{option}: the label of the spell slots must be filled in, on one line, in %{count} characters at most"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
+          labels_not_matching_options: "%{part} › %{field}: “labels” must give a name to each option (%{count})"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
           min_above_max: "%{part} › %{field}: the minimum (%{min}) is above the maximum (%{max})"
           missing_hit_die: "%{part} › %{field}: every class must give its hit die (hit_die)"

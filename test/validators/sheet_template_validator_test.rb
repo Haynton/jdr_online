@@ -83,6 +83,15 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :unknown_parameter
   end
 
+  test "a list with labels gives a name to each of its options" do
+    named_list = { "key" => "rank", "label" => "Rang", "type" => "choice", "options" => %w[low high],
+                   "labels" => %w[Bas Haut], "section" => "Identité" }
+    assert_predicate build_template { |fields| fields << named_list }, :valid?
+
+    assert_error build_template { |fields| fields << named_list.merge("labels" => ["Bas"]) },
+                 :labels_not_matching_options
+  end
+
   test "a list that depends on another names its options, for options of that list" do
     template = build_template { |fields| fields << subclass_field }
     assert_predicate template, :valid?

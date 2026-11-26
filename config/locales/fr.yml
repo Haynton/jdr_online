@@ -213,6 +213,7 @@ fr:
           invalid_spell_slots_label: "Les emplacements de sorts : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_class_slots_label: "%{part} › %{field} › %{option} : le libellé des emplacements de sorts doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
+          labels_not_matching_options: "%{part} › %{field} : « labels » doit donner un nom à chaque option (%{count})"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
           missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
