@@ -315,6 +315,8 @@ en:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
+    features:
+      group: "%{list} · %{option}"
     summary:
       weapon_attacks:
         title: "Attacks"
@@ -1330,6 +1332,8 @@ en:
       npcs:
         empty: "This table has no NPC or enemy yet."
         title: "NPCs and enemies"
+      features:
+        title: "Features"
       skills:
         title: "Skills"
       spells:
@@ -1634,6 +1638,7 @@ en:
         one: "%{count} kind of weapon"
         other: "%{count} kinds of weapons"
       expertise_value: "%{count} at level %{level}"
+      features: "Features"
       features_level: "Level %{level}"
       hit_points_per_level_value: "+%{points} per level"
       label: "Summary of your choices"

@@ -36,14 +36,12 @@ class ChoiceEffectsTest < ActiveSupport::TestCase
     end
   end
 
-  test "the hit points per level and the named features of a subclass are said, each feature with its level" do
+  # The features are listed apart, each with its summary from the catalog (CharacterSheets::Features)
+  test "the hit points per level are said, the features and the origin feat are not facts" do
     I18n.with_locale(:fr) do
       assert_equal [["Points de vie", "+1 par niveau"]], facts("hit_points_per_level", 1)
-      features = { "6" => [{ "key" => "rage", "name" => "Rage aveugle" }],
-                   "3" => [{ "key" => "frenzy", "name" => "Frénésie" }, { "key" => "fury", "name" => "Fureur" }] }
-      assert_equal [["Niveau 3", "Frénésie et Fureur", 3], ["Niveau 6", "Rage aveugle", 6]],
-                   facts("features_by_level", features)
-      assert_empty facts("features_by_level", { "3" => ["cleric-subclass"] })
+      assert_empty facts("features_by_level", { "3" => [{ "key" => "frenzy", "name" => "Frénésie" }] })
+      assert_empty facts("origin_feat", { "key" => "alert", "name" => "Vigilance" })
     end
   end
 

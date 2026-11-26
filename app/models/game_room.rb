@@ -10,8 +10,8 @@ class GameRoom
     "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
   }.freeze
   # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
-  # their character in a fight, their skills, their inventory, their spells, the rest of their sheet
-  PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells details], "dice" => %w[dice] }.freeze
+  # their character in a fight, their skills, their inventory, their spells, their features, the rest of their sheet
+  PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells features details], "dice" => %w[dice] }.freeze
   COMING_SOON_PANELS = %w[map_tools].freeze
 
   # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
@@ -36,7 +36,7 @@ class GameRoom
   end
 
   # A tool with nothing in it is left out: « Sorts » for a character without spells, « Compétences » for a template
-  # without bonus rows
+  # without bonus rows, « Capacités » for options that name no features
   def tool_groups
     return GAME_MASTER_TOOL_GROUPS if game_master?
 
@@ -91,6 +91,7 @@ class GameRoom
     panels = []
     panels << "spells" if character&.spells.blank?
     panels << "skills" unless character&.sheet_fields.to_a.any? { |field| field["type"] == "bonus" }
+    panels << "features" if character.nil? || CharacterSheets::Features.new(character).call.empty?
     panels
   end
 

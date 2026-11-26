@@ -286,6 +286,8 @@ fr:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
+    features:
+      group: "%{list} · %{option}"
     summary:
       weapon_attacks:
         title: "Attaques"
@@ -1301,6 +1303,8 @@ fr:
       npcs:
         empty: "Cette table n'a encore ni PNJ ni ennemi."
         title: "PNJ et ennemis"
+      features:
+        title: "Capacités"
       skills:
         title: "Compétences"
       spells:
@@ -1605,6 +1609,7 @@ fr:
         one: "%{count} sorte d'arme"
         other: "%{count} sortes d'armes"
       expertise_value: "%{count} au niveau %{level}"
+      features: "Capacités"
       features_level: "Niveau %{level}"
       hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"

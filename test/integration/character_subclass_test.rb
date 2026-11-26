@@ -34,8 +34,8 @@ class CharacterSubclassTest < ActionDispatch::IntegrationTest
       assert_select "option[value=?]", "Domaine de la Vie"
       assert_select "option[value=?]", "Évocateur", count: 0
     end
-    assert_select "div:not([hidden]) > dt", text: "Niveau 3"
-    assert_select "div[hidden] > dt", text: "Niveau 6"
+    assert_select "li:not([hidden])", text: /Disciple de la vie\s+Niveau 3/
+    assert_select "li[hidden]", text: /Guérisseur béni\s+Niveau 6/
   end
 
   test "the subclass is required from level 3, and one of another class is refused" do

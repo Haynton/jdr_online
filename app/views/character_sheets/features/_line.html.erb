@@ -1,0 +1,10 @@
+<%# A feature, a trait or a feat (CharacterSheets::Features::Feature): its name, what it is beside (feature_note: an
+    origin feat, a level after the first), its short summary in the window of the page on demand
+    (summary/_entry_details, inside an element of details_dialog_controller.js) %>
+<%= render layout: "character_sheets/summary/entry_details",
+           locals: { title: feature.name, subtitle: feature_note(feature), description: feature.description } do %>
+  <span class="text-ink"><%= feature.name %></span>
+  <% if (note = feature_note(feature)) %>
+    <span class="text-xs text-muted"><%= note %></span>
+  <% end %>
+<% end %>

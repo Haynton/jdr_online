@@ -104,6 +104,30 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-panel-spells", text: /Trait de feu/
   end
 
+  test "a player has their features only when their options name some, each with its summary" do
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-features", count: 0
+
+    give_the_mage_a_feature
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_includes tool_names, "Capacités"
+    assert_select "#game-room-panel-features", text: /Classe · Mage/ do
+      assert_select "[data-details-dialog-content]", text: "Regagne des emplacements."
+    end
+  end
+
+  test "the summary sheet of a character lists its features" do
+    give_the_mage_a_feature
+    sign_in @player
+    get character_path(@character)
+
+    assert_select "#summary_features", text: "Capacités"
+    assert_select "button[data-details-dialog-name-param=?]", "Restauration arcanique"
+  end
+
   test "a player takes their items away one by one, the last one asked first, and the panel is redrawn" do
     dagger = @character.inventory_items.create!(key: "dagger", name: "Dague", quantity: 2)
     sign_in @player
@@ -615,6 +639,17 @@ class GameRoomTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # The class Mage names a feature, which the catalog of the template describes
+  def give_the_mage_a_feature
+    snapshot = @game_table.template_snapshot.deep_dup
+    class_field = snapshot["character_fields"]["fields"].find { |field| field["key"] == "class" }
+    class_field["effects"]["Mage"]["features_by_level"] = { "1" => ["arcane-recovery"] }
+    @game_table.update!(template_snapshot: snapshot)
+    @game_table.sheet_template.catalog_entries.create!(kind: "feature", key: "arcane-recovery",
+                                                       name: "Restauration arcanique",
+                                                       description: "Regagne des emplacements.")
+  end
 
   def create_user(username)
     User.create!(email: "#{username}@example.com", username: username, password: TEST_PASSWORD, locale: "fr")

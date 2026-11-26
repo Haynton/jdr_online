@@ -1,0 +1,16 @@
+<%# The features, traits and feats of a player's character (decision of 26 November), by the option that gives them,
+    up to its level, as on its summary sheet (character_sheets/summary/_features): each line opens its short summary in
+    the window of the room (shared/_details_dialog of layouts/game_room). Only when its options name some
+    (GameRoom#tool_groups) %>
+<div class="flex flex-col gap-5">
+  <% character_feature_groups(game_room.own_character).each do |group| %>
+    <section aria-label="<%= t("character_sheets.features.group", list: group.label, option: group.option) %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t("character_sheets.features.group", list: group.label, option: group.option) %></h3>
+      <ul class="mt-2 flex flex-col gap-1">
+        <% group.features.each do |feature| %>
+          <li><%= render "character_sheets/features/line", feature: feature %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>
