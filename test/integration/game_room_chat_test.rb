@@ -22,7 +22,7 @@ class GameRoomChatTest < ActionDispatch::IntegrationTest
 
     assert_select "#game-room-chat-feed[role=log] li", text: /Bonsoir à tous/
     assert_select "#game-room-chat-body turbo-cable-stream-source[channel=GameTableChannel]"
-    assert_select "form#game-room-chat-form[action=?] input[name='chat_message[body]'][maxlength='1000']",
+    assert_select "form#game-room-chat-form[action=?] textarea[name='chat_message[body]'][maxlength='1000']",
                   game_table_chat_messages_path(@game_table)
   end
 
@@ -35,7 +35,7 @@ class GameRoomChatTest < ActionDispatch::IntegrationTest
     end
     assert_response :ok
     assert_select "turbo-stream[action=append][target=game-room-chat-feed]", text: /J'ouvre la porte\./
-    assert_select "turbo-stream[action=replace][target=game-room-chat-form] input[name='chat_message[body]']:not([value])"
+    assert_select "turbo-stream[action=replace][target=game-room-chat-form] textarea[name='chat_message[body]']", text: ""
     assert_equal "joueur", @game_table.chat_messages.last.author_name
   end
 
@@ -46,7 +46,7 @@ class GameRoomChatTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     assert_select "turbo-stream[action=append]", count: 0
-    assert_select "turbo-stream[target=game-room-chat-form] input[aria-invalid=true]"
+    assert_select "turbo-stream[target=game-room-chat-form] textarea[aria-invalid=true]"
     assert_equal 0, @game_table.chat_messages.count
   end
 

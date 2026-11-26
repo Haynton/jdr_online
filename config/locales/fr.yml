@@ -1076,11 +1076,16 @@ fr:
       field: "Message à la table"
       fold: "Replier le chat"
       former_player: "Ancien joueur"
+      hint: "Entrée pour envoyer, Maj + Entrée pour aller à la ligne"
+      new_messages: "Nouveaux messages"
       placeholder: "Écrire à la table…"
       resize: "Changer la hauteur du chat"
       send: "Envoyer"
       title: "Chat"
       unfold: "Déplier le chat"
+      unread:
+        one: "%{count} nouveau message"
+        other: "%{count} nouveaux messages"
     coming_soon: "Bientôt"
     combat_strip:
       add_condition: "Ajouter un état"
