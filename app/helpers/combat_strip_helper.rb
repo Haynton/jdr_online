@@ -56,16 +56,41 @@ module CombatStripHelper
   # The choices shown under the name of a player (Anthony's request: the class and the species only), precise fields
   SUBTITLE_FIELD_KEYS = %w[class species].freeze
 
-  # Under the name in the quick sheet: the class and the species of a player's character (« Druide · Elfe »), « PNJ »
-  # or « Ennemi » for a creature
+  # Under the name in the quick sheet: the class and the species of a player's character, then what the table gives
+  # (its level: « Druide · Elfe · Niveau 3 »), « PNJ » or « Ennemi » for a creature
   def combat_fighter_subtitle(fighter)
     return t("game_tables.npcs.kinds.#{fighter.character.kind}") unless fighter.side == :player
 
     character = fighter.character
-    character.sheet_fields.select { |field| SUBTITLE_FIELD_KEYS.include?(field["key"]) }.filter_map do |field|
+    choices = character.sheet_fields.select { |field| SUBTITLE_FIELD_KEYS.include?(field["key"]) }.filter_map do |field|
       value = character.sheet[field["key"]]
       FieldTypes.of(field).summary_text(value, field) if value.present?
-    end.join(" · ")
+    end
+    (choices + combat_table_values(character)).join(" · ")
+  end
+
+  # The skill whose passive score the game master compares in secret (10 + its bonus). First version, written for D&D
+  # like the armour class: the template will declare it
+  PASSIVE_SKILL_KEY = "perception".freeze
+  PASSIVE_SCORE_BASE = 10
+
+  # Beside the armour class in the quick sheet of a player's character (decision of 26 November: what the game master
+  # needs): its speed, its passive perception
+  def combat_player_stats(character, computed)
+    stats = own_quick_stats(character, computed, keys: %w[speed])
+    bonus = computed[:values][PASSIVE_SKILL_KEY]
+    return stats unless bonus
+
+    stats << { short_label: t("game_rooms.combat_strip.passive_short"), label: t("game_rooms.combat_strip.passive"),
+               value: PASSIVE_SCORE_BASE + bonus }
+  end
+
+  # The values the table gives (the level), « Niveau 3 »
+  def combat_table_values(character)
+    character.sheet_fields.select { |field| field["from_table"] }.filter_map do |field|
+      value = character.sheet[field["key"]]
+      "#{field['label']} #{value}" if value.present?
+    end
   end
 
   def combat_gauge_percent(gauge)

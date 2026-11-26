@@ -1144,6 +1144,10 @@ en:
         other: "%{count} new messages"
     coming_soon: "Soon"
     combat_strip:
+      long_rest: "Long rest"
+      long_rest_confirm: "Long rest for %{name}? Their hit points come back to the maximum."
+      passive: "Passive perception"
+      passive_short: "Passive perc."
       add_condition: "Add a condition"
       armor_class_label: "AC"
       cancel_preparation: "Cancel"
@@ -1159,7 +1163,6 @@ en:
       label: "Fighters"
       next_turn: "Next turn"
       open_own_panel: "Open my sheet (%{name})"
-      open_sheet: "Open the sheet of %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Preparing"
       preparing_rolled: "Preparing · initiative rolled"
@@ -1276,6 +1279,9 @@ en:
       leave_confirm: "Leave the game “%{name}”? You will find it again in “My tables”."
       settings: "Settings"
       signed_in_as: "Signed in: %{username}"
+    vitals:
+      decrease: "Take 1 off %{label} of %{name}"
+      increase: "Add 1 to %{label} of %{name}"
     video:
       fold: "Fold the cameras"
       larger: "Make the cameras larger"

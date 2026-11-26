@@ -3,13 +3,17 @@
     game_table.conditions) added from the window of the conditions and removed by a click, for a player who casts
     spells their spell slots (game_rooms/_spell_slots; not in the panel « Ma fiche », spell_slots: false: they are in
     the panel « Sorts »), and its attacks with their dice and their damage.
-    The hit points change with − and +, a slot is ticked once used (fighter_card_controller.js): simulated, nothing
-    saved, so these controls and the conditions show only with GameRoom.preview_features?; online, the values alone %>
+    A player's character: its hit points, temporary hit points and inspiration, saved and shared
+    (game_rooms/vitals/_character_vitals, online too). An NPC or an enemy (a token without hit points of its own yet):
+    − and + simulated (fighter_card_controller.js). The conditions and the slots ticked are simulated, nothing saved,
+    so they show only with GameRoom.preview_features?; online, the values alone %>
 <% live = GameRoom.preview_features? %>
 <% name = fighter.character.name %>
 <div data-controller="fighter-card" data-fighter-card-group-key-value="<%= group_key %>"
      data-fighter-card-name-value="<%= name %>">
-  <% if fighter.gauge %>
+  <% if fighter.side == :player %>
+    <%= render "game_rooms/vitals/character_vitals", character: fighter.character %>
+  <% elsif fighter.gauge %>
     <div class="flex items-center gap-2">
       <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>
       <% if live %>

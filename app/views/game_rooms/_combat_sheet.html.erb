@@ -1,24 +1,44 @@
 <%# The quick sheet of a fighter in the strip of the fighters, for the game master (a player opens their own in the
     panel « Ma fiche », game_rooms/panels/_character): only what serves in a fight. Its name and, under it, what it is
-    (the class of a player, NPC or enemy for a creature), its armour class and its initiative
-    (game_rooms/_fighter_badges), then its card (game_rooms/_fighter_status: hit points, conditions, spell slots,
-    attacks) and its whole sheet in its window. Changes stay in this page for now (nothing saved yet) %>
+    (the class, the species and the level of a player, NPC or enemy for a creature), its armour class, its initiative
+    and, for a player, its speed and passive perception (game_rooms/_fighter_badges); then its card (game_rooms/
+    _fighter_status: for a player, hit points, temporary hit points and inspiration, saved), its saving throws
+    (game_rooms/_save_row), its whole sheet in its window and « Repos long » (decision of 26 November: what the game
+    master needs, and changes only what running the game needs) %>
 <% fighter = group.fighters.first %>
 <% name = fighter.character.name %>
+<% player = fighter.side == :player %>
+<% computed = fighter.character.computed_sheet_values if player %>
 <section id="combat-sheet-<%= group.key %>" hidden aria-label="<%= name %>"
          class="<%= GameRoomHelper::ISLAND_CLASSES %> mb-3 max-h-[calc(100dvh-8rem)] w-96 overflow-y-auto p-4 shadow-xl"
          data-combat-strip-target="sheet" data-group-key="<%= group.key %>">
-  <header class="flex items-start justify-between gap-3">
-    <div class="min-w-0 pt-1">
-      <h2 class="truncate text-base font-semibold text-ink"><%= name %></h2>
-      <% subtitle = combat_fighter_subtitle(fighter) %>
-      <p class="mt-0.5 line-clamp-2 text-xs text-muted" title="<%= subtitle %>"><%= subtitle %></p>
+  <%# The name and what it is on one line, the boxes under them across the width (decision: beside the name, a player's
+      boxes went to a second line and squeezed it) %>
+  <header>
+    <h2 class="truncate text-base font-semibold text-ink"><%= name %></h2>
+    <% subtitle = combat_fighter_subtitle(fighter) %>
+    <p class="mt-0.5 truncate text-xs text-muted" title="<%= subtitle %>"><%= subtitle %></p>
+    <div class="mt-3">
+      <%= render "game_rooms/fighter_badges", fighter: fighter, group: group,
+                                              stats: player ? combat_player_stats(fighter.character, computed) : [] %>
     </div>
-    <%= render "game_rooms/fighter_badges", fighter: fighter, group: group %>
   </header>
 
   <div class="mt-4">
     <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key %>
   </div>
-  <p class="mt-4 border-t border-line pt-3 text-xs"><%= combat_full_sheet_link(game_room, fighter) %></p>
+  <% if player %>
+    <%= render "game_rooms/save_row", character: fighter.character, computed: computed %>
+  <% end %>
+  <div class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-xs">
+    <%= combat_full_sheet_link(game_room, fighter) %>
+    <% if player %>
+      <%# What a rest does to each field, as the template declares it (on_rest): saved, for the whole table %>
+      <%= button_to t("game_rooms.combat_strip.long_rest"),
+                    long_rest_game_table_character_vital_path(game_room.game_table, fighter.character),
+                    class: button_classes(:secondary, size: :compact), form_class: "shrink-0",
+                    form: { data: { turbo_confirm: t("game_rooms.combat_strip.long_rest_confirm", name: name),
+                                    confirm_button: t("game_rooms.combat_strip.long_rest") } } %>
+    <% end %>
+  </div>
 </section>

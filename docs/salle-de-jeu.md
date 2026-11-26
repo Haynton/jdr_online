@@ -9,7 +9,7 @@ Les fichiers cités sont ceux de la première version. **La maquette, ce sont de
 Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'**en développement et dans les tests** (`GameRoom.preview_features?`, décision du 26 novembre : un joueur en ligne ne rencontre jamais une fonction qui oublie ce qu'elle a fait) :
 
 - le **tour par tour** (« Lancer le tour par tour », la question sur l'initiative, la préparation, les tours, la réorganisation) ;
-- la **fiche rapide** du MJ (PV, états, emplacements cochés) et, chez un joueur, les − et + des PV et les états du panneau « Ma fiche » et les emplacements à cocher du panneau « Sorts » : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage pour le MJ, et le panneau « Ma fiche » (valeurs seules) pour un joueur ;
+- les **états** et les **emplacements de sorts cochés** (fiche rapide du MJ, « Ma fiche », « Sorts »), et les PV des **PNJ et ennemis** (un jeton n'a pas encore ses propres PV). **Les PV, les PV temporaires et l'Inspiration d'un joueur sont enregistrés** depuis le 26 novembre (voir « Fiche rapide »), en ligne aussi ;
 - les boutons **« Placer »** des créatures (leurs jetons sur la carte). La carte du plateau, elle, est enregistrée et partagée depuis `feature/p1-board-map` : elle est en ligne.
 
 En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat (messages en direct et fil de jeu, depuis `feature/p1-game-room-chat`) ; les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
@@ -132,10 +132,16 @@ Toujours là, 60 px de haut, à gauche du chat (contre le bord droit de 768 à 1
 
 ### Fiche rapide (au clic sur un portrait)
 
-Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. **Le MJ seulement** : un joueur ouvre son panneau « Ma fiche » depuis son portrait, les autres portraits n'ouvrent rien.
+Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. **Le MJ seulement**, **en ligne aussi** : un joueur ouvre son panneau « Ma fiche » depuis son portrait, les autres portraits n'ouvrent rien.
 
-- En tête : le nom ; dessous, **classe et espèce** (« Druide · Elfe ») pour un joueur, « Ennemi » ou « PNJ » pour une créature ; à droite, **la CA dans une case dorée** (mise en avant) et l'initiative dans une case à côté.
-- **Points de vie** : − et +, « 21/21 », une barre (l'anneau du portrait suit).
+Pour le personnage d'un joueur (décision du 26 novembre : ce dont le MJ a besoin, et il ne change que ce qui sert à mener la partie) :
+- En tête : le nom ; dessous, **classe, espèce et niveau** (« Barde · Halfelin · Niveau 3 ») ; puis, sur toute la largeur, **la CA dans une case dorée**, l'initiative, **la vitesse** et **la perception passive** (10 + Perception, écrite pour D&D comme la CA).
+- **Points de vie** : − et +, « 21/21 », une barre ; **PV temporaires** (« PV temp. ») : − et + ; une perte prend d'abord sur les PV temporaires. **Inspiration** : une pastille, dorée quand elle est accordée. **Enregistrés** (`CharacterVitals`, `GameTables::CharacterVitalsController` : le MJ pour tout joueur, un joueur pour le sien, 404 sinon) et **envoyés à toute la table** à l'instant (`GameTableChannel` : la valeur, la barre, l'anneau du portrait, l'Inspiration) ; le même bloc est dans « Ma fiche » du joueur. Tout est lu dans ce que le modèle déclare (`receives_damage`, `absorbs_damage_for`, un oui ou non `at_creation: false`), jamais par sa clé.
+- **Jets de sauvegarde** : six petites cases, l'abréviation et le bonus, dorées quand maîtrisées.
+- **« Repos long »** (MJ, demandé d'abord) : ce que le modèle déclare pour chaque champ (`on_rest` : PV au maximum, interrupteur éteint), enregistré et envoyé à la table.
+- Jamais la classe, les caractéristiques, les sorts ni la description : ils restent au joueur.
+
+Pour une créature : « Ennemi » ou « PNJ », la CA et l'initiative ; ses PV, − et +, restent simulés.
 - **« Ajouter un état »** : ouvre une fenêtre « Ajouter un état à Elowen » avec **les états du modèle et leur règle courte** (deux colonnes) ; un clic ajoute l'état et ferme la fenêtre. Les états choisis se rangent **sous le bouton**, en pastilles dorées ; un clic sur une pastille la retire **sans fermer la fiche**.
 - **Emplacements de sorts** (joueur qui en a) : une ligne par niveau, un rond par emplacement, **coché quand il est utilisé**. Nom et aide viennent du modèle (« Emplacements de pacte » pour un occultiste).
 - **Attaques** : nom et bonus, dés et type de dégâts, portée.

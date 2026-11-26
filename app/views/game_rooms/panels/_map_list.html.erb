@@ -16,19 +16,25 @@
         <% else %>
           <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
         <% end %>
-        <div class="flex items-center justify-between gap-3 px-3 py-2.5">
-          <div class="min-w-0">
-            <p class="truncate text-sm font-semibold text-ink"><%= game_map.name %></p>
+        <%# The name takes the room left (cut when too long), the buttons stay together on the right at their size
+            (Anthony's request: spread across the line, « Placer » moved with the length of the name, and the
+            square of the pencil was squeezed by a long name) %>
+        <div class="flex items-center gap-3 px-3 py-2.5">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-ink" title="<%= game_map.name %>"><%= game_map.name %></p>
             <p class="text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
           </div>
-          <% if game_map.drawn? %>
-            <%= render "game_rooms/panels/board_map_button", game_room:, game_map: %>
-          <% end %>
-          <%= link_to edit_game_table_game_map_path(game_room.game_table, game_map),
-                      class: button_classes(:secondary, size: :compact_icon), title: t("game_rooms.panels.maps.open", name: game_map.name),
-                      aria: { label: t("game_rooms.panels.maps.open", name: game_map.name) } do %>
-            <%= render "shared/icons/pencil" %>
-          <% end %>
+          <div class="flex shrink-0 items-center gap-2">
+            <% if game_map.drawn? %>
+              <%= render "game_rooms/panels/board_map_button", game_room:, game_map: %>
+            <% end %>
+            <%= link_to edit_game_table_game_map_path(game_room.game_table, game_map),
+                        class: "#{button_classes(:secondary, size: :compact_icon)} shrink-0",
+                        title: t("game_rooms.panels.maps.open", name: game_map.name),
+                        aria: { label: t("game_rooms.panels.maps.open", name: game_map.name) } do %>
+              <%= render "shared/icons/pencil" %>
+            <% end %>
+          </div>
         </div>
         <% if board_map?(game_room, game_map) %>
           <%= button_to t("game_rooms.board.clear_tokens"), game_table_board_clearing_path(game_room.game_table),

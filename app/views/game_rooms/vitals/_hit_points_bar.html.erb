@@ -1,0 +1,4 @@
+<%# The bar of the hit points of a player's character, replaced at once for the whole table when they change %>
+<span id="character-<%= character.id %>-hit-points-bar" class="mt-3 block h-1.5 overflow-hidden rounded-full bg-field" aria-hidden="true">
+  <span class="block h-full rounded-full bg-success-ink" style="width: <%= character.hit_points_percent.to_i %>%"></span>
+</span>
