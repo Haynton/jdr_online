@@ -8,6 +8,11 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
   TEMPLATE_FILES = TEMPLATES_DIRECTORY.glob("*.json").sort
   # spell_fields: only the templates that have spells (not the cosmic horror)
   FIELD_DEFINITIONS = %w[character_fields npc_fields item_fields spell_fields].freeze
+  # The conditions of the SRD 5.2.1 (Rules Glossary), in its order
+  SRD_CONDITION_KEYS = %w[
+    blinded charmed deafened exhaustion frightened grappled incapacitated invisible paralyzed petrified poisoned
+    prone restrained stunned unconscious
+  ].freeze
 
   test "every file makes a valid predefined template" do
     each_template do |template_file, template|
@@ -71,6 +76,19 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
 
   # The table of the SRD 5.2.1: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
   # all of one level
+  test "the heroic fantasy declares the 15 conditions of the SRD 5.2.1, the same in both languages" do
+    conditions = %w[fr en].map do |locale|
+      read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))["character_fields"]["conditions"]
+    end
+
+    assert_equal SRD_CONDITION_KEYS, conditions.first.pluck("key")
+    conditions.each do |declared|
+      assert_equal conditions.first.pluck("key", "levels"), declared.pluck("key", "levels")
+      assert(declared.all? { |condition| condition["description"].present? })
+    end
+    assert_equal 6, conditions.first.find { |condition| condition["key"] == "exhaustion" }["levels"]
+  end
+
   test "the spell slots of the 2024 heroic fantasy follow the levels of each class" do
     classes = heroic_fantasy_classes
 

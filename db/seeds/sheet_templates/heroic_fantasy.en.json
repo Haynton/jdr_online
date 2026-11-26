@@ -29,6 +29,23 @@
       { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Details", "sections": ["Details"] }
     ],
+    "conditions": [
+      { "key": "blinded", "label": "Blinded", "description": "You can't see and automatically fail any ability check that requires sight. Attack rolls against you have Advantage, and your attack rolls have Disadvantage." },
+      { "key": "charmed", "label": "Charmed", "description": "You can't attack the charmer or target them with damaging abilities or magical effects. The charmer has Advantage on any ability check to interact with you socially." },
+      { "key": "deafened", "label": "Deafened", "description": "You can't hear and automatically fail any ability check that requires hearing." },
+      { "key": "exhaustion", "label": "Exhaustion", "description": "Cumulative, from level 1 to 6. Each level gives −2 to your D20 Tests and reduces your Speed by 5 feet. At level 6, you die. Finishing a Long Rest removes one level.", "levels": 6 },
+      { "key": "frightened", "label": "Frightened", "description": "You have Disadvantage on ability checks and attack rolls while the source of fear is within line of sight. You can't willingly move closer to it." },
+      { "key": "grappled", "label": "Grappled", "description": "Your Speed is 0 and can't increase. You have Disadvantage on attack rolls against any target other than the grappler. The grappler can drag or carry you, spending extra movement." },
+      { "key": "incapacitated", "label": "Incapacitated", "description": "You can't take any action, Bonus Action, or Reaction, and you can't speak. Your Concentration is broken. You have Disadvantage on Initiative rolls." },
+      { "key": "invisible", "label": "Invisible", "description": "You can't be seen. Attack rolls against you have Disadvantage, and your attack rolls have Advantage, unless the attacker can see you. You have Advantage on Initiative rolls." },
+      { "key": "paralyzed", "label": "Paralyzed", "description": "You have the Incapacitated condition, your Speed is 0, and you automatically fail Strength and Dexterity saving throws. Attack rolls against you have Advantage, and any hit from within 5 feet is a Critical Hit." },
+      { "key": "petrified", "label": "Petrified", "description": "You are turned to stone, with what you wear and carry. You have the Incapacitated condition, your Speed is 0, attack rolls against you have Advantage, and you automatically fail Strength and Dexterity saving throws. You have Resistance to all damage and Immunity to the Poisoned condition." },
+      { "key": "poisoned", "label": "Poisoned", "description": "You have Disadvantage on attack rolls and ability checks." },
+      { "key": "prone", "label": "Prone", "description": "You can only crawl, or spend half your Speed to stand up. You have Disadvantage on attack rolls. Attack rolls against you have Advantage from within 5 feet, Disadvantage from farther away." },
+      { "key": "restrained", "label": "Restrained", "description": "Your Speed is 0 and can't increase. Attack rolls against you have Advantage, and your attack rolls have Disadvantage. You have Disadvantage on Dexterity saving throws." },
+      { "key": "stunned", "label": "Stunned", "description": "You have the Incapacitated condition and automatically fail Strength and Dexterity saving throws. Attack rolls against you have Advantage." },
+      { "key": "unconscious", "label": "Unconscious", "description": "You have the Incapacitated and Prone conditions, and you drop what you're holding. Your Speed is 0, you automatically fail Strength and Dexterity saving throws, attack rolls against you have Advantage, and any hit from within 5 feet is a Critical Hit. You're unaware of your surroundings." }
+    ],
     "spell_slots": { "label": "Spell slots", "help": "A spell of level 1 or higher spends one of its level or higher. All regained after a long rest.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [

@@ -107,6 +107,21 @@ class GameTableTest < ActiveSupport::TestCase
     assert_equal sheet_template.snapshot, game_table.template_snapshot
   end
 
+  test "a table reads the conditions of its template as it is now, its copy once the template is deleted" do
+    poisoned = { "key" => "poisoned", "label" => "Empoisonné" }
+    prone = { "key" => "prone", "label" => "À terre" }
+    sheet_template = SheetTemplate.new(name: "Fantasy", locale: "fr", character_fields: { "conditions" => [poisoned] })
+    game_table = GameTable.new(name: "Les Marches du Nord")
+    game_table.use_sheet_template(sheet_template)
+
+    sheet_template.character_fields = { "conditions" => [poisoned, prone] }
+    assert_equal [poisoned, prone], game_table.conditions
+
+    game_table.sheet_template = nil
+    assert_equal [poisoned], game_table.conditions
+    assert_equal [], GameTable.new(name: "Sans modèle").conditions
+  end
+
   test "a table without a template has an empty copy" do
     game_table = GameTable.new(name: "Les Marches du Nord", template_snapshot: { "character_fields" => {} })
 
