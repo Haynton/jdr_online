@@ -1123,6 +1123,8 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        resource_used: "%{character} utilise %{resource} : il en reste %{left} sur %{total}."
+        resource_pool_used: "%{character} dépense %{count} de %{resource} : il en reste %{left} sur %{total}."
         death_save_success: "%{character} · jet contre la mort : %{roll}, une réussite (%{successes} sur %{needed})."
         death_save_failure: "%{character} · jet contre la mort : %{roll}, un échec (%{failures} sur %{needed})."
         death_save_critical_failure: "%{character} · jet contre la mort : %{roll}, deux échecs (%{failures} sur %{needed})."
@@ -1157,6 +1159,8 @@ fr:
     combat_strip:
       long_rest: "Repos long"
       long_rest_confirm: "Repos long pour %{name} ? Ses points de vie reviennent au maximum."
+      short_rest: "Repos court"
+      short_rest_confirm: "Repos court pour %{name} ? Ses ressources reviennent comme le modèle le dit."
       passive: "Perception passive"
       passive_short: "Perc. passive"
       add_condition: "Ajouter un état"
@@ -1323,6 +1327,13 @@ fr:
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
     vitals:
+      resources:
+        amount: "Montant de %{resource}"
+        restore: "Rendre une utilisation de %{resource} à %{name}"
+        restore_short: "Rendre"
+        spend: "Utiliser %{resource} de %{name}"
+        spend_short: "Dépenser"
+        title: "Ressources"
       death_saves:
         count: "%{count} sur %{needed}"
         dead: "Mort"
@@ -1538,6 +1549,7 @@ fr:
         hit_points_per_level: "Points de vie"
         origin_feat: "Don d'origine"
         proficient: "Maîtrises"
+        resources: "Ressources"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
       features_level: "Niveau %{level}"

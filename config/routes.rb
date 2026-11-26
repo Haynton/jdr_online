@@ -78,7 +78,9 @@ Rails.application.routes.draw do
       # (the game master for any player, a player for their own), and a long rest (the game master)
       resources :character_vitals, only: :update do
         post :long_rest, on: :member
+        post :short_rest, on: :member
         post :death_save, on: :member
+        resources :resources, only: :update, param: :key, controller: "character_resources"
       end
       # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
       resources :chat_messages, only: :create

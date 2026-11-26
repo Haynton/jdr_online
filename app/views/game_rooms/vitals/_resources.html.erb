@@ -1,0 +1,52 @@
+<%# The resources of a player's character (CharacterResources; decision of 26 November): one line per resource its
+    class and subclass give at its level, its label and what is left (« 1/2 »). A use: − spends one (written in the
+    chat), + gives one back (a correction). A pool (the lay on hands): an amount between − and +, « Dépenser » and
+    « Rendre ». By its player in « Ma fiche » or the game master in the quick sheet (GameTables::
+    CharacterResourcesController), sent to the whole table. Always in the page, so that the stream finds it %>
+<% resources = character.resources %>
+<div id="character-<%= character.id %>-resources">
+  <% if resources.any? %>
+    <section class="mt-3" aria-labelledby="character-<%= character.id %>-resources-title">
+      <h4 id="character-<%= character.id %>-resources-title" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.vitals.resources.title") %></h4>
+      <ul class="mt-2 flex flex-col gap-2">
+        <% resources.each do |resource| %>
+          <% path = game_table_character_vital_resource_path(character.game_table, character, resource.key) %>
+          <li>
+            <div class="flex items-center gap-2">
+              <span class="min-w-0 flex-1 truncate text-sm text-ink" title="<%= resource.label %>"><%= resource.label %></span>
+              <% unless resource.pool %>
+                <%= button_to path, method: :patch, params: { resource_change: "spend" }, class: "#{button_classes(:secondary, size: :compact_icon)} size-8",
+                                    form_class: "inline-flex", disabled: resource.left.zero?,
+                                    aria: { label: t("game_rooms.vitals.resources.spend", resource: resource.label, name: character.name) } do %>
+                  <%= render "shared/icons/minus", css_class: "size-4" %>
+                <% end %>
+              <% end %>
+              <span class="w-14 text-center text-sm font-medium text-ink tabular-nums"><%= resource.left %>/<%= resource.total %></span>
+              <% unless resource.pool %>
+                <%= button_to path, method: :patch, params: { resource_change: "restore" }, class: "#{button_classes(:secondary, size: :compact_icon)} size-8",
+                                    form_class: "inline-flex", disabled: resource.used.zero?,
+                                    aria: { label: t("game_rooms.vitals.resources.restore", resource: resource.label, name: character.name) } do %>
+                  <%= render "shared/icons/plus", css_class: "size-4" %>
+                <% end %>
+              <% end %>
+            </div>
+            <% if resource.pool %>
+              <%= form_with url: path, method: :patch, class: "mt-1.5 flex flex-wrap items-center gap-2" do %>
+                <% amount_id = "character-#{character.id}-resource-#{resource.key}-amount" %>
+                <% input = number_field_tag(:amount, 1, id: amount_id, min: 1, max: resource.total, step: 1, required: true,
+                                                        class: CharacterSheets::FieldsHelper::STEPPER_INPUT_CLASSES,
+                                                        data: { number_stepper_target: "input" },
+                                                        aria: { label: t("game_rooms.vitals.resources.amount", resource: resource.label) }) %>
+                <%= render "character_sheets/fields/stepper", field: { "label" => resource.label }, input: input %>
+                <%= button_tag t("game_rooms.vitals.resources.spend_short"), type: "submit", name: "resource_change", value: "spend",
+                               class: button_classes(:secondary, size: :compact) %>
+                <%= button_tag t("game_rooms.vitals.resources.restore_short"), type: "submit", name: "resource_change", value: "restore",
+                               class: button_classes(:secondary, size: :compact) %>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>

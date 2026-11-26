@@ -1152,6 +1152,8 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        resource_used: "%{character} uses %{resource}: %{left} of %{total} left."
+        resource_pool_used: "%{character} spends %{count} of %{resource}: %{left} of %{total} left."
         death_save_success: "%{character} · death save: %{roll}, a success (%{successes} of %{needed})."
         death_save_failure: "%{character} · death save: %{roll}, a failure (%{failures} of %{needed})."
         death_save_critical_failure: "%{character} · death save: %{roll}, two failures (%{failures} of %{needed})."
@@ -1186,6 +1188,8 @@ en:
     combat_strip:
       long_rest: "Long rest"
       long_rest_confirm: "Long rest for %{name}? Their hit points come back to the maximum."
+      short_rest: "Short rest"
+      short_rest_confirm: "Short rest for %{name}? Their resources come back as the template says."
       passive: "Passive perception"
       passive_short: "Passive perc."
       add_condition: "Add a condition"
@@ -1352,6 +1356,13 @@ en:
       settings: "Settings"
       signed_in_as: "Signed in: %{username}"
     vitals:
+      resources:
+        amount: "Amount of %{resource}"
+        restore: "Give back a use of %{resource} to %{name}"
+        restore_short: "Give back"
+        spend: "Use %{resource} of %{name}"
+        spend_short: "Spend"
+        title: "Resources"
       death_saves:
         count: "%{count} of %{needed}"
         dead: "Dead"
@@ -1567,6 +1578,7 @@ en:
         hit_points_per_level: "Hit points"
         origin_feat: "Origin feat"
         proficient: "Proficiencies"
+        resources: "Resources"
         skill_choices: "Skills"
         spellcasting: "Spellcasting ability"
       features_level: "Level %{level}"

@@ -30,6 +30,8 @@ class GameRoomTest < ActionDispatch::IntegrationTest
   ].freeze
   DEATH_SAVES = { "label" => "Jets contre la mort", "sides" => 20, "success_from" => 10, "needed" => 3,
                   "successes_from" => "death_successes", "failures_from" => "death_failures" }.freeze
+  RESOURCE = { "key" => "arcane_recovery", "label" => "Restauration arcanique", "uses" => [1] * 20,
+               "recovery" => "long_rest" }.freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
   setup do
@@ -404,6 +406,36 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     sign_in @player
     post death_save_game_table_character_vital_path(@game_table, @other_character), as: :turbo_stream
     assert_response :not_found
+  end
+
+  test "a player spends a resource of their class, written in the chat; the game master gives it back with a rest" do
+    @game_table.update!(template_snapshot: @game_table.template_snapshot.deep_merge("character_fields" => {
+      "fields" => @game_table.template_snapshot.dig("character_fields", "fields").map do |field|
+        next field unless field["key"] == "class"
+
+        field.deep_merge("effects" => { "Mage" => { "resources" => [RESOURCE] } })
+      end
+    }))
+    sign_in @player
+    get game_table_path(@game_table)
+    path = game_table_character_vital_resource_path(@game_table, @character, "arcane_recovery")
+    assert_select "#character-#{@character.id}-resources form[action=?]", path
+
+    patch path, params: { resource_change: "spend" }, as: :turbo_stream
+    assert_equal({ "arcane_recovery" => 1 }, @character.reload.resources_used)
+    assert_equal "resource_used", ChatMessage.last.event_key
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-resources"
+
+    patch path, params: { resource_change: "spend" }, as: :turbo_stream
+    assert_response :unprocessable_content
+
+    sign_in @player
+    post short_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @game_master
+    post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_empty @character.reload.resources_used
   end
 
   test "a player changes the hit points of their own character only, and never takes a long rest" do
