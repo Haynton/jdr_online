@@ -1,0 +1,4 @@
+<%# A panel to come (GameRoom::COMING_SOON_PANELS): « Bientôt » and what it will do, by role %>
+<% role = game_room.game_master? ? "game_master" : "player" %>
+<span class="<%= badge_classes(:pending) %>"><%= t("game_rooms.coming_soon") %></span>
+<p class="mt-3 text-sm text-muted"><%= t("game_rooms.panels.#{panel}.coming_soon.#{role}") %></p>

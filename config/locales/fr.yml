@@ -1054,6 +1054,82 @@ fr:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
+  # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
+  game_rooms:
+    chat:
+      description: "Le chat de la partie arrive bientôt : messages, jets de dés et actions de chacun, en direct."
+      fold: "Replier le chat"
+      resize: "Changer la hauteur du chat"
+      title: "Chat"
+      unfold: "Déplier le chat"
+    coming_soon: "Bientôt"
+    panel:
+      close: "Fermer %{name}"
+    panels:
+      character:
+        open_sheet: "Ouvrir ma fiche"
+        title: "Ma fiche"
+      dice:
+        coming_soon:
+          game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
+          player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
+        title: "Dés"
+      items:
+        no_category: "Autres"
+        no_match: "Aucun objet ne correspond à cette recherche."
+        search: "Rechercher un objet"
+        title: "Objets"
+      map_tools:
+        coming_soon:
+          game_master: "Sélectionner, mesurer, retirer des objets de la carte, poser du brouillard de guerre et des zones bloquantes, pendant la partie."
+          player: "Sélectionner, mesurer, retirer des objets de la carte, poser du brouillard de guerre et des zones bloquantes, pendant la partie."
+        title: "Outils de carte"
+      maps:
+        change_coming_soon: "Changer la carte du plateau arrive avec le plateau."
+        empty: "Cette table n'a pas encore de carte."
+        manage: "Ajouter des cartes"
+        open: "Modifier %{name}"
+        title: "Cartes"
+      npcs:
+        empty: "Cette table n'a encore ni PNJ ni ennemi."
+        title: "PNJ et ennemis"
+    party:
+      draft: "En création"
+      gauge: "%{label} : %{current} sur %{max}"
+      open_sheet: "ouvrir sa fiche"
+    settings:
+      display:
+        toolbar_hover: "Déplier la barre au survol"
+        toolbar_hover_hint: "La barre d'outils montre le nom de chaque outil quand la souris passe dessus. Éteint, seulement au clavier. Gardé sur cet appareil."
+      participants:
+        invitation_link: "Lien d'invitation"
+      rules:
+        save: "Enregistrer les règles"
+      video:
+        description: "Caméra, micro et son de la visio de la partie."
+    settings_dialog:
+      close: "Fermer les paramètres de la partie"
+      menu: "Rubriques des paramètres"
+      sections:
+        display: "Affichage"
+        participants: "Participants"
+        rules: "Règles de la partie"
+        video: "Visio et son"
+      title: "Paramètres de la partie"
+    toolbar:
+      coming_soon_label: "%{name} (bientôt)"
+      groups:
+        dice: "Dés"
+        library: "Biblio."
+        map: "Carte"
+        players: "Joueurs"
+        sheet: "Fiche"
+      label: "Outils de la partie"
+    top_bar:
+      leave: "Quitter la partie"
+      leave_confirm: "Quitter la partie « %{name} » ? Vous la retrouverez dans « Mes tables »."
+      settings: "Paramètres"
+      signed_in_as: "Connecté(e) : %{username}"
   game_tables:
     map_lists:
       edit:
@@ -1109,6 +1185,12 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    character_sheets:
+      show:
+        back: "Retour à la partie"
+        close: "Fermer la fiche"
+        played_by: "Joué par %{username}"
+        title: "Fiche du personnage"
     character_steps:
       band_label: "Étapes de votre personnage"
       equipment_choices:
@@ -1549,8 +1631,7 @@ fr:
       subtitle: "Donnez-lui un nom, une couverture et un modèle de fiche. Vous inviterez vos joueurs ensuite."
       title: "Créer une table"
     show:
-      back_to_tables: "Retour à mes tables"
-      coming_soon: "La page de la table arrive bientôt : plateau, chat et lancers de dés se joueront ici."
+      board_coming_soon: "Le plateau arrive bientôt : la carte, les jetons des personnages et des ennemis se joueront ici."
     stage:
       game_settings: "Paramètres de la partie"
       create_character: "Créer mon personnage"

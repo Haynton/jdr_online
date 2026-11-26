@@ -1,0 +1,29 @@
+<%# The chat, a key piece of the game (decision), an island at the bottom right (maquette C): low by default, so that
+    the board keeps the screen, its height changed by the handle at its top (dragged, or the arrow keys once it has the
+    focus) and folded by its button, both kept in this browser (chat_island_controller.js; the handle and the button
+    rendered hidden and shown by it). Its messages, the dice and the actions of each come with it. From 1024 px: on a
+    smaller screen it will need a place of its own (to decide with the chat) %>
+<aside class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute right-4 bottom-4 z-20 hidden w-80 flex-col lg:flex"
+       aria-labelledby="game-room-chat-title" data-controller="chat-island"
+       data-chat-island-fold-label-value="<%= t(".fold") %>" data-chat-island-unfold-label-value="<%= t(".unfold") %>">
+  <div hidden role="separator" tabindex="0" aria-orientation="horizontal" aria-controls="game-room-chat-body"
+       aria-label="<%= t(".resize") %>" title="<%= t(".resize") %>"
+       class="group flex h-3 cursor-ns-resize touch-none items-center justify-center rounded-t-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+       data-chat-island-target="handle"
+       data-action="pointerdown->chat-island#startResize keydown->chat-island#resizeWithKeys">
+    <span class="h-1 w-10 rounded-full bg-line transition-colors group-hover:bg-field-line" aria-hidden="true"></span>
+  </div>
+  <header class="flex shrink-0 items-center gap-2 px-4 pt-2 pb-2">
+    <%= render "shared/icons/message_square_text", css_class: "size-5 text-muted" %>
+    <h2 id="game-room-chat-title" class="text-sm font-semibold text-ink"><%= t(".title") %></h2>
+    <span class="<%= badge_classes(:pending) %>"><%= t("game_rooms.coming_soon") %></span>
+    <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %> group/fold ml-auto"
+            aria-expanded="true" aria-controls="game-room-chat-body" aria-label="<%= t(".fold") %>"
+            title="<%= t(".fold") %>" data-chat-island-target="toggle" data-action="chat-island#toggle">
+      <%= render "shared/icons/chevron_down", css_class: "size-4 transition-transform group-aria-[expanded=false]/fold:rotate-180" %>
+    </button>
+  </header>
+  <div id="game-room-chat-body" class="h-48 overflow-y-auto border-t border-line px-4 py-3" data-chat-island-target="body">
+    <p class="text-sm text-muted"><%= t(".description") %></p>
+  </div>
+</aside>

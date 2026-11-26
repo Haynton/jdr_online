@@ -1,0 +1,9 @@
+<%# The name of a group of tools of the bar (game_rooms/_toolbar): for screen readers once (the name of the group,
+    id), and from 768 px written twice in the same cell of grid, centred over the folded bar or on the left once it is
+    open, the one fading into the other (GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_*_CLASSES). On a phone, the separators
+    alone split the groups %>
+<span id="<%= id %>" class="sr-only"><%= name %></span>
+<span class="hidden pt-2.5 pb-1.5 md:grid" aria-hidden="true">
+  <span class="<%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_CLASSES %> <%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_FOLDED_CLASSES %>"><%= name %></span>
+  <span class="<%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_CLASSES %> <%= GameRoomToolbarHelper::TOOLBAR_GROUP_NAME_OPEN_CLASSES %>"><%= name %></span>
+</span>

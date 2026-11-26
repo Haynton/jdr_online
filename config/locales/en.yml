@@ -1083,6 +1083,82 @@ en:
     required:
       # Hidden from screen readers: the field itself carries the required attribute, which they announce
       html: '<span class="text-muted" aria-hidden="true">*</span>'
+  # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
+  game_rooms:
+    chat:
+      description: "The chat of the game is coming soon: messages, dice rolls and everyone's actions, live."
+      fold: "Fold the chat"
+      resize: "Change the height of the chat"
+      title: "Chat"
+      unfold: "Unfold the chat"
+    coming_soon: "Soon"
+    panel:
+      close: "Close %{name}"
+    panels:
+      character:
+        open_sheet: "Open my sheet"
+        title: "My sheet"
+      dice:
+        coming_soon:
+          game_master: "Roll the dice of the game, in secret or in front of everyone, or have a player, the whole table or an NPC roll. Ask for the initiative roll too: the order of the fight sorts itself from the results. The results, rolled by the server, will go to the chat."
+          player: "Roll your dice: the results, rolled by the server, will go to the chat of the game."
+        title: "Dice"
+      items:
+        no_category: "Other"
+        no_match: "No item matches this search."
+        search: "Search an item"
+        title: "Items"
+      map_tools:
+        coming_soon:
+          game_master: "Select, measure, remove objects from the map, lay fog of war and blocked zones, during the game."
+          player: "Select, measure, remove objects from the map, lay fog of war and blocked zones, during the game."
+        title: "Map tools"
+      maps:
+        change_coming_soon: "Changing the map of the board comes with the board."
+        empty: "This table has no map yet."
+        manage: "Add maps"
+        open: "Change %{name}"
+        title: "Maps"
+      npcs:
+        empty: "This table has no NPC or enemy yet."
+        title: "NPCs and enemies"
+    party:
+      draft: "In progress"
+      gauge: "%{label}: %{current} of %{max}"
+      open_sheet: "open the sheet"
+    settings:
+      display:
+        toolbar_hover: "Unfold the bar on hover"
+        toolbar_hover_hint: "The bar of tools shows the name of each tool when the mouse passes over it. Off, only with the keyboard. Kept on this device."
+      participants:
+        invitation_link: "Invitation link"
+      rules:
+        save: "Save the rules"
+      video:
+        description: "Camera, microphone and sound of the video call of the game."
+    settings_dialog:
+      close: "Close the settings of the game"
+      menu: "Sections of the settings"
+      sections:
+        display: "Display"
+        participants: "Players"
+        rules: "Rules of the game"
+        video: "Video and sound"
+      title: "Game settings"
+    toolbar:
+      coming_soon_label: "%{name} (soon)"
+      groups:
+        dice: "Dice"
+        library: "Library"
+        map: "Map"
+        players: "Players"
+        sheet: "Sheet"
+      label: "Tools of the game"
+    top_bar:
+      leave: "Leave the game"
+      leave_confirm: "Leave the game “%{name}”? You will find it again in “My tables”."
+      settings: "Settings"
+      signed_in_as: "Signed in: %{username}"
   game_tables:
     map_lists:
       edit:
@@ -1138,6 +1214,12 @@ en:
         rolled: "Hit dice rolled: %{results}."
     rules:
       former_roll: "Dice roll"
+    character_sheets:
+      show:
+        back: "Back to the game"
+        close: "Close the sheet"
+        played_by: "Played by %{username}"
+        title: "Character sheet"
     character_steps:
       band_label: "Steps of your character"
       equipment_choices:
@@ -1578,8 +1660,7 @@ en:
       subtitle: "Give it a name, a cover and a sheet template. You will invite your players next."
       title: "Create a table"
     show:
-      back_to_tables: "Back to my tables"
-      coming_soon: "The page of the table is coming soon: board, chat and dice rolls will be played here."
+      board_coming_soon: "The board is coming soon: the map and the tokens of the characters and enemies will be played here."
     stage:
       game_settings: "Game settings"
       create_character: "Create my character"

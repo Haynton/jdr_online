@@ -1,0 +1,20 @@
+<%# One panel of the game room, opened by its tool (game_rooms/_toolbar): a floating card beside the bar from 768 px,
+    360 px wide, under the island of the name and down to the foot of the screen, laid over the board (it never moves
+    it) and over the party; on a phone, the screen above the bar. Its title, a cross that closes it, then its
+    content, which scrolls. Hidden until opened: by :target without JavaScript, by data-open with it
+    (game_room_panels_controller.js) %>
+<% title = t("game_rooms.panels.#{panel}.title") %>
+<section id="<%= game_room_panel_id(panel) %>" aria-labelledby="<%= game_room_panel_id(panel) %>-title" tabindex="-1"
+         class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute inset-x-3 top-3 bottom-20 z-30 hidden flex-col overflow-hidden shadow-xl outline-none target:flex data-open:flex md:top-20 md:right-auto md:bottom-4 md:left-21 md:w-[360px]"
+         data-game-room-panels-target="panel">
+  <header class="flex shrink-0 items-center justify-between gap-3 border-b border-line py-2 pr-2 pl-5">
+    <h2 id="<%= game_room_panel_id(panel) %>-title" class="truncate text-base font-semibold text-ink"><%= title %></h2>
+    <%= link_to "#", class: button_classes(:quiet, size: :compact_icon), title: t(".close", name: title),
+                aria: { label: t(".close", name: title) }, data: { action: "game-room-panels#close" } do %>
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    <% end %>
+  </header>
+  <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+    <%= render game_room_panel_partial(game_room, panel), game_room: game_room, panel: panel %>
+  </div>
+</section>

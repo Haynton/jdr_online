@@ -1,0 +1,41 @@
+<%# The items the table offers, for the game master: a search without accents (catalog_search_controller.js, rendered
+    hidden and shown by it), then the items by category, each opening its values and its description in the window
+    of the details (as on a character sheet; a weapon often has no description, its values matter). « Créer un objet »
+    opens the window of the step « Sorts et objets » here, without leaving the room (decision; game_tables/catalogs/
+    _dialog, rendered by layouts/game_room): saved, the room is refreshed and the panel comes back open %>
+<% items = game_room.items.to_a %>
+<% item_fields = catalog_entry_shown_fields(game_room.game_table, "item") %>
+<div data-controller="catalog-search details-dialog">
+  <%= link_to new_game_table_catalog_entry_path(game_room.game_table, kind: "item"),
+              class: "#{button_classes(:secondary, full_width: true)} gap-2", data: catalog_entry_dialog_link_data do %>
+    <%= render "shared/icons/plus" %>
+    <%= t("game_tables.catalogs.edit.add.item") %>
+  <% end %>
+  <div class="mt-4" hidden data-catalog-search-target="tools">
+    <label for="game-room-item-search" class="sr-only"><%= t(".search") %></label>
+    <input id="game-room-item-search" type="search" autocomplete="off" placeholder="<%= t(".search") %>"
+           class="<%= SimpleFormFieldClasses::INPUT %>"
+           data-catalog-search-target="search" data-action="input->catalog-search#filter">
+  </div>
+  <% items.group_by { |item| item.properties["category"].presence || t(".no_category") }.sort.each do |category, category_items| %>
+    <section class="mt-5" data-catalog-search-target="group">
+      <h3 class="text-xs font-semibold tracking-wider text-brass uppercase"><%= category %></h3>
+      <ul class="mt-1 flex flex-col gap-1.5">
+        <% category_items.each do |item| %>
+          <li data-catalog-search-target="entry" data-search-name="<%= catalog_search_name(item) %>">
+            <%= render layout: "character_sheets/summary/entry_details",
+                       locals: { title: item.name, subtitle: catalog_entry_detail(item), description: item.description,
+                                 details: render("game_rooms/panels/item_details", item: item, fields: item_fields) } do %>
+              <span class="text-ink"><%= item.name %></span>
+              <% if catalog_entry_detail(item).present? %>
+                <span class="text-xs text-muted"><%= catalog_entry_detail(item) %></span>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+  <p class="mt-4 text-sm text-muted" hidden data-catalog-search-target="noMatch"><%= t(".no_match") %></p>
+  <%= render "shared/details_dialog" %>
+</div>

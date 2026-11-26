@@ -1,0 +1,42 @@
+<%# The display, in the window of the settings, laid out like the rules (decision): one line per setting, split by a
+    thin line, its name and its help on the left, its control at the end of the line (under them in a narrow window,
+    container query of the lines). The theme (in this browser, theme_controller.js), the unfolding of the bar of
+    tools on hover (in this browser too, toolbar_hover_controller.js; its line rendered hidden and shown by the
+    controller) and the language of the interface, saved as soon as it changes (said in its help, WCAG 3.2.2) by the
+    same action as the settings of the account, which brings back to the room with the window open on this section
+    (game_table_id) %>
+<div class="<%= settings_group_lines_classes %>">
+  <div class="<%= setting_line_classes %>">
+    <div class="min-w-0">
+      <p id="game-room-theme-label" class="text-sm font-semibold text-ink"><%= t("settings.displays.show.theme") %></p>
+      <p class="mt-1 text-sm text-muted"><%= t("settings.displays.show.theme_description") %></p>
+    </div>
+    <%= render "shared/theme_selector", labelled_by: "game-room-theme-label" %>
+  </div>
+
+  <div hidden class="<%= setting_line_classes %>" data-controller="toolbar-hover"
+       data-action="switch:change->toolbar-hover#change">
+    <div class="min-w-0">
+      <p id="game-room-toolbar-hover-label" class="text-sm font-semibold text-ink"><%= t(".toolbar_hover") %></p>
+      <p class="mt-1 text-sm text-muted"><%= t(".toolbar_hover_hint") %></p>
+    </div>
+    <span class="contents" data-toolbar-hover-target="switch">
+      <%= render "shared/switch", labelled_by: "game-room-toolbar-hover-label", checked: true %>
+    </span>
+  </div>
+
+  <div class="<%= setting_line_classes %>">
+    <div class="min-w-0">
+      <p id="game-room-language-label" class="text-sm font-semibold text-ink"><%= t("settings.displays.show.language") %></p>
+      <p class="mt-1 text-sm text-muted"><%= t("settings.displays.show.language_description") %></p>
+    </div>
+    <%= simple_form_for current_user, url: settings_locale_path, method: :patch, html: { class: "w-full shrink-0 @md:w-64" },
+                                      data: { controller: "auto-submit", action: "change->auto-submit#submit" } do |form| %>
+      <%= hidden_field_tag :game_table_id, game_room.game_table.id %>
+      <%= form.input :locale, wrapper: :setting, collection: locale_options,
+                              include_blank: t("settings.displays.show.browser_language"),
+                              wrapper_html: { class: "w-full" },
+                              input_html: { aria: { labelledby: "game-room-language-label" } } %>
+    <% end %>
+  </div>
+</div>

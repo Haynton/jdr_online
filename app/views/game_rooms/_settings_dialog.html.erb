@@ -1,0 +1,48 @@
+<%# The window of the settings of the game (decision: a window like the settings of the app, not a panel, and not the
+    pages of the creation of the table): a title bar across it (its name, the cross), then the menu of its sections on
+    the left and the section on the right, both on surface, split by a thin line (shared/_settings_dialog). Its
+    sections by role (GameRoom#settings_sections): the participants, the rules (game master), the video and the sound
+    (to come), the display. Opened by « Paramètres » at the foot of the bar (game_room_panels_controller.js); a section
+    saved (rules, language) brings back to the room with the window open on it (?settings=…). The menu is a list of
+    tabs (tabs_controller.js), rendered hidden and shown by it: without JavaScript, the sections follow each other.
+    On a phone, the menu is a row above the section, which scrolls sideways %>
+<dialog id="game-room-settings" aria-labelledby="game-room-settings-title" tabindex="-1"
+        class="m-auto h-[min(720px,calc(100dvh-2rem))] w-[min(960px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-game-room-panels-target="settingsDialog"
+        data-action="click->game-room-panels#closeSettingsOnBackdrop cancel->game-room-panels#settingsCancelled close->game-room-panels#settingsClosed">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="game-room-settings-title" class="text-base font-semibold text-ink"><%= t(".title") %></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>"
+            aria-label="<%= t(".close") %>" title="<%= t(".close") %>" data-action="game-room-panels#closeSettings">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <div class="grid min-h-0 flex-1 grid-rows-[auto_1fr] sm:grid-cols-[220px_1fr] sm:grid-rows-1"
+       data-controller="tabs" data-tabs-selected-index-value="<%= game_room_settings_index(game_room) %>">
+    <div class="min-w-0 border-b border-line px-3 py-2 sm:border-r sm:border-b-0 sm:py-4">
+      <div hidden role="tablist" aria-orientation="vertical" aria-label="<%= t(".menu") %>"
+           class="flex gap-1 overflow-x-auto no-scrollbar sm:flex-col sm:overflow-visible" data-tabs-target="list">
+        <% game_room.settings_sections.each do |section| %>
+          <button type="button" role="tab" id="game-room-settings-tab-<%= section %>"
+                  aria-controls="game-room-settings-section-<%= section %>" aria-selected="false"
+                  class="<%= GameRoomHelper::SETTINGS_TAB_CLASSES %>"
+                  data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys">
+            <%= t(".sections.#{section}") %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+    <div class="min-h-0 min-w-0 overflow-y-auto px-6 py-6 sm:px-8">
+      <% game_room.settings_sections.each do |section| %>
+        <section id="game-room-settings-section-<%= section %>" role="tabpanel"
+                 aria-labelledby="game-room-settings-tab-<%= section %>" class="mb-10 last:mb-0"
+                 data-tabs-target="panel">
+          <h3 class="text-lg font-semibold text-ink"><%= t(".sections.#{section}") %></h3>
+          <div class="mt-4">
+            <%= render GameRoomHelper::SETTINGS_PARTIALS.fetch(section), game_room: game_room %>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  </div>
+</dialog>

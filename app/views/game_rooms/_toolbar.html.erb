@@ -1,0 +1,52 @@
+<%# The bar of tools of the room, an island on the left (maquette C, decision of 26 November): as tall as its tools,
+    centred on the height of the screen, where it never moves (Anthony's request: centred above the party, it moved
+    when the party folded; the party below takes only the room left under it, party_clearance_controller.js), its tools in groups (GameRoom#tool_groups) under a short name, split by a
+    thin line. Each tool is an icon; from 768 px the bar unfolds when it is hovered or reached with the keyboard and
+    shows the name of every tool beside its icon (GameRoomToolbarHelper::TOOLBAR_LABEL_CLASSES), over the board, and folds back once a tool is chosen, until the mouse leaves it; screen readers
+    get the name from aria-label. A tool to come carries a small dot and « (bientôt) ». At its foot, the players
+    (game_rooms/_party_member, decision of 26 November: the party in the bar, rather than an island of its own far
+    below it), seen by everyone at the table.
+    Each tool is a link to its panel (#game-room-panel-…): without JavaScript, the panel shows by :target; with it,
+    game_room_panels_controller.js opens and closes it in place, one at a time. On a phone, a row along the bottom,
+    without the names of the groups %>
+<nav id="game-room-toolbar" class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute bottom-3 left-1/2 z-40 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto p-1.5 no-scrollbar md:top-1/2 md:bottom-auto md:left-4 md:max-w-none md:translate-x-0 md:-translate-y-1/2 md:max-h-[calc(100dvh-10rem)] md:flex-col md:items-stretch <%= GameRoomToolbarHelper::TOOLBAR_WIDTH_CLASSES %> group/bar"
+     aria-label="<%= t(".label") %>" data-game-room-panels-target="toolbar"
+     data-action="mouseleave->game-room-panels#releaseToolbar">
+  <% game_room.tool_groups.each_with_index do |(group, panels), index| %>
+    <% if index.positive? %>
+      <span class="mx-0.5 h-8 w-px shrink-0 bg-line md:mx-1.5 md:my-1 md:h-px md:w-auto" aria-hidden="true"></span>
+    <% end %>
+    <div role="group" aria-labelledby="game-room-tool-group-<%= group %>" class="flex items-center gap-1 md:flex-col md:items-stretch">
+      <%= render "game_rooms/tool_group_name", id: "game-room-tool-group-#{group}", name: t(".groups.#{group}") %>
+      <% panels.each do |panel| %>
+        <% name = game_room_tool_name(game_room, panel) %>
+        <%= link_to "##{game_room_panel_id(panel)}", class: GameRoomToolbarHelper::TOOLBAR_TOOL_CLASSES,
+                    aria: { label: name, controls: game_room_panel_id(panel) },
+                    data: { game_room_panels_target: "opener", panel_id: game_room_panel_id(panel),
+                            action: "game-room-panels#toggle keydown.space->game-room-panels#toggle" } do %>
+          <span class="relative shrink-0">
+            <%= render game_room_panel_icon(panel), css_class: "size-5" %>
+            <% if game_room.coming_soon?(panel) %>
+              <span class="absolute -top-0.5 -right-1 size-1.5 rounded-full bg-muted ring-2 ring-surface" aria-hidden="true"></span>
+            <% end %>
+          </span>
+          <span class="<%= GameRoomToolbarHelper::TOOLBAR_LABEL_CLASSES %>" aria-hidden="true"><%= name %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% party = game_room.party.to_a %>
+  <% if party.any? %>
+    <span class="mx-0.5 h-8 w-px shrink-0 bg-line md:mx-1.5 md:my-1 md:h-px md:w-auto" aria-hidden="true"></span>
+    <div role="group" aria-labelledby="game-room-tool-group-players" class="flex items-center gap-1 md:flex-col md:items-stretch">
+      <%# No visible name (decision: the avatars say who they are), only for screen readers %>
+      <span id="game-room-tool-group-players" class="sr-only"><%= t(".groups.players") %></span>
+      <% gauge_field = game_room.party_gauge_field %>
+      <% party.each do |character| %>
+        <%= render "game_rooms/party_member", game_room: game_room, character: character,
+                                              gauge: party_gauge(character, gauge_field) %>
+      <% end %>
+    </div>
+  <% end %>
+</nav>

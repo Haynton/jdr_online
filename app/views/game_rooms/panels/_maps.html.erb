@@ -1,0 +1,37 @@
+<%# The maps of the table, for the game master: each with its preview (its tokens and blocked zones drawn on it, like
+    the step « Cartes ») or its image, its name and grid. Changing the map shown on the board comes with the board
+    (« Bientôt »); a drawn map opens in the map editor, a map sent as an image in the step « Cartes » %>
+<% game_maps = game_room.game_maps.to_a %>
+<p class="text-sm text-muted"><%= t(".change_coming_soon") %></p>
+<% if game_maps.empty? %>
+  <p class="mt-4 text-sm text-muted"><%= t(".empty") %></p>
+<% end %>
+<ul class="mt-4 flex flex-col gap-3">
+  <% game_maps.each do |game_map| %>
+    <li class="overflow-hidden rounded-xl border border-line">
+      <% if game_map.drawn? && map_preview?(game_map) %>
+        <svg viewBox="<%= game_map_view_box(game_map) %>" class="block aspect-video w-full bg-well" aria-hidden="true"
+             <%= tag.attributes(data: game_map_preview_data(game_map)) %>></svg>
+      <% elsif game_map.drawn? %>
+        <span class="flex aspect-video w-full items-center justify-center bg-primary-soft text-primary-soft-ink" aria-hidden="true">
+          <%= render "shared/icons/map", css_class: "size-8" %>
+        </span>
+      <% else %>
+        <%= image_tag game_map.image, alt: "", loading: "lazy", class: "aspect-video w-full bg-field object-cover" %>
+      <% end %>
+      <div class="flex items-center justify-between gap-3 px-3 py-2.5">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-ink"><%= game_map.name %></p>
+          <p class="text-xs text-muted"><%= game_map_grid_text(game_map) %></p>
+        </div>
+        <%= link_to edit_game_table_game_map_path(game_room.game_table, game_map),
+                    class: button_classes(:secondary, size: :compact_icon), title: t(".open", name: game_map.name),
+                    aria: { label: t(".open", name: game_map.name) } do %>
+          <%= render "shared/icons/pencil" %>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ul>
+<%= link_to t(".manage"), edit_game_table_map_list_path(game_room.game_table),
+            class: "#{button_classes(:secondary, full_width: true)} mt-4" %>
