@@ -45,6 +45,19 @@ class GameRoom
     game_table.characters.pc.includes(participation: :user, avatar_attachment: :blob).order(:name)
   end
 
+  # The characters the game master may give an item to (the panel « Objets »): the finished characters of the
+  # players; none for a player
+  def gift_receivers
+    game_master? ? party.reject(&:draft?) : []
+  end
+
+  # The people of the table in the video call (its places for now, the call comes with Jitsi): the game master, then
+  # the players who have accepted, by username
+  def video_participations
+    game_table.participations.accepted.includes(user: { avatar_attachment: :blob })
+              .sort_by { |participation| [participation.game_master? ? 0 : 1, participation.user.username.downcase] }
+  end
+
   # The character of a player, nil while they have none
   def own_character
     participation.character unless game_master?

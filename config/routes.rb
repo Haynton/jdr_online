@@ -63,6 +63,8 @@ Rails.application.routes.draw do
       # The sheet of a character from the game room, in its window: any player's for the game master, their own for a
       # player
       resources :character_sheets, only: :show
+      # The game master gives an item of the catalog of the table to a player, from the game room
+      resource :item_gift, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player

@@ -1056,6 +1056,14 @@ fr:
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
+    board:
+      hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
+      needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
+      place: "Placer"
+      place_creature: "Placer %{name} sur la carte"
+      place_map: "Placer %{name} sur le plateau"
+      remove: "Retirer"
+      remove_map: "Retirer %{name} du plateau"
     chat:
       description: "Le chat de la partie arrive bientôt : messages, jets de dés et actions de chacun, en direct."
       fold: "Replier le chat"
@@ -1070,8 +1078,8 @@ fr:
       close_conditions: "Fermer les états"
       conditions_title: "Ajouter un état à %{name}"
       decrease: "Retirer 1 PV à %{name}"
-      end_fight: "Fin du combat"
-      end_fight_confirm: "Mettre fin au combat ? L'ordre d'initiative et les tours seront effacés, les PV et les états restent."
+      end_turns: "Fin du tour par tour"
+      end_turns_confirm: "Mettre fin au tour par tour ? L'ordre et les tours seront effacés, les PV et les états restent."
       full_sheet: "Voir la fiche complète"
       hit_points: "Points de vie"
       increase: "Rendre 1 PV à %{name}"
@@ -1079,15 +1087,29 @@ fr:
       label: "Combattants"
       next_turn: "Tour suivant"
       portrait: "%{name}, initiative %{initiative}"
+      preparing: "Préparation"
       preparing_rolled: "Préparation · initiatives lancées"
       preparing_waiting:
         one: "Préparation · 1 joueur en attente"
         other: "Préparation · %{count} joueurs en attente"
       ready: "Prêt"
+      reorder_button: "Valider l'ordre"
+      reorder_confirm: "Valider le nouvel ordre ? Il remplace l'ordre du tour par tour."
+      reorder_hint: "Dans les deux cas, vous pourrez changer l'ordre : faites glisser un portrait de la barre à sa nouvelle place (ou Alt + ← / → au clavier), puis validez."
+      roll_question: "Demander un jet d'initiative à toute la table ?"
+      roll_question_hint: "Avec le jet, l'ordre se range d'après les résultats. Sans, l'ordre reste celui de la barre."
       round: "Tour %{count}"
       slot: "Emplacement %{number} de niveau %{level} utilisé"
       spell_level: "Niveau %{level}"
-      start_fight: "Lancer un combat"
+      start_turns: "Lancer le tour par tour"
+      with_rolls: "Jet d'initiative"
+      without_rolls: "Sans jet"
+    item_gift_dialog:
+      cancel: "Annuler"
+      close: "Fermer"
+      give: "Donner"
+      quantity: "Quantité"
+      receiver: "À qui ?"
     panel:
       close: "Fermer %{name}"
     panels:
@@ -1100,6 +1122,9 @@ fr:
           player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
         title: "Dés"
       items:
+        give: "Donner"
+        give_item: "Donner %{item}"
+        give_title: "Donner « %{item} »"
         no_category: "Autres"
         no_match: "Aucun objet ne correspond à cette recherche."
         search: "Rechercher un objet"
@@ -1110,9 +1135,8 @@ fr:
           player: "Sélectionner, mesurer, retirer des objets de la carte, poser du brouillard de guerre et des zones bloquantes, pendant la partie."
         title: "Outils de carte"
       maps:
-        change_coming_soon: "Changer la carte du plateau arrive avec le plateau."
         empty: "Cette table n'a pas encore de carte."
-        manage: "Ajouter des cartes"
+        manage: "Ajouter une carte"
         open: "Modifier %{name}"
         title: "Cartes"
       npcs:
@@ -1120,6 +1144,8 @@ fr:
         title: "PNJ et ennemis"
     settings:
       display:
+        chat_shown: "Afficher le chat"
+        chat_shown_hint: "Éteint, le chat de la partie disparaît de la salle. Gardé sur cet appareil."
         toolbar_hover: "Déplier la barre au survol"
         toolbar_hover_hint: "La barre d'outils montre le nom de chaque outil quand la souris passe dessus. Éteint, seulement au clavier. Gardé sur cet appareil."
       participants:
@@ -1127,7 +1153,16 @@ fr:
       rules:
         save: "Enregistrer les règles"
       video:
+        call: "Caméra, micro et son"
         description: "Caméra, micro et son de la visio de la partie."
+        shown: "Afficher les caméras"
+        shown_hint: "Les caméras de la table, en haut à droite. Gardé sur cet appareil."
+        size: "Taille des caméras"
+        size_hint: "Aussi réglable depuis les boutons − et + de la visio. Gardé sur cet appareil."
+        sizes:
+          large: "Grande"
+          medium: "Moyenne"
+          small: "Petite"
     settings_dialog:
       close: "Fermer les paramètres de la partie"
       menu: "Rubriques des paramètres"
@@ -1150,7 +1185,21 @@ fr:
       leave_confirm: "Quitter la partie « %{name} » ? Vous la retrouverez dans « Mes tables »."
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
+    video:
+      fold: "Replier les caméras"
+      larger: "Agrandir les caméras"
+      leave_stage: "Revenir en haut"
+      smaller: "Réduire les caméras"
+      stage: "Visio au centre"
+      title: "Visio"
+      unfold: "Déplier les caméras"
+      you: "Vous"
   game_tables:
+    item_gifts:
+      create:
+        given:
+          one: "« %{item} » donné à %{character}."
+          other: "%{count} × « %{item} » donnés à %{character}."
     map_lists:
       edit:
         back: "Retour"
@@ -1368,7 +1417,7 @@ fr:
         count:
           one: "%{count} PNJ ou ennemi"
           other: "%{count} PNJ et ennemis"
-        create: "Créer un PNJ"
+        create: "Créer un PNJ ou un ennemi"
         empty: "Aucun PNJ pour l'instant. Ajoutez des créatures du bestiaire, ou créez vos propres personnages."
         intro: "Toutes les créatures du bestiaire de votre modèle restent disponibles : vous pourrez aussi les ajouter pendant la partie."
         purpose: "Cette étape sert surtout à préparer vos propres PNJ, et les ennemis que vous modifiez ou ajoutez pour cette table."

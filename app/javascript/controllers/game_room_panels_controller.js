@@ -93,9 +93,10 @@ export default class extends Controller {
     if (focus) this.panelTargets.find((panel) => panel.id === panelId)?.focus()
   }
 
-  // Escape in the window of the settings belongs to the window (its native closing): the panel under it stays open
+  // Escape in a window (the settings, « Donner »...) belongs to the window (its native closing): the panel under it
+  // stays open
   close(event) {
-    if (!this.openPanelId || (this.hasSettingsDialogTarget && this.settingsDialogTarget.open)) return
+    if (!this.openPanelId || document.querySelector("dialog[open]")) return
 
     event?.preventDefault()
     const opener = this.openerTargets.find((target) => target.dataset.panelId === this.openPanelId)

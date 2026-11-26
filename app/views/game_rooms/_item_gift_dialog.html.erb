@@ -1,0 +1,45 @@
+<%# The window « Donner » of the panel « Objets » (game master): opened by « Donner » on an item, its name in the title
+    (item_gift_controller.js), then the players who may receive it (GameRoom#gift_receivers: their finished
+    characters), each a radio with its avatar and its name, how many (1 to 99), and « Donner ». Sent to
+    GameTables::ItemGiftsController, which puts a copy of the item in the inventory of that character. Escape, the
+    cross or a click beside it close it %>
+<dialog aria-labelledby="item-gift-title" tabindex="-1"
+        class="m-auto max-h-[calc(100dvh-4rem)] w-[min(440px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-item-gift-target="dialog" data-action="click->item-gift#closeOnBackdrop">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="item-gift-title" class="truncate text-base font-semibold text-ink" data-item-gift-target="title"></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>" aria-label="<%= t(".close") %>"
+            title="<%= t(".close") %>" data-action="item-gift#close">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <%= form_with url: game_table_item_gift_path(game_room.game_table), method: :post,
+                class: "flex min-h-0 flex-col overflow-y-auto p-6" do |form| %>
+    <%= form.hidden_field :key, value: "", data: { item_gift_target: "key" } %>
+    <fieldset>
+      <legend class="text-sm font-semibold text-ink"><%= t(".receiver") %></legend>
+      <div class="mt-2 flex flex-col gap-2">
+        <% receivers.each_with_index do |character, index| %>
+          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-2 transition-colors hover:bg-surface-raised has-checked:border-brass has-checked:bg-primary-soft">
+            <%= form.radio_button :character_id, character.id, checked: index.zero?, class: "sr-only" %>
+            <%= render "characters/avatar", character: character, css_class: "size-8 rounded-full!", icon_class: "size-4" %>
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-sm font-medium text-ink"><%= character.name %></span>
+              <span class="block truncate text-xs text-muted"><%= character.participation.user.username %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+    <div class="mt-5 flex items-center justify-between gap-3">
+      <label for="item-gift-quantity" class="text-sm font-semibold text-ink"><%= t(".quantity") %></label>
+      <%= form.number_field :quantity, value: 1, min: GameTables::ItemGiftsController::QUANTITIES.min,
+                                       max: GameTables::ItemGiftsController::QUANTITIES.max, id: "item-gift-quantity",
+                                       class: "#{SimpleFormFieldClasses::INPUT} w-24 text-center" %>
+    </div>
+    <div class="mt-6 flex justify-end gap-2">
+      <button type="button" class="<%= button_classes(:secondary) %>" data-action="item-gift#close"><%= t(".cancel") %></button>
+      <%= form.button t(".give"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+</dialog>
