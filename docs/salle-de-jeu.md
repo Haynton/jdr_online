@@ -68,9 +68,9 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 
 ### Ma fiche (joueur)
 Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (décision du 26 novembre : le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert).
-- Avatar, nom, choix ; la **CA** dans sa case dorée et l'initiative.
-- **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique).
-- **Jets de sauvegarde et compétences maîtrisés** : seulement ceux qui sont cochés sur la fiche, rangés par section du modèle, chacun avec son bonus.
+- Avatar, nom, choix ; la **CA** dans sa case dorée, l'initiative, puis les valeurs qu'un joueur regarde en combat, dans des cases de même taille qui passent à la ligne : **vitesse, bonus de maîtrise**, et pour un lanceur **DD et attaque des sorts** (absents pour une classe sans sorts). Leur nom court est l'abréviation du modèle (« Vit. (m) », « Maîtrise », « DD sorts », « Att. sorts »), sinon leur libellé, sur deux lignes au plus.
+- **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique). Un **jet de sauvegarde maîtrisé** s'affiche dans la case de sa caractéristique, à côté du score : un point doré et son bonus (« 14 ● +4 »), avec une légende dessous (« ● Jets de sauvegarde »). C'est la section du modèle qui a un bonus par caractéristique.
+- **Compétences maîtrisées** en pastilles sur une ligne qui passe à la ligne (« Perspicacité +4 »), seulement celles cochées sur la fiche, par section du modèle.
 - **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », emplacements de sorts, attaques.
 - « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre.
 
