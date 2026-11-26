@@ -1222,6 +1222,9 @@ en:
         result: "Result"
         roll: "Roll"
         title: "Dice"
+      equip_switch:
+        equip: "Equip “%{name}”"
+        equipped: "Equipped"
       inventory:
         amount: "Amount to take out of %{label}"
         remove: "Remove"

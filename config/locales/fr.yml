@@ -1193,6 +1193,9 @@ fr:
         result: "Résultat"
         roll: "Lancer"
         title: "Dés"
+      equip_switch:
+        equip: "Équiper « %{name} »"
+        equipped: "Équipé"
       inventory:
         amount: "Somme à retirer de %{label}"
         remove: "Retirer"

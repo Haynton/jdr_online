@@ -107,6 +107,42 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_not InventoryItem.exists?(dagger.id)
   end
 
+  test "a player equips an armour, a shield or a weapon, one armour at a time, and the panel is redrawn" do
+    leather = @character.inventory_items.create!(key: "leather-armor", name: "Armure de cuir", equipped: true,
+                                                 properties: { "armor_base" => 11 })
+    chain_mail = @character.inventory_items.create!(key: "chain-mail", name: "Cotte de mailles",
+                                                    properties: { "armor_base" => 16, "armor_dexterity_cap" => 0 })
+    rope = @character.inventory_items.create!(key: "rope", name: "Corde")
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-inventory input[role=switch][aria-label=?]:not([checked])", "Équiper « Cotte de mailles »"
+    assert_select "#game-room-inventory input[role=switch][aria-label=?]", "Équiper « Corde »", count: 0
+
+    patch game_table_inventory_item_path(@game_table, chain_mail), params: { equipped: "1" }, as: :turbo_stream
+
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+    assert chain_mail.reload.equipped
+    assert_not leather.reload.equipped
+
+    patch game_table_inventory_item_path(@game_table, rope), params: { equipped: "1" }, as: :turbo_stream
+    assert_response :not_found
+    assert_not rope.reload.equipped
+  end
+
+  test "nobody equips an item of someone else's character, the game master neither" do
+    sword = @other_character.inventory_items.create!(key: "longsword", name: "Épée longue",
+                                                     properties: { "damage_dice" => "1d8" })
+
+    [@player, @game_master].each do |user|
+      sign_in user
+      patch game_table_inventory_item_path(@game_table, sword), params: { equipped: "1" }, as: :turbo_stream
+
+      assert_response :not_found
+    end
+    assert_not sword.reload.equipped
+  end
+
   test "a player spends gold pieces, never more than they have" do
     @character.update_columns(sheet: @character.sheet.merge("gold" => 7))
     sign_in @player
