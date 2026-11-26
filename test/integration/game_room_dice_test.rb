@@ -13,8 +13,7 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     @game_master = create_user("maitre")
     @player = create_user("joueur")
     sheet_template = EquipmentSpellsTemplateBuilder.create_template
-    sheet_template.character_fields["dice_rolls"] = { "modes" => [ADVANTAGE], "modes_on_sides" => 20,
-                                                      "initiative" => INITIATIVE }
+    sheet_template.character_fields["dice_rolls"] = { "modes" => [ADVANTAGE], "initiative" => INITIATIVE }
     sheet_template.save!
     @game_table = GameTable.create!(name: "La Crypte", status: GameTable::READY_STATUS, sheet_template: sheet_template,
                                     template_snapshot: sheet_template.snapshot)
@@ -39,17 +38,19 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     assert_select "turbo-stream[action=append][target=game-room-chat-feed]", text: /Aria lance 3d6\+2 :/
   end
 
-  test "advantage is a mode of the template, on its die only" do
+  test "advantage is a mode of the template, on any single die" do
     sign_in @player
 
-    roll(count: 1, sides: 20, mode: "advantage")
+    [20, 6].each do |sides|
+      roll(count: 1, sides: sides, mode: "advantage")
 
-    params = @game_table.chat_messages.last.event_params
-    assert_equal "1d20 (Avantage)", params["notation"]
-    assert_equal 2, params["dice"].size
-    assert_equal params["dice"].max, params["total"]
+      params = @game_table.chat_messages.last.event_params
+      assert_equal "1d#{sides} (Avantage)", params["notation"]
+      assert_equal 2, params["dice"].size
+      assert_equal params["dice"].max, params["total"]
+    end
 
-    [{ count: 1, sides: 6, mode: "advantage" }, { count: 1, sides: 20, mode: "luck" }].each do |refused|
+    [{ count: 2, sides: 6, mode: "advantage" }, { count: 1, sides: 20, mode: "luck" }].each do |refused|
       assert_no_difference("ChatMessage.count") { roll(**refused) }
       assert_response :unprocessable_content
     end

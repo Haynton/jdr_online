@@ -9,7 +9,6 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   DICE_ROLLS = {
     "modes" => [{ "key" => "advantage", "label" => "Avantage", "help" => "Deux d20, le meilleur.", "dice" => 2,
                   "keep" => "highest" }],
-    "modes_on_sides" => 20,
     "initiative" => { "label" => "Initiative", "sides" => 20, "modifier_from" => "proficiency_bonus",
                       "npc_modifier_from" => "dexterity" }
   }.freeze
@@ -305,11 +304,9 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  "Le mode de dés « Lucky » : il lance de 2 à 5 dés et garde le meilleur (highest) ou le pire (lowest)"
   end
 
-  test "the modes and the initiative roll a die the roller knows" do
-    template = with_dice_rolls(DICE_ROLLS.merge("modes_on_sides" => 7,
-                                                "initiative" => DICE_ROLLS["initiative"].merge("sides" => "d20")))
+  test "the initiative rolls a die the roller knows" do
+    template = with_dice_rolls(DICE_ROLLS.merge("initiative" => DICE_ROLLS["initiative"].merge("sides" => "d20")))
 
-    assert_error template, :invalid_modes_on_sides
     assert_error template, :invalid_initiative_sides
   end
 

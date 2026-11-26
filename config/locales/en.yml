@@ -219,7 +219,6 @@ en:
           invalid_dice_roll_mode_help: "The dice mode “%{mode}”: the help must be a text of one line, of %{count} characters at most"
           unknown_dice_roll_mode_parameter: "The dice mode “%{mode}”: the setting “%{parameter}” is unknown"
           duplicate_dice_roll_mode: "The dice mode “%{key}” is declared twice"
-          invalid_modes_on_sides: "The dice: the modes apply to a die among %{sides}"
           invalid_initiative_roll: "The initiative: the setting must declare its die and what it adds"
           unknown_initiative_parameter: "The initiative: the setting “%{parameter}” is unknown"
           invalid_initiative_label: "The initiative: the label must be filled in, on one line, in %{count} characters at most"

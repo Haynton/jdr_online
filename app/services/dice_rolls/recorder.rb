@@ -17,7 +17,7 @@ module DiceRolls
     end
 
     def call
-      mode = declared_mode(@game_table, @mode_key, @roll[:sides])
+      mode = declared_mode(@game_table, @mode_key)
       result = Roller.new(**@roll, mode:, random: @random).call
       ChatMessage.record_event(@game_table, event_key, game_master_only: @hidden,
                                                        **roller, notation: notation(result, mode),

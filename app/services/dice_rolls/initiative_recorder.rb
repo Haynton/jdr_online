@@ -30,7 +30,7 @@ module DiceRolls
     private
 
     def record(character)
-      mode = declared_mode(@game_table, @asked[:mode_key], @rule["sides"])
+      mode = declared_mode(@game_table, @asked[:mode_key])
       result = Roller.new(count: 1, sides: @rule["sides"], bonus: modifier_of(character), mode:, random: @random).call
       ChatMessage.record_event(@game_table, :initiative_rolled, game_master_only: hidden?,
                                                                 label: @rule["label"], character: character.name,

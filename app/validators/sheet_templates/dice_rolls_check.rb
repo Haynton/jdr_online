@@ -1,10 +1,10 @@
 module SheetTemplates
   # The dice of the game room (character_fields.dice_rolls), when the template declares them: its modes (advantage,
-  # disadvantage: `dice` dice rolled for one, keeping the highest or the lowest), on which die they apply
-  # (modes_on_sides), and its roll of initiative (a die, plus the value of a field of the sheet of a character and of
-  # an NPC). The dice are those the roller knows (DiceRolls::Roller::SIDES)
+  # disadvantage: `dice` dice rolled for one, keeping the highest or the lowest, on any die: decision of 26 November)
+  # and its roll of initiative (a die, plus the value of a field of the sheet of a character and of an NPC). The die
+  # of the initiative is one the roller knows (DiceRolls::Roller::SIDES)
   class DiceRollsCheck < Check
-    PARAMETERS = %w[modes modes_on_sides initiative].freeze
+    PARAMETERS = %w[modes initiative].freeze
     MODE_PARAMETERS = %w[key label help dice keep].freeze
     INITIATIVE_PARAMETERS = %w[label sides modifier_from npc_modifier_from].freeze
     MODE_DICE = (2..5)
@@ -32,8 +32,7 @@ module SheetTemplates
       return [] if modes.nil?
       return [[:invalid_dice_roll_modes, {}]] unless modes.is_a?(Array) && modes.all?(Hash)
 
-      modes.flat_map { |mode| mode_errors(mode) } + duplicate_mode_errors(modes) +
-        sides_errors(dice_rolls["modes_on_sides"], :invalid_modes_on_sides)
+      modes.flat_map { |mode| mode_errors(mode) } + duplicate_mode_errors(modes)
     end
 
     def mode_errors(mode)

@@ -48,10 +48,9 @@
     ],
     "dice_rolls": {
       "modes": [
-        { "key": "advantage", "label": "Avantage", "help": "Lancez deux d20 et gardez le meilleur.", "dice": 2, "keep": "highest" },
-        { "key": "disadvantage", "label": "Désavantage", "help": "Lancez deux d20 et gardez le pire.", "dice": 2, "keep": "lowest" }
+        { "key": "advantage", "label": "Avantage", "help": "Lancez deux dés et gardez le meilleur.", "dice": 2, "keep": "highest" },
+        { "key": "disadvantage", "label": "Désavantage", "help": "Lancez deux dés et gardez le pire.", "dice": 2, "keep": "lowest" }
       ],
-      "modes_on_sides": 20,
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
     "spell_slots": { "label": "Emplacements de sorts", "help": "Un sort de niveau 1 ou plus en dépense un de son niveau ou plus. Tous rendus après un repos long.",

@@ -99,7 +99,6 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal %w[advantage disadvantage], dice_rolls.first["modes"].pluck("key")
     dice_rolls.each do |declared|
       assert_equal dice_rolls.first["modes"].pluck(*MODE_RULES), declared["modes"].pluck(*MODE_RULES)
-      assert_equal 20, declared["modes_on_sides"]
       assert_equal dice_rolls.first["initiative"].except("label"), declared["initiative"].except("label")
     end
   end

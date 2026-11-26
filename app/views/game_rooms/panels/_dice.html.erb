@@ -1,7 +1,7 @@
 <%# The panel « Dés » (GameRoom): a real form, without JavaScript too, sent to GameTables::DiceRollsController. The
     die (one of the seven of DiceRolls::Roller, the d20 chosen first), how many and the bonus between − and +, the modes the
-    template declares (none for a template without them; greyed out by dice_panel_controller.js unless a single die
-    of their sides is rolled, refused by the server anyway), « Jet caché » for the game master, « Lancer ». Then the
+    template declares (none for a template without them; on any die, greyed out by dice_panel_controller.js unless a
+    single die is rolled, refused by the server anyway), « Jet caché » for the game master, « Lancer ». Then the
     initiative of the template (its own button, which sends the same form with dice_roll[initiative]: the mode and
     the hidden roll apply to it, not the die, the count nor the bonus): a player rolls for their character, the game
     master chooses which NPC or enemy (each player rolls their own). The roll goes to the chat; the last roll of the reader shows under « Lancer », in sight
@@ -9,14 +9,14 @@
 <% game_table = game_room.game_table %>
 <% modes = dice_modes(game_table) %>
 <%= form_with url: game_table_dice_roll_path(game_table), scope: :dice_roll, id: "dice-roll-form",
-              class: "flex flex-col gap-5", data: dice_panel_data(game_table) do |form| %>
+              class: "flex flex-col gap-5", data: dice_panel_data do |form| %>
   <fieldset>
-    <legend class="text-sm font-semibold text-ink"><%= t(".die") %></legend>
-    <div class="mt-2 grid grid-cols-4 gap-2">
+    <%# Its name for screen readers only (Anthony's request: the dice speak for themselves) %>
+    <legend class="sr-only"><%= t(".die") %></legend>
+    <div class="grid grid-cols-4 gap-2">
       <% DiceRolls::Roller::SIDES.each do |sides| %>
         <label class="<%= GameRoomDiceHelper::DIE_CLASSES %>">
-          <%= form.radio_button :sides, sides, checked: sides == GameRoomDiceHelper::DEFAULT_SIDES, class: "sr-only",
-                                               data: { dice_panel_target: "side" } %>
+          <%= form.radio_button :sides, sides, checked: sides == GameRoomDiceHelper::DEFAULT_SIDES, class: "sr-only" %>
           <%= t(".die_name", sides: sides) %>
         </label>
       <% end %>

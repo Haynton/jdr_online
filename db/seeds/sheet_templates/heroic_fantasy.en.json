@@ -48,10 +48,9 @@
     ],
     "dice_rolls": {
       "modes": [
-        { "key": "advantage", "label": "Advantage", "help": "Roll two d20 and keep the higher.", "dice": 2, "keep": "highest" },
-        { "key": "disadvantage", "label": "Disadvantage", "help": "Roll two d20 and keep the lower.", "dice": 2, "keep": "lowest" }
+        { "key": "advantage", "label": "Advantage", "help": "Roll two dice and keep the higher.", "dice": 2, "keep": "highest" },
+        { "key": "disadvantage", "label": "Disadvantage", "help": "Roll two dice and keep the lower.", "dice": 2, "keep": "lowest" }
       ],
-      "modes_on_sides": 20,
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
     "spell_slots": { "label": "Spell slots", "help": "A spell of level 1 or higher spends one of its level or higher. All regained after a long rest.",

@@ -190,7 +190,6 @@ fr:
           invalid_dice_roll_mode_help: "Le mode de dés « %{mode} » : l'aide doit être un texte d'une ligne, de %{count} caractères au plus"
           unknown_dice_roll_mode_parameter: "Le mode de dés « %{mode} » : le réglage « %{parameter} » est inconnu"
           duplicate_dice_roll_mode: "Le mode de dés « %{key} » est déclaré deux fois"
-          invalid_modes_on_sides: "Les dés : les modes s'appliquent à un dé parmi %{sides}"
           invalid_initiative_roll: "L'initiative : le réglage doit déclarer son dé et ce qu'il ajoute"
           unknown_initiative_parameter: "L'initiative : le réglage « %{parameter} » est inconnu"
           invalid_initiative_label: "L'initiative : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
