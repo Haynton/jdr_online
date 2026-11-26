@@ -1,6 +1,7 @@
 # An item a character carries: a copy of its catalog entry, made when the character is created (its starting
 # equipment, CharacterSheets::StartingEquipment) or given by the game master in the game room
-# (GameTables::ItemGiftsController), with how many of it (20 arrows)
+# (GameTables::ItemGiftsController), with how many of it (20 arrows); the player takes them out one by one
+# (GameTables::InventoryItemsController)
 class InventoryItem < ApplicationRecord
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
@@ -13,6 +14,13 @@ class InventoryItem < ApplicationRecord
   # A copy of an item of the catalog, its note in its name ("Livre de prières")
   def self.copy_of(starting_item)
     from_entry(starting_item.entry, quantity: starting_item.count, note: starting_item.note)
+  end
+
+  # One fewer (an arrow shot, a potion drunk): the last one removes the line
+  def take_one_away
+    return destroy if quantity <= 1
+
+    update(quantity: quantity - 1)
   end
 
   # A copy of an entry of the catalog of the table: it never changes when the catalog does

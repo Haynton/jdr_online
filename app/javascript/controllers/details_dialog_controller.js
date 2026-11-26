@@ -8,9 +8,14 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["opener", "fold", "dialog", "title", "summary", "body"]
 
-  connect() {
-    this.openerTargets.forEach((opener) => { opener.hidden = false })
-    this.foldTargets.forEach((fold) => { fold.hidden = true })
+  // Each time a button or a fold reaches the page, also once the page is drawn again in part (the inventory of the
+  // game room, redrawn by the server after an item is taken away)
+  openerTargetConnected(opener) {
+    opener.hidden = false
+  }
+
+  foldTargetConnected(fold) {
+    fold.hidden = true
   }
 
   open({ currentTarget: opener, params: { name, summary } }) {

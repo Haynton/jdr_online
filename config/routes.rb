@@ -66,6 +66,12 @@ Rails.application.routes.draw do
       resources :character_sheets, only: :show
       # The game master gives an item of the catalog of the table to a player, from the game room
       resource :item_gift, only: :create
+      # A player takes one of an item out of their inventory, from the game room (the last one removes its line)
+      resources :inventory_items, only: :destroy
+      # A player takes an amount out of a value kept with their inventory (gold pieces spent), from the game room
+      resources :inventory_values, only: :update, param: :key
+      # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
+      resource :spell_choice, only: %i[edit update]
       # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
       resources :chat_messages, only: :create
     end

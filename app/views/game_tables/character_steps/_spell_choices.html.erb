@@ -10,7 +10,11 @@
 <% groups = spell_choices.groups %>
 <%# Spacing (decision, balanced): 32 px under the header of the page (40 after the sections of the step, when there
     are), the search and the filters 20 px apart (12 px was too tight), one block of tools, then 40 px before each group of spells %>
-<%= tag.div class: ["flex flex-col gap-10", ("mt-10" if local_assigns[:after_sections])], data: { controller: "spell-choices details-dialog" } do %>
+<%# compact: the window of the game room (game_tables/spell_choices/edit): no spell slots (the panel « Sorts » shows
+    them behind the window), the search and the filters on one line where they fit, its label in the field, 24 px
+    between the blocks (Anthony's request: tighter) %>
+<% compact = local_assigns[:compact] %>
+<%= tag.div class: ["flex flex-col", compact ? "gap-6" : "gap-10", ("mt-10" if local_assigns[:after_sections])], data: { controller: "spell-choices details-dialog" } do %>
   <% if character.errors[:spells].any? %>
     <div role="alert">
       <% character.errors.messages_for(:spells).each do |message| %>
@@ -19,9 +23,9 @@
     </div>
   <% end %>
   <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
-  <%= render "shared/details_dialog" %>
+  <%= render "shared/details_dialog", id: local_assigns.fetch(:details_dialog_id, "details-dialog") %>
   <%# The spell slots first (decision): they say how far the prepared spells will go %>
-  <% if (slots = character_spell_slots(character)) %>
+  <% if !compact && (slots = character_spell_slots(character)) %>
     <%= render "character_sheets/summary/spell_slots", slots: slots, title_classes: "text-lg leading-7 font-bold text-ink" %>
   <% end %>
 
@@ -31,12 +35,14 @@
     <%# The search and the filters (decision: level, school, concentration and ritual, chosen only), shown by the
         controller. Pills of "My tables" (filter_pill_classes): within a group the values add up, between the groups
         they combine, a group with no pill pressed lets every spell through %>
-    <div hidden class="flex flex-col gap-5" data-spell-choices-target="tools">
-      <div class="w-full max-w-sm">
-        <%= label_tag "spell_search", t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"), class: SimpleFormFieldClasses::LABEL %>
+    <div hidden class="<%= compact ? "flex flex-col gap-3 lg:flex-row lg:items-start lg:gap-4" : "flex flex-col gap-5" %>" data-spell-choices-target="tools">
+      <div class="<%= compact ? "w-full shrink-0 lg:w-64" : "w-full max-w-sm" %>">
+        <%= label_tag "spell_search", t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"),
+                      class: compact ? "sr-only" : SimpleFormFieldClasses::LABEL %>
         <div class="relative">
           <%= render "shared/icons/search", css_class: "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" %>
           <%= search_field_tag "spell_search", nil, class: "#{SimpleFormFieldClasses::INPUT} pl-9", autocomplete: "off",
+                                                    placeholder: (t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search") if compact),
                                                     data: { spell_choices_target: "search", action: "input->spell-choices#filter" } %>
         </div>
       </div>

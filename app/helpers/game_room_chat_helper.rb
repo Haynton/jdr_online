@@ -1,7 +1,9 @@
 # What the chat of the game room shows of a line of its feed (ChatMessage), and its field
 module GameRoomChatHelper
   # The text of each event, written once (a key per event, never built from its name)
-  CHAT_EVENT_TEXTS = { "item_given" => "game_rooms.chat.events.item_given" }.freeze
+  CHAT_EVENT_TEXTS = {
+    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed"
+  }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own
   # in gold (primary-soft) with a fine gold contour inside, like the game master badge (without it, the dark gold
