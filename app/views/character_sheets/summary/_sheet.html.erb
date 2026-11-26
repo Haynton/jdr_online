@@ -5,7 +5,8 @@
     (combat: summary_only) shows here only. A name still missing is said here.
     Then "Create my character", at the bottom of the screen on a short page (mt-auto).
     read_only: the sheet of a complete character (« Mes personnages »): its name is the title of the page, "Change"
-    leads to its identity and description only, nothing to roll or confirm.
+    leads to its identity and description only, nothing to roll or confirm. editable: false leaves that "Change" out
+    (a sheet read by the game master in the game room).
     The spells and the items open their details in one window (shared/_details_dialog): the whole sheet is the scope
     of details_dialog_controller.js, in a box that does not count in the layout (contents) %>
 <% read_only = local_assigns[:read_only] %>
@@ -28,7 +29,8 @@
 <% if header_step %>
   <%= render "character_sheets/summary/block", character: character, step: header_step,
                                                           computed: computed, header: true,
-                                                          read_only: read_only %>
+                                                          read_only: read_only,
+                                                          editable: local_assigns.fetch(:editable, true) %>
 <% end %>
 <div class="mt-8 grid gap-x-12 gap-y-8 lg:grid-cols-2">
   <% summary_columns(steps - [header_step]).each do |column| %>

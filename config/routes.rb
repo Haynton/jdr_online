@@ -60,6 +60,9 @@ Rails.application.routes.draw do
       resource :ability_roll, only: :create
       # "Roll the hit dice" on the summary of that character: the server rolls once and keeps the results
       resource :hit_dice_roll, only: :create
+      # The sheet of a character from the game room, in its window: any player's for the game master, their own for a
+      # player
+      resources :character_sheets, only: :show
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player
