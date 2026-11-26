@@ -29,6 +29,23 @@
       { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Détails", "sections": ["Détails"] }
     ],
+    "conditions": [
+      { "key": "blinded", "label": "Aveuglé", "description": "Vous ne voyez rien et ratez automatiquement tout test de caractéristique qui demande la vue. Les jets d'attaque contre vous ont l'avantage, et les vôtres le désavantage." },
+      { "key": "charmed", "label": "Charmé", "description": "Vous ne pouvez pas attaquer celui qui vous a charmé, ni le viser avec un effet ou une capacité qui fait des dégâts. Il a l'avantage aux tests de caractéristique pour interagir socialement avec vous." },
+      { "key": "deafened", "label": "Assourdi", "description": "Vous n'entendez rien et ratez automatiquement tout test de caractéristique qui demande l'ouïe." },
+      { "key": "exhaustion", "label": "Épuisement", "description": "Se cumule du niveau 1 au niveau 6. Chaque niveau donne −2 à vos tests de d20 et retire 1,50 mètre à votre vitesse. Au niveau 6, vous mourez. Un repos long retire un niveau.", "levels": 6 },
+      { "key": "frightened", "label": "Effrayé", "description": "Vous avez le désavantage aux tests de caractéristique et aux jets d'attaque tant que la source de votre peur est en vue. Vous ne pouvez pas vous en approcher volontairement." },
+      { "key": "grappled", "label": "Agrippé", "description": "Votre vitesse est de 0 et ne peut pas augmenter. Vous avez le désavantage aux jets d'attaque contre toute autre cible que celui qui vous agrippe. Il peut vous traîner ou vous porter en dépensant plus de déplacement." },
+      { "key": "incapacitated", "label": "Neutralisé", "description": "Vous ne pouvez faire ni action, ni action bonus, ni réaction, et vous ne pouvez pas parler. Votre concentration est rompue. Vous avez le désavantage aux jets d'initiative." },
+      { "key": "invisible", "label": "Invisible", "description": "On ne peut pas vous voir. Les jets d'attaque contre vous ont le désavantage et les vôtres l'avantage, sauf si l'attaquant vous voit. Vous avez l'avantage aux jets d'initiative." },
+      { "key": "paralyzed", "label": "Paralysé", "description": "Vous êtes neutralisé, votre vitesse est de 0 et vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Les jets d'attaque contre vous ont l'avantage, et un coup porté à 1,50 mètre ou moins est un coup critique." },
+      { "key": "petrified", "label": "Pétrifié", "description": "Vous êtes changé en pierre, avec ce que vous portez. Vous êtes neutralisé, votre vitesse est de 0, les jets d'attaque contre vous ont l'avantage et vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Vous résistez à tous les dégâts et ne pouvez pas être empoisonné." },
+      { "key": "poisoned", "label": "Empoisonné", "description": "Vous avez le désavantage aux jets d'attaque et aux tests de caractéristique." },
+      { "key": "prone", "label": "À terre", "description": "Vous ne pouvez que ramper, ou dépenser la moitié de votre vitesse pour vous relever. Vous avez le désavantage aux jets d'attaque. Les jets d'attaque contre vous ont l'avantage à 1,50 mètre ou moins, le désavantage au-delà." },
+      { "key": "restrained", "label": "Entravé", "description": "Votre vitesse est de 0 et ne peut pas augmenter. Les jets d'attaque contre vous ont l'avantage et les vôtres le désavantage. Vous avez le désavantage aux jets de sauvegarde de Dextérité." },
+      { "key": "stunned", "label": "Étourdi", "description": "Vous êtes neutralisé et ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Les jets d'attaque contre vous ont l'avantage." },
+      { "key": "unconscious", "label": "Inconscient", "description": "Vous êtes neutralisé et à terre, et vous lâchez ce que vous tenez. Votre vitesse est de 0, vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité, les jets d'attaque contre vous ont l'avantage et un coup porté à 1,50 mètre ou moins est un coup critique. Vous ne savez rien de ce qui vous entoure." }
+    ],
     "spell_slots": { "label": "Emplacements de sorts", "help": "Un sort de niveau 1 ou plus en dépense un de son niveau ou plus. Tous rendus après un repos long.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
     "spell_groups": [
