@@ -1,5 +1,7 @@
-# A character of a table: a player character (pc), one per player, made before they join the game; or an NPC or a
-# monster of the game master (npc, monster), added at the step "NPCs and enemies", from the bestiary or from nothing.
+# A character of a table: a player character (pc), one per player, made before they join the game; or an NPC, a
+# monster or a companion of the game master (npc, monster, companion), added at the step "NPCs and enemies", from the
+# bestiary or from nothing. A companion (a familiar, a steed, a tamed beast) is given to a player character, its
+# owner: often later, since the players have no character yet when the table is created.
 # The values of the sheet are JSONB, keyed by the fields of the template copied into the table (template_snapshot: the
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
@@ -20,11 +22,17 @@ class Character < ApplicationRecord
   belongs_to :participation, optional: true
   # What it carries: the starting equipment, copied when the character is complete
   has_many :inventory_items, dependent: :destroy
+  # Only for a companion: the player character it is given to. None yet: it stays with the game master
+  belongs_to :owner_character, class_name: "Character", optional: true, inverse_of: :companions
+  # The companions given to this player character: they go back to the game master when it goes
+  has_many :companions, class_name: "Character", foreign_key: :owner_character_id, inverse_of: :owner_character,
+                        dependent: :nullify
 
   enum :kind, {
     pc: "pc",
     npc: "npc",
-    monster: "monster"
+    monster: "monster",
+    companion: "companion"
   }
 
   # A player character is made in steps, saved as a draft after each one (CharacterCreationSteps), and complete
@@ -35,7 +43,7 @@ class Character < ApplicationRecord
   }
 
   # The kinds of the characters of the game master (step "NPCs and enemies")
-  GAME_MASTER_KINDS = %w[npc monster].freeze
+  GAME_MASTER_KINDS = %w[npc monster companion].freeze
 
   scope :of_game_master, -> { where(kind: GAME_MASTER_KINDS) }
 
@@ -44,6 +52,7 @@ class Character < ApplicationRecord
   validates :name, length: { maximum: NAME_MAX_LENGTH }
   validates :participation, presence: true, if: :pc?
   validates :participation_id, uniqueness: { message: :already_has_character }, if: :pc?
+  validate :owner_is_a_player_character_of_the_table, if: :owner_character
   validates_with CharacterSheetValidator
   validates_with CharacterSpellsValidator
 
@@ -126,6 +135,14 @@ class Character < ApplicationRecord
       choices.copy_of(spell_key) || { "key" => spell_key }
     end
     self.spells = chosen_spells + choices.always_prepared.copies
+  end
+
+  # Only a companion has an owner, and only a player character of its own table
+  def owner_is_a_player_character_of_the_table
+    return errors.add(:owner_character, :only_for_companion) unless companion?
+    return if owner_character.pc? && owner_character.game_table_id == game_table_id
+
+    errors.add(:owner_character, :not_a_player_of_the_table)
   end
 
   # CharacterSheetValidator adds its errors per field ("sheet.strength"), so that each one shows under its field.
