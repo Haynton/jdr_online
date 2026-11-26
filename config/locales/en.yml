@@ -241,6 +241,7 @@ en:
           invalid_spell_group_label: "The group of spells “%{group}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_spell_slots_label: "The spell slots: the label must be filled in, on one line, in %{count} characters at most"
           invalid_class_slots_label: "%{part} › %{field} › %{option}: the label of the spell slots must be filled in, on one line, in %{count} characters at most"
+          invalid_class_slots_recovery: "%{part} › %{field} › %{option}: the slots come back in one of these ways: %{recoveries}"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           labels_not_matching_options: "%{part} › %{field}: “labels” must give a name to each option (%{count})"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
@@ -1152,6 +1153,8 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
+        hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
         resource_used: "%{character} uses %{resource}: %{left} of %{total} left."
         resource_pool_used: "%{character} spends %{count} of %{resource}: %{left} of %{total} left."
         death_save_success: "%{character} · death save: %{roll}, a success (%{successes} of %{needed})."
@@ -1173,7 +1176,7 @@ en:
       field: "Message to the table"
       fold: "Fold the chat"
       former_player: "Former player"
-      hidden_roll: "Hidden roll, seen by you only"
+      game_master_only: "Seen by you only"
       hint: "Enter to send, Shift + Enter for a new line"
       new_messages: "New messages"
       placeholder: "Write to the table…"
@@ -1221,6 +1224,7 @@ en:
       roll_question_hint: "With the roll, the order follows the results. Without, the order stays the one of the strip."
       round: "Round %{count}"
       slot: "Level %{level} slot %{number} used"
+      slots_left: "%{left} of %{total}"
       spell_level: "Level %{level}"
       start_turns: "Start turn by turn"
       with_rolls: "Initiative roll"
@@ -1363,6 +1367,11 @@ en:
         spend: "Use %{resource} of %{name}"
         spend_short: "Spend"
         title: "Resources"
+      hit_dice:
+        left: "%{left} of %{total} · d%{sides}"
+        spend: "Spend"
+        spend_for: "Spend a hit die of %{name}"
+        title: "Hit dice"
       death_saves:
         count: "%{count} of %{needed}"
         dead: "Dead"

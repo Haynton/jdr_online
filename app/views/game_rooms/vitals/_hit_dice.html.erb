@@ -1,0 +1,19 @@
+<%# The hit dice of a player's character (CharacterHitDice; decision of 26 November): how many are left, the die of its
+    class, and « Dépenser » (whenever the player wants, the game master judges; GameTables::CharacterVitalsController
+    #hit_die: the server rolls the die plus the modifier, gives back the hit points, writes it in the chat). A long rest
+    gives them all back. Always in the page, so that the stream finds it %>
+<div id="character-<%= character.id %>-hit-dice">
+  <% if character.hit_dice_total.positive? %>
+    <div class="mt-3 flex items-center gap-2">
+      <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.vitals.hit_dice.title") %></span>
+      <span class="text-sm font-medium text-ink tabular-nums"><%= t("game_rooms.vitals.hit_dice.left", left: character.hit_dice_left, total: character.hit_dice_total, sides: character.hit_die_sides) %></span>
+      <%= button_to hit_die_game_table_character_vital_path(character.game_table, character), method: :post,
+                    class: "#{button_classes(:secondary, size: :compact)} gap-1.5", form_class: "inline-flex",
+                    disabled: character.hit_dice_left.zero?,
+                    aria: { label: t("game_rooms.vitals.hit_dice.spend_for", name: character.name) } do %>
+        <%= render "shared/icons/dices", css_class: "size-4" %>
+        <%= t("game_rooms.vitals.hit_dice.spend") %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -32,6 +32,18 @@ module GameTables
       save_and_share
     end
 
+    # A hit die spent to heal (CharacterHitDice), whenever the player wants: written in the chat for everyone
+    def hit_die
+      spent = @character.spend_hit_die
+      return head(:unprocessable_content) unless spent
+
+      save_and_share do
+        ChatMessage.record_event(@game_table, :hit_die_spent, character: @character.name, sides: spent.sides,
+                                                              roll: spent.roll, modifier: signed(spent.modifier),
+                                                              healed: spent.healed)
+      end
+    end
+
     # A death saving throw, rolled by the server, for a character at 0 hit points who is neither stable nor dead
     def death_save
       raise ActiveRecord::RecordNotFound unless @character.dying?
@@ -49,6 +61,10 @@ module GameTables
       end
       @character.switch(params[:switch], params[:switched_on] == "true") if params[:switch]
       adjust_for_game_master if params[:adjust]
+    end
+
+    def signed(number)
+      number.negative? ? number.to_s : "+#{number}"
     end
 
     # Only the game master adjusts a number (the bonus to the armour class)

@@ -80,7 +80,9 @@ Rails.application.routes.draw do
         post :long_rest, on: :member
         post :short_rest, on: :member
         post :death_save, on: :member
+        post :hit_die, on: :member
         resources :resources, only: :update, param: :key, controller: "character_resources"
+        resources :spell_slots, only: :update, param: :level, controller: "character_spell_slots"
       end
       # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
       resources :chat_messages, only: :create

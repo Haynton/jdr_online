@@ -438,6 +438,26 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_empty @character.reload.resources_used
   end
 
+  test "a player spends a spell slot, written in the chat of the game master only; a long rest gives it back" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+    path = game_table_character_vital_spell_slot_path(@game_table, @character, 1)
+    assert_select "#character-#{@character.id}-spell-slots form[action=?]", path
+
+    sign_in @player
+    patch path, params: { resource_change: "spend" }, as: :turbo_stream
+    assert_equal({ "1" => 1 }, @character.reload.spell_slots_used)
+    assert_predicate ChatMessage.last, :game_master_only?
+    assert_equal "spell_slot_spent", ChatMessage.last.event_key
+
+    2.times { patch path, params: { resource_change: "spend" }, as: :turbo_stream }
+    assert_response :unprocessable_content
+
+    sign_in @game_master
+    post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_empty @character.reload.spell_slots_used
+  end
+
   test "a player changes the hit points of their own character only, and never takes a long rest" do
     @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 10, "max" => 12 }))
     @other_character.update_columns(sheet: @other_character.sheet.merge("hp" => { "current" => 10, "max" => 12 }))

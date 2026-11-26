@@ -15,7 +15,9 @@ module GameRoomChatHelper
     "death_save_dead" => "game_rooms.chat.events.death_save_dead",
     "death_save_hit" => "game_rooms.chat.events.death_save_hit",
     "resource_used" => "game_rooms.chat.events.resource_used",
-    "resource_pool_used" => "game_rooms.chat.events.resource_pool_used"
+    "resource_pool_used" => "game_rooms.chat.events.resource_pool_used",
+    "spell_slot_spent" => "game_rooms.chat.events.spell_slot_spent",
+    "hit_die_spent" => "game_rooms.chat.events.hit_die_spent"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own
