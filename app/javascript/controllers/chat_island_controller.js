@@ -8,7 +8,7 @@ import { Controller } from "@hotwired/stimulus"
 const HEIGHT_KEY = "game_room_chat_height"
 const FOLDED_KEY = "game_room_chat_folded"
 export const HIDDEN_KEY = "game_room_chat_hidden"
-const MIN_HEIGHT = 96
+const MIN_HEIGHT = 160
 const KEY_STEP = 24
 const BIG_KEY_STEP = 96
 

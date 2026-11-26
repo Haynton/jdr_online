@@ -1,0 +1,24 @@
+<%# The field of the chat, under the feed. A message refused (empty, too long) comes back with its error and the text
+    typed (refused_message); sent, the form comes back empty and keeps the focus (chat_feed_controller.js) %>
+<% refused_message = local_assigns[:refused_message] %>
+<%= form_with url: game_table_chat_messages_path(game_table), scope: :chat_message, id: "game-room-chat-form",
+              class: "shrink-0 border-t border-line p-3",
+              data: { chat_feed_target: "form", action: "turbo:submit-end->chat-feed#sent" } do |form| %>
+  <div class="flex gap-2">
+    <%= form.text_field :body, value: refused_message&.body, required: true, maxlength: ChatMessage::BODY_MAX_LENGTH,
+                               autocomplete: "off", "aria-label": t("game_rooms.chat.field"),
+                               placeholder: t("game_rooms.chat.placeholder"),
+                               "aria-invalid": refused_message.present? || nil,
+                               "aria-describedby": (refused_message ? "game-room-chat-error" : nil),
+                               class: "#{SimpleFormFieldClasses::INPUT} min-w-0 flex-1", data: { chat_feed_target: "field" } %>
+    <button type="submit" class="<%= button_classes(:secondary, size: :compact_icon) %>"
+            aria-label="<%= t("game_rooms.chat.send") %>" title="<%= t("game_rooms.chat.send") %>">
+      <%= render "shared/icons/send_horizontal" %>
+    </button>
+  </div>
+  <% if refused_message %>
+    <p id="game-room-chat-error" class="mt-1 text-xs text-error-ink first-letter:uppercase">
+      <%= refused_message.errors.messages_for(:body).first %>
+    </p>
+  <% end %>
+<% end %>

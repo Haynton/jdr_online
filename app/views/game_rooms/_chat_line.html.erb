@@ -1,0 +1,18 @@
+<%# A line of the feed (ChatMessage), the same for everyone at the table: it is also sent live by the channel, so it
+    knows nothing of who reads it. Their own lines are marked by chat_feed_controller.js (data-own), which also
+    writes the time in the time zone of the reader (the server one stays without JavaScript) %>
+<li id="<%= dom_id(line) %>" class="group" data-chat-feed-target="line" data-author-id="<%= line.user_id %>">
+  <% if line.event? %>
+    <p class="flex gap-2 text-sm text-muted">
+      <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
+      <span><%= chat_event_text(line) %></span>
+    </p>
+  <% else %>
+    <p class="flex items-baseline gap-2">
+      <span class="truncate text-sm font-semibold text-ink group-data-own:text-brass"><%= chat_author_name(line) %></span>
+      <time datetime="<%= line.created_at.iso8601 %>" class="shrink-0 text-xs text-muted tabular-nums"
+            data-chat-feed-target="time"><%= l(line.created_at, format: :chat_time) %></time>
+    </p>
+    <p class="text-sm break-words whitespace-pre-line text-ink"><%= line.body %></p>
+  <% end %>
+</li>

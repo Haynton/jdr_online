@@ -2,8 +2,9 @@
     the board keeps the screen, its height changed by the handle at its top (dragged, or the arrow keys once it has the
     focus) and folded by its button, both kept in this browser (chat_island_controller.js; the handle and the button
     rendered hidden and shown by it). Folded, 60 px high like the other islands (its header 58 px inside its
-    border). Its messages, the dice and the actions of each come with it. From 1024 px: on a smaller screen it will
-    need a place of its own (to decide with the chat). « Afficher le chat » (Paramètres › Affichage) hides it altogether %>
+    border). Its feed (ChatMessage): the last lines of the table, then those sent live by GameTableChannel, messages
+    typed at the table and events written by the server (an item given), then the field to write. From 1024 px: on a
+    smaller screen it will need a place of its own. « Afficher le chat » (Paramètres › Affichage) hides it altogether %>
 <aside class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute right-4 bottom-4 z-20 hidden w-80 flex-col lg:flex"
        aria-labelledby="game-room-chat-title" data-controller="chat-island"
        data-action="game-room-chat:change@window->chat-island#showOrHide"
@@ -18,14 +19,21 @@
   <header class="flex h-[58px] shrink-0 items-center gap-2 px-4">
     <%= render "shared/icons/message_square_text", css_class: "size-5 text-muted" %>
     <h2 id="game-room-chat-title" class="text-sm font-semibold text-ink"><%= t(".title") %></h2>
-    <span class="<%= badge_classes(:pending) %>"><%= t("game_rooms.coming_soon") %></span>
     <button type="button" hidden class="<%= button_classes(:quiet, size: :compact_icon) %> group/fold ml-auto"
             aria-expanded="true" aria-controls="game-room-chat-body" aria-label="<%= t(".fold") %>"
             title="<%= t(".fold") %>" data-chat-island-target="toggle" data-action="chat-island#toggle">
       <%= render "shared/icons/chevron_down", css_class: "size-4 transition-transform group-aria-[expanded=false]/fold:rotate-180" %>
     </button>
   </header>
-  <div id="game-room-chat-body" class="h-48 overflow-y-auto border-t border-line px-4 py-3" data-chat-island-target="body">
-    <p class="text-sm text-muted"><%= t(".description") %></p>
+  <div id="game-room-chat-body" class="flex h-64 flex-col border-t border-line" data-chat-island-target="body"
+       data-controller="chat-feed" data-chat-feed-current-user-id-value="<%= current_user.id %>">
+    <%= game_table_stream_from(game_room.game_table) %>
+    <div class="min-h-0 flex-1 overflow-y-auto px-4 py-3" data-chat-feed-target="scroller">
+      <p class="text-sm text-muted [&:has(+ol>li)]:hidden"><%= t(".empty") %></p>
+      <ol id="<%= ChatMessage::FEED_TARGET %>" class="space-y-3" role="log" aria-labelledby="game-room-chat-title">
+        <%= render partial: "game_rooms/chat_line", collection: game_room.chat_feed, as: :line %>
+      </ol>
+    </div>
+    <%= render "game_rooms/chat_form", game_table: game_room.game_table %>
   </div>
 </aside>

@@ -1,4 +1,7 @@
 fr:
+  time:
+    formats:
+      chat_time: "%H:%M"
   # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
   activemodel:
     attributes:
@@ -1065,9 +1068,17 @@ fr:
       remove: "Retirer"
       remove_map: "Retirer %{name} du plateau"
     chat:
-      description: "Le chat de la partie arrive bientôt : messages, jets de dés et actions de chacun, en direct."
+      events:
+        item_given:
+          one: "Le MJ a donné « %{item} » à %{character}."
+          other: "Le MJ a donné %{count} × « %{item} » à %{character}."
+      empty: "Aucun message pour l'instant. Écrivez à la table : chacun le voit en direct."
+      field: "Message à la table"
       fold: "Replier le chat"
+      former_player: "Ancien joueur"
+      placeholder: "Écrire à la table…"
       resize: "Changer la hauteur du chat"
+      send: "Envoyer"
       title: "Chat"
       unfold: "Déplier le chat"
     coming_soon: "Bientôt"

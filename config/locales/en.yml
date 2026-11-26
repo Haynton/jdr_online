@@ -28,6 +28,9 @@
 #       enabled: "ON"
 
 en:
+  time:
+    formats:
+      chat_time: "%H:%M"
   # The form objects (app/models/player_invitation.rb): ActiveModel, not ActiveRecord
   activemodel:
     attributes:
@@ -1094,9 +1097,17 @@ en:
       remove: "Take off"
       remove_map: "Take %{name} off the board"
     chat:
-      description: "The chat of the game is coming soon: messages, dice rolls and everyone's actions, live."
+      events:
+        item_given:
+          one: "The GM gave “%{item}” to %{character}."
+          other: "The GM gave %{count} × “%{item}” to %{character}."
+      empty: "No messages yet. Write to the table: everyone sees it live."
+      field: "Message to the table"
       fold: "Fold the chat"
+      former_player: "Former player"
+      placeholder: "Write to the table…"
       resize: "Change the height of the chat"
+      send: "Send"
       title: "Chat"
       unfold: "Unfold the chat"
     coming_soon: "Soon"
