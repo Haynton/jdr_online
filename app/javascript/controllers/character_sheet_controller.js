@@ -205,8 +205,11 @@ export default class extends Controller {
     const modifier = modifiers[output.dataset.basedOn]
     if (modifier === null || modifier === undefined) return null
 
-    const isProficient = document.getElementById(output.dataset.proficientBox)?.checked
-    return modifier + (isProficient ? this.proficiencyOf(output.dataset.proficiency) : 0)
+    // The expertise (FieldTypes::Bonus: "expertise") counts the proficiency twice, and implies it
+    const hasExpertise = document.getElementById(output.dataset.expertiseBox)?.checked
+    const isProficient = hasExpertise || document.getElementById(output.dataset.proficientBox)?.checked
+    const factor = hasExpertise ? 2 : (isProficient ? 1 : 0)
+    return modifier + factor * this.proficiencyOf(output.dataset.proficiency)
   }
 
   // The threshold of the level typed in the field levelFrom: the last one at or under it

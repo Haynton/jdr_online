@@ -112,6 +112,10 @@ en:
         standard_array_value_taken: "%{value} is already placed on another ability"
         too_many_picks: "%{count} at most"
         skill_not_offered: "%{skill} is not offered by your choices: untick it"
+        expertise_not_offered: "%{skill} cannot take expertise: untick it"
+        too_many_expertise:
+          one: "too much expertise: %{count} at most"
+          other: "too much expertise: %{count} at most"
         too_many_skills:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"
@@ -1568,6 +1572,9 @@ en:
         place_value: "Place"
         points_spent: "%{spent} points spent out of %{points}"
         proficient: "(proficient)"
+        expertise: "Expertise"
+        expertise_for: "Expertise in %{skill}"
+        expertise_hint: "The proficiency bonus counts twice."
         reroll: "Roll again"
         resource_hint: "Maximum value: the character starts full."
         roll: "Roll the dice"
@@ -1582,6 +1589,7 @@ en:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        expertise: "Expertise"
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"
         hit_points_per_level: "Hit points"
@@ -1590,6 +1598,7 @@ en:
         resources: "Resources"
         skill_choices: "Skills"
         spellcasting: "Spellcasting ability"
+      expertise_value: "%{count} at level %{level}"
       features_level: "Level %{level}"
       hit_points_per_level_value: "+%{points} per level"
       label: "Summary of your choices"

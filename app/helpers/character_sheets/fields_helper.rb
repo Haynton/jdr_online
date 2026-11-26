@@ -71,7 +71,7 @@ module CharacterSheets
     # The hidden "0" first: an unchecked box sends nothing on its own. For a bonus, the box is its proficiency
     def sheet_check_box(character, field, data: {})
       hidden_field_tag(sheet_field_name(field), "0", id: nil) +
-        check_box_tag(sheet_field_name(field), "1", character.sheet[field["key"]] == true,
+        check_box_tag(sheet_field_name(field), "1", FieldTypes::Bonus.proficient?(character.sheet[field["key"]]),
                       sheet_control_options(character, field)
                         .merge(class: SimpleFormFieldClasses::CHECKBOX, data: data))
     end

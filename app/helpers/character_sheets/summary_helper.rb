@@ -95,7 +95,11 @@ module CharacterSheets
     end
 
     def summary_proficient?(character, field)
-      character.sheet[field["key"]] == true
+      FieldTypes::Bonus.proficient?(character.sheet[field["key"]])
+    end
+
+    def summary_expertise?(character, field)
+      FieldTypes::Bonus.expertise?(character.sheet[field["key"]])
     end
 
     # The value as read on the sheet, said by its type (a yes-or-no value as yes or no, a resource by its maximum, a

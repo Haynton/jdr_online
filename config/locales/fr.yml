@@ -83,6 +83,10 @@ fr:
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
         skill_not_offered: "%{skill} n'est pas proposée par vos choix : décochez-la"
+        expertise_not_offered: "%{skill} ne peut pas recevoir l'expertise : décochez-la"
+        too_many_expertise:
+          one: "trop d'expertises : %{count} au plus"
+          other: "trop d'expertises : %{count} au plus"
         too_many_skills:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
@@ -1539,6 +1543,9 @@ fr:
         place_value: "Placer"
         points_spent: "%{spent} points dépensés sur %{points}"
         proficient: "(maîtrise)"
+        expertise: "Expertise"
+        expertise_for: "Expertise en %{skill}"
+        expertise_hint: "Le bonus de maîtrise compte double."
         reroll: "Relancer les dés"
         resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
@@ -1553,6 +1560,7 @@ fr:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        expertise: "Expertise"
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
         hit_points_per_level: "Points de vie"
@@ -1561,6 +1569,7 @@ fr:
         resources: "Ressources"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+      expertise_value: "%{count} au niveau %{level}"
       features_level: "Niveau %{level}"
       hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"
