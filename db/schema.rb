@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,10 +76,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_170000) do
     t.string "ability_method"
     t.string "hit_point_method"
     t.jsonb "hit_point_rolls", default: {}, null: false
+    t.bigint "owner_character_id"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
+    t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
-    t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying, 'companion'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "owner_character_id IS NULL OR kind::text = 'companion'::text", name: "characters_owner_only_for_companion_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
   end
 
@@ -409,6 +412,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_170000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "catalog_entries", "game_tables"
   add_foreign_key "catalog_entries", "sheet_templates"
+  add_foreign_key "characters", "characters", column: "owner_character_id", on_delete: :nullify
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
   add_foreign_key "chat_messages", "game_tables", on_delete: :cascade

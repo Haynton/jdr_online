@@ -75,6 +75,7 @@ en:
         name: "Name"
       character:
         name: "Character name"
+        owner_character: "Character"
         spells: "Spells"
       game_table:
         board_game_map: "Map on the board"
@@ -171,6 +172,9 @@ en:
               too_many_points:
                 one: "Take off 1 point to continue."
                 other: "Take off %{count} points to continue."
+            owner_character:
+              not_a_player_of_the_table: "must be the character of a player of this table"
+              only_for_companion: "can only be chosen for a companion"
             participation_id:
               already_has_character: "already has a character at this table"
             spells:
@@ -1755,6 +1759,7 @@ en:
         kind: "Role"
         name: "Name"
       kinds:
+        companion: "Companion"
         monster: "Enemy"
         npc: "NPC"
       window:

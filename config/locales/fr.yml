@@ -46,6 +46,7 @@ fr:
         name: "Nom"
       character:
         name: "Nom du personnage"
+        owner_character: "Personnage"
         spells: "Sorts"
       game_table:
         board_game_map: "Carte du plateau"
@@ -142,6 +143,9 @@ fr:
               too_many_points:
                 one: "Retirez 1 point pour continuer."
                 other: "Retirez %{count} points pour continuer."
+            owner_character:
+              not_a_player_of_the_table: "doit être un personnage d'un joueur de cette table"
+              only_for_companion: "ne se choisit que pour un compagnon"
             participation_id:
               already_has_character: "a déjà un personnage à cette table"
             spells:
@@ -1726,6 +1730,7 @@ fr:
         kind: "Rôle"
         name: "Nom"
       kinds:
+        companion: "Compagnon"
         monster: "Ennemi"
         npc: "PNJ"
       window:
