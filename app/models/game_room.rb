@@ -30,9 +30,9 @@ class GameRoom
     @participation = participation
   end
 
-  # The last lines of the feed of the table, the oldest first (the chat)
+  # The last lines of the feed of the table, the oldest first (the chat); the hidden rolls for the game master only
   def chat_feed
-    ChatMessage.feed_of(game_table)
+    ChatMessage.feed_of(game_table, game_master: game_master?)
   end
 
   # A tool with nothing in it is left out: « Sorts » for a character without spells, « Compétences » for a template

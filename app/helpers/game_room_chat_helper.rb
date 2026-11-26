@@ -2,7 +2,9 @@
 module GameRoomChatHelper
   # The text of each event, written once (a key per event, never built from its name)
   CHAT_EVENT_TEXTS = {
-    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed"
+    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed",
+    "dice_rolled" => "game_rooms.chat.events.dice_rolled",
+    "dice_rolled_by_game_master" => "game_rooms.chat.events.dice_rolled_by_game_master"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own
@@ -37,8 +39,10 @@ module GameRoomChatHelper
     %w[min-h-10 max-h-32 min-w-0 flex-1 resize-none py-[9px] leading-5]
   ).join(" ").freeze
 
+  # A list among the values (the dice of a roll) reads « 7, 15 »
   def chat_event_text(line)
-    t(CHAT_EVENT_TEXTS.fetch(line.event_key), **line.event_params.symbolize_keys)
+    values = line.event_params.transform_values { |value| value.is_a?(Array) ? value.join(", ") : value }
+    t(CHAT_EVENT_TEXTS.fetch(line.event_key), **values.symbolize_keys)
   end
 
   # The name of the author, kept on the line: the line stays when the account is deleted
