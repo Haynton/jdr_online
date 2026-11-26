@@ -22,6 +22,14 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     { "key" => "silver", "label" => "Pièces d'argent", "abbreviation" => "pa", "type" => "number", "min" => 0,
       "max" => 100, "at_creation" => false, "currency" => true, "section" => "Notes" }
   ].freeze
+  DEATH_SAVE_FIELDS = [
+    { "key" => "death_successes", "label" => "Réussites", "type" => "number", "at_creation" => false,
+      "internal" => true, "section" => "Notes" },
+    { "key" => "death_failures", "label" => "Échecs", "type" => "number", "at_creation" => false, "internal" => true,
+      "section" => "Notes" }
+  ].freeze
+  DEATH_SAVES = { "label" => "Jets contre la mort", "sides" => 20, "success_from" => 10, "needed" => 3,
+                  "successes_from" => "death_successes", "failures_from" => "death_failures" }.freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
   setup do
@@ -362,6 +370,40 @@ class GameRoomTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
     assert_nil @character.reload.sheet["armor_class_bonus"]
+  end
+
+  test "at 0 hit points, a player rolls their death save, written in the chat; a hit at 0 is a failure" do
+    @game_table.update!(template_snapshot: @game_table.template_snapshot.deep_merge("character_fields" => {
+      "fields" => @game_table.template_snapshot.dig("character_fields", "fields") + DEATH_SAVE_FIELDS,
+      "death_saves" => DEATH_SAVES
+    }))
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 0, "max" => 12 }))
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#character-#{@character.id}-death-saves form[action=?]",
+                  death_save_game_table_character_vital_path(@game_table, @character)
+
+    post death_save_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+
+    assert_response :success
+    assert_equal 1, @character.reload.sheet.values_at("death_successes", "death_failures").compact.sum
+    assert_match(/\Adeath_save_/, ChatMessage.last.event_key)
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-death-saves"
+
+    sign_in @game_master
+    patch game_table_character_vital_path(@game_table, @character), params: { hit_points_delta: -1 }, as: :turbo_stream
+    assert_operator @character.reload.sheet["death_failures"].to_i, :>=, 1
+  end
+
+  test "nobody rolls a death save above 0 hit points, nor for someone else's character" do
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 5, "max" => 12 }))
+    sign_in @player
+    post death_save_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @player
+    post death_save_game_table_character_vital_path(@game_table, @other_character), as: :turbo_stream
+    assert_response :not_found
   end
 
   test "a player changes the hit points of their own character only, and never takes a long rest" do

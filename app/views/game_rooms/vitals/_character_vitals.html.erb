@@ -21,6 +21,7 @@
     <% end %>
   </div>
   <%= render "game_rooms/vitals/hit_points_bar", character: %>
+  <%= render "game_rooms/vitals/death_saves", character: %>
 <% end %>
 <% if (temporary_field = character.temporary_hit_points_field) %>
   <div class="mt-3 flex items-center gap-2">

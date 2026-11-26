@@ -273,6 +273,13 @@ en:
           invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
           missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
           unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
+          invalid_death_saves: "The death saving throws: the setting must declare its die and its fields"
+          invalid_death_saves_field: "The death saving throws: “%{parameter}” must name a field %{type} of the character sheet"
+          invalid_death_saves_label: "The death saving throws: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_death_saves_number: "The death saving throws: “%{parameter}” must be a whole number above 0"
+          invalid_death_saves_sides: "The death saving throws: the die must be a die among %{sides}"
+          missing_death_saves_parameter: "The death saving throws: the setting “%{parameter}” is required"
+          unknown_death_saves_parameter: "The death saving throws: the setting “%{parameter}” is unknown"
           unknown_step_effect: "The step “%{step}” depends on an unknown effect: %{effect}"
           unknown_step_parameter: "The step “%{step}”: the setting “%{parameter}” is unknown"
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
@@ -1145,6 +1152,13 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        death_save_success: "%{character} · death save: %{roll}, a success (%{successes} of %{needed})."
+        death_save_failure: "%{character} · death save: %{roll}, a failure (%{failures} of %{needed})."
+        death_save_critical_failure: "%{character} · death save: %{roll}, two failures (%{failures} of %{needed})."
+        death_save_revived: "%{character} · death save: %{roll}, comes back with 1 HP."
+        death_save_stable: "%{character} is out of danger: stable."
+        death_save_dead: "%{character} dies of their wounds."
+        death_save_hit: "%{character} takes a hit at 0 HP: a failure (%{failures} of %{needed})."
         item_given:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
@@ -1338,6 +1352,14 @@ en:
       settings: "Settings"
       signed_in_as: "Signed in: %{username}"
     vitals:
+      death_saves:
+        count: "%{count} of %{needed}"
+        dead: "Dead"
+        failures: "Failures"
+        roll: "Roll the save"
+        roll_for: "Roll the death save of %{name}"
+        stable: "Stable"
+        successes: "Successes"
       decrease: "Take 1 off %{label} of %{name}"
       increase: "Add 1 to %{label} of %{name}"
     video:

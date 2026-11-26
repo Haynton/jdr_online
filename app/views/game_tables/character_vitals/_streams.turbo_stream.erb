@@ -7,6 +7,7 @@
 <% if character.hit_points %>
   <%= turbo_stream.replace "character-#{id}-hit-points", partial: "game_rooms/vitals/hit_points_value", locals: { character: } %>
   <%= turbo_stream.replace "character-#{id}-hit-points-bar", partial: "game_rooms/vitals/hit_points_bar", locals: { character: } %>
+  <%= turbo_stream.replace "character-#{id}-death-saves", partial: "game_rooms/vitals/death_saves", locals: { character: } %>
 <% end %>
 <%= turbo_stream.replace "character-#{id}-temporary-hit-points", partial: "game_rooms/vitals/temporary_hit_points_value", locals: { character: } %>
 <% character.play_switch_fields.each do |field| %>

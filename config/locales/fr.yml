@@ -244,6 +244,13 @@ fr:
           invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
           missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
           unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_death_saves: "Les jets contre la mort : le réglage doit déclarer son dé et ses champs"
+          invalid_death_saves_field: "Les jets contre la mort : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_death_saves_label: "Les jets contre la mort : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_death_saves_number: "Les jets contre la mort : « %{parameter} » doit être un nombre entier plus grand que 0"
+          invalid_death_saves_sides: "Les jets contre la mort : le dé doit être un dé parmi %{sides}"
+          missing_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est obligatoire"
+          unknown_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est inconnu"
           unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
           unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
@@ -1116,6 +1123,13 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        death_save_success: "%{character} · jet contre la mort : %{roll}, une réussite (%{successes} sur %{needed})."
+        death_save_failure: "%{character} · jet contre la mort : %{roll}, un échec (%{failures} sur %{needed})."
+        death_save_critical_failure: "%{character} · jet contre la mort : %{roll}, deux échecs (%{failures} sur %{needed})."
+        death_save_revived: "%{character} · jet contre la mort : %{roll}, reprend conscience avec 1 PV."
+        death_save_stable: "%{character} n'est plus en danger : stable."
+        death_save_dead: "%{character} succombe à ses blessures."
+        death_save_hit: "%{character} subit un coup à 0 PV : un échec (%{failures} sur %{needed})."
         item_given:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
@@ -1309,6 +1323,14 @@ fr:
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
     vitals:
+      death_saves:
+        count: "%{count} sur %{needed}"
+        dead: "Mort"
+        failures: "Échecs"
+        roll: "Lancer le jet"
+        roll_for: "Lancer le jet contre la mort de %{name}"
+        stable: "Stable"
+        successes: "Réussites"
       decrease: "Retirer 1 à %{label} de %{name}"
       increase: "Ajouter 1 à %{label} de %{name}"
     video:
