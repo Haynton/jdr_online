@@ -111,6 +111,37 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_nil armor_class.call("class" => "Moine")
   end
 
+  test "the armour class of the equipment: the armour, Dexterity within its cap, the shield, the bonus of the game master" do
+    class_effects = { "Moine" => { "hit_die" => 8, "unarmored_defense" => "strength",
+                                   "unarmored_defense_without_shield" => true },
+                      "Barbare" => { "hit_die" => 12, "unarmored_defense" => "strength" }, "Guerrier" => { "hit_die" => 10 } }
+    fields = FIELDS + [{ "key" => "class", "type" => "choice", "effects" => class_effects },
+                       { "key" => "armor_class_bonus", "type" => "number" },
+                       { "key" => "armor_class", "type" => "computed", "rule" => "worn_armor_class",
+                         "class_from" => "class", "based_on" => "dexterity", "bonus_from" => "armor_class_bonus" }]
+    fighter = { "class" => "Guerrier", "dexterity" => 16, "strength" => 14 }
+    leather = { "armor_base" => 11 }
+    chain_shirt = { "armor_base" => 13, "armor_dexterity_cap" => 2 }
+    chain_mail = { "armor_base" => 16, "armor_dexterity_cap" => 0 }
+    shield = { "armor_bonus" => 2 }
+    armor_class = lambda do |sheet, equipped_items|
+      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], equipped_items: equipped_items)
+                                 .call[:values]["armor_class"]
+    end
+
+    assert_equal "13", armor_class.call(fighter, [])
+    assert_equal "14", armor_class.call(fighter, [leather])
+    assert_equal "15", armor_class.call(fighter, [chain_shirt])
+    assert_equal "18", armor_class.call(fighter, [chain_mail, shield])
+    assert_equal "19", armor_class.call(fighter.merge("armor_class_bonus" => 1), [chain_mail, shield])
+    # Dexterity +3 and Strength +4: the monk loses its unarmored defense with a shield, the barbarian keeps it
+    strong = fighter.merge("strength" => 18)
+    assert_equal "17", armor_class.call(strong.merge("class" => "Moine"), [])
+    assert_equal "15", armor_class.call(strong.merge("class" => "Moine"), [shield])
+    assert_equal "19", armor_class.call(strong.merge("class" => "Barbare"), [shield])
+    assert_nil armor_class.call({ "class" => "Guerrier" }, [chain_mail])
+  end
+
   test "the effects of a subclass add to those of its class: hit points per level, unarmored defense" do
     class_effects = { "Ensorceleur" => { "hit_die" => 6 } }
     subclass_effects = { "Sorcellerie draconique" => { "hit_points_per_level" => 1, "unarmored_defense" => "strength" } }

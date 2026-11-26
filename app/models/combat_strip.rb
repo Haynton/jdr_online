@@ -76,7 +76,7 @@ class CombatStrip
 
   def fighter_of(character, side)
     fields = side == :player ? @game_table.character_sheet_fields : @game_table.npc_sheet_fields
-    Fighter.new(character:, side:, gauge: gauge_of(character, fields), armor_class: character.sheet.to_h["armor_class"],
+    Fighter.new(character:, side:, gauge: gauge_of(character, fields), armor_class: character.armor_class_shown,
                 attacks: attacks_of(character, fields),
                 spell_slots: (CharacterSheets::SpellSlots.new(character).call if side == :player))
   end

@@ -8,7 +8,8 @@ module ChoiceEffects
   ALL = [
     ChoiceEffects::HitDie, ChoiceEffects::HitPointsPerLevel, ChoiceEffects::Proficient, ChoiceEffects::SkillChoices,
     ChoiceEffects::Spellcasting, ChoiceEffects::AlwaysPreparedSpells, ChoiceEffects::AbilityBonusChoices,
-    ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense, ChoiceEffects::Training,
+    ChoiceEffects::OriginFeat, ChoiceEffects::SetValues, ChoiceEffects::UnarmoredDefense,
+    ChoiceEffects::UnarmoredDefenseWithoutShield, ChoiceEffects::Training,
     ChoiceEffects::Tools, ChoiceEffects::FeaturesByLevel, ChoiceEffects::Traits, ChoiceEffects::StartingEquipment
   ].freeze
 

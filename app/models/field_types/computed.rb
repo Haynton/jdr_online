@@ -3,10 +3,11 @@ module FieldTypes
   # never stored, never typed
   class Computed < Base
     KEY = "computed".freeze
-    OWN_PARAMETERS = %w[rule based_on level_from class_from proficiency].freeze
+    OWN_PARAMETERS = %w[rule based_on level_from class_from proficiency bonus_from].freeze
     REQUIRED_PARAMETERS = %w[rule].freeze
     REFERENCES = {
-      "based_on" => "ability", "level_from" => "number", "class_from" => "choice", "proficiency" => "computed"
+      "based_on" => "ability", "level_from" => "number", "class_from" => "choice", "proficiency" => "computed",
+      "bonus_from" => "number"
     }.freeze
 
     def partial

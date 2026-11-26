@@ -16,6 +16,8 @@ module CharacterSheets
 
     # What the live calculation needs to work out a computed value, beside its rule
     def computed_value_data(field)
+      return {} unless ComputedRules.of(field).live?
+
       { character_sheet_target: "computed", key: field["key"], rule: field["rule"], based_on: field["based_on"],
         level_from: field["level_from"], class_from: field["class_from"], proficiency: field["proficiency"] }.compact
     end

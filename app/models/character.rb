@@ -10,6 +10,7 @@ class Character < ApplicationRecord
   include CharacterDraftSaving
   include CharacterHitPoints
   include CharacterVitals
+  include CharacterEquipment
   include PlacedOnMaps
   include CharacterDescription
   include HasAvatar
@@ -107,9 +108,7 @@ class Character < ApplicationRecord
       [field["key"], FieldTypes.of(field).initial_value(value)] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
-    starting_items = CharacterSheets::StartingEquipment.new(self).chosen_items.map { |item| InventoryItem.copy_of(item) }
-    InventoryItem.equip_starting(starting_items)
-    inventory_items << starting_items
+    inventory_items << starting_inventory
     self.status = :complete
   end
 
@@ -126,7 +125,8 @@ class Character < ApplicationRecord
   # The values worked out from what was typed: modifiers, level, proficiency, bonuses (never stored)
   def computed_sheet_values
     CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, hit_point_rolls: hit_point_rolls_for_rules,
-                                    level_thresholds: game_table.level_thresholds).call
+                                    level_thresholds: game_table.level_thresholds,
+                                    equipped_items: equipped_item_properties).call
   end
 
   # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options

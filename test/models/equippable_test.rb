@@ -38,6 +38,13 @@ class EquippableTest < ActiveSupport::TestCase
     assert_equal [true, false, true, true, true, false], items.map(&:equipped)
   end
 
+  test "a complete character counts in its rules only what its inventory has equipped" do
+    create_item(ARMOR).equip(true)
+    create_item(SHIELD)
+
+    assert_equal [ARMOR], @character.reload.equipped_item_properties
+  end
+
   private
 
   def item(properties)
