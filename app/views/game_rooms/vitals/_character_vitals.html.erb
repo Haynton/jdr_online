@@ -1,0 +1,45 @@
+<%# What changes on a player's character during the game, saved (CharacterVitals, GameTables::CharacterVitalsController;
+    decision of 26 November): its hit points between − and +, their bar, its temporary hit points between − and +
+    (a loss takes them first), its switches granted in play (the inspiration). In the quick sheet of the game master
+    and in the panel « Ma fiche » of the player; the values are replaced at once for the whole table (game_rooms/vitals/
+    _hit_points_value, _hit_points_bar, _temporary_hit_points_value, _switch). Online too: nothing here is simulated %>
+<% name = character.name %>
+<% path = game_table_character_vital_path(character.game_table, character) %>
+<% step_button = "#{button_classes(:secondary, size: :compact_icon)} size-8" %>
+<% if character.hit_points %>
+  <div class="flex items-center gap-2">
+    <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>
+    <%= button_to path, method: :patch, params: { hit_points_delta: -1 }, class: step_button, form_class: "inline-flex",
+                        aria: { label: t("game_rooms.combat_strip.decrease", name: name) } do %>
+      <%= render "shared/icons/minus", css_class: "size-4" %>
+    <% end %>
+    <%= render "game_rooms/vitals/hit_points_value", character: %>
+    <%= button_to path, method: :patch, params: { hit_points_delta: 1 }, class: step_button, form_class: "inline-flex",
+                        aria: { label: t("game_rooms.combat_strip.increase", name: name) } do %>
+      <%= render "shared/icons/plus", css_class: "size-4" %>
+    <% end %>
+  </div>
+  <%= render "game_rooms/vitals/hit_points_bar", character: %>
+<% end %>
+<% if (temporary_field = character.temporary_hit_points_field) %>
+  <div class="mt-3 flex items-center gap-2">
+    <%# Its abbreviation (« PV temp. »): its label did not fit beside its buttons %>
+    <span class="flex-1 truncate text-xs font-semibold tracking-wider text-muted uppercase" title="<%= temporary_field["label"] %>"><%= temporary_field["abbreviation"] || temporary_field["label"] %></span>
+    <%= button_to path, method: :patch, params: { temporary_hit_points_delta: -1 }, class: step_button, form_class: "inline-flex",
+                        aria: { label: t("game_rooms.vitals.decrease", label: temporary_field["label"], name: name) } do %>
+      <%= render "shared/icons/minus", css_class: "size-4" %>
+    <% end %>
+    <%= render "game_rooms/vitals/temporary_hit_points_value", character: %>
+    <%= button_to path, method: :patch, params: { temporary_hit_points_delta: 1 }, class: step_button, form_class: "inline-flex",
+                        aria: { label: t("game_rooms.vitals.increase", label: temporary_field["label"], name: name) } do %>
+      <%= render "shared/icons/plus", css_class: "size-4" %>
+    <% end %>
+  </div>
+<% end %>
+<% if character.play_switch_fields.any? %>
+  <div class="mt-3 flex flex-wrap gap-2">
+    <% character.play_switch_fields.each do |field| %>
+      <%= render "game_rooms/vitals/switch", character:, field: %>
+    <% end %>
+  </div>
+<% end %>

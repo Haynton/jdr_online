@@ -1,0 +1,8 @@
+<%# A yes or no granted in play (the inspiration: CharacterVitals#play_switch_fields), a pill pressed when it is on,
+    gold like the badge of the game master; a click turns it the other way, saved, for the whole table at once.
+    Named by its label, the template's (no translated text: it is sent to every reader) %>
+<% on = character.switched_on?(field) %>
+<%= button_to field["label"], game_table_character_vital_path(character.game_table, character), method: :patch,
+              params: { switch: field["key"], switched_on: !on }, form_class: "inline-flex",
+              form: { id: "character-#{character.id}-switch-#{field["key"]}" },
+              class: PlayerSheetPanelsHelper::PLAY_SWITCH_CLASSES, aria: { pressed: on } %>

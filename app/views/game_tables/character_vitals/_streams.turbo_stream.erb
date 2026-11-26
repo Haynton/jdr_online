@@ -1,0 +1,12 @@
+<%# The values of a player's character changed during the game, sent to the whole table and to who changed them
+    (GameTables::CharacterVitalsController): each part a partial with an id of its own, written without a translated
+    text, so that every reader gets it right whatever their language. An element absent from a page (the panel
+    « Ma fiche » of another player) is simply left alone by Turbo %>
+<% id = character.id %>
+<%= turbo_stream.replace "character-#{id}-hit-points", partial: "game_rooms/vitals/hit_points_value", locals: { character: } %>
+<%= turbo_stream.replace "character-#{id}-hit-points-bar", partial: "game_rooms/vitals/hit_points_bar", locals: { character: } %>
+<%= turbo_stream.replace "character-#{id}-temporary-hit-points", partial: "game_rooms/vitals/temporary_hit_points_value", locals: { character: } %>
+<% character.play_switch_fields.each do |field| %>
+  <%= turbo_stream.replace "character-#{id}-switch-#{field["key"]}", partial: "game_rooms/vitals/switch", locals: { character:, field: } %>
+<% end %>
+<%= turbo_stream.replace "combat-ring-character-#{id}", partial: "game_rooms/combat_ring", locals: { group_key: "character-#{id}", percent: character.hit_points_percent } %>
