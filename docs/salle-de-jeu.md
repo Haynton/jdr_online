@@ -30,7 +30,7 @@ En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêt
 | Haut, centré sur l'écran | Ligne des caméras (320 px gardés de chaque côté pour les îlots) | `game_rooms/_video` |
 | Haut droite | Îlot : Paramètres, Quitter la partie (demandé d'abord), avatar (info-bulles sous les boutons) | `game_rooms/_top_bar` |
 | Gauche, centrée en hauteur | Barre d'outils | `game_rooms/_toolbar` |
-| À droite de la barre, 12 px sous les îlots du haut | Panneau ouvert (360 px de large, aussi haut que son contenu, défile au-delà) | `game_rooms/_panel` |
+| À droite de la barre, centré sur la hauteur de l'écran comme elle | Panneau ouvert (360 px de large, aussi haut que son contenu : un panneau court au niveau de la barre, un long jusqu'à 88 px du haut et du bas, 12 px sous les îlots, puis il défile) | `game_rooms/_panel` |
 | Bas, à gauche du chat | Barre des combattants ; ses fiches rapides s'ouvrent au-dessus | `game_rooms/_combat_strip` |
 | Bas droite | Chat (à partir de 1024 px) | `game_rooms/_chat` |
 | Tout l'écran, sous les îlots | Le plateau (la carte posée) | `game_tables/show` |
@@ -67,12 +67,20 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 - **« Donner »** : fenêtre « Donner « Arc court » » → à qui (personnages terminés des joueurs), combien (1 à 99) → « Donner ». **Enregistré** : une copie de l'objet entre dans l'inventaire du personnage ; bulle « 3 × « Dague » donnés à Aria. ». Serveur : MJ de la table, objet du catalogue de la table, personnage d'un de ses joueurs, sinon 404 (`GameTables::ItemGiftsController`).
 
 ### Ma fiche (joueur)
-Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (décision du 26 novembre : le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert).
-- Avatar, nom, choix ; la **CA** dans sa case dorée, l'initiative, puis les valeurs qu'un joueur regarde en combat, dans des cases de même taille qui passent à la ligne : **vitesse, bonus de maîtrise**, et pour un lanceur **DD et attaque des sorts** (absents pour une classe sans sorts). Leur nom court est l'abréviation du modèle (« Vit. (m) », « Maîtrise », « DD sorts », « Att. sorts »), sinon leur libellé, sur deux lignes au plus.
+Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (décision du 26 novembre : le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert). Dans l'ordre où on le lit en combat (demande d'Anthony : la photo petite) :
+- Une **petite photo** (48 px), le nom, les choix.
+- La **CA** dans sa case dorée, l'initiative, puis les valeurs qu'un joueur regarde en combat, dans des cases de même taille qui passent à la ligne : **vitesse, bonus de maîtrise**. Leur nom court est l'abréviation du modèle (« Vit. (m) », « Maîtrise »), sinon leur libellé, sur deux lignes au plus.
+- **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », attaques. **Les emplacements de sorts sont dans le panneau Sorts** (décision du 26 novembre).
 - **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique). Un **jet de sauvegarde maîtrisé** s'affiche dans la case de sa caractéristique, à côté du score : un point doré et son bonus (« 14 ● +4 »), avec une légende dessous (« ● Jets de sauvegarde »). C'est la section du modèle qui a un bonus par caractéristique.
 - **Compétences maîtrisées** en pastilles sur une ligne qui passe à la ligne (« Perspicacité +4 »), seulement celles cochées sur la fiche, par section du modèle.
-- **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », emplacements de sorts, attaques.
-- « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre.
+- « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre. Son bouton **« Modifier »** (nom, identité, description, photo) ouvre le formulaire **dans la même fenêtre** : « Enregistrer » et « Annuler » ramènent à la fiche, toujours dans la fenêtre ; le joueur ne quitte jamais la partie (décision du 26 novembre, avant : « Content missing »).
+
+### Inventaire et Sorts (joueur)
+Deux outils de plus dans le groupe « Fiche » (décision du 26 novembre). **« Sorts » seulement pour un personnage qui a des sorts** (`GameRoom#tool_groups`).
+- **Inventaire** : l'or en tête (les valeurs de jeu de l'étape Équipement), puis une ligne par objet (« 2 × Dague », dégâts ou CA). « Rien dans l'inventaire. » sinon.
+- **Sorts** : en tête, ce qu'on regarde en lançant un sort (décision du 26 novembre) : le **DD et l'attaque des sorts** (« DD sorts », « Att. sorts »), puis les **emplacements de sorts**, cochés quand ils sont utilisés. Puis les sorts par groupe, comme au récapitulatif (toujours préparés, sorts mineurs, sorts préparés de niveau 1…), chacun avec son école. La fiche rapide du MJ garde aussi les emplacements.
+- Chaque objet et chaque sort ouvre **ses détails dans une fenêtre** (la même que sur la fiche, une seule pour la salle) ; Échap la ferme et laisse le panneau ouvert.
+- Lecture seule : ce que le personnage porte et connaît change par la fiche (et par « Donner » du MJ).
 
 ## Plateau
 
@@ -188,5 +196,6 @@ Dans `docs/prototypes/salle-de-jeu/`, 1440 × 900, chacune en sombre (`-dark`) e
 | `11-mj-parametres-de-la-partie` | La fenêtre des paramètres de la partie |
 | `12-joueur-salle` | La salle d'un joueur (Fiche, Dés ; sa place « Vous ») |
 | `13-joueur-sa-fiche` | Son panneau « Ma fiche », ouvert depuis son portrait |
+| `14-joueur-ses-sorts` | Son panneau « Sorts » : DD, attaque, emplacements, puis les sorts (Mirelle, joueuse Isolde) |
 
 Elles se refont par un script hors du dépôt (Selenium, Chrome sans fenêtre, sur le serveur local) ; à refaire quand la salle change.
