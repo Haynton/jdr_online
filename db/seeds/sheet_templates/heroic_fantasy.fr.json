@@ -224,7 +224,11 @@
       { "key": "class_equipment", "label": "Équipement de la classe", "type": "equipment_option", "from": "class", "section": "Équipement" },
       { "key": "background_equipment", "label": "Équipement de l'historique", "type": "equipment_option", "from": "background", "section": "Équipement" },
       { "key": "starting_gold", "internal": true, "label": "Or de départ", "type": "computed", "rule": "starting_gold", "section": "Équipement" },
-      { "key": "gold", "label": "Pièces d'or", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "initial_from": "starting_gold", "section": "Équipement" },
+      { "key": "copper", "label": "Pièces de cuivre", "abbreviation": "pc", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Équipement" },
+      { "key": "silver", "label": "Pièces d'argent", "abbreviation": "pa", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Équipement" },
+      { "key": "electrum", "label": "Pièces d'électrum", "abbreviation": "pe", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Équipement" },
+      { "key": "gold", "label": "Pièces d'or", "abbreviation": "po", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "initial_from": "starting_gold", "section": "Équipement" },
+      { "key": "platinum", "label": "Pièces de platine", "abbreviation": "pp", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Équipement" },
 
       { "key": "strength_save", "label": "Sauvegarde de Force", "type": "bonus", "based_on": "strength", "proficiency": "proficiency_bonus", "section": "Jets de sauvegarde",
         "help": "Votre classe coche celles qu'elle maîtrise, et vous pouvez les changer : le bonus de la caractéristique et celui de maîtrise s'additionnent tout seuls." },

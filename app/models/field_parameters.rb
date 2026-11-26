@@ -15,6 +15,9 @@ module FieldParameters
     "filter" => :boolean,
     # A number the game master adjusts in play, from the quick sheet of the character (the bonus to the armour class)
     "game_master_adjusts" => :boolean,
+    # A coin of the money of the character (the gold pieces): shown in its inventory, added or taken out by its player,
+    # given by the game master
+    "currency" => :boolean,
     # A field is asked at creation unless it says false: the box is ticked by default
     "at_creation" => :asked_at_creation,
     "min" => :integer, "max" => :integer, "count" => :integer, "total" => :integer, "max_per_ability" => :integer,

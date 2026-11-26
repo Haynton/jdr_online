@@ -224,7 +224,11 @@
       { "key": "class_equipment", "label": "Class equipment", "type": "equipment_option", "from": "class", "section": "Equipment" },
       { "key": "background_equipment", "label": "Background equipment", "type": "equipment_option", "from": "background", "section": "Equipment" },
       { "key": "starting_gold", "internal": true, "label": "Starting gold", "type": "computed", "rule": "starting_gold", "section": "Equipment" },
-      { "key": "gold", "label": "Gold pieces", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "initial_from": "starting_gold", "section": "Equipment" },
+      { "key": "copper", "label": "Copper pieces", "abbreviation": "cp", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Equipment" },
+      { "key": "silver", "label": "Silver pieces", "abbreviation": "sp", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Equipment" },
+      { "key": "electrum", "label": "Electrum pieces", "abbreviation": "ep", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Equipment" },
+      { "key": "gold", "label": "Gold pieces", "abbreviation": "gp", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "initial_from": "starting_gold", "section": "Equipment" },
+      { "key": "platinum", "label": "Platinum pieces", "abbreviation": "pp", "type": "number", "min": 0, "max": 1000000, "at_creation": false, "currency": true, "section": "Equipment" },
 
       { "key": "strength_save", "label": "Strength saving throw", "type": "bonus", "based_on": "strength", "proficiency": "proficiency_bonus", "section": "Saving throws",
         "help": "Your class ticks those it is proficient in, and you can change them: the ability bonus and the proficiency bonus add up on their own." },

@@ -11,6 +11,7 @@ class Character < ApplicationRecord
   include CharacterHitPoints
   include CharacterVitals
   include CharacterEquipment
+  include CharacterMoney
   include PlacedOnMaps
   include CharacterDescription
   include HasAvatar
