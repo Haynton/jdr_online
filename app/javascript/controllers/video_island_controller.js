@@ -45,6 +45,12 @@ export default class extends Controller {
     this.refresh()
   }
 
+  // The list of places is permanent (data-turbo-permanent): after a Turbo visit from one room to another, Turbo puts it
+  // back in the new page only after this controller has connected (a placeholder holds its spot until then)
+  placesTargetConnected() {
+    this.refresh()
+  }
+
   smaller() {
     this.changeSize(-1)
   }
@@ -84,6 +90,8 @@ export default class extends Controller {
 
   // Reads the choices kept in this browser and shows them
   refresh() {
+    if (!this.hasPlacesTarget) return
+
     const savedSize = readVideoSetting(VIDEO_KEYS.size)
     this.size = VIDEO_SIZES.includes(savedSize) ? savedSize : VIDEO_SIZES[0]
     this.folded = readVideoSetting(VIDEO_KEYS.folded) === "true"
