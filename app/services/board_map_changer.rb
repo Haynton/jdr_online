@@ -12,7 +12,10 @@ class BoardMapChanger
   end
 
   def call
-    @game_table.update!(board_game_map: @game_map)
+    GameTable.transaction do
+      @game_table.update!(board_game_map: @game_map)
+      BoardTokenCopier.new(@game_map).call if @game_map
+    end
     send_board_to_players
   end
 

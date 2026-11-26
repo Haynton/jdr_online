@@ -1,13 +1,14 @@
 module MapLayouts
   # Checks the tokens put on a map of a table (the list "tokens" of its layout): each one { "character_id", "column",
-  # "row" }, a non-player character or an enemy of the table (step "PNJ et ennemis", or copied from the bestiary in the
-  # editor), on a cell of the grid, never two on the same cell, never on a blocked zone painted by the game master
-  # (the empty ground is refused by the editor only: a map switched from its picture to its drawing could otherwise
-  # never be saved again). The same character may have several tokens (Anthony's decision: a band of goblins) and
-  # tokens on other maps. A map of « Mes cartes » has none: it belongs to no table. Gives the first error,
-  # [type, options], or nil
+  # "row" }, and "hidden" (true or false, hidden when it is not said), a non-player character or an enemy of the table
+  # (step "PNJ et ennemis", or copied from the bestiary in the editor), on a cell of the grid, never two on the same
+  # cell, never on a blocked zone painted by the game master (the empty ground is refused by the editor only: a map
+  # switched from its picture to its drawing could otherwise never be saved again). The same character may have
+  # several tokens (Anthony's decision: a band of goblins) and tokens on other maps. A map of « Mes cartes » has none:
+  # it belongs to no table. Gives the first error, [type, options], or nil
   class TokensCheck
     TOKEN_KEYS = %w[character_id column row].freeze
+    OPTIONAL_TOKEN_KEYS = %w[hidden].freeze
 
     def initialize(map, tokens)
       @map = map
@@ -38,8 +39,14 @@ module MapLayouts
     end
 
     def well_formed?(token)
-      token.is_a?(Hash) && token.keys.sort == TOKEN_KEYS.sort &&
-        token.values.all? { |value| value.is_a?(Integer) && value >= 0 }
+      return false unless token.is_a?(Hash) && (TOKEN_KEYS - token.keys).empty?
+      return false unless (token.keys - TOKEN_KEYS - OPTIONAL_TOKEN_KEYS).empty?
+
+      token.values_at(*TOKEN_KEYS).all? { |value| value.is_a?(Integer) && value >= 0 } && hidden_or_shown?(token)
+    end
+
+    def hidden_or_shown?(token)
+      !token.key?("hidden") || [true, false].include?(token["hidden"])
     end
 
     def character_ids

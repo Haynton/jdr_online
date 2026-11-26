@@ -19,6 +19,7 @@ class Character < ApplicationRecord
   belongs_to :participation, optional: true
   # What it carries: the starting equipment, copied when the character is complete
   has_many :inventory_items, dependent: :destroy
+  has_many :board_tokens, dependent: :delete_all
 
   enum :kind, {
     pc: "pc",

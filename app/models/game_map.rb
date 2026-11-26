@@ -16,6 +16,7 @@ class GameMap < ApplicationRecord
 
   belongs_to :game_table
   belongs_to :map_template, optional: true
+  has_many :board_tokens, -> { order(:id) }, dependent: :delete_all, inverse_of: :game_map
   has_one_attached :image
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
@@ -53,16 +54,21 @@ class GameMap < ApplicationRecord
   end
 
   # For the board: the tokens put in the editor, where the game begins (Anthony's decision: the board starts from
-  # them). [{ character:, column:, row:, number: }], number counting the tokens of the same character on this map
-  # (« Gobelin 2 »), in the order they were put
+  # them). [{ character:, column:, row:, number:, hidden: }], number counting the tokens of the same character on this
+  # map (« Gobelin 2 »), in the order they were put; hidden from the players unless the game master shows it
   def placed_tokens
     tokens = layout.to_h.fetch("tokens", [])
     characters = game_table.npcs.where(id: tokens.pluck("character_id")).index_by(&:id)
     numbers = Hash.new(0)
     tokens.map do |token|
       character = characters.fetch(token["character_id"])
-      { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1 }
+      { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1,
+        hidden: token.fetch("hidden", true) }
     end
+  end
+
+  def tokens_copied?
+    tokens_copied_at.present?
   end
 
   # A character of the table deleted: its tokens leave the maps (unchecked: only a list is shortened)

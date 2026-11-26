@@ -25,6 +25,10 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      board_token:
+        character: "Personnage"
+        column: "Colonne"
+        row: "Ligne"
       map_template:
         columns: "Colonnes"
         layout: "Dessin de la carte"
@@ -86,6 +90,12 @@ fr:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
       models:
+        board_token:
+          attributes:
+            base:
+              outside_grid: "Le jeton doit être sur une case de la carte"
+            character:
+              not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
         friendship:
           attributes:
             addressee:
