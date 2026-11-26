@@ -3,7 +3,8 @@
     of the details (as on a character sheet; a weapon often has no description, its values matter). « Créer un objet »
     opens the window of the step « Sorts et objets » here, without leaving the room (decision; game_tables/catalogs/
     _dialog, rendered by layouts/game_room): saved, the room is refreshed and the panel comes back open. « Donner », on
-    each item, gives it to a player (game_rooms/_item_gift_dialog: the player, how many), into their inventory %>
+    each item, gives it to a player (game_rooms/_item_gift_dialog: the player, how many), into their inventory;
+    « Donner de l'argent », an amount of a coin (game_rooms/_money_gift_dialog) %>
 <% items = game_room.items.to_a %>
 <% item_fields = catalog_entry_shown_fields(game_room.game_table, "item") %>
 <% gift_receivers = game_room.gift_receivers.to_a %>
@@ -13,6 +14,16 @@
               class: "#{button_classes(:secondary, full_width: true)} gap-2", data: catalog_entry_dialog_link_data do %>
     <%= render "shared/icons/plus" %>
     <%= t("game_tables.catalogs.edit.add.item") %>
+  <% end %>
+  <%# « Donner de l'argent »: an amount of a coin of the template to a player (game_rooms/_money_gift_dialog) %>
+  <% if gift_receivers.any? && gift_receivers.first.currency_fields.any? %>
+    <div data-controller="dialog-opener">
+      <button type="button" hidden class="<%= button_classes(:secondary, full_width: true) %> mt-2"
+              aria-haspopup="dialog" data-dialog-opener-target="opener" data-action="dialog-opener#open">
+        <%= t(".give_money") %>
+      </button>
+      <%= render "game_rooms/money_gift_dialog", game_table: game_room.game_table, receivers: gift_receivers %>
+    </div>
   <% end %>
   <div class="mt-4" hidden data-catalog-search-target="tools">
     <label for="game-room-item-search" class="sr-only"><%= t(".search") %></label>
@@ -31,10 +42,13 @@
               <%= render layout: "character_sheets/summary/entry_details",
                          locals: { title: item.name, subtitle: catalog_entry_detail(item), description: item.description,
                                    details: render("game_rooms/panels/item_details", item: item, fields: item_fields) } do %>
-                <span class="text-ink"><%= item.name %></span>
-                <% if catalog_entry_detail(item).present? %>
-                  <span class="text-xs text-muted"><%= catalog_entry_detail(item) %></span>
-                <% end %>
+                <%# Its name on one line, its damage or armour class under it (decision of 26 November, as the inventory) %>
+                <span class="min-w-0">
+                  <span class="block text-ink"><%= item.name %></span>
+                  <% if catalog_entry_detail(item).present? %>
+                    <span class="block text-xs text-muted"><%= catalog_entry_detail(item) %></span>
+                  <% end %>
+                </span>
               <% end %>
             </div>
             <% if gift_receivers.any? %>

@@ -1,0 +1,40 @@
+<%# The death saving throws of a player's character (CharacterDeathSaves; decision of 26 November), under its hit
+    points, only at 0 hit points: its successes and its failures as dots (needed of each), then « Lancer le jet »
+    (GameTables::CharacterVitalsController#death_save: its player or the game master; the server rolls, the feed says
+    what it did), or « Stable » or « Mort » once it is over. Always in the page, empty above 0, so that the stream
+    finds it when the hit points change %>
+<% settings = character.death_saves_settings %>
+<div id="character-<%= character.id %>-death-saves">
+  <% if settings && character.at_zero_hit_points? %>
+    <section class="mt-3 rounded-lg border border-line p-3" aria-labelledby="character-<%= character.id %>-death-saves-title">
+      <h4 id="character-<%= character.id %>-death-saves-title" class="text-xs font-semibold tracking-wider text-muted uppercase"
+          title="<%= settings["help"] %>"><%= settings["label"] %></h4>
+      <% needed = character.death_saves_needed %>
+      <dl class="mt-2 flex flex-col gap-1.5 text-xs">
+        <% [[:successes, character.death_save_successes, "bg-success-ink"], [:failures, character.death_save_failures, "bg-error-ink"]].each do |kind, count, filled| %>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-muted"><%= t("game_rooms.vitals.death_saves.#{kind}") %></dt>
+            <dd class="flex gap-1.5">
+              <span class="sr-only"><%= t("game_rooms.vitals.death_saves.count", count: count, needed: needed) %></span>
+              <% needed.times do |index| %>
+                <span aria-hidden="true" class="size-3 rounded-full border border-field-line <%= filled if index < count %>"></span>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+      <% if character.dead? %>
+        <p class="mt-3 text-sm font-semibold text-error-ink" aria-live="polite"><%= t("game_rooms.vitals.death_saves.dead") %></p>
+      <% elsif character.stable? %>
+        <p class="mt-3 text-sm font-semibold text-success-ink" aria-live="polite"><%= t("game_rooms.vitals.death_saves.stable") %></p>
+      <% else %>
+        <%= button_to death_save_game_table_character_vital_path(character.game_table, character), method: :post,
+                      class: "#{button_classes(:secondary, size: :compact, full_width: true)} mt-3 gap-2", form_class: "block",
+                      aria: { label: t("game_rooms.vitals.death_saves.roll_for", name: character.name) } do %>
+          <%= render "shared/icons/dices", css_class: "size-4" %>
+          <%= t("game_rooms.vitals.death_saves.roll") %>
+        <% end %>
+      <% end %>
+    </section>
+  <% end %>
+</div>

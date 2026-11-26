@@ -242,6 +242,7 @@ en:
           invalid_spell_slots_label: "The spell slots: the label must be filled in, on one line, in %{count} characters at most"
           invalid_class_slots_label: "%{part} › %{field} › %{option}: the label of the spell slots must be filled in, on one line, in %{count} characters at most"
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
+          labels_not_matching_options: "%{part} › %{field}: “labels” must give a name to each option (%{count})"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
           min_above_max: "%{part} › %{field}: the minimum (%{min}) is above the maximum (%{max})"
           missing_hit_die: "%{part} › %{field}: every class must give its hit die (hit_die)"
@@ -267,6 +268,18 @@ en:
           unknown_spell_group_changes: "The group of spells “%{group}”: the change rule “%{changes}” is unknown"
           unknown_spell_group_parameter: "The group of spells “%{group}”: the setting “%{parameter}” is unknown"
           unknown_spell_slots_parameter: "The spell slots: the setting “%{parameter}” is unknown"
+          invalid_weapon_attacks: "The weapon attacks: the setting must declare its abilities"
+          invalid_weapon_attacks_field: "The weapon attacks: “%{parameter}” must name a field %{type} of the character sheet"
+          invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
+          missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
+          unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
+          invalid_death_saves: "The death saving throws: the setting must declare its die and its fields"
+          invalid_death_saves_field: "The death saving throws: “%{parameter}” must name a field %{type} of the character sheet"
+          invalid_death_saves_label: "The death saving throws: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_death_saves_number: "The death saving throws: “%{parameter}” must be a whole number above 0"
+          invalid_death_saves_sides: "The death saving throws: the die must be a die among %{sides}"
+          missing_death_saves_parameter: "The death saving throws: the setting “%{parameter}” is required"
+          unknown_death_saves_parameter: "The death saving throws: the setting “%{parameter}” is unknown"
           unknown_step_effect: "The step “%{step}” depends on an unknown effect: %{effect}"
           unknown_step_parameter: "The step “%{step}”: the setting “%{parameter}” is unknown"
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
@@ -285,6 +298,8 @@ en:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
     summary:
+      weapon_attacks:
+        title: "Attacks"
       inventory:
         title: "Inventory"
         empty: "Nothing in the inventory."
@@ -822,6 +837,7 @@ en:
         spell_save_dc: "8, plus the %{proficiency}, plus the modifier of the spellcasting ability of the class (%{class})."
         starting_gold: "The gold of the starting equipment the player chose."
         unarmored_armor_class: "10 plus the modifier of %{ability}, plus the unarmored defense of the class (%{class}) if it has one."
+        worn_armor_class: "The armor class of the armor equipped plus the modifier of %{ability}, at most what the armor allows; without armor, 10 plus that modifier and the unarmored defense of the class (%{class}). Then the bonus of the shield equipped and %{bonus}."
     duplicates:
       copy_name: "%{name} (copy)"
       create:
@@ -928,6 +944,9 @@ en:
       based_on:
         hint: "The ability whose modifier goes into the value."
         label: "Ability"
+      bonus_from:
+        hint: "The number added at the end of the calculation (a bonus given by the game master in play)."
+        label: "Field of the bonus"
       class_from:
         hint: "The list whose option picked gives the hit die and the spells."
         label: "Class field"
@@ -939,9 +958,15 @@ en:
       count:
         hint: "How many options the player may tick at most."
         label: "Number of choices"
+      currency:
+        hint: "A coin of the money of the character: shown in its inventory, added or taken out by its player, given by the game master."
+        label: "Coin"
       filter:
         hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
         label: "Search filter"
+      game_master_adjusts:
+        hint: "A number the game master changes in play, from the quick sheet of the character (an AC bonus)."
+        label: "Adjusted by the game master"
       from:
         hint: "The list whose option picked gives this field (the background, the class)."
         label: "Source list"
@@ -1025,6 +1050,7 @@ en:
           spell_save_dc: "Spell save DC"
           starting_gold: "Gold of the starting equipment"
           unarmored_armor_class: "Armour class without armour"
+          worn_armor_class: "Armour class of the equipment"
       section:
         hint: "The group of the sheet where the field shows."
         label: "Section"
@@ -1126,9 +1152,17 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        death_save_success: "%{character} · death save: %{roll}, a success (%{successes} of %{needed})."
+        death_save_failure: "%{character} · death save: %{roll}, a failure (%{failures} of %{needed})."
+        death_save_critical_failure: "%{character} · death save: %{roll}, two failures (%{failures} of %{needed})."
+        death_save_revived: "%{character} · death save: %{roll}, comes back with 1 HP."
+        death_save_stable: "%{character} is out of danger: stable."
+        death_save_dead: "%{character} dies of their wounds."
+        death_save_hit: "%{character} takes a hit at 0 HP: a failure (%{failures} of %{needed})."
         item_given:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
+        money_given: "The GM gave %{count} %{coin} to %{character}."
         spells_changed: "%{character} changes their spells: %{changes}."
         dice_rolled: "%{roller} rolls %{notation}: %{dice} → %{total}"
         dice_rolled_by_game_master: "The GM rolls %{notation}: %{dice} → %{total}"
@@ -1193,6 +1227,14 @@ en:
       give: "Give"
       quantity: "Quantity"
       receiver: "To whom?"
+    money_gift_dialog:
+      amount: "Amount"
+      cancel: "Cancel"
+      close: "Close"
+      coin: "Coin"
+      give: "Give"
+      receiver: "To whom?"
+      title: "Give money"
     panel:
       close: "Close %{name}"
     panels:
@@ -1221,8 +1263,19 @@ en:
         result: "Result"
         roll: "Roll"
         title: "Dice"
+      equip_switch:
+        equip: "Equip “%{name}”"
+        equipped: "Equipped"
+      purse:
+        add: "Add"
+        amount: "Amount"
+        coin: "Coin"
+        remove: "Take out"
+        title: "Money"
       inventory:
         amount: "Amount to take out of %{label}"
+        bag: "In the bag"
+        gear: "Gear"
         remove: "Remove"
         remove_confirm: "Remove “%{name}” from the inventory? It is the last one."
         take_one: "Take away 1 %{name}"
@@ -1232,6 +1285,7 @@ en:
         give: "Give"
         give_item: "Give %{item}"
         give_title: "Give “%{item}”"
+        give_money: "Give money"
         no_category: "Other"
         no_match: "No item matches this search."
         search: "Search an item"
@@ -1298,6 +1352,14 @@ en:
       settings: "Settings"
       signed_in_as: "Signed in: %{username}"
     vitals:
+      death_saves:
+        count: "%{count} of %{needed}"
+        dead: "Dead"
+        failures: "Failures"
+        roll: "Roll the save"
+        roll_for: "Roll the death save of %{name}"
+        stable: "Stable"
+        successes: "Successes"
       decrease: "Take 1 off %{label} of %{name}"
       increase: "Add 1 to %{label} of %{name}"
     video:
@@ -1315,6 +1377,10 @@ en:
         given:
           one: "“%{item}” given to %{character}."
           other: "%{count} × “%{item}” given to %{character}."
+    money_gifts:
+      create:
+        given: "%{count} %{coin} given to %{character}."
+        too_much: "%{character} cannot have more than %{max} %{coin}."
     map_lists:
       edit:
         back: "Back"
@@ -1377,6 +1443,12 @@ en:
         save: "Save"
         subtitle: "The spells of %{name}, within the numbers of their class and level. The change is written in the chat."
         title: "Change my spells"
+    purses:
+      update:
+        invalid_amount: "Enter an amount of at least 1."
+        not_enough: "There are only %{count} %{coin} in the purse."
+        not_saved: "The amount could not be saved."
+        too_much: "At most %{max} %{coin}."
     inventory_values:
       update:
         invalid_amount: "Enter an amount from 1 to %{count}."

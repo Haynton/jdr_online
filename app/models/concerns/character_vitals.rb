@@ -1,6 +1,7 @@
 # What changes on a character during the game, saved (decision of 26 November: the game master changes it from the
 # quick sheet of a player, the player on their own panel « Ma fiche »): its hit points, its temporary hit points, its
-# switches granted in play (the inspiration) and a long rest. Every field is the template's, found by what it
+# switches granted in play (the inspiration), the numbers the game master adjusts (game_master_adjusts: the bonus to
+# the armour class) and a long rest. Every field is the template's, found by what it
 # declares, never by its key (rule of the project): the field that takes the damage (receives_damage), the one that
 # takes it first (absorbs_damage_for), the yes or no not asked at the creation (at_creation: false), what a rest does
 # to each field (on_rest)
@@ -9,6 +10,8 @@ module CharacterVitals
 
   # A box holds a few digits
   TEMPORARY_HIT_POINTS_MAX = 999
+  # The bound of a number adjusted by the game master without its own min or max
+  ADJUSTED_LIMIT = 99
   # What a rest does to a field, by the value of its on_rest: one method each, written once
   REST_EFFECTS = { "reset_to_max" => :rest_to_maximum, "turn_off" => :rest_turned_off }.freeze
 
@@ -23,6 +26,25 @@ module CharacterVitals
 
   def play_switch_fields
     sheet_fields.select { |field| field["type"] == "boolean" && field["at_creation"] == false }
+  end
+
+  # The numbers the game master adjusts in play (game_master_adjusts: the bonus to the armour class)
+  def adjusted_fields
+    sheet_fields.select { |field| field["type"] == "number" && field["game_master_adjusts"] }
+  end
+
+  def adjusted_value(field)
+    value = sheet.to_h[field["key"]]
+    value.is_a?(Integer) ? value : 0
+  end
+
+  # Within the bounds of the field; back at 0, the value goes from the sheet
+  def adjust(key, delta)
+    field = adjusted_fields.find { |candidate| candidate["key"] == key }
+    return unless field
+
+    value = (adjusted_value(field) + delta).clamp(field["min"] || -ADJUSTED_LIMIT, field["max"] || ADJUSTED_LIMIT)
+    write_sheet_value(field, value.zero? ? nil : value)
   end
 
   def hit_points
@@ -50,9 +72,11 @@ module CharacterVitals
   def change_hit_points(delta)
     return unless hit_points
 
+    previous = hit_points["current"]
     delta = absorb_with_temporary_hit_points(delta) if delta.negative?
     current = (hit_points["current"] + delta).clamp(0, hit_points["max"])
     write_sheet_value(hit_points_field, hit_points.merge("current" => current))
+    follow_death_saves(previous, delta)
   end
 
   def change_temporary_hit_points(delta)

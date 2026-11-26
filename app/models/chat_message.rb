@@ -8,7 +8,11 @@ class ChatMessage < ApplicationRecord
   KINDS = %w[message event].freeze
   BODY_MAX_LENGTH = 1000
   FEED_SIZE = 50
-  EVENT_KEYS = %w[item_given spells_changed dice_rolled dice_rolled_by_game_master initiative_rolled].freeze
+  EVENT_KEYS = %w[
+    item_given money_given spells_changed dice_rolled dice_rolled_by_game_master initiative_rolled
+    death_save_success death_save_failure death_save_critical_failure death_save_revived death_save_stable
+    death_save_dead death_save_hit
+  ].freeze
   FEED_TARGET = "game-room-chat-feed".freeze
 
   belongs_to :game_table

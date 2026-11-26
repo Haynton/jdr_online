@@ -76,7 +76,7 @@ class CombatStrip
 
   def fighter_of(character, side)
     fields = side == :player ? @game_table.character_sheet_fields : @game_table.npc_sheet_fields
-    Fighter.new(character:, side:, gauge: gauge_of(character, fields), armor_class: character.sheet.to_h["armor_class"],
+    Fighter.new(character:, side:, gauge: gauge_of(character, fields), armor_class: character.armor_class_shown,
                 attacks: attacks_of(character, fields),
                 spell_slots: (CharacterSheets::SpellSlots.new(character).call if side == :player))
   end
@@ -89,7 +89,11 @@ class CombatStrip
     { current: value["current"].to_i, max: value["max"].to_i }
   end
 
+  # A player's character attacks with the weapons it holds (CharacterSheets::WeaponAttacks); a creature with the
+  # attacks of its sheet
   def attacks_of(character, fields)
+    return CharacterSheets::WeaponAttacks.new(character).call if character.pc?
+
     field = fields.find { |candidate| candidate["type"] == "attacks" }
     Array(character.sheet.to_h[field["key"]]) if field
   end

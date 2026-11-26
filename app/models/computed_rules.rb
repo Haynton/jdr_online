@@ -7,7 +7,7 @@ module ComputedRules
   ALL = [
     ComputedRules::ProficiencyByLevel, ComputedRules::AbilityModifier, ComputedRules::HitDiceByClass,
     ComputedRules::SpellSaveDc, ComputedRules::SpellAttackBonus, ComputedRules::HitPointsByLevel,
-    ComputedRules::UnarmoredArmorClass, ComputedRules::StartingGold
+    ComputedRules::UnarmoredArmorClass, ComputedRules::WornArmorClass, ComputedRules::StartingGold
   ].freeze
 
   def self.all

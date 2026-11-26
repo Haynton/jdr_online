@@ -1,0 +1,54 @@
+<%# The window « Donner de l'argent » of the panel « Objets » (game master; decision of 26 November): the players who
+    may receive it (GameRoom#gift_receivers: their finished characters), each a radio with its avatar and its name, the
+    coin (the currency fields of the template), the amount between − and +, and « Donner ». Sent to
+    GameTables::MoneyGiftsController. Escape, the cross or a click beside it close it (dialog_opener_controller.js) %>
+<% coins = receivers.first&.currency_fields.to_a %>
+<dialog aria-labelledby="money-gift-title" tabindex="-1"
+        class="m-auto max-h-[calc(100dvh-4rem)] w-[min(440px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
+        data-dialog-opener-target="dialog" data-action="click->dialog-opener#closeOnBackdrop">
+  <header class="flex h-14 shrink-0 items-center justify-between border-b border-line pr-3 pl-6">
+    <h2 id="money-gift-title" class="truncate text-base font-semibold text-ink"><%= t(".title") %></h2>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>" aria-label="<%= t(".close") %>"
+            title="<%= t(".close") %>" data-action="dialog-opener#close">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+  </header>
+  <%= form_with url: game_table_money_gift_path(game_table), method: :post,
+                class: "flex min-h-0 flex-col overflow-y-auto p-6" do |form| %>
+    <fieldset>
+      <legend class="text-sm font-semibold text-ink"><%= t(".receiver") %></legend>
+      <div class="mt-2 flex flex-col gap-2">
+        <% receivers.each_with_index do |character, index| %>
+          <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-2 transition-colors hover:bg-surface-raised has-checked:border-brass has-checked:bg-primary-soft">
+            <%= form.radio_button :character_id, character.id, checked: index.zero?, class: "sr-only" %>
+            <%= render "characters/avatar", character: character, css_class: "size-8 rounded-full!", icon_class: "size-4" %>
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-sm font-medium text-ink"><%= character.name %></span>
+              <span class="block truncate text-xs text-muted"><%= character.participation.user.username %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+    <label for="money-gift-coin" class="mt-5 mb-1.5 block text-sm font-semibold text-ink"><%= t(".coin") %></label>
+    <div class="relative">
+      <%= form.select :coin, coins.map { |field| [field["label"], field["key"]] },
+                      { selected: coins.find { |field| field["initial_from"] }&.dig("key") },
+                      id: "money-gift-coin", class: CharacterSheets::FieldsHelper::SELECT_CLASSES %>
+      <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+    </div>
+    <div class="mt-5 flex items-center justify-between gap-3">
+      <label for="money-gift-amount" class="text-sm font-semibold text-ink"><%= t(".amount") %></label>
+      <%# Between − and +, the stepper of the sheet (decision: never the arrows of the browser) %>
+      <% input = form.number_field(:amount, value: 1, min: GameTables::MoneyGiftsController::AMOUNTS.min,
+                                            max: GameTables::MoneyGiftsController::AMOUNTS.max, id: "money-gift-amount",
+                                            class: CharacterSheets::FieldsHelper::STEPPER_INPUT_CLASSES,
+                                            data: { number_stepper_target: "input" }) %>
+      <%= render "character_sheets/fields/stepper", field: { "label" => t(".amount") }, input: input %>
+    </div>
+    <div class="mt-6 flex justify-end gap-2">
+      <button type="button" class="<%= button_classes(:secondary) %>" data-action="dialog-opener#close"><%= t(".cancel") %></button>
+      <%= form.button t(".give"), class: button_classes(:primary) %>
+    </div>
+  <% end %>
+</dialog>

@@ -2,10 +2,18 @@
 module GameRoomChatHelper
   # The text of each event, written once (a key per event, never built from its name)
   CHAT_EVENT_TEXTS = {
-    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed",
+    "item_given" => "game_rooms.chat.events.item_given", "money_given" => "game_rooms.chat.events.money_given",
+    "spells_changed" => "game_rooms.chat.events.spells_changed",
     "dice_rolled" => "game_rooms.chat.events.dice_rolled",
     "dice_rolled_by_game_master" => "game_rooms.chat.events.dice_rolled_by_game_master",
-    "initiative_rolled" => "game_rooms.chat.events.initiative_rolled"
+    "initiative_rolled" => "game_rooms.chat.events.initiative_rolled",
+    "death_save_success" => "game_rooms.chat.events.death_save_success",
+    "death_save_failure" => "game_rooms.chat.events.death_save_failure",
+    "death_save_critical_failure" => "game_rooms.chat.events.death_save_critical_failure",
+    "death_save_revived" => "game_rooms.chat.events.death_save_revived",
+    "death_save_stable" => "game_rooms.chat.events.death_save_stable",
+    "death_save_dead" => "game_rooms.chat.events.death_save_dead",
+    "death_save_hit" => "game_rooms.chat.events.death_save_hit"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own

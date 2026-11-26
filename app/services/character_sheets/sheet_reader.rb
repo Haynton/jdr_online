@@ -6,17 +6,24 @@ module CharacterSheets
   class SheetReader
     attr_reader :fields, :sheet
 
-    # hit_point_rolls: the hit dice rolled for the levels after the first ([5, 3]), nil for their average,
-    # HitPointMethods::Roll::NOT_ROLLED while a roll the table imposes is still to make
-    # (Character#kept_hit_point_rolls)
-    attr_reader :hit_point_rolls
-
-    def initialize(fields:, sheet:, level_thresholds:, modifiers:, hit_point_rolls: nil)
+    # play_state: what the rules read beside the sheet (CharacterSheets::PlayState: the hit dice rolled, what the
+    # character wears)
+    def initialize(fields:, sheet:, level_thresholds:, modifiers:, play_state: PlayState.new)
       @fields = fields
       @sheet = sheet
       @level_thresholds = level_thresholds
       @modifiers = modifiers
-      @hit_point_rolls = hit_point_rolls
+      @play_state = play_state
+    end
+
+    # The hit dice rolled for the levels after the first ([5, 3]), nil for their average
+    def hit_point_rolls
+      @play_state.hit_point_rolls
+    end
+
+    # The values of the items the character wears and holds (its armour, its shield), [] for none
+    def equipped_items
+      @play_state.equipped_items
     end
 
     # nil while the ability has no score
@@ -42,6 +49,11 @@ module CharacterSheets
       [list_key, *refining_list_keys(list_key)].reduce({}) do |effects, key|
         effects.merge(field(key)&.dig("effects", @sheet[key].to_s) || {})
       end
+    end
+
+    # The whole number typed in number_key, 0 without that field or a number
+    def typed_number(number_key)
+      @sheet[number_key].is_a?(Integer) ? @sheet[number_key] : 0
     end
 
     # The value of the computed field proficiency_key (the proficiency bonus of the level), 0 without that field

@@ -213,6 +213,7 @@ fr:
           invalid_spell_slots_label: "Les emplacements de sorts : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_class_slots_label: "%{part} › %{field} › %{option} : le libellé des emplacements de sorts doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
+          labels_not_matching_options: "%{part} › %{field} : « labels » doit donner un nom à chaque option (%{count})"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
           missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
@@ -238,6 +239,18 @@ fr:
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
           unknown_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est inconnu"
           unknown_spell_slots_parameter: "Les emplacements de sorts : le réglage « %{parameter} » est inconnu"
+          invalid_weapon_attacks: "Les attaques d'arme : le réglage doit déclarer ses caractéristiques"
+          invalid_weapon_attacks_field: "Les attaques d'arme : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
+          missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
+          unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_death_saves: "Les jets contre la mort : le réglage doit déclarer son dé et ses champs"
+          invalid_death_saves_field: "Les jets contre la mort : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_death_saves_label: "Les jets contre la mort : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_death_saves_number: "Les jets contre la mort : « %{parameter} » doit être un nombre entier plus grand que 0"
+          invalid_death_saves_sides: "Les jets contre la mort : le dé doit être un dé parmi %{sides}"
+          missing_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est obligatoire"
+          unknown_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est inconnu"
           unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
           unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
@@ -256,6 +269,8 @@ fr:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
     summary:
+      weapon_attacks:
+        title: "Attaques"
       inventory:
         title: "Inventaire"
         empty: "Rien dans l'inventaire."
@@ -793,6 +808,7 @@ fr:
         spell_save_dc: "8, plus le %{proficiency}, plus le modificateur de la caractéristique des sorts de la classe (%{class})."
         starting_gold: "L'or de l'équipement de départ choisi par le joueur."
         unarmored_armor_class: "10 plus le modificateur de %{ability}, plus la défense sans armure de la classe (%{class}) si elle en a une."
+        worn_armor_class: "La classe d'armure de l'armure équipée plus le modificateur de %{ability}, au plus ce que l'armure permet ; sans armure, 10 plus ce modificateur et la défense sans armure de la classe (%{class}). Puis le bonus du bouclier équipé et %{bonus}."
     duplicates:
       copy_name: "%{name} (copie)"
       create:
@@ -899,6 +915,9 @@ fr:
       based_on:
         hint: "La caractéristique dont le modificateur entre dans le calcul."
         label: "Caractéristique"
+      bonus_from:
+        hint: "Le nombre ajouté à la fin du calcul (un bonus donné par le MJ en jeu)."
+        label: "Champ du bonus"
       class_from:
         hint: "La liste dont l'option choisie donne le dé de vie et les sorts."
         label: "Champ de la classe"
@@ -910,9 +929,15 @@ fr:
       count:
         hint: "Combien d'options le joueur peut cocher au plus."
         label: "Nombre de choix"
+      currency:
+        hint: "Une pièce de l'argent du personnage : montrée dans son inventaire, ajoutée ou retirée par son joueur, donnée par le MJ."
+        label: "Pièce de monnaie"
       filter:
         hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
         label: "Filtre de la recherche"
+      game_master_adjusts:
+        hint: "Un nombre que le MJ change en jeu, depuis la fiche rapide du personnage (un bonus de CA)."
+        label: "Ajusté par le MJ"
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
@@ -996,6 +1021,7 @@ fr:
           spell_save_dc: "DD des sorts"
           starting_gold: "Or de l'équipement de départ"
           unarmored_armor_class: "Classe d'armure sans armure"
+          worn_armor_class: "Classe d'armure de l'équipement"
       section:
         hint: "Le groupe de la fiche où le champ s'affiche."
         label: "Section"
@@ -1097,9 +1123,17 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        death_save_success: "%{character} · jet contre la mort : %{roll}, une réussite (%{successes} sur %{needed})."
+        death_save_failure: "%{character} · jet contre la mort : %{roll}, un échec (%{failures} sur %{needed})."
+        death_save_critical_failure: "%{character} · jet contre la mort : %{roll}, deux échecs (%{failures} sur %{needed})."
+        death_save_revived: "%{character} · jet contre la mort : %{roll}, reprend conscience avec 1 PV."
+        death_save_stable: "%{character} n'est plus en danger : stable."
+        death_save_dead: "%{character} succombe à ses blessures."
+        death_save_hit: "%{character} subit un coup à 0 PV : un échec (%{failures} sur %{needed})."
         item_given:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
+        money_given: "Le MJ a donné %{count} %{coin} à %{character}."
         spells_changed: "%{character} change ses sorts : %{changes}."
         dice_rolled: "%{roller} lance %{notation} : %{dice} → %{total}"
         dice_rolled_by_game_master: "Le MJ lance %{notation} : %{dice} → %{total}"
@@ -1164,6 +1198,14 @@ fr:
       give: "Donner"
       quantity: "Quantité"
       receiver: "À qui ?"
+    money_gift_dialog:
+      amount: "Somme"
+      cancel: "Annuler"
+      close: "Fermer"
+      coin: "Pièce"
+      give: "Donner"
+      receiver: "À qui ?"
+      title: "Donner de l'argent"
     panel:
       close: "Fermer %{name}"
     panels:
@@ -1192,8 +1234,19 @@ fr:
         result: "Résultat"
         roll: "Lancer"
         title: "Dés"
+      equip_switch:
+        equip: "Équiper « %{name} »"
+        equipped: "Équipé"
+      purse:
+        add: "Ajouter"
+        amount: "Somme"
+        coin: "Pièce"
+        remove: "Retirer"
+        title: "Argent"
       inventory:
         amount: "Somme à retirer de %{label}"
+        bag: "Dans le sac"
+        gear: "Équipement"
         remove: "Retirer"
         remove_confirm: "Retirer « %{name} » de l'inventaire ? C'est le dernier exemplaire."
         take_one: "Retirer 1 %{name}"
@@ -1203,6 +1256,7 @@ fr:
         give: "Donner"
         give_item: "Donner %{item}"
         give_title: "Donner « %{item} »"
+        give_money: "Donner de l'argent"
         no_category: "Autres"
         no_match: "Aucun objet ne correspond à cette recherche."
         search: "Rechercher un objet"
@@ -1269,6 +1323,14 @@ fr:
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
     vitals:
+      death_saves:
+        count: "%{count} sur %{needed}"
+        dead: "Mort"
+        failures: "Échecs"
+        roll: "Lancer le jet"
+        roll_for: "Lancer le jet contre la mort de %{name}"
+        stable: "Stable"
+        successes: "Réussites"
       decrease: "Retirer 1 à %{label} de %{name}"
       increase: "Ajouter 1 à %{label} de %{name}"
     video:
@@ -1286,6 +1348,10 @@ fr:
         given:
           one: "« %{item} » donné à %{character}."
           other: "%{count} × « %{item} » donnés à %{character}."
+    money_gifts:
+      create:
+        given: "%{count} %{coin} donnés à %{character}."
+        too_much: "%{character} ne peut pas avoir plus de %{max} %{coin}."
     map_lists:
       edit:
         back: "Retour"
@@ -1348,6 +1414,12 @@ fr:
         save: "Enregistrer"
         subtitle: "Les sorts de %{name}, dans les nombres de sa classe et de son niveau. Le changement s'écrit dans le chat."
         title: "Changer mes sorts"
+    purses:
+      update:
+        invalid_amount: "Indiquez une somme d'au moins 1."
+        not_enough: "Il n'y a que %{count} %{coin} dans la bourse."
+        not_saved: "La somme n'a pas pu être enregistrée."
+        too_much: "Au plus %{max} %{coin}."
     inventory_values:
       update:
         invalid_amount: "Indiquez une somme de 1 à %{count}."

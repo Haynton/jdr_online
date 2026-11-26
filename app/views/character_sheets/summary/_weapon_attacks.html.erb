@@ -1,0 +1,13 @@
+<%# The attacks of the weapons the character holds (CharacterSheets::WeaponAttacks), under its equipment on the summary
+    sheet and on its sheet of « Mes personnages »: the same lines as in the game room (combat_attack_text), its name and
+    its bonus to hit, then its damage. Nothing for a template without weapon attacks, or no weapon held %>
+<% attacks = CharacterSheets::WeaponAttacks.new(character).call %>
+<% if attacks.any? %>
+  <h3 class="mt-5 text-sm font-semibold text-ink"><%= t("character_sheets.summary.weapon_attacks.title") %></h3>
+  <ul class="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+    <% attacks.each do |attack| %>
+      <% name_and_bonus, *details = combat_attack_text(attack) %>
+      <li><span class="font-medium text-ink"><%= name_and_bonus %></span> <span class="text-muted"><%= details.join(" · ") %></span></li>
+    <% end %>
+  </ul>
+<% end %>

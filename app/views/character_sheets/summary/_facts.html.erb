@@ -1,11 +1,13 @@
 <%# Lists, short texts and yes or no on the summary sheet, as read-only fields (decision): the label over a box with the
     look of a field (bg-field, 40 px), which nothing can change here. wide: the block across the width (the header of
-    the sheet), up to five per line, three from 1280 px, where it shares the width with the abilities %>
+    the sheet), up to five per line, three from 1280 px, where it shares the width with the abilities. The boxes of a row
+    take the height of the tallest, and a value that may run long takes the whole row (FieldTypes::Base#wide_in_summary?:
+    several options picked; decision of 26 November, the languages on two lines beside a level looked broken) %>
 <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 <%= "sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-3" if wide %>">
   <% fields.each do |field| %>
-    <div class="min-w-0">
+    <div class="flex min-w-0 flex-col <%= "col-span-full" if FieldTypes.of(field).wide_in_summary? %>">
       <dt class="text-xs font-medium text-muted"><%= field["label"] %></dt>
-      <dd class="mt-1 flex min-h-10 items-center rounded-lg bg-field px-3 py-2 text-sm break-words text-ink"><%= summary_value(character, field, computed) %></dd>
+      <dd class="mt-1 flex min-h-10 flex-1 items-center rounded-lg bg-field px-3 py-2 text-sm break-words text-ink"><%= summary_value(character, field, computed) %></dd>
     </div>
   <% end %>
 </dl>

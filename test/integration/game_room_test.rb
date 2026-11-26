@@ -14,8 +14,22 @@ class GameRoomTest < ActionDispatch::IntegrationTest
       "on_rest" => "reset_to_max", "at_creation" => false, "section" => "Notes" },
     { "key" => "temp_hp", "label" => "PV temporaires", "type" => "resource", "absorbs_damage_for" => "hp",
       "at_creation" => false, "section" => "Notes" },
-    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" }
+    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" },
+    { "key" => "armor_class_bonus", "label" => "Bonus de CA", "type" => "number", "at_creation" => false,
+      "game_master_adjusts" => true, "min" => -10, "max" => 10, "section" => "Notes" },
+    { "key" => "armor_class", "label" => "Classe d'armure", "type" => "computed", "rule" => "worn_armor_class",
+      "based_on" => "intelligence", "bonus_from" => "armor_class_bonus", "section" => "Notes" },
+    { "key" => "silver", "label" => "Pièces d'argent", "abbreviation" => "pa", "type" => "number", "min" => 0,
+      "max" => 100, "at_creation" => false, "currency" => true, "section" => "Notes" }
   ].freeze
+  DEATH_SAVE_FIELDS = [
+    { "key" => "death_successes", "label" => "Réussites", "type" => "number", "at_creation" => false,
+      "internal" => true, "section" => "Notes" },
+    { "key" => "death_failures", "label" => "Échecs", "type" => "number", "at_creation" => false, "internal" => true,
+      "section" => "Notes" }
+  ].freeze
+  DEATH_SAVES = { "label" => "Jets contre la mort", "sides" => 20, "success_from" => 10, "needed" => 3,
+                  "successes_from" => "death_successes", "failures_from" => "death_failures" }.freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
   setup do
@@ -105,6 +119,98 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     delete game_table_inventory_item_path(@game_table, dagger), as: :turbo_stream
 
     assert_not InventoryItem.exists?(dagger.id)
+  end
+
+  test "a player equips an armour, a shield or a weapon, one armour at a time, and the panel is redrawn" do
+    leather = @character.inventory_items.create!(key: "leather-armor", name: "Armure de cuir", equipped: true,
+                                                 properties: { "armor_base" => 11 })
+    chain_mail = @character.inventory_items.create!(key: "chain-mail", name: "Cotte de mailles",
+                                                    properties: { "armor_base" => 16, "armor_dexterity_cap" => 0 })
+    rope = @character.inventory_items.create!(key: "rope", name: "Corde")
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-inventory input[role=switch][aria-label=?]:not([checked])", "Équiper « Cotte de mailles »"
+    assert_select "#game-room-inventory input[role=switch][aria-label=?]", "Équiper « Corde »", count: 0
+
+    @character.update_columns(sheet: @character.sheet.merge("intelligence" => 14))
+    assert_turbo_stream_broadcasts @game_table do
+      patch game_table_inventory_item_path(@game_table, chain_mail), params: { equipped: "1" }, as: :turbo_stream
+    end
+
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-armor-class", text: "16"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-attacks"
+    assert chain_mail.reload.equipped
+    assert_not leather.reload.equipped
+
+    patch game_table_inventory_item_path(@game_table, rope), params: { equipped: "1" }, as: :turbo_stream
+    assert_response :not_found
+    assert_not rope.reload.equipped
+  end
+
+  test "nobody equips an item of someone else's character, the game master neither" do
+    sword = @other_character.inventory_items.create!(key: "longsword", name: "Épée longue",
+                                                     properties: { "damage_dice" => "1d8" })
+
+    [@player, @game_master].each do |user|
+      sign_in user
+      patch game_table_inventory_item_path(@game_table, sword), params: { equipped: "1" }, as: :turbo_stream
+
+      assert_response :not_found
+    end
+    assert_not sword.reload.equipped
+  end
+
+  test "a player adds coins to their purse or takes some out, never below 0 nor above the most of the coin" do
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-inventory form[action=?] select[name=coin] option[value=silver]",
+                  game_table_purse_path(@game_table)
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_equal 8, @character.reload.sheet["silver"]
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 3, direction: "remove" },
+                                              as: :turbo_stream
+    assert_equal 5, @character.reload.sheet["silver"]
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 9, direction: "remove" },
+                                              as: :turbo_stream
+    assert_response :unprocessable_content
+    assert_select "#game-room-purse-error", text: "Il n'y a que 5 pa dans la bourse."
+
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 200, direction: "add" }, as: :turbo_stream
+    assert_response :unprocessable_content
+    assert_equal 5, @character.reload.sheet["silver"]
+  end
+
+  test "nobody fills the purse of a coin the template does not declare, nor the game master their own" do
+    sign_in @player
+    patch game_table_purse_path(@game_table), params: { coin: "hp", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @game_master
+    patch game_table_purse_path(@game_table), params: { coin: "silver", amount: 8, direction: "add" }, as: :turbo_stream
+    assert_response :not_found
+  end
+
+  test "the game master gives money to a player, written in the chat; a player never does" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_select "dialog form[action=?] select[name=coin]", game_table_money_gift_path(@game_table)
+
+    post game_table_money_gift_path(@game_table), params: { character_id: @character.id, coin: "silver", amount: 12 }
+
+    assert_redirected_to game_table_path(@game_table)
+    assert_equal 12, @character.reload.sheet["silver"]
+    assert_equal({ "count" => 12, "coin" => "pa", "character" => "Aria" }, ChatMessage.last.event_params)
+
+    sign_in @player
+    post game_table_money_gift_path(@game_table), params: { character_id: @character.id, coin: "silver", amount: 12 }
+    assert_response :not_found
+    assert_equal 12, @character.reload.sheet["silver"]
   end
 
   test "a player spends gold pieces, never more than they have" do
@@ -229,6 +335,75 @@ class GameRoomTest < ActionDispatch::IntegrationTest
 
     post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
     assert_equal 12, @character.reload.sheet.dig("hp", "current")
+  end
+
+  test "the game master adjusts the bonus to the armour class of a player, and the armour class is shared at once" do
+    @character.update_columns(sheet: @character.sheet.merge("intelligence" => 14, "hp" => { "current" => 10, "max" => 12 }))
+    @character.inventory_items.create!(name: "Cotte de mailles", equipped: true,
+                                       properties: { "armor_base" => 16, "armor_dexterity_cap" => 0 })
+    sign_in @game_master
+    get game_table_path(@game_table)
+
+    assert_select "section#combat-sheet-character-#{@character.id}" do
+      assert_select "#character-#{@character.id}-armor-class", text: "16"
+      assert_select "form[action=?] input[name=adjust][value=armor_class_bonus]",
+                    game_table_character_vital_path(@game_table, @character)
+    end
+
+    assert_turbo_stream_broadcasts @game_table do
+      patch game_table_character_vital_path(@game_table, @character),
+            params: { adjust: "armor_class_bonus", adjust_delta: 2 }, as: :turbo_stream
+    end
+    assert_equal 2, @character.reload.sheet["armor_class_bonus"]
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-armor-class", text: "18"
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-adjusted-armor_class_bonus",
+                  text: "+2"
+  end
+
+  test "a player never adjusts the bonus to the armour class, and does not see it in their panel" do
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-character input[name=adjust]", count: 0
+
+    patch game_table_character_vital_path(@game_table, @character),
+          params: { adjust: "armor_class_bonus", adjust_delta: 2 }, as: :turbo_stream
+
+    assert_response :not_found
+    assert_nil @character.reload.sheet["armor_class_bonus"]
+  end
+
+  test "at 0 hit points, a player rolls their death save, written in the chat; a hit at 0 is a failure" do
+    @game_table.update!(template_snapshot: @game_table.template_snapshot.deep_merge("character_fields" => {
+      "fields" => @game_table.template_snapshot.dig("character_fields", "fields") + DEATH_SAVE_FIELDS,
+      "death_saves" => DEATH_SAVES
+    }))
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 0, "max" => 12 }))
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#character-#{@character.id}-death-saves form[action=?]",
+                  death_save_game_table_character_vital_path(@game_table, @character)
+
+    post death_save_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+
+    assert_response :success
+    assert_equal 1, @character.reload.sheet.values_at("death_successes", "death_failures").compact.sum
+    assert_match(/\Adeath_save_/, ChatMessage.last.event_key)
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-death-saves"
+
+    sign_in @game_master
+    patch game_table_character_vital_path(@game_table, @character), params: { hit_points_delta: -1 }, as: :turbo_stream
+    assert_operator @character.reload.sheet["death_failures"].to_i, :>=, 1
+  end
+
+  test "nobody rolls a death save above 0 hit points, nor for someone else's character" do
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 5, "max" => 12 }))
+    sign_in @player
+    post death_save_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @player
+    post death_save_game_table_character_vital_path(@game_table, @other_character), as: :turbo_stream
+    assert_response :not_found
   end
 
   test "a player changes the hit points of their own character only, and never takes a long rest" do

@@ -3,10 +3,19 @@
     text, so that every reader gets it right whatever their language. An element absent from a page (the panel
     « Ma fiche » of another player) is simply left alone by Turbo %>
 <% id = character.id %>
-<%= turbo_stream.replace "character-#{id}-hit-points", partial: "game_rooms/vitals/hit_points_value", locals: { character: } %>
-<%= turbo_stream.replace "character-#{id}-hit-points-bar", partial: "game_rooms/vitals/hit_points_bar", locals: { character: } %>
+<%# The hit points only when it has some: the equipment changed sends these streams too %>
+<% if character.hit_points %>
+  <%= turbo_stream.replace "character-#{id}-hit-points", partial: "game_rooms/vitals/hit_points_value", locals: { character: } %>
+  <%= turbo_stream.replace "character-#{id}-hit-points-bar", partial: "game_rooms/vitals/hit_points_bar", locals: { character: } %>
+  <%= turbo_stream.replace "character-#{id}-death-saves", partial: "game_rooms/vitals/death_saves", locals: { character: } %>
+<% end %>
 <%= turbo_stream.replace "character-#{id}-temporary-hit-points", partial: "game_rooms/vitals/temporary_hit_points_value", locals: { character: } %>
 <% character.play_switch_fields.each do |field| %>
   <%= turbo_stream.replace "character-#{id}-switch-#{field["key"]}", partial: "game_rooms/vitals/switch", locals: { character:, field: } %>
+<% end %>
+<%= turbo_stream.replace "character-#{id}-armor-class", partial: "game_rooms/vitals/armor_class", locals: { character: } %>
+<%= turbo_stream.replace "character-#{id}-attacks", partial: "game_rooms/vitals/attacks", locals: { character: } %>
+<% character.adjusted_fields.each do |field| %>
+  <%= turbo_stream.replace "character-#{id}-adjusted-#{field["key"]}", partial: "game_rooms/vitals/adjusted_value", locals: { character:, field: } %>
 <% end %>
 <%= turbo_stream.replace "combat-ring-character-#{id}", partial: "game_rooms/combat_ring", locals: { group_key: "character-#{id}", percent: character.hit_points_percent } %>

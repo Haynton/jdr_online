@@ -23,6 +23,11 @@ module FieldTypes
       true
     end
 
+    # « Commun, Draconique et Elfique » on one line, rather than squeezed beside a level (decision of 26 November)
+    def wide_in_summary?
+      true
+    end
+
     def error_for(value, field, **)
       return [:inclusion] unless value.is_a?(Array) && (value - field["options"].to_a).empty?
 
