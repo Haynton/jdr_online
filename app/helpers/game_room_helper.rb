@@ -6,12 +6,14 @@ module GameRoomHelper
   PANEL_ICONS = {
     "character" => "shared/icons/venetian_mask", "npcs" => "shared/icons/skull", "maps" => "shared/icons/map",
     "map_tools" => "shared/icons/cloud_fog", "dice" => "shared/icons/dices",
-    "items" => "shared/icons/backpack"
+    "items" => "shared/icons/backpack", "inventory" => "shared/icons/backpack",
+    "spells" => "shared/icons/wand_sparkles"
   }.freeze
   # Written in full, so that a search for the file name finds them (rule of the project)
   PANEL_PARTIALS = {
     "character" => "game_rooms/panels/character", "npcs" => "game_rooms/panels/npcs",
-    "maps" => "game_rooms/panels/maps", "items" => "game_rooms/panels/items"
+    "maps" => "game_rooms/panels/maps", "items" => "game_rooms/panels/items",
+    "inventory" => "game_rooms/panels/inventory", "spells" => "game_rooms/panels/spells"
   }.freeze
   # The sections of the window of the settings, written in full too (GameRoom#settings_sections)
   SETTINGS_PARTIALS = {

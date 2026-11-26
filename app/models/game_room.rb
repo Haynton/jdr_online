@@ -9,7 +9,8 @@ class GameRoom
   GAME_MASTER_TOOL_GROUPS = {
     "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
   }.freeze
-  PLAYER_TOOL_GROUPS = { "sheet" => %w[character], "dice" => %w[dice] }.freeze
+  # A player's sheet in three tools (decision of 26 November): their character, their inventory, their spells
+  PLAYER_TOOL_GROUPS = { "sheet" => %w[character inventory spells], "dice" => %w[dice] }.freeze
   COMING_SOON_PANELS = %w[map_tools dice].freeze
 
   # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
@@ -33,8 +34,12 @@ class GameRoom
     ChatMessage.feed_of(game_table)
   end
 
+  # « Sorts » only for a character who has some: a tool with nothing in it is left out
   def tool_groups
-    game_master? ? GAME_MASTER_TOOL_GROUPS : PLAYER_TOOL_GROUPS
+    return GAME_MASTER_TOOL_GROUPS if game_master?
+    return PLAYER_TOOL_GROUPS if own_character&.spells.present?
+
+    PLAYER_TOOL_GROUPS.transform_values { |panels| panels - %w[spells] }
   end
 
   def panels

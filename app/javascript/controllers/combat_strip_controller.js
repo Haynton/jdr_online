@@ -5,9 +5,10 @@ import { confirmWithDialog } from "confirm_dialog"
 // table rolls its initiative, then opens the preparation; « Prêt » begins the turns (in the order of initiative, or
 // the one of the strip without a roll), which the game master may reorder (asked first); « Fin du tour par tour »
 // brings everyone back without an order. A portrait opens its quick sheet above the strip (one at a time; Escape or a
-// click elsewhere closes it), « Tour suivant » moves the gold ring to the next place and counts the rounds, − and +
-// change the hit points of a fighter, a condition is added from its window and removed by a click on it. Nothing is
-// saved, nothing reaches the others: it all stays in this page
+// click elsewhere closes it), « Tour suivant » moves the gold ring to the next place and counts the rounds. The hit
+// points of a fighter, changed on its card (fighter_card_controller.js), redraw the ring of its portrait, and a
+// condition is added to a card from the window of the conditions. Nothing is saved, nothing reaches the others: it
+// all stays in this page
 export default class extends Controller {
   static targets = [
     "portrait", "sheet", "ring", "round", "order", "startButton", "startDialog", "preparationButtons", "fightButtons",
@@ -280,30 +281,18 @@ export default class extends Controller {
     list.scrollTo({ left, behavior: reducedMotion ? "auto" : "smooth" })
   }
 
-  changeHitPoints(event) {
-    const member = event.currentTarget.closest("[data-combat-member]")
-    const hitPoints = member.querySelector("[data-combat-hit-points]")
-    const max = Number(hitPoints.dataset.max)
-    const current = Math.min(Math.max(Number(hitPoints.textContent) + event.params.delta, 0), max)
-    hitPoints.textContent = current
-    member.querySelector("[data-combat-bar]").style.width = `${Math.round((100 * current) / max)}%`
-    this.updateRing(member.dataset.groupKey)
-  }
-
-  // The ring of a place shows what is left of the hit points of all its fighters
-  updateRing(groupKey) {
-    const values = [...this.element.querySelectorAll(`[data-combat-member][data-group-key="${groupKey}"] [data-combat-hit-points]`)]
-    const current = values.reduce((sum, value) => sum + Number(value.textContent), 0)
-    const max = values.reduce((sum, value) => sum + Number(value.dataset.max), 0)
+  // The hit points of a fighter changed on its card (fighter_card_controller.js, in a quick sheet or the panel
+  // « Ma fiche »): the ring of its portrait shows what is left of them
+  updateRing({ detail: { groupKey, percent } }) {
     const ring = this.ringTargets.find((candidate) => candidate.dataset.groupKey === groupKey)
-    if (ring && max > 0) ring.style.strokeDasharray = `${Math.round((100 * current) / max)} 100`
+    if (ring) ring.style.strokeDasharray = `${percent} 100`
   }
 
-  // « Ajouter un état »: the window of the conditions, for the fighter of this sheet; it takes the focus itself
-  openConditions(event) {
-    this.conditionsList = event.currentTarget.closest("[data-combat-conditions]").querySelector("[data-combat-condition-chips]")
-    this.conditionsOpener = event.currentTarget
-    this.conditionsTitleTarget.textContent = this.conditionsTitleValue.replace("__NAME__", event.params.name)
+  // « Ajouter un état » on the card of a fighter: the window of the conditions, for that fighter; it takes the focus
+  openConditions({ detail: { name, list, opener } }) {
+    this.conditionsList = list
+    this.conditionsOpener = opener
+    this.conditionsTitleTarget.textContent = this.conditionsTitleValue.replace("__NAME__", name)
     this.conditionsDialogTarget.showModal()
     this.conditionsDialogTarget.focus()
   }
@@ -325,15 +314,5 @@ export default class extends Controller {
   // A click on the backdrop reaches the <dialog> itself; a click inside lands on its content
   closeConditionsOnBackdrop(event) {
     if (event.target === this.conditionsDialogTarget) this.closeConditions()
-  }
-
-  // A spell slot ticked once used, unticked when it comes back
-  toggleSlot(event) {
-    const slot = event.currentTarget
-    slot.setAttribute("aria-pressed", String(slot.getAttribute("aria-pressed") !== "true"))
-  }
-
-  removeCondition(event) {
-    event.currentTarget.remove()
   }
 }

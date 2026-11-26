@@ -1,9 +1,9 @@
 <%# One place in the strip of the fighters: the avatar of a player or the initials of a creature, in the ring of
     what is left of its hit points (never for a player looking at an NPC or an enemy), its number for a
     numbered creature (« Guerrier gobelin 2 »), a crossed eye on a creature while the fight is prepared (hidden
-    from the players). A button when who plays may open its quick sheet; outside development
-    (GameRoom.preview_features?: the quick sheet is simulated), a link to the whole sheet of the character in the
-    window of the room %>
+    from the players). For a player, their own portrait opens the panel « Ma fiche »; for the game master, a button
+    that opens its quick sheet, outside development (GameRoom.preview_features?: the quick sheet is simulated) a link
+    to the whole sheet of the character in the window of the room; anyone else's, a picture alone %>
 <% percent = combat_group_percent(group) if combat_gauge_shown?(game_room, group) %>
 <% previews = GameRoom.preview_features? %>
 <% label = previews ? t("game_rooms.combat_strip.portrait", name: group.name, initiative: group.initiative) : group.name %>
@@ -35,12 +35,20 @@
   </span>
 <% end %>
 <% portrait_classes = "flex in-data-reordering:touch-none rounded-full outline-offset-2 transition-opacity select-none data-current:outline-2 data-current:outline-brass data-waiting:opacity-35 in-data-reordering:cursor-grab in-data-dragged:opacity-50" %>
-<% if previews && combat_sheet_openable?(game_room, group) %>
+<% if combat_own_place?(game_room, group) %>
+  <%# A player's own portrait: the panel « Ma fiche » (game_room_panels_controller.js), like its tool in the bar %>
+  <button type="button" class="<%= portrait_classes %> cursor-pointer focus-visible:outline-2 focus-visible:outline-focus-ring"
+          aria-label="<%= t("game_rooms.combat_strip.open_own_panel", name: group.name) %>" title="<%= group.name %>"
+          aria-controls="<%= game_room_panel_id("character") %>" <%= "data-current" if current %>
+          data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
+          data-game-room-panels-target="opener" data-panel-id="<%= game_room_panel_id("character") %>"
+          data-action="game-room-panels#toggle"><%= portrait %></button>
+<% elsif previews && game_room.game_master? %>
   <button type="button" class="<%= portrait_classes %> cursor-pointer focus-visible:outline-2 focus-visible:outline-focus-ring"
           aria-label="<%= label %>" title="<%= label %>" aria-expanded="false" aria-controls="combat-sheet-<%= group.key %>"
           <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
           data-action="combat-strip#toggleSheet keydown->combat-strip#moveWithKeys"><%= portrait %></button>
-<% elsif combat_sheet_openable?(game_room, group) %>
+<% elsif game_room.game_master? %>
   <%# Outside development: the whole sheet of the character, in the window of the room (the quick sheet is simulated) %>
   <%= link_to portrait, game_table_character_sheet_path(game_room.game_table, group.fighters.first.character),
               class: "#{portrait_classes} focus-visible:outline-2 focus-visible:outline-focus-ring",

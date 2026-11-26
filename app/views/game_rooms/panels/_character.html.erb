@@ -1,12 +1,81 @@
-<%# The character of a player: their picture, name and choices, then their whole sheet (abilities, combat, spells,
-    inventory) in the window of the room. A player always has one here: the room sends them to make it first %>
+<%# The character of a player, opened by the tool « Ma fiche » or by their own portrait in the strip of the fighters
+    (decision of 26 November). In the order they are looked at during a fight (Anthony's request: the spell slots of a
+    caster high in the panel, the picture small): their picture, name and choices; their armour class, initiative
+    and the values of a fight (speed, proficiency...: CombatStripHelper#own_quick_stats); what changes in a fight (hit
+    points, conditions, spell slots, attacks: game_rooms/_fighter_status, the card of the quick sheets); their
+    abilities (modifier, the score raised by the bonus of the background, and the saving throw beside it when
+    proficient: the section of the template with one bonus per ability); the skills they are proficient in, as chips;
+    their whole sheet in the window of the room. A player always has one here: the room sends them to make it first %>
 <% character = game_room.own_character %>
-<div class="flex flex-col items-center gap-3 text-center">
-  <%= render "characters/avatar", character: character, css_class: "size-28" %>
-  <div class="min-w-0">
-    <p class="text-lg font-semibold text-ink"><%= character_display_name(character) %></p>
-    <p class="text-sm text-muted"><%= character_card_choices(character) %></p>
+<% group = combat_own_group(game_room) %>
+<% fighter = group&.fighters&.first %>
+<% ability_fields = character.sheet_fields.select { |field| field["type"] == "ability" } %>
+<% computed = character.computed_sheet_values %>
+<% bonus_sections = own_bonus_sections(character) %>
+<% tile_section, tile_bonuses = own_tile_bonus_section(bonus_sections, ability_fields) %>
+<div class="flex flex-col gap-5">
+  <div class="flex items-center gap-3">
+    <%= render "characters/avatar", character: character, css_class: "size-12 shrink-0", icon_class: "size-5" %>
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-base font-semibold text-ink"><%= character_display_name(character) %></p>
+      <p class="line-clamp-2 text-xs text-muted"><%= character_card_choices(character) %></p>
+    </div>
   </div>
+
+  <% if fighter %>
+    <%= render "game_rooms/fighter_badges", fighter: fighter, group: group, stats: own_quick_stats(character, computed) %>
+    <section class="border-b border-line pb-4" aria-label="<%= t(".fight") %>">
+      <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key, spell_slots: false %>
+    </section>
+  <% end %>
+
+  <% if ability_fields.any? %>
+    <section aria-labelledby="game-room-own-abilities">
+      <h3 id="game-room-own-abilities" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t(".abilities") %></h3>
+      <ul class="mt-2 grid grid-cols-3 gap-2">
+        <% ability_fields.each do |field| %>
+          <% save = tile_bonuses&.dig(field["key"]) %>
+          <li class="flex flex-col items-center rounded-lg border border-line px-1.5 py-2">
+            <span class="w-full truncate text-center text-[10px] font-semibold tracking-wider text-muted uppercase"
+                  title="<%= field["label"] %>"><%= field["abbreviation"] || field["label"] %></span>
+            <span class="text-lg leading-tight font-bold text-ink tabular-nums">
+              <span class="sr-only"><%= field["label"] %>, <%= t("game_tables.characters.new.modifier") %></span>
+              <%= format_bonus(computed[:modifiers][field["key"]]) %>
+            </span>
+            <span class="flex items-center gap-1.5 text-xs text-muted tabular-nums">
+              <span><span class="sr-only"><%= t(".score") %></span><%= computed[:scores][field["key"]] || "—" %></span>
+              <% if save && own_ticked?(character, save) %>
+                <%# A saving throw the character is proficient in: a gold dot and its bonus, named for screen readers %>
+                <span class="inline-flex items-center gap-1 font-semibold text-brass" title="<%= save["label"] %>">
+                  <span class="size-1.5 rounded-full bg-brass" aria-hidden="true"></span>
+                  <span class="sr-only"><%= save["label"] %></span><%= format_bonus(computed[:values][save["key"]]) %>
+                </span>
+              <% end %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+      <% if tile_section && tile_bonuses.values.any? { |save| own_ticked?(character, save) } %>
+        <p class="mt-2 flex items-center gap-1.5 text-xs text-muted" aria-hidden="true">
+          <span class="size-1.5 rounded-full bg-brass"></span><%= tile_section %>
+        </p>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% own_ticked_chip_sections(character, bonus_sections, tile_section).each do |section, fields| %>
+    <section aria-label="<%= section %>" class="flex flex-wrap items-center gap-1.5">
+      <h3 class="mr-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= section %></h3>
+      <% fields.each do |field| %>
+        <span class="inline-flex h-6 items-center gap-1 rounded-full bg-field px-2.5 text-xs text-ink">
+          <%= field["label"] %>
+          <span class="font-semibold tabular-nums"><%= format_bonus(computed[:values][field["key"]]) %></span>
+        </span>
+      <% end %>
+    </section>
+  <% end %>
+
+
   <%= link_to game_table_character_sheet_path(game_room.game_table, character),
               class: button_classes(:primary, full_width: true), data: character_sheet_dialog_link_data do %>
     <%= render "shared/icons/venetian_mask" %>

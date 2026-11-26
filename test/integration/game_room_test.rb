@@ -5,7 +5,7 @@ require "test_helper"
 # game master, their own for a player)
 class GameRoomTest < ActionDispatch::IntegrationTest
   GAME_MASTER_TOOLS = ["Cartes", "Outils de carte (bientôt)", "PNJ et ennemis", "Objets", "Dés (bientôt)"].freeze
-  PLAYER_TOOLS = ["Ma fiche", "Dés (bientôt)"].freeze
+  PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Dés (bientôt)"].freeze
 
   setup do
     @game_master = create_user("maitre")
@@ -46,15 +46,44 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a player sees the strip, opens only their own quick sheet and starts no turns" do
+  test "a player sees the strip, their own portrait opens their panel, no quick sheet, no turns" do
     sign_in @player
     get game_table_path(@game_table)
 
     assert_select "[data-controller=combat-strip]" do
-      assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
+      assert_select "button[data-panel-id=game-room-panel-character][data-action='game-room-panels#toggle']" \
+                    "[aria-controls=game-room-panel-character]", count: 1
       assert_select "[role=img][data-combat-strip-target=portrait][aria-label^=?]", "Borin"
-      assert_select "section[data-combat-strip-target=sheet]", count: 1
+      assert_select "section[data-combat-strip-target=sheet]", count: 0
       assert_select "button[data-action='combat-strip#askInitiative']", count: 0
+    end
+  end
+
+  test "a player has their inventory, and their spells only when they have some" do
+    @character.inventory_items.create!(key: "dagger", name: "Dague", quantity: 2, description: "Une lame courte.")
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-panel-inventory", text: /2 × Dague/
+    assert_select "#game-room-panel-spells", count: 0
+    assert_select "[data-controller~=details-dialog] dialog#details-dialog", count: 1
+
+    @character.update_columns(spells: [{ "key" => "fire-bolt", "name" => "Trait de feu", "level" => 0,
+                                         "properties" => { "school" => "Évocation" } }])
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_includes tool_names, "Sorts"
+    assert_select "#game-room-panel-spells", text: /Trait de feu/
+  end
+
+  test "the panel of a player holds their abilities and their fight card" do
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-panel-character" do
+      assert_select "#game-room-own-abilities", text: "Caractéristiques"
+      assert_select "[data-controller=fighter-card][data-fighter-card-name-value=Aria]"
     end
   end
 
@@ -98,6 +127,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "[data-room-board-target=creaturePlacer]", count: 0
     assert_select "[data-controller=combat-strip] a[href=?][data-turbo-frame=character_sheet_dialog]",
                   game_table_character_sheet_path(@game_table, @character)
+    assert_select "[data-action='fighter-card#changeHitPoints']", count: 0
   ensure
     Rails.env = original_environment
   end
@@ -198,6 +228,23 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "turbo-frame#character_sheet_dialog h1", text: /Borin/
     assert_select "a[href=?]", edit_character_path(@other_character), count: 0
+  end
+
+  test "a player changes their character in the window of their sheet, and comes back to the sheet there" do
+    sign_in @player
+    frame = { "Turbo-Frame" => GameRoomHelper::SHEET_FRAME }
+    get edit_character_path(@character), headers: frame
+
+    assert_select "turbo-frame##{GameRoomHelper::SHEET_FRAME}" do
+      assert_select "h2#character-sheet-dialog-title", text: "Modifier Aria"
+      assert_select "form[action=?]", character_path(@character)
+      assert_select "a[href=?]", game_table_character_sheet_path(@game_table, @character), text: "Annuler"
+    end
+
+    patch character_path(@character), params: { character: { name: "Aria la Brave" } }, headers: frame
+
+    assert_redirected_to game_table_character_sheet_path(@game_table, @character)
+    assert_equal "Aria la Brave", @character.reload.name
   end
 
   test "a player reads their own sheet, with the button to change it" do

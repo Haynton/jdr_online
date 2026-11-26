@@ -1,0 +1,65 @@
+<%# What serves in a fight on the card of a fighter, in its quick sheet (game_rooms/_combat_sheet) and in the panel
+    « Ma fiche » (game_rooms/panels/_character): its hit points and a bar, its conditions (the template's,
+    game_table.conditions) added from the window of the conditions and removed by a click, for a player who casts
+    spells their spell slots (game_rooms/_spell_slots; not in the panel « Ma fiche », spell_slots: false: they are in
+    the panel « Sorts »), and its attacks with their dice and their damage.
+    The hit points change with − and +, a slot is ticked once used (fighter_card_controller.js): simulated, nothing
+    saved, so these controls and the conditions show only with GameRoom.preview_features?; online, the values alone %>
+<% live = GameRoom.preview_features? %>
+<% name = fighter.character.name %>
+<div data-controller="fighter-card" data-fighter-card-group-key-value="<%= group_key %>"
+     data-fighter-card-name-value="<%= name %>">
+  <% if fighter.gauge %>
+    <div class="flex items-center gap-2">
+      <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>
+      <% if live %>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact_icon) %> size-8"
+                aria-label="<%= t("game_rooms.combat_strip.decrease", name: name) %>"
+                data-action="fighter-card#changeHitPoints" data-fighter-card-delta-param="-1">
+          <%= render "shared/icons/minus", css_class: "size-4" %>
+        </button>
+      <% end %>
+      <span class="w-14 text-center text-sm font-medium text-ink tabular-nums" aria-live="polite">
+        <span data-fighter-card-target="hitPoints" data-max="<%= fighter.gauge[:max] %>"><%= fighter.gauge[:current] %></span>/<%= fighter.gauge[:max] %>
+      </span>
+      <% if live %>
+        <button type="button" class="<%= button_classes(:secondary, size: :compact_icon) %> size-8"
+                aria-label="<%= t("game_rooms.combat_strip.increase", name: name) %>"
+                data-action="fighter-card#changeHitPoints" data-fighter-card-delta-param="1">
+          <%= render "shared/icons/plus", css_class: "size-4" %>
+        </button>
+      <% end %>
+    </div>
+    <span class="mt-3 block h-1.5 overflow-hidden rounded-full bg-field" aria-hidden="true">
+      <span class="block h-full rounded-full bg-success-ink" data-fighter-card-target="bar"
+            style="width: <%= combat_gauge_percent(fighter.gauge) %>%"></span>
+    </span>
+  <% end %>
+
+  <% if live && room_combat_strip.conditions.any? %>
+    <div class="mt-4 flex flex-col items-start">
+      <button type="button" class="<%= button_classes(:secondary, size: :compact) %> h-7 gap-1 px-2.5 text-xs"
+              aria-haspopup="dialog" data-action="fighter-card#openConditions">
+        <%= render "shared/icons/plus", css_class: "size-3.5" %>
+        <%= t("game_rooms.combat_strip.add_condition") %>
+      </button>
+      <%# The conditions added, under the button (decision), out of the page while there are none %>
+      <div class="mt-3 flex flex-wrap gap-2 empty:hidden" data-fighter-card-target="conditions"></div>
+    </div>
+  <% end %>
+
+  <% if fighter.spell_slots && local_assigns.fetch(:spell_slots, true) %>
+    <div class="mt-4 border-t border-line pt-4">
+      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots %>
+    </div>
+  <% end %>
+
+  <% if fighter.attacks.present? %>
+    <ul class="mt-4 flex flex-col gap-1.5 border-t border-line pt-4 text-xs">
+      <% fighter.attacks.each do |attack| %>
+        <% name_and_bonus, *details = combat_attack_text(attack) %>
+        <li class="flex justify-between gap-3"><span class="font-medium text-ink"><%= name_and_bonus %></span><span class="text-right text-muted"><%= details.join(" · ") %></span></li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

@@ -66,6 +66,7 @@ export default class extends Controller {
     event.preventDefault()
     this.retractToolbar()
     const panelId = event.currentTarget.dataset.panelId
+    this.usedOpener = event.currentTarget
     if (this.openPanelId === panelId) {
       this.close(event)
     } else {
@@ -99,7 +100,11 @@ export default class extends Controller {
     if (!this.openPanelId || document.querySelector("dialog[open]")) return
 
     event?.preventDefault()
-    const opener = this.openerTargets.find((target) => target.dataset.panelId === this.openPanelId)
+    // Back to what opened it: a panel may have two openers (« Ma fiche »: its tool, and the player's own portrait
+    // in the strip of the fighters)
+    const opener = this.usedOpener?.dataset.panelId === this.openPanelId && this.usedOpener.isConnected
+      ? this.usedOpener
+      : this.openerTargets.find((target) => target.dataset.panelId === this.openPanelId)
     this.openPanelId = null
     this.panelTargets.forEach((panel) => panel.removeAttribute("data-open"))
     this.openerTargets.forEach((target) => target.setAttribute("aria-expanded", "false"))

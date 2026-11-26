@@ -270,3 +270,12 @@
     font-size: 16px;
   }
 }
+
+/* An element given the focus back by a script after the mouse (a window closed by its cross or a click beside it,
+   details_dialog_controller.js) shows no ring: it looked like a chosen line (Anthony's request). focus({ focusVisible:
+   false }) is only a hint that a browser may ignore. The script removes the mark as soon as a key is pressed or the
+   element loses the focus: the keyboard gets its ring back. Outside the layers, to win over the focus classes of a
+   button */
+[data-focus-quiet]:focus-visible {
+  outline: none;
+}
