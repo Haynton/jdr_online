@@ -32,12 +32,12 @@
     <% end %>
   </span>
 <% end %>
-<% portrait_classes = "flex rounded-full outline-offset-2 transition-opacity data-current:outline-2 data-current:outline-brass data-waiting:opacity-35" %>
+<% portrait_classes = "flex in-data-reordering:touch-none rounded-full outline-offset-2 transition-opacity select-none data-current:outline-2 data-current:outline-brass data-waiting:opacity-35 in-data-reordering:cursor-grab in-data-dragged:opacity-50" %>
 <% if combat_sheet_openable?(game_room, group) %>
   <button type="button" class="<%= portrait_classes %> cursor-pointer focus-visible:outline-2 focus-visible:outline-focus-ring"
           aria-label="<%= label %>" title="<%= label %>" aria-expanded="false" aria-controls="combat-sheet-<%= group.key %>"
           <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
-          data-action="combat-strip#toggleSheet"><%= portrait %></button>
+          data-action="combat-strip#toggleSheet keydown->combat-strip#moveWithKeys"><%= portrait %></button>
 <% else %>
   <span class="<%= portrait_classes %>" role="img" aria-label="<%= label %>" title="<%= label %>"
         <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"><%= portrait %></span>

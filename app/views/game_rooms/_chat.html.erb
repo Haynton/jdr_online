@@ -3,9 +3,10 @@
     focus) and folded by its button, both kept in this browser (chat_island_controller.js; the handle and the button
     rendered hidden and shown by it). Folded, 60 px high like the other islands (its header 58 px inside its
     border). Its messages, the dice and the actions of each come with it. From 1024 px: on a smaller screen it will
-    need a place of its own (to decide with the chat) %>
+    need a place of its own (to decide with the chat). « Afficher le chat » (Paramètres › Affichage) hides it altogether %>
 <aside class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute right-4 bottom-4 z-20 hidden w-80 flex-col lg:flex"
        aria-labelledby="game-room-chat-title" data-controller="chat-island"
+       data-action="game-room-chat:change@window->chat-island#showOrHide"
        data-chat-island-fold-label-value="<%= t(".fold") %>" data-chat-island-unfold-label-value="<%= t(".unfold") %>">
   <div hidden role="separator" tabindex="0" aria-orientation="horizontal" aria-controls="game-room-chat-body"
        aria-label="<%= t(".resize") %>" title="<%= t(".resize") %>"

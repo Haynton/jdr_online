@@ -31,20 +31,22 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-panel-npcs", text: /Gobelin/
   end
 
-  test "the strip of the fighters shows the players out of a fight, the game master may start one" do
+  test "the strip of the fighters shows the players out of the turns, the game master may start them" do
     sign_in @game_master
     get game_table_path(@game_table)
 
     assert_select "[data-controller=combat-strip]" do
       assert_select "li[data-side=player]", count: 2
       assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
-      assert_select "button[data-action='combat-strip#startFight']", text: /Lancer un combat/
-      assert_select "button[data-action^='combat-strip#endFight'][data-confirm-question^=?]", "Mettre fin au combat ?"
+      assert_select "button[data-action='combat-strip#askInitiative']", text: /Lancer le tour par tour/
+      assert_select "button[data-action^='combat-strip#endFight'][data-confirm-question^=?]", "Mettre fin au tour par tour ?"
+      assert_select "dialog button[data-action='combat-strip#startWithoutRolls']", text: /Sans jet/
+      assert_select "ol[data-action*='combat-strip#pointerDown']"
       assert_select "section[data-combat-strip-target=sheet]", count: 2
     end
   end
 
-  test "a player sees the strip, opens only their own quick sheet and starts no fight" do
+  test "a player sees the strip, opens only their own quick sheet and starts no turns" do
     sign_in @player
     get game_table_path(@game_table)
 
@@ -52,8 +54,38 @@ class GameRoomTest < ActionDispatch::IntegrationTest
       assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
       assert_select "[role=img][data-combat-strip-target=portrait][aria-label^=?]", "Borin"
       assert_select "section[data-combat-strip-target=sheet]", count: 1
-      assert_select "button[data-action='combat-strip#startFight']", count: 0
+      assert_select "button[data-action='combat-strip#askInitiative']", count: 0
     end
+  end
+
+  test "the cameras have a place per person of the table at the top, sized and shown from their buttons and the settings" do
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "section[data-controller=video-island] ul#game-room-video-places[data-turbo-permanent] li", count: 3
+    assert_select "#game-room-video-places li", text: /Vous/, count: 1
+    assert_select "section[data-controller=video-island] button[data-action='video-island#larger']"
+    assert_select "#game-room-settings [data-controller=video-settings] [data-video-settings-target=size]", count: 3
+  end
+
+  test "the display lets each viewer hide the chat altogether" do
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-settings [data-controller=chat-visibility][hidden]", text: /Afficher le chat/ do
+      assert_select "[role=switch][aria-labelledby=game-room-chat-shown-label]"
+    end
+    assert_select "aside[data-controller=chat-island][data-action*='game-room-chat:change@window']"
+  end
+
+  test "the game master places a creature from its panel, a player has no such button" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_select "#game-room-npc-list button[data-action='room-board#takeCreature'][data-room-board-name-param=?]", "Gobelin"
+
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "button[data-action='room-board#takeCreature']", count: 0
   end
 
   test "the chat has its handle and its button, shown by its controller" do
@@ -66,7 +98,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "adding an NPC, an enemy or an item opens its window in the room, never leaves it" do
+  test "adding an NPC, an enemy, an item or a map opens its window in the room, never leaves it" do
     sign_in @game_master
     get game_table_path(@game_table)
 
@@ -77,7 +109,9 @@ class GameRoomTest < ActionDispatch::IntegrationTest
                   new_game_table_catalog_entry_path(@game_table, kind: "item")
     assert_select "#game-room-panel-npcs a[href=?], #game-room-panel-items a[href^=?]",
                   edit_game_table_cast_path(@game_table), edit_game_table_catalog_path(@game_table), count: 0
-    assert_select "dialog#npc-dialog, dialog#bestiary-dialog, dialog#catalog-entry-dialog", count: 3
+    assert_select "dialog#npc-dialog, dialog#bestiary-dialog, dialog#catalog-entry-dialog, dialog#map-dialog", count: 4
+    assert_select "#game-room-panel-maps a[href=?][data-turbo-frame=map_dialog]", new_game_table_game_map_path(@game_table)
+    assert_select "#game-room-panel-maps a[href=?]", edit_game_table_map_list_path(@game_table), count: 0
   end
 
   test "a player gets their own sheet, and nothing of the game master" do
@@ -88,7 +122,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-panel-character a[href=?]", game_table_character_sheet_path(@game_table, @character)
     assert_select "#game-room-panel-npcs, #game-room-panel-items, #game-room-panel-maps", count: 0
     assert_no_match(/Gobelin/, response.body)
-    assert_select "dialog#npc-dialog, dialog#bestiary-dialog, dialog#catalog-entry-dialog", count: 0
+    assert_select "dialog#npc-dialog, dialog#bestiary-dialog, dialog#catalog-entry-dialog, dialog#map-dialog", count: 0
     assert_select "#game-room-settings [role=tab]", text: /Participants|Visio et son|Affichage/, count: 3
     assert_select "#game-room-settings", text: /Borin/
     assert_select "#game-room-settings input#game-room-invitation-link", count: 0

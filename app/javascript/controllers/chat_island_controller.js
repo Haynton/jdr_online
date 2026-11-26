@@ -3,9 +3,11 @@ import { Controller } from "@hotwired/stimulus"
 // The chat of the game room (game_rooms/_chat): low by default, its height changed by the handle at its top (dragged,
 // or the arrow keys, Shift for a bigger step) and folded by its button. Both are kept in this browser
 // (localStorage, a convenience of each viewer: the room opens as it was left). The handle and the button are rendered
-// hidden and shown here: without JavaScript, the chat keeps its height
+// hidden and shown here: without JavaScript, the chat keeps its height. « Afficher le chat » in the settings of the game
+// hides it altogether (chat_visibility_controller.js, the same key, told by game-room-chat:change on window)
 const HEIGHT_KEY = "game_room_chat_height"
 const FOLDED_KEY = "game_room_chat_folded"
+export const HIDDEN_KEY = "game_room_chat_hidden"
 const MIN_HEIGHT = 96
 const KEY_STEP = 24
 const BIG_KEY_STEP = 96
@@ -20,6 +22,11 @@ export default class extends Controller {
     const savedHeight = Number(this.read(HEIGHT_KEY))
     if (savedHeight) this.setHeight(savedHeight)
     this.setFolded(this.read(FOLDED_KEY) === "true")
+    this.showOrHide()
+  }
+
+  showOrHide() {
+    this.element.hidden = this.read(HIDDEN_KEY) === "true"
   }
 
   toggle() {

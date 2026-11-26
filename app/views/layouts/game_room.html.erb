@@ -11,9 +11,10 @@
       never moves (game_room_panels_controller.js), at the bottom right the chat. On a phone (simplified, decision),
       the bar runs along the bottom and a panel takes the screen above it; the chat waits for a wider screen %>
   <body class="h-dvh overflow-hidden bg-well text-ink">
-    <div class="relative h-full" data-controller="game-room-panels"
+    <div class="group/room relative h-full" data-controller="game-room-panels room-board"
          data-game-room-panels-settings-open-value="<%= game_room_settings_open?(@game_room) %>"
-         data-action="keydown.esc->game-room-panels#close">
+         data-room-board-hint-value="<%= t("game_rooms.board.hint", name: "__NAME__") %>"
+         data-action="keydown.esc->game-room-panels#close keydown.esc->room-board#dropCreatureWithKeys">
       <main class="absolute inset-0">
         <%= render "shared/flashes" %>
         <%= yield %>
@@ -25,17 +26,19 @@
       <% @game_room.panels.each do |panel| %>
         <%= render "game_rooms/panel", game_room: @game_room, panel: panel %>
       <% end %>
+      <%= render "game_rooms/video", game_room: @game_room %>
       <%= render "game_rooms/chat" %>
       <%= render "game_rooms/settings_dialog", game_room: @game_room %>
     </div>
 
     <%= render "game_rooms/sheet_dialog" %>
-    <%# The windows of the steps « PNJ et ennemis » and « Sorts et objets », opened from the panels of the game master:
-        adding an NPC, an enemy or an item never leaves the game (decision) %>
+    <%# The windows of the steps « PNJ et ennemis », « Sorts et objets » and « Cartes », opened from the panels of the
+        game master: adding an NPC, an enemy, an item or a map never leaves the game (decision) %>
     <% if @game_room.game_master? %>
       <%= render "game_tables/npcs/dialog" %>
       <%= render "game_tables/bestiaries/dialog" %>
       <%= render "game_tables/catalogs/dialog" %>
+      <%= render "game_tables/game_maps/dialog" %>
     <% end %>
     <%= render "shared/confirm_dialog" %>
     <%= yield :detached_forms %>

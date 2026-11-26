@@ -26,6 +26,33 @@ module GameRoomHelper
     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
   COMING_SOON_PARTIAL = "game_rooms/panels/coming_soon".freeze
+  # The cameras (game_rooms/_video): a line at the top, centred, 320 px kept on each side; in the middle
+  # (data-size="stage"), the room between the bar of tools, the islands at the top and the strip of the fighters, the
+  # places straight on the board (decision: not in a card)
+  VIDEO_CLASSES = %w[
+    group/video absolute top-4 left-1/2 z-20 hidden max-w-[calc(100%-40rem)] -translate-x-1/2 flex-col items-center
+    md:flex data-[size=stage]:top-22 data-[size=stage]:right-4 data-[size=stage]:bottom-22 data-[size=stage]:left-22
+    data-[size=stage]:z-30 data-[size=stage]:max-w-none data-[size=stage]:translate-x-0 data-[size=stage]:justify-center
+  ].join(" ").freeze
+  # Its places: a line that never scrolls (they shrink together); in the middle, large places in rows, each row
+  # centred (the last one too, when it is not full)
+  VIDEO_PLACES_CLASSES = %w[
+    flex max-w-full justify-center gap-2 group-data-[size=stage]/video:max-w-5xl group-data-[size=stage]/video:flex-wrap
+    group-data-[size=stage]/video:gap-3
+  ].join(" ").freeze
+  # One place: 16:9, 107, 160 or 240 px wide (60, 90 or 135 px high), shrinking with the others; 320 px in the
+  # middle
+  VIDEO_PLACE_CLASSES = %w[
+    relative flex aspect-video w-[107px] min-w-0 items-center justify-center overflow-hidden
+    group-data-[size=medium]/video:w-40 group-data-[size=large]/video:w-60 group-data-[size=stage]/video:w-80
+  ].join(" ").freeze
+  # A small button of an island header (the cameras: smaller, larger, fold): an icon alone in 28 px, the size of the
+  # quiet buttons of the app would leave no room for the name of the island at its smallest
+  ISLAND_HEADER_BUTTON_CLASSES = %w[
+    inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted transition-colors
+    hover:bg-surface-raised hover:text-ink disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+  ].join(" ").freeze
   SHEET_FRAME = "character_sheet_dialog".freeze
 
   # An island over the board: a card of surface with its thin border and a shadow, which detaches it from the map
