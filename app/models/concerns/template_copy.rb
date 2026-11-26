@@ -39,6 +39,14 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "spell_slots")
   end
 
+  # The conditions of the game (character_fields.conditions: key, label, description, levels), for the characters of
+  # the players and the NPCs alike. Read in the template as it is now, like the NPC sheet (decision: a table already
+  # made gets them at once), in the copy once the template is deleted; none for a template that has no conditions
+  def conditions
+    declared = sheet_template&.character_fields.to_h["conditions"]
+    declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
+  end
+
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each
   def level_thresholds
     template_snapshot.to_h["level_thresholds"] || []
