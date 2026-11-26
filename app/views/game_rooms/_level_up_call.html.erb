@@ -1,0 +1,9 @@
+<%# The level the game master gave a player's character, at the top of « Ma fiche »: its choices open in the window of
+    the room (game_tables/level_ups/new), an action that waits for the player (attention) %>
+<% if character.level_up_to %>
+  <div class="flex flex-col gap-2 rounded-lg bg-primary-soft p-3 ring-1 ring-brass ring-inset">
+    <p class="text-sm text-ink"><%= t("game_rooms.level_grant.call", level: character.level_up_to) %></p>
+    <%= link_to t("game_rooms.level_grant.reach", level: character.level_up_to), new_game_table_level_up_path(game_table),
+                class: button_classes(:attention, full_width: true), data: character_sheet_dialog_link_data %>
+  </div>
+<% end %>

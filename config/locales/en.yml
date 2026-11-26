@@ -40,6 +40,19 @@ en:
         username: "Invite a player by their username"
     errors:
       models:
+        level_up:
+          attributes:
+            hit_point_choice:
+              inclusion: "Choose how to gain your hit points."
+            subclass:
+              inclusion: "Choose an option of the list."
+            ability_increases:
+              not_shared: "Share exactly %{points} points."
+              above_maximum: "%{ability} would go above %{maximum}."
+            expertise_keys:
+              not_picked:
+                one: "Choose 1 skill."
+                other: "Choose %{count} skills."
         friend_request:
           attributes:
             username:
@@ -1156,6 +1169,12 @@ en:
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
+    level_grant:
+      call: "The GM gives you level %{level}."
+      confirm: "Give level %{level} to %{name}? The player will then make the choices of that level."
+      give: "Give level %{level}"
+      reach: "Reach level %{level}"
+      waiting: "Level %{level} waiting for the player's choices."
     board:
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
@@ -1172,6 +1191,9 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        level_granted: "The GM gives level %{level} to %{character}."
+        level_reached: "%{character} reaches level %{level}: +%{hit_points} HP."
+        level_reached_rolled: "%{character} reaches level %{level}: hit die %{roll}, +%{hit_points} HP."
         weapon_masteries_changed: "%{character} changes their masteries: %{changes}."
         spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
         hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
@@ -1478,6 +1500,28 @@ en:
         rolled: "Hit dice rolled: %{results}."
     rules:
       former_roll: "Dice roll"
+    level_ups:
+      new:
+        back: "Back to the game"
+        close: "Close"
+        features: "New features"
+        later: "Later"
+        picks_later: "Your new spells and weapon masteries are picked afterwards, in “Change my spells” and “Change my masteries”."
+        submit: "Reach level %{level}"
+        subtitle: "The GM gives a level to %{name}. Make the choices of that level; the chat will say the result."
+        title: "Level %{level}"
+      hit_points:
+        title: "Hit points"
+        average: "Average: +%{points} HP"
+        roll: "Roll the d%{sides}"
+      improvement:
+        title: "Ability Score Improvement"
+        rule: "Share %{points} points, never above the maximum of an ability."
+      expertise:
+        title: "Expertise"
+        rule:
+          one: "Choose 1 proficient skill: its proficiency bonus counts twice."
+          other: "Choose %{count} proficient skills: their proficiency bonus counts twice."
     weapon_mastery_choices:
       edit:
         back: "Back to the game"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_233000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,11 +82,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_230000) do
     t.integer "hit_dice_used", default: 0, null: false
     t.string "fighting_style"
     t.jsonb "weapon_masteries", default: [], null: false
+    t.integer "level_up_to"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
     t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying, 'companion'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "level_up_to >= 2 AND level_up_to <= 20", name: "characters_level_up_to_check"
     t.check_constraint "owner_character_id IS NULL OR kind::text = 'companion'::text", name: "characters_owner_only_for_companion_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
   end

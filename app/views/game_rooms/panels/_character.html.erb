@@ -14,6 +14,7 @@
 <% bonus_sections = own_bonus_sections(character) %>
 <% tile_section, tile_bonuses = own_tile_bonus_section(bonus_sections, ability_fields) %>
 <div class="flex flex-col gap-5">
+  <%= render "game_rooms/level_up_call", character: character, game_table: game_room.game_table %>
   <div class="flex items-center gap-3">
     <%= render "characters/avatar", character: character, css_class: "size-12 shrink-0", icon_class: "size-5" %>
     <div class="min-w-0 flex-1">

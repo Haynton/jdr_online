@@ -18,7 +18,10 @@ module GameRoomChatHelper
     "resource_pool_used" => "game_rooms.chat.events.resource_pool_used",
     "spell_slot_spent" => "game_rooms.chat.events.spell_slot_spent",
     "hit_die_spent" => "game_rooms.chat.events.hit_die_spent",
-    "weapon_masteries_changed" => "game_rooms.chat.events.weapon_masteries_changed"
+    "weapon_masteries_changed" => "game_rooms.chat.events.weapon_masteries_changed",
+    "level_granted" => "game_rooms.chat.events.level_granted",
+    "level_reached" => "game_rooms.chat.events.level_reached",
+    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own

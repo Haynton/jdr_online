@@ -28,6 +28,9 @@
     <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key, game_master_view: true %>
   </div>
   <% if player %>
+    <%= render "game_rooms/level_grant", character: fighter.character, game_table: game_room.game_table %>
+  <% end %>
+  <% if player %>
     <%= render "game_rooms/save_row", character: fighter.character, computed: computed %>
   <% end %>
   <div class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-xs">

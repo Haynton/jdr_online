@@ -1,0 +1,5 @@
+<%# The first error of one choice of the level gained, under it %>
+<% message = level_up.errors[attribute].first %>
+<% if message %>
+  <p id="level_up_<%= attribute %>_error" class="mt-2 text-sm text-error-ink"><%= message %></p>
+<% end %>

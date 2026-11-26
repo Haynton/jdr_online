@@ -1,6 +1,7 @@
 // ComputedRules::HitPointsByLevel: at level 1 the highest roll of the hit die of the class plus the modifier of
 // basedOn, then at each level the average of the die (half plus one) plus that modifier, or, when the hit dice were
-// rolled (reader.hitPointRolls, null otherwise), each roll plus that modifier, at least 1 a level. A plain number, as a
+// rolled (reader.hitPointRolls, null otherwise), each roll plus that modifier, at least 1 a level (a level gained with
+// the average in a list of rolls is null: the average). A plain number, as a
 // text. Plus, at each level, the points an option adds (hit_points_per_level: the draconic resilience)
 export default function hitPointsByLevel({ basedOn, levelFrom, classFrom }, reader) {
   const effects = reader.classEffects(classFrom)
@@ -14,7 +15,7 @@ export default function hitPointsByLevel({ basedOn, levelFrom, classFrom }, read
 
 function laterLevelsPoints(levelFrom, reader, sides, modifier) {
   const rolls = reader.hitPointRolls?.() ?? null
-  if (rolls) return rolls.reduce((total, roll) => total + Math.max(roll + modifier, 1), 0)
+  if (rolls) return rolls.reduce((total, roll) => total + Math.max((roll ?? Math.floor(sides / 2) + 1) + modifier, 1), 0)
 
   return (reader.typedLevel(levelFrom) - 1) * (Math.floor(sides / 2) + 1 + modifier)
 }

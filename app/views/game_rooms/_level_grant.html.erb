@@ -1,0 +1,13 @@
+<%# The game master gives the next level to a player's character, from its quick sheet (decision of 26 November), after
+    the question of the window of confirmation; a level waiting for the choices of the player is said instead.
+    Nothing for a template without levels, nor at the last one %>
+<% if character.level_up_to %>
+  <p class="mt-3 text-xs text-muted"><%= t("game_rooms.level_grant.waiting", level: character.level_up_to) %></p>
+<% elsif character.levels_up? && character.current_level < CharacterLevels::MAXIMUM_LEVEL %>
+  <% next_level = character.current_level + 1 %>
+  <%= button_to t("game_rooms.level_grant.give", level: next_level),
+                game_table_level_grant_path(game_table, character_id: character.id),
+                class: button_classes(:secondary, size: :compact, full_width: true), form_class: "mt-3",
+                form: { data: { turbo_confirm: t("game_rooms.level_grant.confirm", level: next_level, name: character.name),
+                                confirm_button: t("game_rooms.level_grant.give", level: next_level) } } %>
+<% end %>

@@ -1,0 +1,18 @@
+<%# The expertise the class gives at this level: so many skills it is proficient in, without expertise yet %>
+<fieldset aria-describedby="level_up_expertise_keys_error">
+  <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.expertise.title") %></legend>
+  <p class="mt-2 text-sm text-muted"><%= t("game_tables.level_ups.expertise.rule", count: level_up.expertise_count) %></p>
+  <%= hidden_field_tag "level_up[expertise_keys][]", "", id: nil %>
+  <ul class="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
+    <% level_up.expertise_candidates.each do |field| %>
+      <li>
+        <label class="flex items-center gap-2 text-sm text-ink">
+          <%= check_box_tag "level_up[expertise_keys][]", field["key"], level_up.expertise_keys.include?(field["key"]),
+                            id: "level_up_expertise_#{field["key"]}", class: SimpleFormFieldClasses::CHECKBOX %>
+          <%= field["label"] %>
+        </label>
+      </li>
+    <% end %>
+  </ul>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :expertise_keys %>
+</fieldset>

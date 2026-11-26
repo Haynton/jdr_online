@@ -75,6 +75,9 @@ Rails.application.routes.draw do
       # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
       resource :spell_choice, only: %i[edit update]
       resource :weapon_mastery_choice, only: %i[edit update]
+      # The game master gives the next level to a player's character; the player then makes the choices of that level
+      resource :level_grant, only: :create
+      resource :level_up, only: %i[new create]
       # What changes on a player's character during the game, saved: hit points, temporary hit points, inspiration
       # (the game master for any player, a player for their own), and a long rest (the game master)
       resources :character_vitals, only: :update do

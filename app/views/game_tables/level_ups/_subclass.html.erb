@@ -1,0 +1,14 @@
+<%# The list asked from this level, still empty (the subclass at level 3), with the options its class offers: a native
+    select drawn like the other lists (CollectionSelectInput) %>
+<% field = level_up.subclass_field %>
+<section>
+  <label for="level_up_subclass" class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= field["label"] %></label>
+  <div class="relative mt-2 max-w-sm">
+    <%= select_tag "level_up[subclass]", options_for_select(level_up.subclass_options, level_up.subclass),
+                   include_blank: true, required: true, id: "level_up_subclass",
+                   class: "#{SimpleFormFieldClasses::INPUT} #{CollectionSelectInput::SELECT_CLASSES}",
+                   aria: { invalid: level_up.errors[:subclass].any?, describedby: "level_up_subclass_error" } %>
+    <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+  </div>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :subclass %>
+</section>

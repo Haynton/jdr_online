@@ -11,6 +11,19 @@ fr:
         username: "Inviter un joueur par son pseudo"
     errors:
       models:
+        level_up:
+          attributes:
+            hit_point_choice:
+              inclusion: "Choisissez comment gagner vos points de vie."
+            subclass:
+              inclusion: "Choisissez une option de la liste."
+            ability_increases:
+              not_shared: "Répartissez exactement %{points} points."
+              above_maximum: "%{ability} dépasserait %{maximum}."
+            expertise_keys:
+              not_picked:
+                one: "Choisissez 1 compétence."
+                other: "Choisissez %{count} compétences."
         friend_request:
           attributes:
             username:
@@ -1127,6 +1140,12 @@ fr:
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
+    level_grant:
+      call: "Le MJ vous donne le niveau %{level}."
+      confirm: "Donner le niveau %{level} à %{name} ? Le joueur fera ensuite les choix de ce niveau."
+      give: "Donner le niveau %{level}"
+      reach: "Passer au niveau %{level}"
+      waiting: "Niveau %{level} en attente des choix du joueur."
     board:
       empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
       empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
@@ -1143,6 +1162,9 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        level_granted: "Le MJ donne le niveau %{level} à %{character}."
+        level_reached: "%{character} passe au niveau %{level} : +%{hit_points} PV."
+        level_reached_rolled: "%{character} passe au niveau %{level} : dé de vie %{roll}, +%{hit_points} PV."
         weapon_masteries_changed: "%{character} change ses maîtrises : %{changes}."
         spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
         hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
@@ -1449,6 +1471,28 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    level_ups:
+      new:
+        back: "Retour à la partie"
+        close: "Fermer"
+        features: "Nouvelles capacités"
+        later: "Plus tard"
+        picks_later: "Vos nouveaux sorts et maîtrises d'armes se choisissent ensuite, dans « Changer mes sorts » et « Changer mes maîtrises »."
+        submit: "Passer au niveau %{level}"
+        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau, le chat dira le résultat."
+        title: "Niveau %{level}"
+      hit_points:
+        title: "Points de vie"
+        average: "Moyenne : +%{points} PV"
+        roll: "Lancer le d%{sides}"
+      improvement:
+        title: "Amélioration de caractéristique"
+        rule: "Répartissez %{points} points, sans dépasser le maximum d'une caractéristique."
+      expertise:
+        title: "Expertise"
+        rule:
+          one: "Choisissez 1 compétence maîtrisée : son bonus de maîtrise compte double."
+          other: "Choisissez %{count} compétences maîtrisées : leur bonus de maîtrise compte double."
     weapon_mastery_choices:
       edit:
         back: "Retour à la partie"
