@@ -18,6 +18,15 @@ module PlayerSheetPanelsHelper
     font-semibold text-muted tabular-nums transition-colors hover:border-field-line hover:bg-surface-raised
     hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
+  # A yes or no granted in play (the inspiration, game_rooms/vitals/_switch): a pill, gold when it is on, like the
+  # badge of the game master (ink on primary-soft 12 and more; primary-soft-ink on it 6 and more)
+  PLAY_SWITCH_CLASSES = %w[
+    inline-flex h-7 cursor-pointer items-center rounded-full border border-line px-3 text-xs font-semibold text-muted
+    transition-colors hover:bg-surface-raised hover:text-ink aria-pressed:border-transparent
+    aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink aria-pressed:ring-1
+    aria-pressed:ring-primary-soft-ink/50 aria-pressed:ring-inset
+    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
+  ].join(" ").freeze
   # The groups of the summary sheet « Détails » leaves out: the abilities (« Ma fiche »), the bonus rows
   # (« Compétences »), and the long texts (appearance, story: Anthony's request, too long for a narrow panel and of
   # little use during the game; they are read and changed in « Modifier ma fiche »)

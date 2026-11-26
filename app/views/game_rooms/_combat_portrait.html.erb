@@ -2,8 +2,7 @@
     what is left of its hit points (never for a player looking at an NPC or an enemy), its number for a
     numbered creature (« Guerrier gobelin 2 »), a crossed eye on a creature while the fight is prepared (hidden
     from the players). For a player, their own portrait opens the panel « Ma fiche »; for the game master, a button
-    that opens its quick sheet, outside development (GameRoom.preview_features?: the quick sheet is simulated) a link
-    to the whole sheet of the character in the window of the room; anyone else's, a picture alone %>
+    that opens its quick sheet (online too); anyone else's, a picture alone %>
 <% percent = combat_group_percent(group) if combat_gauge_shown?(game_room, group) %>
 <% previews = GameRoom.preview_features? %>
 <% label = previews ? t("game_rooms.combat_strip.portrait", name: group.name, initiative: group.initiative) : group.name %>
@@ -15,12 +14,7 @@
       <span class="flex size-8 items-center justify-center rounded-full text-xs font-semibold <%= combat_portrait_classes(group) %>" aria-hidden="true"><%= combat_initials(group.name) %></span>
     <% end %>
     <% if percent %>
-      <svg viewBox="0 0 40 40" class="absolute inset-0 size-10 -rotate-90" aria-hidden="true">
-        <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" class="stroke-field"></circle>
-        <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" stroke-linecap="round" pathLength="100"
-                class="stroke-success-ink" style="stroke-dasharray: <%= percent %> 100"
-                data-combat-strip-target="ring" data-group-key="<%= group.key %>"></circle>
-      </svg>
+      <%= render "game_rooms/combat_ring", group_key: group.key, percent: percent %>
     <% end %>
     <% unless group.side == :player %>
       <%# Hidden from the players while the game master prepares the fight (data-preparing on the strip) %>
@@ -43,17 +37,13 @@
           data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
           data-game-room-panels-target="opener" data-panel-id="<%= game_room_panel_id("character") %>"
           data-action="game-room-panels#toggle"><%= portrait %></button>
-<% elsif previews && game_room.game_master? %>
+<% elsif game_room.game_master? %>
+  <%# Its quick sheet, online too (decision of 26 November: the hit points, the temporary ones and the inspiration of
+      a player are saved; the turns stay in development) %>
   <button type="button" class="<%= portrait_classes %> cursor-pointer focus-visible:outline-2 focus-visible:outline-focus-ring"
           aria-label="<%= label %>" title="<%= label %>" aria-expanded="false" aria-controls="combat-sheet-<%= group.key %>"
           <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"
           data-action="combat-strip#toggleSheet keydown->combat-strip#moveWithKeys"><%= portrait %></button>
-<% elsif game_room.game_master? %>
-  <%# Outside development: the whole sheet of the character, in the window of the room (the quick sheet is simulated) %>
-  <%= link_to portrait, game_table_character_sheet_path(game_room.game_table, group.fighters.first.character),
-              class: "#{portrait_classes} focus-visible:outline-2 focus-visible:outline-focus-ring",
-              aria: { label: t("game_rooms.combat_strip.open_sheet", name: group.name) }, title: group.name,
-              data: character_sheet_dialog_link_data %>
 <% else %>
   <span class="<%= portrait_classes %>" role="img" aria-label="<%= label %>" title="<%= label %>"
         <%= "data-current" if current %> data-combat-strip-target="portrait" data-group-key="<%= group.key %>"><%= portrait %></span>

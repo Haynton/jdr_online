@@ -21,9 +21,9 @@
       the order (during the turns, and from the preparation without a roll) by dragging a portrait, or Alt and an
       arrow on it; the new order is asked first in the confirmation
       window, the one before comes back when it is refused (decision).
-    Everything changes in this page only (combat_strip_controller.js). The turns and the quick sheets are shown in
-    development and in the tests only (GameRoom.preview_features?): online, the strip shows the players, each
-    opening their whole sheet for the game master, and their own panel « Ma fiche » for a player %>
+    The turns change in this page only (combat_strip_controller.js) and are shown in development and in the tests only
+    (GameRoom.preview_features?). The quick sheets of the game master show online too: the hit points, the temporary
+    ones and the inspiration of a player are saved (game_rooms/vitals); a player's own portrait opens « Ma fiche » %>
 <% groups = room_combat_strip.groups %>
 <% if groups.any? %>
   <% initiative_ranks = groups.each_with_index.to_h { |group, index| [group.key, index] } %>
@@ -83,7 +83,7 @@
       <% end %>
     </div>
     <% groups.each do |group| %>
-      <% if GameRoom.preview_features? && @game_room.game_master? %>
+      <% if @game_room.game_master? %>
         <%= render "game_rooms/combat_sheet", game_room: @game_room, group: group %>
       <% end %>
     <% end %>

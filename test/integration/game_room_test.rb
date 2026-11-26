@@ -1,17 +1,28 @@
 require "test_helper"
+require "turbo/broadcastable/test_helper"
 
 # The game room of a table: a board on the whole screen with its islands instead of the navigation of the app, the
 # tools of its bar in groups and by role, the party, and the sheet of a character in its window (any player's for the
 # game master, their own for a player)
 class GameRoomTest < ActionDispatch::IntegrationTest
+  include Turbo::Broadcastable::TestHelper
+
   GAME_MASTER_TOOLS = ["Cartes", "Outils de carte (bientôt)", "PNJ et ennemis", "Objets", "Dés (bientôt)"].freeze
+  # The fields of the game the template declares, as the heroic fantasy: hit points, temporary ones, inspiration
+  VITAL_FIELDS = [
+    { "key" => "hp", "label" => "Points de vie", "type" => "resource", "receives_damage" => true,
+      "on_rest" => "reset_to_max", "at_creation" => false, "section" => "Notes" },
+    { "key" => "temp_hp", "label" => "PV temporaires", "type" => "resource", "absorbs_damage_for" => "hp",
+      "at_creation" => false, "section" => "Notes" },
+    { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" }
+  ].freeze
   PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés (bientôt)"].freeze
 
   setup do
     @game_master = create_user("maitre")
     @player = create_user("joueur")
     @other_player = create_user("autre")
-    sheet_template = EquipmentSpellsTemplateBuilder.create_template
+    sheet_template = EquipmentSpellsTemplateBuilder.create_template(extra_fields: VITAL_FIELDS)
     @game_table = GameTable.create!(name: "La Crypte", status: GameTable::READY_STATUS, sheet_template: sheet_template,
                                     template_snapshot: sheet_template.snapshot)
     @game_table.participations.create!(user: @game_master, role: :game_master)
@@ -182,19 +193,60 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "button[data-action='room-board#takeCreature']", count: 0
   end
 
-  test "online, the simulated parts are hidden: no turns, no quick sheets, no placing, each portrait opens the sheet" do
+  test "online, the simulated parts are hidden: no turns, no placing, no conditions; the quick sheets are saved" do
     original_environment = Rails.env
     Rails.env = "production"
     sign_in @game_master
     get game_table_path(@game_table)
 
-    assert_select "[data-action='combat-strip#askInitiative'], [data-combat-strip-target=sheet]", count: 0
+    assert_select "[data-action='combat-strip#askInitiative']", count: 0
     assert_select "[data-room-board-target=creaturePlacer]", count: 0
-    assert_select "[data-controller=combat-strip] a[href=?][data-turbo-frame=character_sheet_dialog]",
+    assert_select "[data-action='fighter-card#changeHitPoints'], [data-action='fighter-card#openConditions']", count: 0
+    assert_select "section[data-combat-strip-target=sheet]", count: 2
+    assert_select "section#combat-sheet-character-#{@character.id} a[href=?][data-turbo-frame=character_sheet_dialog]",
                   game_table_character_sheet_path(@game_table, @character)
-    assert_select "[data-action='fighter-card#changeHitPoints']", count: 0
   ensure
     Rails.env = original_environment
+  end
+
+  test "the game master changes the hit points, temporary hit points and inspiration of a player, shared at once" do
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 10, "max" => 12 }))
+    sign_in @game_master
+    get game_table_path(@game_table)
+
+    assert_select "section#combat-sheet-character-#{@character.id}" do
+      assert_select "form[action=?] input[name=hit_points_delta][value='-1']",
+                    game_table_character_vital_path(@game_table, @character)
+      assert_select "form[action=?]", long_rest_game_table_character_vital_path(@game_table, @character)
+    end
+
+    assert_turbo_stream_broadcasts @game_table do
+      patch game_table_character_vital_path(@game_table, @character), params: { hit_points_delta: -3 },
+                                                                       as: :turbo_stream
+    end
+    assert_select "turbo-stream[action=replace][target=?]", "character-#{@character.id}-hit-points", text: %r{7/12}
+    assert_equal 7, @character.reload.sheet.dig("hp", "current")
+
+    post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_equal 12, @character.reload.sheet.dig("hp", "current")
+  end
+
+  test "a player changes the hit points of their own character only, and never takes a long rest" do
+    @character.update_columns(sheet: @character.sheet.merge("hp" => { "current" => 10, "max" => 12 }))
+    @other_character.update_columns(sheet: @other_character.sheet.merge("hp" => { "current" => 10, "max" => 12 }))
+    sign_in @player
+    patch game_table_character_vital_path(@game_table, @character), params: { hit_points_delta: 1 }, as: :turbo_stream
+
+    assert_equal 11, @character.reload.sheet.dig("hp", "current")
+
+    patch game_table_character_vital_path(@game_table, @other_character), params: { hit_points_delta: -1 },
+                                                                           as: :turbo_stream
+    assert_response :not_found
+
+    sign_in @player
+    post long_rest_game_table_character_vital_path(@game_table, @character), as: :turbo_stream
+    assert_response :not_found
+    assert_equal 10, @other_character.reload.sheet.dig("hp", "current")
   end
 
   test "the chat has its handle and its button, shown by its controller" do

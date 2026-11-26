@@ -1099,6 +1099,10 @@ fr:
         other: "%{count} nouveaux messages"
     coming_soon: "Bientôt"
     combat_strip:
+      long_rest: "Repos long"
+      long_rest_confirm: "Repos long pour %{name} ? Ses points de vie reviennent au maximum."
+      passive: "Perception passive"
+      passive_short: "Perc. passive"
       add_condition: "Ajouter un état"
       armor_class_label: "CA"
       cancel_preparation: "Annuler"
@@ -1114,7 +1118,6 @@ fr:
       label: "Combattants"
       next_turn: "Tour suivant"
       open_own_panel: "Ouvrir ma fiche (%{name})"
-      open_sheet: "Ouvrir la fiche de %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Préparation"
       preparing_rolled: "Préparation · initiatives lancées"
@@ -1231,6 +1234,9 @@ fr:
       leave_confirm: "Quitter la partie « %{name} » ? Vous la retrouverez dans « Mes tables »."
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
+    vitals:
+      decrease: "Retirer 1 à %{label} de %{name}"
+      increase: "Ajouter 1 à %{label} de %{name}"
     video:
       fold: "Replier les caméras"
       larger: "Agrandir les caméras"

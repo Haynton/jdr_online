@@ -1,0 +1,9 @@
+<%# The ring of what is left of the hit points around a portrait of the strip of the fighters; for a player's
+    character, replaced at once for the whole table when they change (GameTables::CharacterVitalsController). The
+    whole <svg> is replaced: a <circle> alone, read as HTML by Turbo, would no longer be drawn %>
+<svg id="combat-ring-<%= group_key %>" viewBox="0 0 40 40" class="absolute inset-0 size-10 -rotate-90" aria-hidden="true">
+  <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" class="stroke-field"></circle>
+  <circle cx="20" cy="20" r="18.5" fill="none" stroke-width="3" stroke-linecap="round" pathLength="100"
+          class="stroke-success-ink" style="stroke-dasharray: <%= percent.to_i %> 100"
+          data-combat-strip-target="ring" data-group-key="<%= group_key %>"></circle>
+</svg>

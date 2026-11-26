@@ -1,0 +1,3 @@
+<%# The hit points of a player's character, « 7/12 », replaced at once for the whole table when they change %>
+<% points = character.hit_points %>
+<span id="character-<%= character.id %>-hit-points" class="w-14 text-center text-sm font-medium text-ink tabular-nums" aria-live="polite"><%= points["current"] %>/<%= points["max"] %></span>
