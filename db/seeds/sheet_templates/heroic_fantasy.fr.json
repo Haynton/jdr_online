@@ -53,6 +53,7 @@
       ],
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
+    "death_saves": { "label": "Jets contre la mort", "help": "À 0 PV, un d20 à chaque tour : 10 ou plus, une réussite ; moins, un échec. Un 1 compte deux échecs, un 20 rend 1 PV. Trois réussites : stable ; trois échecs : mort. Un coup reçu à 0 PV compte un échec.", "sides": 20, "success_from": 10, "needed": 3, "critical_failure": 1, "critical_success": 20, "massive_damage": true, "successes_from": "death_save_successes", "failures_from": "death_save_failures" },
     "weapon_attacks": { "melee_ability": "strength", "ranged_ability": "dexterity", "proficiency": "proficiency_bonus", "training_from": "class", "two_handed_label": "à deux mains" },
     "spell_slots": { "label": "Emplacements de sorts", "help": "Un sort de niveau 1 ou plus en dépense un de son niveau ou plus. Tous rendus après un repos long.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
@@ -206,6 +207,8 @@
         "help": "Au niveau 1 : le maximum du dé de vie de la classe, plus le modificateur de Constitution. Puis, à chaque niveau, la moyenne du dé plus le modificateur de Constitution." },
       { "key": "hp", "label": "Points de vie", "abbreviation": "PV", "type": "resource", "at_creation": false, "initial_from": "max_hp", "receives_damage": true, "on_rest": "reset_to_max", "section": "Combat", "visible_to_others": true },
       { "key": "temp_hp", "label": "Points de vie temporaires", "abbreviation": "PV temp.", "type": "resource", "absorbs_damage_for": "hp", "at_creation": false, "section": "Combat" },
+      { "key": "death_save_successes", "label": "Réussites contre la mort", "type": "number", "min": 0, "max": 3, "at_creation": false, "internal": true, "section": "Combat" },
+      { "key": "death_save_failures", "label": "Échecs contre la mort", "type": "number", "min": 0, "max": 3, "at_creation": false, "internal": true, "section": "Combat" },
       { "key": "armor_class", "label": "Classe d'armure", "abbreviation": "CA", "type": "computed", "rule": "worn_armor_class", "based_on": "dexterity", "class_from": "class", "bonus_from": "armor_class_bonus", "section": "Combat", "visible_to_others": true, "help": "L'armure et le bouclier équipés, plus la Dextérité dans ce que l'armure permet ; sans armure : 10 + Dextérité (barbare : + Constitution ; moine : + Sagesse). Puis le bonus de CA donné par le MJ." },
       { "key": "armor_class_bonus", "label": "Bonus de CA", "type": "number", "at_creation": false, "game_master_adjusts": true, "min": -10, "max": 10, "section": "Combat", "help": "Donné par le MJ en jeu (un sort, un objet magique) : il s'ajoute à la classe d'armure." },
       { "key": "initiative", "label": "Initiative", "type": "computed", "rule": "ability_modifier", "based_on": "dexterity", "section": "Combat",

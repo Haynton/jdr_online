@@ -72,9 +72,11 @@ module CharacterVitals
   def change_hit_points(delta)
     return unless hit_points
 
+    previous = hit_points["current"]
     delta = absorb_with_temporary_hit_points(delta) if delta.negative?
     current = (hit_points["current"] + delta).clamp(0, hit_points["max"])
     write_sheet_value(hit_points_field, hit_points.merge("current" => current))
+    follow_death_saves(previous, delta)
   end
 
   def change_temporary_hit_points(delta)

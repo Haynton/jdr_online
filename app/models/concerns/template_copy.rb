@@ -39,6 +39,12 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "spell_slots")
   end
 
+  # The death saving throws of a player's character (character_fields.death_saves, CharacterDeathSaves), nil for a
+  # template without: in its copy, like the fields of the sheet they fill
+  def death_saves
+    template_snapshot.to_h.dig("character_fields", "death_saves")
+  end
+
   # How the weapons of a character attack (character_fields.weapon_attacks, CharacterSheets::WeaponAttacks), nil for a
   # template without: in its copy, like the fields of the sheet they read
   def weapon_attacks

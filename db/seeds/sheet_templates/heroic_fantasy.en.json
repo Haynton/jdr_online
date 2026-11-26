@@ -53,6 +53,7 @@
       ],
       "initiative": { "label": "Initiative", "sides": 20, "modifier_from": "initiative", "npc_modifier_from": "dexterity" }
     },
+    "death_saves": { "label": "Death saving throws", "help": "At 0 HP, a d20 each turn: 10 or more, a success; less, a failure. A 1 counts as two failures, a 20 gives back 1 HP. Three successes: stable; three failures: dead. A hit taken at 0 HP counts as a failure.", "sides": 20, "success_from": 10, "needed": 3, "critical_failure": 1, "critical_success": 20, "massive_damage": true, "successes_from": "death_save_successes", "failures_from": "death_save_failures" },
     "weapon_attacks": { "melee_ability": "strength", "ranged_ability": "dexterity", "proficiency": "proficiency_bonus", "training_from": "class", "two_handed_label": "two-handed" },
     "spell_slots": { "label": "Spell slots", "help": "A spell of level 1 or higher spends one of its level or higher. All regained after a long rest.",
       "count_from": "slots", "label_from": "slots_label", "help_from": "slots_help" },
@@ -206,6 +207,8 @@
         "help": "At level 1: the highest roll of the hit die of the class, plus the Constitution modifier. Then, at each level, the average of the die plus the Constitution modifier." },
       { "key": "hp", "label": "Hit points", "abbreviation": "HP", "type": "resource", "at_creation": false, "initial_from": "max_hp", "receives_damage": true, "on_rest": "reset_to_max", "section": "Combat", "visible_to_others": true },
       { "key": "temp_hp", "label": "Temporary hit points", "abbreviation": "Temp HP", "type": "resource", "absorbs_damage_for": "hp", "at_creation": false, "section": "Combat" },
+      { "key": "death_save_successes", "label": "Death save successes", "type": "number", "min": 0, "max": 3, "at_creation": false, "internal": true, "section": "Combat" },
+      { "key": "death_save_failures", "label": "Death save failures", "type": "number", "min": 0, "max": 3, "at_creation": false, "internal": true, "section": "Combat" },
       { "key": "armor_class", "label": "Armor class", "abbreviation": "AC", "type": "computed", "rule": "worn_armor_class", "based_on": "dexterity", "class_from": "class", "bonus_from": "armor_class_bonus", "section": "Combat", "visible_to_others": true, "help": "The armor and the shield equipped, plus Dexterity as far as the armor allows; without armor: 10 + Dexterity (barbarian: + Constitution; monk: + Wisdom). Then the AC bonus given by the game master." },
       { "key": "armor_class_bonus", "label": "AC bonus", "type": "number", "at_creation": false, "game_master_adjusts": true, "min": -10, "max": 10, "section": "Combat", "help": "Given by the game master in play (a spell, a magic item): it is added to the armor class." },
       { "key": "initiative", "label": "Initiative", "type": "computed", "rule": "ability_modifier", "based_on": "dexterity", "section": "Combat",

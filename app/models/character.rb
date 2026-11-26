@@ -12,6 +12,7 @@ class Character < ApplicationRecord
   include CharacterVitals
   include CharacterEquipment
   include CharacterMoney
+  include CharacterDeathSaves
   include PlacedOnMaps
   include CharacterDescription
   include HasAvatar

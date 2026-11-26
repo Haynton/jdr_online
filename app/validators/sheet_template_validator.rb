@@ -9,6 +9,7 @@ class SheetTemplateValidator < ActiveModel::Validator
     SheetTemplates::FieldsCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
     SheetTemplates::SpellGroupsCheck, SheetTemplates::SpellSlotsCheck, SheetTemplates::RuleMethodsCheck,
     SheetTemplates::ConditionsCheck, SheetTemplates::DiceRollsCheck, SheetTemplates::WeaponAttacksCheck,
+    SheetTemplates::DeathSavesCheck,
     SheetTemplates::PresetsCheck
   ].freeze
 
