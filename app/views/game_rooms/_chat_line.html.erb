@@ -6,13 +6,14 @@
     whole width, to stand out from the messages %>
 <% if line.event? %>
   <li id="<%= dom_id(line) %>" class="<%= GameRoomChatHelper::EVENT_CLASSES %>" data-chat-feed-target="line"
-      data-kind="event">
+      data-kind="event" data-line-id="<%= line.id %>">
     <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
     <span><%= chat_event_text(line) %></span>
   </li>
 <% else %>
   <li id="<%= dom_id(line) %>" class="group flex flex-col items-start data-continued:-mt-2 data-own:items-end"
-      data-chat-feed-target="line" data-kind="message" data-author-id="<%= line.user_id %>"
+      data-chat-feed-target="line" data-kind="message" data-line-id="<%= line.id %>"
+      data-author-id="<%= line.user_id %>"
       data-created-at="<%= line.created_at.iso8601 %>">
     <p class="mb-1 flex items-baseline gap-2 px-1 text-xs group-data-continued:sr-only">
       <span class="truncate font-semibold text-ink group-data-own:sr-only"><%= chat_author_name(line) %></span>

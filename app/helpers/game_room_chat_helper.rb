@@ -17,6 +17,18 @@ module GameRoomChatHelper
     flex items-start gap-2 rounded-lg border border-line bg-page px-3 py-2 text-xs leading-5 text-ink
   ].join(" ").freeze
 
+  # The number of unread lines on the folded chat, drawn like the count of the bell (side_nav_count): a gold round
+  UNREAD_BADGE_CLASSES = %w[
+    flex h-5 min-w-5 items-center justify-center rounded-full bg-brass px-1.5 text-[11px] font-bold text-page
+    tabular-nums
+  ].join(" ").freeze
+
+  # Over the bottom of the feed, while the reader is further up and new lines came
+  NEW_MESSAGES_BUTTON_CLASSES = %w[
+    absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-line bg-surface
+    px-3 py-1 text-xs font-semibold whitespace-nowrap text-ink shadow-md hover:bg-surface-raised
+  ].join(" ").freeze
+
   # The look of the other fields, without their fixed height (the text area grows with its text, up to 128 px)
   FIELD_CLASSES = (
     (SimpleFormFieldClasses::INPUT.split - %w[h-10 py-1.5]) +

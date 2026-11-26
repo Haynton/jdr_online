@@ -43,6 +43,34 @@ class GameRoomChatLiveTest < ApplicationSystemTestCase
     assert lines.last.matches_css?("[data-own]")
   end
 
+  test "a message that comes while the chat is folded is counted, then shown after a line once unfolded" do
+    open_room_as("maitre")
+    find("[data-chat-island-target=toggle]").click
+    assert_selector "#game-room-chat-body", visible: :hidden
+
+    ChatMessage.post(@game_table, @player, "Je fouille le coffre.")
+    ChatMessage.post(@game_table, @player, "Il y a une clé !")
+
+    assert_selector "[data-chat-feed-target=badge]", text: "2"
+    assert_selector "#game-room-chat-unread", text: "2 nouveaux messages", visible: :all
+
+    find("[data-chat-island-target=toggle]").click
+
+    assert_no_selector "[data-chat-feed-target=badge]"
+    assert_selector "#game-room-chat-feed li[data-chat-divider] + li", text: "Je fouille le coffre."
+  end
+
+  test "what came while the reader was away is still unread back in the room" do
+    open_room_as("maitre")
+    find("[data-chat-island-target=toggle]").click
+    visit game_tables_path
+
+    ChatMessage.post(@game_table, @player, "Tu reviens bientôt ?")
+    visit game_table_path(@game_table)
+
+    assert_selector "[data-chat-feed-target=badge]", text: "1"
+  end
+
   private
 
   def create_user(username)
