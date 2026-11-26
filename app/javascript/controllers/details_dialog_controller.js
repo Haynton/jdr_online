@@ -26,13 +26,41 @@ export default class extends Controller {
     this.dialogTarget.focus()
   }
 
-  close() {
-    if (this.dialogTarget.open) this.dialogTarget.close()
+  // The cross pressed with Enter or Space (a click from the keyboard has no detail) counts as the keyboard
+  close(event) {
+    if (!this.dialogTarget.open) return
+
+    if (event?.detail === 0) this.closedWithKeyboard = true
+    this.dialogTarget.close()
   }
 
-  // The focus goes back to "Details", even where the browser gave it none on the click (Safari)
+  // Escape (the native cancel of the window): the keyboard is in use
+  cancelled() {
+    this.closedWithKeyboard = true
+  }
+
+  // The focus goes back to "Details", even where the browser gave it none on the click (Safari). Its ring only after
+  // the keyboard: after a click on the cross or beside the window, it looked like a chosen line (Anthony's request,
+  // as for « Paramètres » in the game room)
   returnFocus() {
-    this.opener?.focus()
+    if (!this.opener) return
+
+    if (!this.closedWithKeyboard) this.quietFocusRing(this.opener)
+    this.opener.focus({ focusVisible: Boolean(this.closedWithKeyboard) })
+    this.closedWithKeyboard = false
+  }
+
+  // Without a ring until a key is pressed or the focus leaves (data-focus-quiet, application.css): a browser may
+  // ignore focusVisible
+  quietFocusRing(element) {
+    element.setAttribute("data-focus-quiet", "")
+    const showRingAgain = () => {
+      element.removeAttribute("data-focus-quiet")
+      element.removeEventListener("blur", showRingAgain)
+      element.removeEventListener("keydown", showRingAgain)
+    }
+    element.addEventListener("blur", showRingAgain)
+    element.addEventListener("keydown", showRingAgain)
   }
 
   // A click on the backdrop reaches the <dialog> itself; a click inside lands on its content
