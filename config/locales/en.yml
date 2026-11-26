@@ -1201,9 +1201,18 @@ en:
       details:
         title: "Details"
       dice:
-        coming_soon:
-          game_master: "Roll the dice of the game, in secret or in front of everyone, or have a player, the whole table or an NPC roll. Ask for the initiative roll too: the order of the fight sorts itself from the results. The results, rolled by the server, will go to the chat."
-          player: "Roll your dice: the results, rolled by the server, will go to the chat of the game."
+        bonus: "Bonus"
+        count: "Number of dice"
+        die: "Die"
+        die_name: "d%{sides}"
+        hidden: "Hidden roll"
+        hidden_hint: "Only you see the result, the players know nothing of it."
+        hidden_result: "Hidden roll"
+        mode: "Mode"
+        no_result: "The result shows here and in the chat, for the whole table."
+        normal: "Normal"
+        result: "Result"
+        roll: "Roll"
         title: "Dice"
       inventory:
         amount: "Amount to take out of %{label}"

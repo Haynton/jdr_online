@@ -1,0 +1,18 @@
+<%# The last roll of the reader, under the form of the panel « Dés »: its total in large, then its notation and its
+    dice; replaced by the answer of each roll (GameTables::DiceRollsController), said to screen readers (role status).
+    Before the first roll: where the results go. line: the line of the feed of the roll (ChatMessage), or nil %>
+<div id="<%= GameRoomDiceHelper::RESULT_ID %>" role="status" class="mt-6 border-t border-line pt-5">
+  <% if line %>
+    <p class="text-xs font-semibold tracking-wider text-brass uppercase">
+      <%= line.game_master_only? ? t("game_rooms.panels.dice.hidden_result") : t("game_rooms.panels.dice.result") %>
+    </p>
+    <p class="mt-1 flex items-baseline gap-3">
+      <span class="text-4xl font-extrabold text-ink tabular-nums"><%= line.event_params["total"] %></span>
+      <span class="min-w-0 text-sm text-muted">
+        <span class="font-medium text-ink"><%= line.event_params["notation"] %></span> · <%= dice_result_dice(line) %>
+      </span>
+    </p>
+  <% else %>
+    <p class="text-sm text-muted"><%= t("game_rooms.panels.dice.no_result") %></p>
+  <% end %>
+</div>

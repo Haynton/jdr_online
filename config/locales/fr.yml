@@ -1172,9 +1172,18 @@ fr:
       details:
         title: "Détails"
       dice:
-        coming_soon:
-          game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
-          player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
+        bonus: "Bonus"
+        count: "Nombre de dés"
+        die: "Dé"
+        die_name: "d%{sides}"
+        hidden: "Jet caché"
+        hidden_hint: "Vous seul voyez le résultat, les joueurs n'en savent rien."
+        hidden_result: "Jet caché"
+        mode: "Mode"
+        no_result: "Le résultat s'affiche ici et dans le chat, pour toute la table."
+        normal: "Normal"
+        result: "Résultat"
+        roll: "Lancer"
         title: "Dés"
       inventory:
         amount: "Somme à retirer de %{label}"

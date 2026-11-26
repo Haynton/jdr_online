@@ -95,6 +95,48 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 1
   end
 
+  test "the panel offers the dice, the modes of the template, and the hidden roll to the game master only" do
+    sign_in @game_master
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-panel-dice form[action=?]", game_table_dice_roll_path(@game_table) do
+      assert_select "input[type=radio][name='dice_roll[sides]']", count: DiceRoller::SIDES.size
+      assert_select "input[type=radio][name='dice_roll[sides]'][value='20'][checked]"
+      assert_select "input[name='dice_roll[count]'][min='1'][max='20']"
+      assert_select "input[name='dice_roll[bonus]'][min='-50'][max='50']"
+      assert_select "input[type=radio][name='dice_roll[mode]']", count: 2
+      assert_select "label", text: /Avantage/
+      assert_select "input[type=checkbox][role=switch][name='dice_roll[hidden]']"
+    end
+
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-dice input[name='dice_roll[hidden]']", count: 0
+  end
+
+  test "the roll shows in the panel of who rolled; without JavaScript, back to the room" do
+    sign_in @player
+
+    roll(count: 2, sides: 8, bonus: 1)
+    line = @game_table.chat_messages.last
+    assert_select "turbo-stream[action=replace][target=dice-roll-result]",
+                  text: /#{line.event_params['total']}.*2d8\+1/m
+
+    post game_table_dice_roll_path(@game_table), params: { dice_roll: { count: 1, sides: 20 } }
+    assert_redirected_to game_table_path(@game_table, anchor: "game-room-panel-dice")
+  end
+
+  test "a template without modes shows no mode" do
+    @game_table.sheet_template.character_fields.delete("dice_rolls")
+    @game_table.sheet_template.save!
+    @game_table.update!(template_snapshot: @game_table.sheet_template.snapshot)
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-panel-dice input[name='dice_roll[mode]']", count: 0
+    assert_select "#game-room-panel-dice input[name='dice_roll[sides]']", count: DiceRoller::SIDES.size
+  end
+
   test "someone who is not accepted at the table cannot roll" do
     invited = create_user("invite")
     @game_table.participations.create!(user: invited, role: :player, status: :pending)

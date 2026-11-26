@@ -1,0 +1,72 @@
+<%# The panel « Dés » (GameRoom): a real form, without JavaScript too, sent to GameTables::DiceRollsController. The
+    die (one of the seven of DiceRoller, the d20 chosen first), how many and the bonus between − and +, the modes the
+    template declares (none for a template without them; greyed out by dice_panel_controller.js unless a single die
+    of their sides is rolled, refused by the server anyway), « Jet caché » for the game master, « Lancer ». The roll
+    goes to the chat; the last roll of the reader shows under the form (replaced by the answer) %>
+<% game_table = game_room.game_table %>
+<% modes = dice_modes(game_table) %>
+<%= form_with url: game_table_dice_roll_path(game_table), scope: :dice_roll, id: "dice-roll-form",
+              class: "flex flex-col gap-5", data: dice_panel_data(game_table) do |form| %>
+  <fieldset>
+    <legend class="text-sm font-semibold text-ink"><%= t(".die") %></legend>
+    <div class="mt-2 grid grid-cols-4 gap-2">
+      <% DiceRoller::SIDES.each do |sides| %>
+        <label class="<%= GameRoomDiceHelper::DIE_CLASSES %>">
+          <%= form.radio_button :sides, sides, checked: sides == GameRoomDiceHelper::DEFAULT_SIDES, class: "sr-only",
+                                               data: { dice_panel_target: "side" } %>
+          <%= t(".die_name", sides: sides) %>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div class="flex items-center justify-between gap-3">
+    <label for="dice-roll-count" class="text-sm font-semibold text-ink"><%= t(".count") %></label>
+    <%= render "character_sheets/fields/stepper", field: { "label" => t(".count") },
+               input: dice_number_input(form, :count, DiceRoller::COUNTS, value: 1) %>
+  </div>
+  <div class="-mt-2 flex items-center justify-between gap-3">
+    <label for="dice-roll-bonus" class="text-sm font-semibold text-ink"><%= t(".bonus") %></label>
+    <%= render "character_sheets/fields/stepper", field: { "label" => t(".bonus") },
+               input: dice_number_input(form, :bonus, DiceRoller::BONUSES, value: 0) %>
+  </div>
+
+  <% if modes.any? %>
+    <fieldset>
+      <legend class="text-sm font-semibold text-ink"><%= t(".mode") %></legend>
+      <div class="mt-2 flex gap-1 rounded-lg bg-field p-1">
+        <label class="<%= GameRoomDiceHelper::MODE_OPTION_CLASSES %>">
+          <%= form.radio_button :mode, "", checked: true, class: "sr-only", data: { dice_panel_target: "normalMode" } %>
+          <%= t(".normal") %>
+        </label>
+        <% modes.each do |mode| %>
+          <label class="<%= GameRoomDiceHelper::MODE_OPTION_CLASSES %>" title="<%= mode["help"] %>">
+            <%= form.radio_button :mode, mode["key"], class: "sr-only", data: { dice_panel_target: "mode" } %>
+            <%= mode["label"] %>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <% if game_room.game_master? %>
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <%= form.label :hidden, t(".hidden"), class: "cursor-pointer text-sm font-semibold text-ink" %>
+        <p id="dice-roll-hidden-hint" class="mt-1 text-sm text-muted"><%= t(".hidden_hint") %></p>
+      </div>
+      <span class="relative inline-flex shrink-0">
+        <%= form.check_box :hidden, role: "switch", aria: { describedby: "dice-roll-hidden-hint" },
+                                    class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+        <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+        <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+      </span>
+    </div>
+  <% end %>
+
+  <%= form.button class: button_classes(:primary, full_width: true) do %>
+    <%= render "shared/icons/dices", css_class: "size-4" %>
+    <%= t(".roll") %>
+  <% end %>
+<% end %>
+<%= render "game_rooms/panels/dice_result", line: nil %>

@@ -4,15 +4,15 @@
 # a player never gets what this object keeps for the game master, the panels are not merely hidden
 class GameRoom
   # The bar of the room (maquette C, decision of 26 November): its tools in groups, each group under a short name.
-  # The board, the map tools and the dice (the initiative roll included: its panel, decision) come with their own
-  # branches (« Bientôt » until then)
+  # The map tools come with their own branch (« Bientôt » until then); the initiative roll will join the panel of
+  # the dice (decision)
   GAME_MASTER_TOOL_GROUPS = {
     "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
   }.freeze
   # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
   # their character in a fight, their skills, their inventory, their spells, the rest of their sheet
   PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells details], "dice" => %w[dice] }.freeze
-  COMING_SOON_PANELS = %w[map_tools dice].freeze
+  COMING_SOON_PANELS = %w[map_tools].freeze
 
   # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
   # board and its placing, the turn by turn, the quick sheet that changes hit points and conditions), shown in

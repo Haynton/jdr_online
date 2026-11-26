@@ -7,7 +7,7 @@ require "turbo/broadcastable/test_helper"
 class GameRoomTest < ActionDispatch::IntegrationTest
   include Turbo::Broadcastable::TestHelper
 
-  GAME_MASTER_TOOLS = ["Cartes", "Outils de carte (bientôt)", "PNJ et ennemis", "Objets", "Dés (bientôt)"].freeze
+  GAME_MASTER_TOOLS = ["Cartes", "Outils de carte (bientôt)", "PNJ et ennemis", "Objets", "Dés"].freeze
   # The fields of the game the template declares, as the heroic fantasy: hit points, temporary ones, inspiration
   VITAL_FIELDS = [
     { "key" => "hp", "label" => "Points de vie", "type" => "resource", "receives_damage" => true,
@@ -16,7 +16,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
       "at_creation" => false, "section" => "Notes" },
     { "key" => "inspiration", "label" => "Inspiration", "type" => "boolean", "at_creation" => false, "section" => "Notes" }
   ].freeze
-  PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés (bientôt)"].freeze
+  PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés"].freeze
 
   setup do
     @game_master = create_user("maitre")
