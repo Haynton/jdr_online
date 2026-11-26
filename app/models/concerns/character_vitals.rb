@@ -103,6 +103,8 @@ module CharacterVitals
       send(rest_effect, field) if rest_effect
     end
     give_back_resources
+    give_back_spell_slots
+    give_back_hit_dice
   end
 
   private

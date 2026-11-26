@@ -9,11 +9,7 @@ class Character < ApplicationRecord
   include CharacterSkillChoices
   include CharacterDraftSaving
   include CharacterHitPoints
-  include CharacterVitals
-  include CharacterEquipment
-  include CharacterMoney
-  include CharacterDeathSaves
-  include CharacterResources
+  include CharacterInPlay
   include PlacedOnMaps
   include CharacterDescription
   include HasAvatar

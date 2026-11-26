@@ -36,6 +36,7 @@ module CharacterResources
   # Each resource as its template declares: all back, one back, or nothing until a long rest (unless it also comes
   # back after a short rest from a level: the bardic inspiration)
   def take_short_rest
+    give_back_spell_slots(short_rest: true)
     level = spell_choices.level
     resources.each do |resource|
       recovery = short_rest_recovery(resource, level)
