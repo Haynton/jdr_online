@@ -301,6 +301,7 @@
       { "key": "armor_dexterity_cap", "label": "Dextérité ajoutée au plus", "type": "number", "min": 0, "max": 10, "help": "Vide : toute la Dextérité s'ajoute (armure légère). 2 pour une armure intermédiaire, 0 pour une armure lourde." },
       { "key": "armor_bonus", "label": "Bonus de CA", "type": "number", "min": 0, "max": 10, "help": "Ajouté à la CA tant qu'il est équipé (un bouclier : 2)." },
       { "key": "damage_dice", "label": "Dés de dégâts", "type": "text", "short": true, "help": "Par exemple 1d8 : le modificateur de la caractéristique de l'attaque s'y ajoute." },
+      { "key": "versatile_dice", "label": "Dés à deux mains", "type": "text", "short": true, "help": "Pour une arme polyvalente, par exemple 1d10 : une seconde attaque, à deux mains, tant qu'aucun bouclier n'est équipé." },
       { "key": "damage_type", "label": "Type de dégâts", "type": "text", "short": true },
       { "key": "finesse", "label": "Finesse", "type": "boolean", "help": "L'attaque utilise la meilleure de la Force et de la Dextérité." },
       { "key": "ranged", "label": "À distance", "type": "boolean", "help": "L'attaque utilise la Dextérité au lieu de la Force." },

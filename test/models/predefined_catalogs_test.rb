@@ -60,11 +60,14 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     catalogs = %w[en fr].map do |locale|
       read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_items.#{locale}.json"))["entries"]
     end
-    rule_values = %w[training armor_base armor_dexterity_cap armor_bonus damage_dice finesse ranged]
+    rule_values = %w[training armor_base armor_dexterity_cap armor_bonus damage_dice versatile_dice finesse ranged]
     weapons_and_armor = catalogs.first.select { |item| item.dig("properties", "training") }
 
     assert_equal(*catalogs.map { |entries| entries.map { |item| item["properties"].slice(*rule_values) } })
     assert_equal 20, weapons_and_armor.size
+    assert_equal({ "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8" },
+                 catalogs.first.select { |item| item.dig("properties", "versatile_dice") }
+                               .to_h { |item| [item["key"], item.dig("properties", "versatile_dice")] })
     weapons_and_armor.select { |item| item.dig("properties", "training").end_with?("weapons") }.each do |weapon|
       assert_match(/\A\d+d\d+\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
       assert weapon.dig("properties", "damage").start_with?(weapon.dig("properties", "damage_dice")), weapon["key"]

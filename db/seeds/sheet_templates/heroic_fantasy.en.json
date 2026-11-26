@@ -301,6 +301,7 @@
       { "key": "armor_dexterity_cap", "label": "Dexterity added at most", "type": "number", "min": 0, "max": 10, "help": "Empty: all of the Dexterity is added (light armor). 2 for medium armor, 0 for heavy armor." },
       { "key": "armor_bonus", "label": "AC bonus", "type": "number", "min": 0, "max": 10, "help": "Added to the AC while it is equipped (a shield: 2)." },
       { "key": "damage_dice", "label": "Damage dice", "type": "text", "short": true, "help": "For example 1d8: the modifier of the ability of the attack is added to it." },
+      { "key": "versatile_dice", "label": "Two-handed dice", "type": "text", "short": true, "help": "For a versatile weapon, for example 1d10: a second attack, with two hands, while no shield is equipped." },
       { "key": "damage_type", "label": "Damage type", "type": "text", "short": true },
       { "key": "finesse", "label": "Finesse", "type": "boolean", "help": "The attack uses the better of Strength and Dexterity." },
       { "key": "ranged", "label": "Ranged", "type": "boolean", "help": "The attack uses Dexterity instead of Strength." },
