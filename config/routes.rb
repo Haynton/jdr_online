@@ -74,6 +74,7 @@ Rails.application.routes.draw do
       resource :purse, only: :update
       # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
       resource :spell_choice, only: %i[edit update]
+      resource :weapon_mastery_choice, only: %i[edit update]
       # What changes on a player's character during the game, saved: hit points, temporary hit points, inspiration
       # (the game master for any player, a player for their own), and a long rest (the game master)
       resources :character_vitals, only: :update do

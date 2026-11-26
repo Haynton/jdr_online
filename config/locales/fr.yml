@@ -45,6 +45,8 @@ fr:
         description: "Description"
         name: "Nom"
       character:
+        fighting_style: "Style de combat"
+        weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
         owner_character: "Personnage"
         spells: "Sorts"
@@ -137,6 +139,13 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            fighting_style:
+              not_offered: "n'est pas proposé par votre classe à ce niveau"
+            weapon_masteries:
+              not_offered: "comptent une arme que votre classe ne propose pas"
+              too_many:
+                one: "%{count} au plus"
+                other: "%{count} au plus"
             avatar: &avatar_errors
               blank: "Choisissez une image."
               content_type: "L'image doit être en PNG, JPEG ou WebP."
@@ -249,6 +258,10 @@ fr:
           invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
           missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
           unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_fighting_styles: "Les styles de combat : le réglage doit être une liste de styles"
+          invalid_fighting_style: "Le style de combat « %{style} » : une clé, un libellé sur une ligne, et des effets connus"
+          unknown_fighting_style: "%{part} › %{field} › %{option} : le style de combat « %{style} » n'existe pas"
+          unknown_fighting_style_parameter: "Les styles de combat : le réglage « %{parameter} » est inconnu"
           invalid_death_saves: "Les jets contre la mort : le réglage doit déclarer son dé et ses champs"
           invalid_death_saves_field: "Les jets contre la mort : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
           invalid_death_saves_label: "Les jets contre la mort : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
@@ -1128,6 +1141,7 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        weapon_masteries_changed: "%{character} change ses maîtrises : %{changes}."
         spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
         hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
         resource_used: "%{character} utilise %{resource} : il en reste %{left} sur %{total}."
@@ -1222,6 +1236,7 @@ fr:
       close: "Fermer %{name}"
     panels:
       character:
+        change_masteries: "Changer mes maîtrises"
         abilities: "Caractéristiques"
         edit_sheet: "Modifier ma fiche"
         fight: "Combat"
@@ -1430,6 +1445,14 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    weapon_mastery_choices:
+      edit:
+        back: "Retour à la partie"
+        cancel: "Annuler"
+        close: "Fermer"
+        save: "Enregistrer"
+        subtitle: "Le style de combat et les maîtrises d'armes de %{name}, dans ce que donnent sa classe et son niveau. Le changement s'écrit dans le chat."
+        title: "Changer mes maîtrises"
     spell_choices:
       edit:
         back: "Retour à la partie"
@@ -1455,6 +1478,13 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      weapon_mastery_choices:
+        masteries: "Maîtrises d'armes"
+        masteries_hint:
+          one: "Cochez %{count} sorte d'arme : sa propriété de maîtrise s'ajoute à vos attaques avec elle."
+          other: "Cochez %{count} sortes d'armes : leur propriété de maîtrise s'ajoute à vos attaques avec elles."
+        style: "Style de combat"
+        style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
       equipment_choices:
         armor_class: "CA %{value}"
@@ -1560,6 +1590,7 @@ fr:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        fighting_style: "Style de combat"
         expertise: "Expertise"
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
@@ -1569,6 +1600,10 @@ fr:
         resources: "Ressources"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+        weapon_mastery: "Maîtrises d'armes"
+      weapon_mastery_value:
+        one: "%{count} sorte d'arme"
+        other: "%{count} sortes d'armes"
       expertise_value: "%{count} au niveau %{level}"
       features_level: "Niveau %{level}"
       hit_points_per_level_value: "+%{points} par niveau"
