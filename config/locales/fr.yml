@@ -1097,6 +1097,7 @@ fr:
       initiative_label: "Init."
       label: "Combattants"
       next_turn: "Tour suivant"
+      open_own_panel: "Ouvrir ma fiche (%{name})"
       open_sheet: "Ouvrir la fiche de %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Préparation"
@@ -1126,7 +1127,10 @@ fr:
       close: "Fermer %{name}"
     panels:
       character:
+        abilities: "Caractéristiques"
+        fight: "Combat"
         open_sheet: "Ouvrir ma fiche"
+        score: "Score"
         title: "Ma fiche"
       dice:
         coming_soon:

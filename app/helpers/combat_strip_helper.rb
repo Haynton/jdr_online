@@ -1,6 +1,6 @@
 # The strip of the fighters of the game room (CombatStrip, game_rooms/_combat_strip): its portraits by side,
-# what each person may see (the game master everything; a player never the hit points of an NPC or an enemy, and only
-# their own quick sheet)
+# what each person may see (the game master everything and the quick sheets; a player never the hit points of an NPC or
+# an enemy, and their own place opens their panel « Ma fiche »)
 module CombatStripHelper
   PORTRAIT_SIDE_CLASSES = {
     player: "bg-success-bg text-success-ink", npc: "bg-primary-soft text-primary-soft-ink",
@@ -33,10 +33,23 @@ module CombatStripHelper
     game_room.game_master? || group.side == :player
   end
 
-  def combat_sheet_openable?(game_room, group)
-    return true if game_room.game_master?
+  # The place of a player's own character: its portrait opens the panel « Ma fiche »
+  def combat_own_place?(game_room, group)
+    return false if game_room.game_master?
 
     group.fighters.any? { |fighter| fighter.character.participation_id == game_room.participation.id }
+  end
+
+  # The place of a player's own character in the strip (the panel « Ma fiche »), nil for the game master
+  def combat_own_group(game_room)
+    room_combat_strip.groups.find { |group| combat_own_place?(game_room, group) }
+  end
+
+  # The saving throws and skills a player's character is proficient in (the panel « Ma fiche »): its bonus fields
+  # ticked, by the section of the template (« Jets de sauvegarde », « Compétences »), in the order of the template
+  def own_proficiency_sections(character)
+    character.sheet_fields.select { |field| field["type"] == "bonus" && character.sheet.to_h[field["key"]] == true }
+             .group_by { |field| field["section"] }
   end
 
   # What is left of the gauges of a group, from 0 to 100: the ring around its portrait

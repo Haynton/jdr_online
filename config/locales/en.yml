@@ -1126,6 +1126,7 @@ en:
       initiative_label: "Init."
       label: "Fighters"
       next_turn: "Next turn"
+      open_own_panel: "Open my sheet (%{name})"
       open_sheet: "Open the sheet of %{name}"
       portrait: "%{name}, initiative %{initiative}"
       preparing: "Preparing"
@@ -1155,7 +1156,10 @@ en:
       close: "Close %{name}"
     panels:
       character:
+        abilities: "Abilities"
+        fight: "Fight"
         open_sheet: "Open my sheet"
+        score: "Score"
         title: "My sheet"
       dice:
         coming_soon:

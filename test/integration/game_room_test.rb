@@ -46,15 +46,26 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "a player sees the strip, opens only their own quick sheet and starts no turns" do
+  test "a player sees the strip, their own portrait opens their panel, no quick sheet, no turns" do
     sign_in @player
     get game_table_path(@game_table)
 
     assert_select "[data-controller=combat-strip]" do
-      assert_select "button[data-combat-strip-target=portrait][aria-label^=?]", "Aria"
+      assert_select "button[data-panel-id=game-room-panel-character][data-action='game-room-panels#toggle']" \
+                    "[aria-controls=game-room-panel-character]", count: 1
       assert_select "[role=img][data-combat-strip-target=portrait][aria-label^=?]", "Borin"
-      assert_select "section[data-combat-strip-target=sheet]", count: 1
+      assert_select "section[data-combat-strip-target=sheet]", count: 0
       assert_select "button[data-action='combat-strip#askInitiative']", count: 0
+    end
+  end
+
+  test "the panel of a player holds their abilities and their fight card" do
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-panel-character" do
+      assert_select "#game-room-own-abilities", text: "Caractéristiques"
+      assert_select "[data-controller=fighter-card][data-fighter-card-name-value=Aria]"
     end
   end
 
@@ -99,6 +110,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
                   count: 0
     assert_select "[data-controller=combat-strip] a[href=?][data-turbo-frame=character_sheet_dialog]",
                   game_table_character_sheet_path(@game_table, @character)
+    assert_select "[data-action='fighter-card#changeHitPoints']", count: 0
   ensure
     Rails.env = original_environment
   end

@@ -1,7 +1,7 @@
-<%# The window of the conditions, opened by « Ajouter un état » in a quick sheet (decision: a window rather
-    than a list, to read the short rule of each): the conditions of the template (game_table.conditions), each a
-    button with its label and its rule; a click adds it to the fighter of that sheet and closes the window. Escape,
-    the cross or a click beside it close it (combat_strip_controller.js) %>
+<%# The window of the conditions, opened by « Ajouter un état » on the card of a fighter, in a quick sheet or the
+    panel « Ma fiche » (decision: a window rather than a list, to read the short rule of each): the conditions of the
+    template (game_table.conditions), each a button with its label and its rule; a click adds it to that card and
+    closes the window. Escape, the cross or a click beside it close it (combat_strip_controller.js) %>
 <dialog aria-labelledby="combat-conditions-title" tabindex="-1"
         class="m-auto max-h-[calc(100dvh-4rem)] w-[min(640px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50 open:flex"
         data-combat-strip-target="conditionsDialog"
@@ -28,4 +28,9 @@
       </li>
     <% end %>
   </ul>
+  <%# A condition added to the card of a fighter (game_rooms/_fighter_status), removed by a click on it %>
+  <template data-combat-strip-target="conditionChip">
+    <button type="button" class="inline-flex h-7 items-center rounded-full bg-primary-soft px-2.5 text-xs font-medium text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset hover:line-through"
+            data-action="fighter-card#removeCondition"></button>
+  </template>
 </dialog>

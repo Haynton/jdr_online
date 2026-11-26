@@ -1,12 +1,68 @@
-<%# The character of a player: their picture, name and choices, then their whole sheet (abilities, combat, spells,
-    inventory) in the window of the room. A player always has one here: the room sends them to make it first %>
+<%# The character of a player, opened by the tool « Ma fiche » or by their own portrait in the strip of the fighters
+    (decision of 26 November): their picture, name and choices, their armour class and initiative, their abilities
+    (modifier, and the score raised by the bonus of the background), the saving throws and skills they are
+    proficient in (Anthony's request: the bonus fields ticked, by the section of the template), then what serves in a fight (hit points,
+    conditions, spell slots, attacks: game_rooms/_fighter_status, the card of the quick sheets), and their whole sheet
+    in the window of the room. A player always has one here: the room sends them to make it first %>
 <% character = game_room.own_character %>
-<div class="flex flex-col items-center gap-3 text-center">
-  <%= render "characters/avatar", character: character, css_class: "size-28" %>
-  <div class="min-w-0">
-    <p class="text-lg font-semibold text-ink"><%= character_display_name(character) %></p>
-    <p class="text-sm text-muted"><%= character_card_choices(character) %></p>
+<% group = combat_own_group(game_room) %>
+<% fighter = group&.fighters&.first %>
+<% ability_fields = character.sheet_fields.select { |field| field["type"] == "ability" } %>
+<% computed = character.computed_sheet_values %>
+<div class="flex flex-col gap-5">
+  <div class="flex items-center gap-4">
+    <%= render "characters/avatar", character: character, css_class: "size-20 shrink-0" %>
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-lg font-semibold text-ink"><%= character_display_name(character) %></p>
+      <p class="line-clamp-2 text-sm text-muted"><%= character_card_choices(character) %></p>
+    </div>
   </div>
+
+  <% if fighter %>
+    <%= render "game_rooms/fighter_badges", fighter: fighter, group: group %>
+  <% end %>
+
+  <% if ability_fields.any? %>
+    <section aria-labelledby="game-room-own-abilities">
+      <h3 id="game-room-own-abilities" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t(".abilities") %></h3>
+      <ul class="mt-2 grid grid-cols-3 gap-2">
+        <% ability_fields.each do |field| %>
+          <li class="flex flex-col items-center rounded-lg border border-line px-1.5 py-2">
+            <span class="w-full truncate text-center text-[10px] font-semibold tracking-wider text-muted uppercase"
+                  title="<%= field["label"] %>"><%= field["abbreviation"] || field["label"] %></span>
+            <span class="text-lg leading-tight font-bold text-ink tabular-nums">
+              <span class="sr-only"><%= field["label"] %>, <%= t("game_tables.characters.new.modifier") %></span>
+              <%= format_bonus(computed[:modifiers][field["key"]]) %>
+            </span>
+            <span class="text-xs text-muted tabular-nums">
+              <span class="sr-only"><%= t(".score") %></span><%= computed[:scores][field["key"]] || "—" %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% own_proficiency_sections(character).each do |section, fields| %>
+    <section aria-label="<%= section %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= section %></h3>
+      <ul class="mt-2 flex flex-col gap-1">
+        <% fields.each do |field| %>
+          <li class="flex min-w-0 items-baseline justify-between gap-2 text-sm">
+            <span class="truncate text-ink" title="<%= field["label"] %>"><%= field["label"] %></span>
+            <span class="shrink-0 font-semibold text-ink tabular-nums"><%= format_bonus(computed[:values][field["key"]]) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if fighter %>
+    <section class="border-t border-line pt-4" aria-label="<%= t(".fight") %>">
+      <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key %>
+    </section>
+  <% end %>
+
   <%= link_to game_table_character_sheet_path(game_room.game_table, character),
               class: button_classes(:primary, full_width: true), data: character_sheet_dialog_link_data do %>
     <%= render "shared/icons/venetian_mask" %>

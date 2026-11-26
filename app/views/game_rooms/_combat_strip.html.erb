@@ -1,8 +1,9 @@
 <%# The strip of the fighters (first version, tried on the local branch style/testing-combat-strip: nothing saved or
     shared yet): an island at the bottom, left of the chat (decision: it holds the players, no more in the bar of
     tools), from 768 px (on the right edge until the chat shows, from 1024 px), always there, 60 px high like the
-    islands at the top; its quick sheets open above it (game_rooms/_combat_sheet: the game master any, a player only
-    their own). Its portraits (40 px, their gold ring 4 px around, inside the 6 px margin of the list) scroll when
+    islands at the top; its quick sheets open above it, for the game master (game_rooms/_combat_sheet); a player's own
+    portrait opens the panel « Ma fiche » instead, with more of their sheet (decision of 26 November), the others
+    open nothing. Its portraits (40 px, their gold ring 4 px around, inside the 6 px margin of the list) scroll when
     they do not fit.
     - Out of the turns (the start): the players alone, without an order (CombatStrip#resting_groups; decision: the
       creatures join at the preparation) and, for the game master, « Lancer le tour par tour » (decision: turns are
@@ -22,7 +23,7 @@
       window, the one before comes back when it is refused (decision).
     Everything changes in this page only (combat_strip_controller.js). The turns and the quick sheets are shown in
     development and in the tests only (GameRoom.preview_features?): online, the strip shows the players, each
-    opening their whole sheet %>
+    opening their whole sheet for the game master, and their own panel « Ma fiche » for a player %>
 <% groups = room_combat_strip.groups %>
 <% if groups.any? %>
   <% initiative_ranks = groups.each_with_index.to_h { |group, index| [group.key, index] } %>
@@ -36,7 +37,7 @@
        data-combat-strip-reorder-question-value="<%= t(".reorder_confirm") %>"
        data-combat-strip-reorder-button-value="<%= t(".reorder_button") %>"
        data-combat-strip-reorderable-value="<%= @game_room.game_master? %>"
-       data-action="keydown.esc->combat-strip#closeSheets click@window->combat-strip#closeOnOutsideClick">
+       data-action="keydown.esc->combat-strip#closeSheets click@window->combat-strip#closeOnOutsideClick fighter-card:hit-points@window->combat-strip#updateRing fighter-card:open-conditions@window->combat-strip#openConditions">
     <div class="<%= GameRoomHelper::ISLAND_CLASSES %> flex h-15 max-w-full items-center gap-5 px-2" role="group"
          aria-label="<%= t(".label") %>">
       <%# Digits of one width and room for « Tour 99 »: the strip never moves when the round changes %>
@@ -82,7 +83,7 @@
       <% end %>
     </div>
     <% groups.each do |group| %>
-      <% if GameRoom.preview_features? && combat_sheet_openable?(@game_room, group) %>
+      <% if GameRoom.preview_features? && @game_room.game_master? %>
         <%= render "game_rooms/combat_sheet", game_room: @game_room, group: group %>
       <% end %>
     <% end %>
