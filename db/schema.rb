@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_26_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_26_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_150000) do
     t.jsonb "event_params", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "game_master_only", default: false, null: false
     t.index ["game_table_id", "created_at"], name: "index_chat_messages_on_game_table_id_and_created_at"
     t.index ["user_id"], name: "index_chat_messages_on_user_id"
     t.check_constraint "kind::text <> 'event'::text OR event_key IS NOT NULL", name: "chat_messages_event_key_check"
@@ -194,7 +195,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_26_150000) do
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying::text, 'player'::character varying::text])", name: "participations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
     t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 

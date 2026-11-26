@@ -6,6 +6,12 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     { "key" => "identity", "label" => "Personnage", "sections" => ["Identité"], "asks_name" => true },
     { "key" => "abilities", "label" => "Caractéristiques", "sections" => %w[Caractéristiques Combat] }
   ].freeze
+  DICE_ROLLS = {
+    "modes" => [{ "key" => "advantage", "label" => "Avantage", "help" => "Deux d20, le meilleur.", "dice" => 2,
+                  "keep" => "highest" }],
+    "initiative" => { "label" => "Initiative", "sides" => 20, "modifier_from" => "proficiency_bonus",
+                      "npc_modifier_from" => "dexterity" }
+  }.freeze
 
   test "a template that follows the rules is valid" do
     assert_predicate build_template, :valid?
@@ -276,6 +282,52 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_predicate build_template, :valid?
   end
 
+  test "the dice declare their modes, the die they apply to and their initiative" do
+    assert_predicate with_dice_rolls(DICE_ROLLS), :valid?
+    assert_predicate with_dice_rolls({ "initiative" => { "label" => "Initiative", "sides" => 20 } }), :valid?
+  end
+
+  test "a dice mode has a key, a label, a short help, 2 to 5 dice and keeps the highest or the lowest" do
+    modes = [
+      { "key" => "advantage", "label" => "Avantage", "dice" => 2, "keep" => "highest" },
+      { "key" => "advantage", "label" => "Encore", "dice" => 2, "keep" => "highest" },
+      { "key" => "Lucky", "label" => "", "help" => "x" * 201, "dice" => 1, "keep" => "best", "bonus" => 1 }
+    ]
+    template = with_dice_rolls(DICE_ROLLS.merge("modes" => modes))
+
+    assert_error template, :duplicate_dice_roll_mode, "Le mode de dés « advantage » est déclaré deux fois"
+    assert_error template, :invalid_dice_roll_mode_key
+    assert_error template, :invalid_dice_roll_mode_label
+    assert_error template, :invalid_dice_roll_mode_help
+    assert_error template, :unknown_dice_roll_mode_parameter
+    assert_error template, :invalid_dice_roll_mode,
+                 "Le mode de dés « Lucky » : il lance de 2 à 5 dés et garde le meilleur (highest) ou le pire (lowest)"
+  end
+
+  test "the initiative rolls a die the roller knows" do
+    template = with_dice_rolls(DICE_ROLLS.merge("initiative" => DICE_ROLLS["initiative"].merge("sides" => "d20")))
+
+    assert_error template, :invalid_initiative_sides
+  end
+
+  test "the initiative adds a field that gives a number, on the sheet and on the sheet of an NPC" do
+    template = with_dice_rolls(DICE_ROLLS.merge("initiative" => DICE_ROLLS["initiative"].merge(
+      "modifier_from" => "hp", "npc_modifier_from" => "speed", "dice" => 1
+    )))
+
+    assert_error template, :invalid_initiative_field,
+                 "L'initiative : Fiche du personnage n'a pas de champ « hp » qui donne un nombre " \
+                 "(nombre, valeur calculée ou caractéristique)"
+    assert_error template, :unknown_initiative_parameter
+  end
+
+  test "the dice refuse an unknown setting and a value of the wrong shape" do
+    assert_error with_dice_rolls(DICE_ROLLS.merge("critical" => 20)), :unknown_dice_rolls_parameter
+    assert_error with_dice_rolls([]), :invalid_dice_rolls
+    assert_error with_dice_rolls(DICE_ROLLS.merge("modes" => "advantage")), :invalid_dice_roll_modes
+    assert_error with_dice_rolls(DICE_ROLLS.merge("initiative" => "d20")), :invalid_initiative_roll
+  end
+
   test "the starting equipment has one letter per option, each line an item or a known group" do
     template = build_template do |fields|
       class_effects(fields)["starting_equipment"]["options"] = [
@@ -353,6 +405,16 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
 
   def with_conditions(conditions)
     build_template.tap { |template| template.character_fields["conditions"] = conditions }
+  end
+
+  # The NPCs have a Dexterity, the initiative of their rolls
+  def with_dice_rolls(dice_rolls)
+    build_template.tap do |template|
+      template.character_fields["dice_rolls"] = dice_rolls
+      template.npc_fields = { "fields" => [{ "key" => "dexterity", "label" => "Dextérité", "type" => "ability",
+                                             "modifier" => "half_above_ten" },
+                                           { "key" => "speed", "label" => "Vitesse", "type" => "text" }] }
+    end
   end
 
   def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS,
