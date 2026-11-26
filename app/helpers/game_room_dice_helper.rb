@@ -40,17 +40,12 @@ module GameRoomDiceHelper
   # The rule of the template (a die, a label), when it declares one and someone may roll it
   def initiative_rule(game_room)
     rule = game_room.game_table.dice_rolls["initiative"]
-    rule if rule && game_room.initiative_characters.values.any?(&:present?)
+    rule if rule && game_room.initiative_characters.any?
   end
 
-  # The characters the game master may roll for, in two groups of a list
+  # The NPCs and enemies the game master may roll for
   def initiative_character_options(game_room)
-    game_room.initiative_characters.filter_map do |group, characters|
-      next if characters.empty?
-
-      options = characters.map { |character| [character.name, character.id] }
-      [t("game_rooms.panels.dice.initiative_groups.#{group}"), options]
-    end
+    game_room.initiative_characters.map { |character| [character.name, character.id] }
   end
 
   # « 7, 15 » for the dice of the roll shown in the panel

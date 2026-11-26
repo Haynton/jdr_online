@@ -1180,10 +1180,7 @@ fr:
         hidden: "Jet caché"
         hidden_hint: "Vous seul voyez le résultat, les joueurs n'en savent rien."
         hidden_result: "Jet caché"
-        initiative_for: "Pour qui"
-        initiative_groups:
-          npcs: "PNJ et ennemis"
-          players: "Joueurs"
+        initiative_for: "Pour quel PNJ ou ennemi"
         initiative_hint: "Un d%{sides} plus la valeur de la fiche. Le mode et le jet caché s'appliquent aussi, pas le dé, le nombre ni le bonus choisis plus haut."
         roll_initiative: "Lancer « %{label} »"
         mode: "Mode"

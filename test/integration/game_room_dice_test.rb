@@ -164,12 +164,12 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     assert_equal ["Gobelin", "1d20"], line.event_params.values_at("character", "notation")
   end
 
-  test "the panel offers the initiative to who has someone to roll for" do
+  test "the panel offers the initiative of the NPCs to the game master, their own to a player" do
     sign_in @game_master
     get game_table_path(@game_table)
     assert_select "#game-room-panel-dice select[name='dice_roll[character_id]']" do
-      assert_select "optgroup[label=Joueurs] option[value=?]", @character.id.to_s, text: "Aria"
-      assert_select "optgroup[label=?] option[value=?]", "PNJ et ennemis", @goblin.id.to_s, text: "Gobelin"
+      assert_select "option[value=?]", @goblin.id.to_s, text: "Gobelin"
+      assert_select "option[value=?]", @character.id.to_s, count: 0
     end
     assert_select "#game-room-panel-dice button[name='dice_roll[initiative]']", text: /Lancer « Initiative »/
 
@@ -177,6 +177,32 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
     assert_select "#game-room-panel-dice button[name='dice_roll[initiative]']"
     assert_select "#game-room-panel-dice select[name='dice_roll[character_id]']", count: 0
+  end
+
+  test "the game master does not roll the initiative of a player: each player rolls their own" do
+    sign_in @game_master
+
+    assert_no_difference("ChatMessage.count") { roll(initiative: 1, character_id: @character.id) }
+    assert_response :unprocessable_content
+  end
+
+  test "a roll of initiative orders the strip of the fighters, and reaches the strip of the game master at once" do
+    sign_in @player
+
+    assert_turbo_stream_broadcasts([@game_table, GameTableChannel::GAME_MASTER_AUDIENCE], count: 1) do
+      roll(initiative: 1)
+    end
+
+    total = @game_table.chat_messages.last.event_params["total"]
+    assert_equal @character.id, @game_table.chat_messages.last.event_params["character_id"]
+    game_master_room = GameRoom.new(@game_table.participations.find_by(role: :game_master))
+    assert_equal({ "character-#{@character.id}" => { rank: 0, initiative: total } },
+                 CombatStrip.new(game_master_room).initiative_ranks)
+    assert_select "template#combat-initiative-ranks", count: 0
+
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_select "template#combat-initiative-ranks[data-combat-strip-target=ranks]"
   end
 
   test "the initiative is refused without a finished character, or for a character of another table" do

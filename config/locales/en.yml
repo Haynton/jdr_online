@@ -1209,10 +1209,7 @@ en:
         hidden: "Hidden roll"
         hidden_hint: "Only you see the result, the players know nothing of it."
         hidden_result: "Hidden roll"
-        initiative_for: "For whom"
-        initiative_groups:
-          npcs: "NPCs and enemies"
-          players: "Players"
+        initiative_for: "For which NPC or enemy"
         initiative_hint: "A d%{sides} plus the value of the sheet. The mode and the hidden roll apply too, not the die, the count nor the bonus chosen above."
         roll_initiative: "Roll “%{label}”"
         mode: "Mode"

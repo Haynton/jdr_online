@@ -33,6 +33,12 @@ class ChatMessage < ApplicationRecord
     game_table.chat_messages.create(kind: "message", user: user, author_name: user.username, body: body)
   end
 
+  # The initiatives rolled at the table, the oldest first: [id of the character, total] (CombatStrip)
+  def self.initiative_rolls_of(game_table)
+    game_table.chat_messages.where(event_key: "initiative_rolled").order(:created_at, :id).pluck(:event_params)
+              .filter_map { |values| values.values_at("character_id", "total") if values["character_id"] }
+  end
+
   def self.record_event(game_table, event_key, game_master_only: false, **event_params)
     game_table.chat_messages.create!(kind: "event", event_key: event_key.to_s, event_params: event_params,
                                      game_master_only: game_master_only)

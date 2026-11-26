@@ -1,0 +1,5 @@
+<%# The order of initiative of the strip of the game master (CombatStrip#initiative_ranks): replaced on their stream
+    after each roll of initiative (CombatStrip.broadcast_initiative_ranks); combat_strip_controller.js gives each
+    place its new rank and the name said to screen readers, and « Prêt » sorts the strip by them %>
+<template id="<%= CombatStrip::RANKS_ID %>" data-combat-strip-target="ranks"
+          data-ranks="<%= combat_strip.initiative_ranks.to_json %>"></template>

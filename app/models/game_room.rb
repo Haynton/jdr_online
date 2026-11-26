@@ -64,13 +64,13 @@ class GameRoom
     game_table.characters.pc.includes(participation: :user, avatar_attachment: :blob).order(:name)
   end
 
-  # Who may roll initiative from the panel « Dés », by group: the game master for the finished characters of the
-  # players and the NPCs and enemies of the table, a player for their own finished character (DiceRolls::
-  # InitiativeRecorder checks it again)
+  # Who may roll initiative from the panel « Dés »: the game master for the NPCs and enemies of the table (decision:
+  # each player rolls their own), a player for their own finished character (DiceRolls::InitiativeRecorder checks
+  # it again)
   def initiative_characters
-    return { players: party.reject(&:draft?), npcs: game_table.npcs.to_a } if game_master?
+    return game_table.npcs.to_a if game_master?
 
-    { players: [participation.character].compact.reject(&:draft?), npcs: [] }
+    [participation.character].compact.reject(&:draft?)
   end
 
   # The characters the game master may give an item to (the panel « Objets »): the finished characters of the

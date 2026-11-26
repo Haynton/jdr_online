@@ -2,9 +2,11 @@ module DiceRolls
   # A roll of initiative asked from the panel « Dés » of the game room, by the rule the template declares
   # (character_fields.dice_rolls.initiative: a die, plus a field of the sheet of a character, another of the sheet of
   # an NPC): rolled by the server (Roller), then written in the feed of the table (ChatMessage) under the name of the
-  # character. A player rolls for their own character; the game master for any character of the table, a player's or
-  # an NPC, and may roll hidden. The mode of the panel (advantage) applies on the die of the initiative. Anything else
-  # raises Roller::InvalidRoll
+  # character. A player rolls for their own character; the game master for the NPCs and enemies of the table only
+  # (decision of 26 November: each player rolls their own), and may roll hidden. The mode of the panel (advantage)
+  # applies on the die of the initiative. Anything else raises Roller::InvalidRoll. The roll keeps the id of the
+  # character: the strip of the fighters reads it (CombatStrip), and the game master's strip gets the new order at
+  # once (CombatStrip#broadcast_initiative_ranks)
   class InitiativeRecorder
     include Modes
 
@@ -20,16 +22,22 @@ module DiceRolls
     def call
       raise Roller::InvalidRoll, "the template has no initiative" unless @rule
 
-      character = rolling_character
+      line = record(rolling_character)
+      CombatStrip.broadcast_initiative_ranks(@game_table)
+      line
+    end
+
+    private
+
+    def record(character)
       mode = declared_mode(@game_table, @asked[:mode_key], @rule["sides"])
       result = Roller.new(count: 1, sides: @rule["sides"], bonus: modifier_of(character), mode:, random: @random).call
       ChatMessage.record_event(@game_table, :initiative_rolled, game_master_only: hidden?,
                                                                 label: @rule["label"], character: character.name,
-                                                                notation: notation(result, mode), dice: result.dice,
-                                                                total: result.total)
+                                                                character_id: character.id,
+                                                                notation: notation(result, mode),
+                                                                dice: result.dice, total: result.total)
     end
-
-    private
 
     def rolling_character
       character = @participation.game_master? ? table_character : @participation.character
@@ -39,7 +47,7 @@ module DiceRolls
     end
 
     def table_character
-      @game_table.characters.find_by(id: @asked[:character_id])
+      @game_table.npcs.find_by(id: @asked[:character_id])
     end
 
     # The value of the field the rule names, worked out like the sheet shows it (a calculated value, the modifier of
