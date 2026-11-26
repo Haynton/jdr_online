@@ -252,6 +252,30 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_predicate build_template(spell_groups: []), :valid?
   end
 
+  test "the conditions have a unique key, a label, a short text and a number of levels, nothing else" do
+    template = with_conditions([
+                                 { "key" => "poisoned", "label" => "Empoisonné", "description" => "Désavantage." },
+                                 { "key" => "poisoned", "label" => "Empoisonné bis" },
+                                 { "key" => "À terre", "label" => "À terre" },
+                                 { "key" => "dazed", "label" => "", "color" => "green" },
+                                 { "key" => "tired", "label" => "Fatigué", "levels" => 1, "description" => "x" * 501 }
+                               ])
+
+    assert_error template, :duplicate_condition, "L'état « poisoned » est déclaré deux fois"
+    assert_error template, :invalid_condition_key
+    assert_error template, :invalid_condition_label
+    assert_error template, :unknown_condition_parameter
+    assert_error template, :invalid_condition_levels,
+                 "L'état « Fatigué » : le nombre de niveaux doit être un nombre entier de 2 à 20"
+    assert_error template, :invalid_condition_description
+  end
+
+  test "the conditions are a list of conditions; a template may have none" do
+    assert_error with_conditions({ "poisoned" => "Empoisonné" }), :invalid_conditions
+    assert_predicate with_conditions([{ "key" => "exhaustion", "label" => "Épuisement", "levels" => 6 }]), :valid?
+    assert_predicate build_template, :valid?
+  end
+
   test "the starting equipment has one letter per option, each line an item or a known group" do
     template = build_template do |fields|
       class_effects(fields)["starting_equipment"]["options"] = [
@@ -325,6 +349,10 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   # The template given to the block (its character fields) can be changed before it is built
   def with_ability_methods(methods)
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
+  def with_conditions(conditions)
+    build_template.tap { |template| template.character_fields["conditions"] = conditions }
   end
 
   def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS,
