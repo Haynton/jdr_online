@@ -66,21 +66,32 @@ Sur téléphone (simplifié, décision) : la barre d'outils en bas, un panneau p
 - « Créer un objet » ouvre sa fenêtre dans la salle.
 - **« Donner »** : fenêtre « Donner « Arc court » » → à qui (personnages terminés des joueurs), combien (1 à 99) → « Donner ». **Enregistré** : une copie de l'objet entre dans l'inventaire du personnage ; bulle « 3 × « Dague » donnés à Aria. ». Serveur : MJ de la table, objet du catalogue de la table, personnage d'un de ses joueurs, sinon 404 (`GameTables::ItemGiftsController`).
 
-### Ma fiche (joueur)
-Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (décision du 26 novembre : le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert). Dans l'ordre où on le lit en combat (demande d'Anthony : la photo petite) :
-- Une **petite photo** (48 px), le nom, les choix.
-- La **CA** dans sa case dorée, l'initiative, puis les valeurs qu'un joueur regarde en combat, dans des cases de même taille qui passent à la ligne : **vitesse, bonus de maîtrise**. Leur nom court est l'abréviation du modèle (« Vit. (m) », « Maîtrise »), sinon leur libellé, sur deux lignes au plus.
-- **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », attaques. **Les emplacements de sorts sont dans le panneau Sorts** (décision du 26 novembre).
-- **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique). Un **jet de sauvegarde maîtrisé** s'affiche dans la case de sa caractéristique, à côté du score : un point doré et son bonus (« 14 ● +4 »), avec une légende dessous (« ● Jets de sauvegarde »). C'est la section du modèle qui a un bonus par caractéristique.
-- **Compétences maîtrisées** en pastilles sur une ligne qui passe à la ligne (« Perspicacité +4 »), seulement celles cochées sur la fiche, par section du modèle.
-- « Ouvrir ma fiche » ouvre la fiche complète dans une fenêtre. Son bouton **« Modifier »** (nom, identité, description, photo) ouvre le formulaire **dans la même fenêtre** : « Enregistrer » et « Annuler » ramènent à la fiche, toujours dans la fenêtre ; le joueur ne quitte jamais la partie (décision du 26 novembre, avant : « Content missing »).
+### Les panneaux de la fiche (joueur)
+**Toute la fiche est dans les panneaux** (décision du 26 novembre) : le groupe « Fiche » de la barre a « Ma fiche », « Compétences », « Inventaire », « Sorts » et « Détails ». La fiche complète ne s'ouvre plus que pour **modifier** ce qui peut l'être. Un outil vide n'apparaît pas (`GameRoom#tool_groups`) : « Sorts » pour un personnage sans sorts, « Compétences » pour un modèle sans compétences.
 
-### Inventaire et Sorts (joueur)
-Deux outils de plus dans le groupe « Fiche » (décision du 26 novembre). **« Sorts » seulement pour un personnage qui a des sorts** (`GameRoom#tool_groups`).
-- **Inventaire** : l'or en tête (les valeurs de jeu de l'étape Équipement), puis une ligne par objet (« 2 × Dague », dégâts ou CA). « Rien dans l'inventaire. » sinon.
-- **Sorts** : en tête, ce qu'on regarde en lançant un sort (décision du 26 novembre) : le **DD et l'attaque des sorts** (« DD sorts », « Att. sorts »), puis les **emplacements de sorts**, cochés quand ils sont utilisés. Puis les sorts par groupe, comme au récapitulatif (toujours préparés, sorts mineurs, sorts préparés de niveau 1…), chacun avec son école. La fiche rapide du MJ garde aussi les emplacements.
-- Chaque objet et chaque sort ouvre **ses détails dans une fenêtre** (la même que sur la fiche, une seule pour la salle) ; Échap la ferme et laisse le panneau ouvert.
-- Lecture seule : ce que le personnage porte et connaît change par la fiche (et par « Donner » du MJ).
+#### Ma fiche
+Ouvert par l'outil « Ma fiche » **ou par son propre portrait** dans la barre des combattants (le joueur n'a plus de fiche rapide au-dessus de la barre ; un second clic sur le portrait ferme le panneau, le focus revient à ce qui l'a ouvert). Dans l'ordre où on le lit en combat :
+- Une **petite photo** (48 px), le nom, les choix (classe, sous-classe, historique, espèce).
+- La **CA** dans sa case dorée, puis les valeurs qu'un joueur regarde en combat, dans des cases de même taille qui passent à la ligne : **initiative, vitesse, dés de vie, bonus de maîtrise** (`PlayerSheetPanelsHelper::QUICK_STAT_FIELD_KEYS`). Leur nom court est l'abréviation du modèle (« Vit. (m) », « Maîtrise »), sinon leur libellé, sur deux lignes au plus. L'initiative tirée (simulée) reste dans la barre des combattants.
+- **Combat**, la même carte que la fiche rapide du MJ (`game_rooms/_fighter_status`, `fighter_card_controller.js`) : PV avec − et + (l'anneau du portrait suit), « Ajouter un état », attaques.
+- **Caractéristiques** : six cases (abréviation, modificateur en grand, score avec le bonus de l'historique). Un **jet de sauvegarde maîtrisé** s'affiche dans la case de sa caractéristique, à côté du score : un point doré et son bonus (« 14 ● +4 »), avec une légende dessous (« ● Jets de sauvegarde »).
+- **« Modifier ma fiche »** (bouton secondaire, crayon) : le formulaire du nom, de l'identité, de la description et de la photo, **dans une fenêtre de la salle**. « Annuler » la ferme ; « Enregistrer » rafraîchit la salle, qui montre le changement, fenêtre fermée. Le joueur ne quitte jamais la partie.
+
+#### Compétences
+**Toutes** les lignes de bonus, par section du modèle (« Jets de sauvegarde », « Compétences »), comme au récapitulatif : un point plein si maîtrisé, le nom, la caractéristique, le bonus à droite. Toutes, pas seulement les maîtrisées : le MJ peut demander n'importe quel jet.
+
+#### Inventaire
+L'or en tête (les valeurs de jeu de l'étape Équipement), puis une ligne par objet (« 2 × Dague », dégâts ou CA). « Rien dans l'inventaire. » sinon. Le bouton **« −1 »** d'une ligne (à bordure : un simple − se lisait comme une valeur vide) **retire un exemplaire** (une flèche tirée, une potion bue ; décision du 26 novembre : un à la fois), sans question ; le dernier exemplaire est demandé d'abord (« Retirer « Dague » de l'inventaire ? », en rouge) et retire la ligne. **Enregistré** (`GameTables::InventoryItemsController#destroy`, `InventoryItem#take_one_away` : un joueur accepté de la table, un objet de son propre personnage, 404 sinon, MJ compris) ; le serveur redessine la liste en place (`#game-room-inventory`), le panneau reste ouvert. **Les pièces d'or se dépensent** (demande d'Anthony, 26 novembre) : sur une ligne, comme les PV de « Ma fiche » : « PIÈCES D'OR 7 » à gauche, à droite la somme entre « − » et « + » (le compteur de la fiche, `character_sheets/fields/_stepper`, jamais les flèches du navigateur ; elle commence à 1) et « Retirer » ; jamais plus que ce que le personnage possède (« Indiquez une somme de 1 à 7. » sous le champ). Enregistré (`GameTables::InventoryValuesController`, toute valeur numérique rangée avec l'inventaire, `own_removable_value?`), même règle d'accès, même redessin.
+
+#### Sorts
+En tête, ce qu'on regarde en lançant un sort : le **DD et l'attaque des sorts** (« DD sorts », « Att. sorts »), puis les **emplacements de sorts**, cochés quand ils sont utilisés. Puis les sorts par groupe, comme au récapitulatif (toujours préparés, sorts mineurs, sorts préparés de niveau 1…), chacun avec son école. La fiche rapide du MJ garde aussi les emplacements.
+
+**« Changer mes sorts »**, en tête du panneau (décision du 26 novembre : **quand il veut**, dans les nombres de sa classe et de son niveau, vérifiés par le serveur, `CharacterSpellsValidator`), ouvre **la liste de l'étape Sorts de la création** dans la grande fenêtre de la salle, resserrée (`compact:`, demande d'Anthony : sans les emplacements, déjà dans le panneau derrière ; la recherche, son nom dans le champ, et les filtres sur une ligne ; 24 px entre les blocs) : recherche, filtres, sorts toujours préparés, compteurs « 2 sur 3 choisis », détails de chaque sort. « Enregistrer » rafraîchit la salle et **écrit le changement dans le chat**, pour que le MJ le voie : « Mirelle change ses sorts : + Aide · − Soins. » (les noms en notation neutre, la phrase dans la langue de chaque lecteur, événement `spells_changed`). Trop de sorts dans un groupe : la liste revient avec son erreur. `GameTables::SpellChoicesController` (un joueur accepté, son personnage terminé, une classe qui a des sorts à choisir ; 404 sinon, MJ compris).
+
+#### Détails
+**Tout le reste de la fiche**, calculé et non écrit à la main (`PlayerSheetPanelsHelper#own_detail_sections`) : ce que montre la fiche complète, moins ce qu'un autre panneau montre déjà. Rangé par section du modèle, avec les cases du récapitulatif : en fantasy, taille, alignement, langues et niveau, puis l'apparence physique (âge, taille, poids, yeux, cheveux, peau). **Les longs textes** (apparence, traits, histoire, capacités) **n'y sont pas** (décision du 26 novembre : trop longs pour un panneau étroit, peu utiles en partie) : ils se lisent et se changent dans « Modifier ma fiche ». Vérifié sur les douze personnages du seed : à part ces textes, rien de la fiche ne manque aux panneaux.
+
+Dans Inventaire et Sorts, chaque objet et chaque sort ouvre **ses détails dans une fenêtre** (la même que sur la fiche, une seule pour la salle) ; Échap la ferme et laisse le panneau ouvert. Tout est en lecture seule, sauf les PV, les états et les emplacements (simulés) et le retrait d'un objet (enregistré).
 
 ## Plateau
 
@@ -149,7 +160,7 @@ Au-dessus de la barre, une à la fois ; Échap ou un clic ailleurs la ferment. *
 
 - **Une ligne en haut, centrée sur l'écran, sans carte autour** : une vignette 16:9 par personne de la table (MJ puis joueurs), chacune un petit îlot, avatar et nom (« Vous » pour soi, « MJ ») en attendant Jitsi. Le haut des vignettes est aligné sur celui des îlots.
 - **Trois tailles** : 60 px de haut (celle des îlots), 90 ou 135 px. **Jamais de défilement** : quand elles ne tiennent pas, elles rétrécissent ensemble en gardant leur format ; **sous 60 px de haut, la ligne se replie toute seule** en un bouton « Visio » (60 px de haut), qui ouvre la visio au centre.
-- Au survol ou au clavier, une petite pastille sous la ligne : « Visio · Bientôt », −, +, **visio au centre**, replier. Repliée : un bouton « Visio ».
+- Au survol ou au clavier, une petite pastille sous la ligne : « Visio », −, +, **visio au centre**, replier. Repliée : un bouton « Visio » de 40 px de haut, la hauteur des boutons, avec un petit chevron vers le bas (on comprend qu'il déplie), **sans « Bientôt »** (demande d'Anthony, 26 novembre ; le titre caché le dit encore aux lecteurs d'écran).
 - **Visio au centre** : les vignettes prennent la place entre la barre d'outils, les îlots du haut et la barre des combattants, **posées sur le plateau, sans carte**, en rangées centrées de 320 px ; « Revenir en haut » ou Échap.
 - Paramètres › Visio et son : « Afficher les caméras » (les cache entièrement) et « Taille des caméras ».
 - **À brancher** : le conteneur de la visio garde un `id` fixe et `data-turbo-permanent` (règle du projet) : Jitsi s'installera dans `#game-room-video-places`. Donner à la salle Jitsi un nom impossible à deviner.
@@ -203,7 +214,9 @@ Dans `docs/prototypes/salle-de-jeu/`, 1440 × 900, chacune en sombre (`-dark`) e
 | `10-mj-visio-au-centre` | La visio au centre, pendant les tours |
 | `11-mj-parametres-de-la-partie` | La fenêtre des paramètres de la partie |
 | `12-joueur-salle` | La salle d'un joueur (Fiche, Dés ; sa place « Vous ») |
-| `13-joueur-sa-fiche` | Son panneau « Ma fiche », ouvert depuis son portrait |
+| `13-joueur-sa-fiche` | Son panneau « Ma fiche », ouvert depuis son portrait, « Modifier ma fiche » en bas |
 | `14-joueur-ses-sorts` | Son panneau « Sorts » : DD, attaque, emplacements, puis les sorts (Mirelle, joueuse Isolde) |
+| `15-joueur-ses-competences` | Son panneau « Compétences » : sauvegardes et compétences, maîtrisées ou non |
+| `16-joueur-details` | Son panneau « Détails » : le reste de la fiche |
 
 Elles se refont par un script hors du dépôt (Selenium, Chrome sans fenêtre, sur le serveur local) ; à refaire quand la salle change.
