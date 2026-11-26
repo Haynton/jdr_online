@@ -45,59 +45,6 @@ module CombatStripHelper
     room_combat_strip.groups.find { |group| combat_own_place?(game_room, group) }
   end
 
-  # The values a player looks at in a fight, beside the armour class of the panel « Ma fiche ». First version,
-  # written for D&D like the armour class (CombatStrip): the template will declare them (decision: the room keeps its
-  # shape, the template decides what fills it)
-  QUICK_STAT_FIELD_KEYS = %w[speed proficiency_bonus].freeze
-  # Those of a caster, at the top of the panel « Sorts » with the spell slots (decision of 26 November: they are looked
-  # at while casting a spell)
-  SPELL_STAT_FIELD_KEYS = %w[spell_save_dc spell_attack_bonus].freeze
-
-  # Each with its short label (the abbreviation of the template, else its label), its label and its value; none for a
-  # value the character has not (the spell save DC of a class without spells)
-  def own_quick_stats(character, computed, keys: QUICK_STAT_FIELD_KEYS)
-    character.sheet_fields.select { |field| keys.include?(field["key"]) }.filter_map do |field|
-      value = own_stat_value(character, field, computed)
-      next if value.blank? || value == "—"
-
-      { short_label: field["abbreviation"] || field["label"], label: field["label"], value: value }
-    end
-  end
-
-  # The bonus fields of a sheet (saving throws, skills), by the section of the template
-  def own_bonus_sections(character)
-    character.sheet_fields.select { |field| field["type"] == "bonus" }.group_by { |field| field["section"] }
-  end
-
-  # The section with one bonus per ability (the saving throws) goes into the tiles of the abilities: its label and
-  # its fields by ability key, nil when the template has none
-  def own_tile_bonus_section(bonus_sections, ability_fields)
-    ability_keys = ability_fields.pluck("key").sort
-    section, fields = bonus_sections.find { |_, candidates| candidates.pluck("based_on").sort == ability_keys }
-    [section, fields.index_by { |field| field["based_on"] }] if section
-  end
-
-  # The values of the game kept with the inventory (the gold): those of the step that chooses the equipment, as on
-  # the summary sheet (summary_play_fields); none for a template without that step
-  def own_inventory_play_fields(character)
-    step = character.creation_steps.summary_blocks.find do |candidate|
-      candidate.behaviors.any?(CreationStepBehaviors::ChoosesEquipment)
-    end
-    step ? summary_play_fields(character, step) : []
-  end
-
-  # A bonus field ticked on the sheet: the character is proficient in it
-  def own_ticked?(character, field)
-    character.sheet.to_h[field["key"]] == true
-  end
-
-  # The other sections show the fields ticked on the sheet (the skills the character is proficient in), as chips
-  def own_ticked_chip_sections(character, bonus_sections, tile_section)
-    bonus_sections.except(tile_section)
-                  .transform_values { |fields| fields.select { |field| own_ticked?(character, field) } }
-                  .reject { |_, fields| fields.empty? }
-  end
-
   # What is left of the gauges of a group, from 0 to 100: the ring around its portrait
   def combat_group_percent(group)
     gauges = group.fighters.filter_map(&:gauge)
@@ -139,14 +86,5 @@ module CombatStripHelper
       link_to t("game_rooms.combat_strip.full_sheet"), edit_game_table_npc_path(game_room.game_table, character),
               class: "font-medium text-link hover:underline", data: npc_dialog_link_data
     end
-  end
-
-  private
-
-  def own_stat_value(character, field, computed)
-    return format_computed_value(computed[:values][field["key"]]) unless FieldTypes.of(field).stored?
-
-    value = character.sheet.to_h[field["key"]]
-    FieldTypes.of(field).summary_text(value, field) unless value.nil?
   end
 end

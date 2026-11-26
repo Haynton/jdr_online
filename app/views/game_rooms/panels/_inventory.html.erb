@@ -1,34 +1,71 @@
 <%# The inventory of a player's character (decision of 26 November): the values of the game kept with it first (the
     gold), then one line per item, by name, with how many and its damage or armour class; each opens its description
-    in the window of the details of the room (summary/_entry_details, shared/_details_dialog in layouts/game_room). A
-    character made before the inventory existed has none: the panel says so %>
+    in the window of the details of the room (summary/_entry_details, shared/_details_dialog in layouts/game_room).
+    Its « −1 » (a small button with its border, decision: a bare − read as an empty value) takes one away (GameTables::InventoryItemsController, saved; decision: one at a time, the last one asked
+    first), and the server redraws this block in place (#game-room-inventory). An amount is taken out of a number kept
+    with it (the gold spent: GameTables::InventoryValuesController, never more than the character has; refused, its
+    error under its field, value_errors). A character made before the inventory
+    existed has none: the panel says so %>
 <% character = game_room.own_character %>
+<% value_errors = local_assigns.fetch(:value_errors, {}) %>
+<div id="game-room-inventory">
 <% items = character.inventory_items.sort_by(&:name) %>
 <% play_fields = own_inventory_play_fields(character) %>
 <% if items.empty? && play_fields.empty? %>
   <p class="text-sm text-muted"><%= t("character_sheets.summary.inventory.empty") %></p>
 <% else %>
   <% if play_fields.any? %>
-    <ul class="mb-4 flex flex-wrap gap-2">
+    <%# One line per value (the gold), as the hit points of « Ma fiche »: its label and its value on the left; on the
+        right the amount to take out, between − and + (the stepper of the sheet, decision: never the arrows of the
+        browser), starting at 1, and « Retirer »; never more than the character has, checked by the server %>
+    <ul class="mb-4 flex flex-col gap-3 border-b border-line pb-4">
       <% play_fields.each do |field| %>
-        <li class="inline-flex h-7 items-center rounded-full bg-primary-soft px-3 text-xs font-semibold text-primary-soft-ink ring-1 ring-primary-soft-ink/50 ring-inset">
-          <%= t("character_sheets.summary.inventory.play_value", label: field["label"],
-                                                                 value: FieldTypes.of(field).summary_text(character.sheet[field["key"]], field)) %>
+        <% error = value_errors[field["key"]] %>
+        <% current = character.sheet[field["key"]] %>
+        <li>
+          <div class="flex items-center gap-3">
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold tracking-wider text-muted uppercase" title="<%= field["label"] %>"><%= field["label"] %></p>
+              <p class="text-xl leading-tight font-bold text-ink tabular-nums"><%= FieldTypes.of(field).summary_text(current, field) %></p>
+            </div>
+            <% if own_removable_value?(character, field) %>
+              <%= form_with url: game_table_inventory_value_path(game_room.game_table, field["key"]), method: :patch,
+                            class: "flex shrink-0 items-center gap-2" do %>
+                <% input = number_field_tag(:amount, 1, id: "inventory-value-#{field["key"]}", min: 1, max: current.to_i, step: 1,
+                                                        required: true, class: CharacterSheets::FieldsHelper::STEPPER_INPUT_CLASSES,
+                                                        data: { number_stepper_target: "input" },
+                                                        aria: { label: t(".amount", label: field["label"]), invalid: error.present?,
+                                                                describedby: ("inventory-value-#{field["key"]}-error" if error) }) %>
+                <%= render "character_sheets/fields/stepper", field: field, input: input %>
+                <%= submit_tag t(".remove"), class: button_classes(:secondary, size: :compact) %>
+              <% end %>
+            <% end %>
+          </div>
+          <% if error %>
+            <p id="inventory-value-<%= field["key"] %>-error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+          <% end %>
         </li>
       <% end %>
     </ul>
   <% end %>
   <ul class="flex flex-col gap-1.5">
     <% items.each do |item| %>
-      <li>
-        <%= render layout: "character_sheets/summary/entry_details",
-                   locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
-          <span class="text-ink"><%= inventory_item_text(item) %></span>
-          <% if (detail = inventory_item_detail(item)) %>
-            <span class="text-xs text-muted"><%= detail %></span>
+      <li class="flex items-start gap-2">
+        <div class="min-w-0 flex-1">
+          <%= render layout: "character_sheets/summary/entry_details",
+                     locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
+            <span class="text-ink"><%= inventory_item_text(item) %></span>
+            <% if (detail = inventory_item_detail(item)) %>
+              <span class="text-xs text-muted"><%= detail %></span>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
+        <%= button_to t(".take_one_short"), game_table_inventory_item_path(game_room.game_table, item), method: :delete,
+                      class: PlayerSheetPanelsHelper::TAKE_ONE_BUTTON_CLASSES, form_class: "shrink-0",
+                      title: t(".take_one", name: item.name), aria: { label: t(".take_one", name: item.name) },
+                      form: { data: own_inventory_removal_form_data(item) } %>
       </li>
     <% end %>
   </ul>
 <% end %>
+</div>

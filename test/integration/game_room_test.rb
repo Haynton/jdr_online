@@ -5,7 +5,7 @@ require "test_helper"
 # game master, their own for a player)
 class GameRoomTest < ActionDispatch::IntegrationTest
   GAME_MASTER_TOOLS = ["Cartes", "Outils de carte (bientôt)", "PNJ et ennemis", "Objets", "Dés (bientôt)"].freeze
-  PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Dés (bientôt)"].freeze
+  PLAYER_TOOLS = ["Ma fiche", "Inventaire", "Détails", "Dés (bientôt)"].freeze
 
   setup do
     @game_master = create_user("maitre")
@@ -75,6 +75,71 @@ class GameRoomTest < ActionDispatch::IntegrationTest
 
     assert_includes tool_names, "Sorts"
     assert_select "#game-room-panel-spells", text: /Trait de feu/
+  end
+
+  test "a player takes their items away one by one, the last one asked first, and the panel is redrawn" do
+    dagger = @character.inventory_items.create!(key: "dagger", name: "Dague", quantity: 2)
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-inventory form[action=?]:not([data-turbo-confirm])",
+                  game_table_inventory_item_path(@game_table, dagger)
+
+    delete game_table_inventory_item_path(@game_table, dagger), as: :turbo_stream
+
+    assert_equal 1, dagger.reload.quantity
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+    assert_select "#game-room-inventory form[data-turbo-confirm^=?]", "Retirer « Dague » de l'inventaire ?"
+
+    delete game_table_inventory_item_path(@game_table, dagger), as: :turbo_stream
+
+    assert_not InventoryItem.exists?(dagger.id)
+  end
+
+  test "a player spends gold pieces, never more than they have" do
+    @character.update_columns(sheet: @character.sheet.merge("gold" => 7))
+    sign_in @player
+    get game_table_path(@game_table)
+
+    assert_select "#game-room-inventory form[action=?] input[name=amount][max='7']",
+                  game_table_inventory_value_path(@game_table, "gold")
+
+    patch game_table_inventory_value_path(@game_table, "gold"), params: { amount: 5 }, as: :turbo_stream
+
+    assert_equal 2, @character.reload.sheet["gold"]
+    assert_select "turbo-stream[action=replace][target=game-room-inventory]"
+
+    patch game_table_inventory_value_path(@game_table, "gold"), params: { amount: 3 }, as: :turbo_stream
+
+    assert_response :unprocessable_content
+    assert_select "#inventory-value-gold-error", text: "Indiquez une somme de 1 à 2."
+    assert_equal 2, @character.reload.sheet["gold"]
+  end
+
+  test "nobody spends the gold of someone else's character, nor a value that is not kept with the inventory" do
+    @other_character.update_columns(sheet: @other_character.sheet.merge("gold" => 7))
+    sign_in @player
+    patch game_table_inventory_value_path(@game_table, "level"), params: { amount: 1 }, as: :turbo_stream
+
+    assert_response :not_found
+
+    sign_in @game_master
+    patch game_table_inventory_value_path(@game_table, "gold"), params: { amount: 1 }, as: :turbo_stream
+
+    assert_response :not_found
+    assert_equal 7, @other_character.reload.sheet["gold"]
+  end
+
+  test "nobody takes away an item of someone else's character, the game master neither" do
+    dagger = @other_character.inventory_items.create!(key: "dagger", name: "Dague", quantity: 2)
+
+    [@player, @game_master].each do |user|
+      sign_in user
+      delete game_table_inventory_item_path(@game_table, dagger), as: :turbo_stream
+
+      assert_response :not_found
+    end
+    assert_equal 2, dagger.reload.quantity
   end
 
   test "the panel of a player holds their abilities and their fight card" do
@@ -163,7 +228,9 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_equal PLAYER_TOOLS, tool_names
-    assert_select "#game-room-panel-character a[href=?]", game_table_character_sheet_path(@game_table, @character)
+    assert_select "#game-room-panel-character a[href=?][data-turbo-frame=?]", edit_character_path(@character),
+                  GameRoomHelper::SHEET_FRAME, text: /Modifier ma fiche/
+    assert_select "#game-room-panel-details", text: /Niveau/
     assert_select "#game-room-panel-npcs, #game-room-panel-items, #game-room-panel-maps", count: 0
     assert_no_match(/Gobelin/, response.body)
     assert_select "dialog#npc-dialog, dialog#bestiary-dialog, dialog#catalog-entry-dialog, dialog#map-dialog", count: 0
@@ -230,7 +297,7 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_character_path(@other_character), count: 0
   end
 
-  test "a player changes their character in the window of their sheet, and comes back to the sheet there" do
+  test "a player changes their character in the window of the room, which is refreshed once saved" do
     sign_in @player
     frame = { "Turbo-Frame" => GameRoomHelper::SHEET_FRAME }
     get edit_character_path(@character), headers: frame
@@ -238,12 +305,13 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame##{GameRoomHelper::SHEET_FRAME}" do
       assert_select "h2#character-sheet-dialog-title", text: "Modifier Aria"
       assert_select "form[action=?]", character_path(@character)
-      assert_select "a[href=?]", game_table_character_sheet_path(@game_table, @character), text: "Annuler"
+      assert_select "button[data-action='frame-dialog#close']", text: "Annuler"
     end
 
     patch character_path(@character), params: { character: { name: "Aria la Brave" } }, headers: frame
 
-    assert_redirected_to game_table_character_sheet_path(@game_table, @character)
+    assert_response :success
+    assert_match(/<turbo-stream action="refresh"/, response.body)
     assert_equal "Aria la Brave", @character.reload.name
   end
 

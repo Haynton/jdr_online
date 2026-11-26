@@ -9,8 +9,9 @@ class GameRoom
   GAME_MASTER_TOOL_GROUPS = {
     "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
   }.freeze
-  # A player's sheet in three tools (decision of 26 November): their character, their inventory, their spells
-  PLAYER_TOOL_GROUPS = { "sheet" => %w[character inventory spells], "dice" => %w[dice] }.freeze
+  # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
+  # their character in a fight, their skills, their inventory, their spells, the rest of their sheet
+  PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells details], "dice" => %w[dice] }.freeze
   COMING_SOON_PANELS = %w[map_tools dice].freeze
 
   # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
@@ -34,12 +35,12 @@ class GameRoom
     ChatMessage.feed_of(game_table)
   end
 
-  # « Sorts » only for a character who has some: a tool with nothing in it is left out
+  # A tool with nothing in it is left out: « Sorts » for a character without spells, « Compétences » for a template
+  # without bonus rows
   def tool_groups
     return GAME_MASTER_TOOL_GROUPS if game_master?
-    return PLAYER_TOOL_GROUPS if own_character&.spells.present?
 
-    PLAYER_TOOL_GROUPS.transform_values { |panels| panels - %w[spells] }
+    PLAYER_TOOL_GROUPS.transform_values { |panels| panels - empty_player_panels }
   end
 
   def panels
@@ -74,6 +75,14 @@ class GameRoom
   def video_participations
     game_table.participations.accepted.includes(user: { avatar_attachment: :blob })
               .sort_by { |participation| [participation.game_master? ? 0 : 1, participation.user.username.downcase] }
+  end
+
+  def empty_player_panels
+    character = own_character
+    panels = []
+    panels << "spells" if character&.spells.blank?
+    panels << "skills" unless character&.sheet_fields.to_a.any? { |field| field["type"] == "bonus" }
+    panels
   end
 
   # The character of a player, nil while they have none

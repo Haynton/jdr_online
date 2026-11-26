@@ -1,11 +1,11 @@
 <%# The character of a player, opened by the tool « Ma fiche » or by their own portrait in the strip of the fighters
-    (decision of 26 November). In the order they are looked at during a fight (Anthony's request: the spell slots of a
-    caster high in the panel, the picture small): their picture, name and choices; their armour class, initiative
-    and the values of a fight (speed, proficiency...: CombatStripHelper#own_quick_stats); what changes in a fight (hit
-    points, conditions, spell slots, attacks: game_rooms/_fighter_status, the card of the quick sheets); their
-    abilities (modifier, the score raised by the bonus of the background, and the saving throw beside it when
-    proficient: the section of the template with one bonus per ability); the skills they are proficient in, as chips;
-    their whole sheet in the window of the room. A player always has one here: the room sends them to make it first %>
+    (decision of 26 November). In the order they are looked at during a fight (the picture small, decision): their
+    picture, name and choices; their armour class and the values of a fight (initiative, speed, proficiency, hit
+    dice: PlayerSheetPanelsHelper#own_quick_stats; the initiative rolled is the strip's); what changes in a fight (hit
+    points, conditions, attacks: game_rooms/_fighter_status, the card of the quick sheets); their abilities
+    (modifier, the score raised by the bonus of the background, and the saving throw beside it when proficient: the
+    section of the template with one bonus per ability). The rest of the sheet is in the other panels (skills,
+    inventory, spells, details); « Modifier ma fiche » opens what may change in the window of the room %>
 <% character = game_room.own_character %>
 <% group = combat_own_group(game_room) %>
 <% fighter = group&.fighters&.first %>
@@ -23,7 +23,8 @@
   </div>
 
   <% if fighter %>
-    <%= render "game_rooms/fighter_badges", fighter: fighter, group: group, stats: own_quick_stats(character, computed) %>
+    <%= render "game_rooms/fighter_badges", fighter: fighter, group: group, initiative_roll: false,
+                                            stats: own_quick_stats(character, computed) %>
     <section class="border-b border-line pb-4" aria-label="<%= t(".fight") %>">
       <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key, spell_slots: false %>
     </section>
@@ -63,22 +64,11 @@
     </section>
   <% end %>
 
-  <% own_ticked_chip_sections(character, bonus_sections, tile_section).each do |section, fields| %>
-    <section aria-label="<%= section %>" class="flex flex-wrap items-center gap-1.5">
-      <h3 class="mr-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= section %></h3>
-      <% fields.each do |field| %>
-        <span class="inline-flex h-6 items-center gap-1 rounded-full bg-field px-2.5 text-xs text-ink">
-          <%= field["label"] %>
-          <span class="font-semibold tabular-nums"><%= format_bonus(computed[:values][field["key"]]) %></span>
-        </span>
-      <% end %>
-    </section>
-  <% end %>
-
-
-  <%= link_to game_table_character_sheet_path(game_room.game_table, character),
-              class: button_classes(:primary, full_width: true), data: character_sheet_dialog_link_data do %>
-    <%= render "shared/icons/venetian_mask" %>
-    <%= t(".open_sheet") %>
+  <%# The whole sheet is opened only to change what may change (decision of 26 November: every piece of information is
+      in a panel), in the window of the room (characters/edit in its frame) %>
+  <%= link_to edit_character_path(character), class: button_classes(:secondary, full_width: true),
+                                              data: character_sheet_dialog_link_data do %>
+    <%= render "shared/icons/pencil" %>
+    <%= t(".edit_sheet") %>
   <% end %>
 </div>
