@@ -93,7 +93,7 @@ export default class extends Controller {
   }
 
   clickBoard(event) {
-    if (this.pointerMovedSinceDown(event)) return
+    if (this.pointerMovedSinceDown(event) || this.mapTarget.closest("[data-moving-map]")) return
     if (this.creature) return this.placeCreature(event)
 
     const token = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-board-token-id]")

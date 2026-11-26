@@ -3,11 +3,16 @@
   <div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0"
        <%= tag.attributes(data: board_zoom_data(board_map)) %>>
     <svg viewBox="<%= game_map_view_box(board_map) %>" role="img" aria-label="<%= board_map.name %>"
-         class="absolute inset-0 size-full touch-none cursor-grab active:cursor-grabbing in-data-placing:cursor-crosshair"
+         class="absolute inset-0 size-full touch-none in-data-placing:cursor-crosshair in-data-moving-map:cursor-grab in-data-moving-map:active:cursor-grabbing"
          <%= tag.attributes(data: board_map_data(board_map, game_master:)) %>></svg>
     <%= render "game_rooms/board_tokens", game_map: board_map, game_master: %>
     <div hidden role="group" aria-label="<%= t("game_rooms.board.zoom_label") %>"
          class="absolute bottom-4 left-4 z-10 flex gap-2 max-md:hidden" data-board-zoom-target="zoomButtons">
+      <button type="button" aria-pressed="false" class="<%= MapTemplatesHelper::MAP_FLOATING_BUTTON_CLASSES %> <%= BoardHelper::HAND_PRESSED_CLASSES %>"
+              aria-label="<%= t("game_rooms.board.hand") %>" title="<%= t("game_rooms.board.hand_tip") %>"
+              data-board-zoom-target="handButton" data-action="board-zoom#toggleHand">
+        <%= render "shared/icons/hand", css_class: "size-4" %>
+      </button>
       <%= render "game_rooms/board_zoom_button", action: "zoomIn", label: t("game_rooms.board.zoom_in"), icon: "plus" %>
       <%= render "game_rooms/board_zoom_button", action: "zoomOut", label: t("game_rooms.board.zoom_out"), icon: "minus" %>
       <%= render "game_rooms/board_zoom_button", action: "showWholeMap", label: t("game_rooms.board.whole_map"), icon: "maximize" %>

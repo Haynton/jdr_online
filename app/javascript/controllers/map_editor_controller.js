@@ -12,6 +12,7 @@ import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, fittedPicture, isFitted, rowsOverPicture, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
 import { isTouchpadSlide, wheelPixels, pinchShape } from "map_editor/gestures"
+import { isTyping } from "map_editor/typing"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
 import { edgeOf, doorKey } from "map_edges"
@@ -961,10 +962,6 @@ function presetOf(element) {
 
 function jsonHeaders() {
   return { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
-}
-
-function isTyping(event) {
-  return Boolean(event.target.closest?.("input, textarea, select, [contenteditable]"))
 }
 
 // Hours and minutes in the language of the page

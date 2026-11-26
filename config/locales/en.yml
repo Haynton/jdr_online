@@ -1116,6 +1116,8 @@ en:
       token_menu: "Token"
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
+      hand: "Move the map"
+      hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
       hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"

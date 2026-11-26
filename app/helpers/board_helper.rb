@@ -1,13 +1,20 @@
 module BoardHelper
   ZOOM_ACTIONS = %w[
-    wheel->board-zoom#zoomOrMoveWithWheel gesturestart->board-zoom#startGesture
-    gesturechange->board-zoom#zoomWithGesture pointerdown->board-zoom#pressPointer
+    wheel->board-zoom#zoomOrMoveWithWheel:!passive gesturestart->board-zoom#startGesture:!passive
+    gesturechange->board-zoom#zoomWithGesture:!passive pointerdown->board-zoom#pressPointer
     pointermove->board-zoom#movePointer pointerup->board-zoom#releasePointer
-    pointercancel->board-zoom#releasePointer
+    pointercancel->board-zoom#releasePointer pointerenter->board-zoom#enterMap pointerleave->board-zoom#leaveMap
+  ].join(" ").freeze
+  MOVING_KEYS_ACTIONS = %w[
+    keydown.space@window->board-zoom#holdSpace keyup.space@window->board-zoom#releaseSpace
+    keydown.h@window->board-zoom#toggleHandWithKey
   ].join(" ").freeze
   GAME_MASTER_ACTIONS = %w[
     pointerdown->room-board#notePointerDown click->room-board#clickBoard
     contextmenu->room-board#dropCreatureWithRightClick
+  ].join(" ").freeze
+  HAND_PRESSED_CLASSES = %w[
+    aria-pressed:border-brass aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink
   ].join(" ").freeze
   KEPT_FROM_PLAYERS = %w[tokens blocked].freeze
   KEPT_FROM_GAME_MASTER = %w[tokens].freeze
@@ -21,7 +28,8 @@ module BoardHelper
   end
 
   def board_zoom_data(board_map)
-    { controller: "board-zoom", board_zoom_columns_value: board_map.columns, board_zoom_rows_value: board_map.rows }
+    { controller: "board-zoom", action: MOVING_KEYS_ACTIONS,
+      board_zoom_columns_value: board_map.columns, board_zoom_rows_value: board_map.rows }
   end
 
   def board_tokens_json(game_map, game_master:)
