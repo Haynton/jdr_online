@@ -3,6 +3,8 @@
 # (GameTables::ItemGiftsController), with how many of it (20 arrows); the player takes them out one by one
 # (GameTables::InventoryItemsController)
 class InventoryItem < ApplicationRecord
+  include Equippable
+
   # Same limit as the name column in the database
   NAME_MAX_LENGTH = 60
 

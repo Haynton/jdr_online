@@ -107,7 +107,9 @@ class Character < ApplicationRecord
       [field["key"], FieldTypes.of(field).initial_value(value)] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
-    CharacterSheets::StartingEquipment.new(self).chosen_items.each { |item| inventory_items << InventoryItem.copy_of(item) }
+    starting_items = CharacterSheets::StartingEquipment.new(self).chosen_items.map { |item| InventoryItem.copy_of(item) }
+    InventoryItem.equip_starting(starting_items)
+    inventory_items << starting_items
     self.status = :complete
   end
 
