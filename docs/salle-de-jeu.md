@@ -2,7 +2,17 @@
 
 Ce document décrit la salle de jeu telle qu'elle a été validée par Anthony le 26 novembre 2026, sur la branche `feature/p1-game-room-frame`. Il sert de cahier des charges pour la brancher sur le vrai plateau (branche de Julien), les dés du serveur et le temps réel : **la forme et les comportements décrits ici sont validés**, seuls les points marqués « simulé » ou « à brancher » restent à faire.
 
-Les fichiers cités sont ceux de la première version. La maquette correspondante est dans `docs/prototypes/salle-de-jeu.svg` (s'importe dans Figma par un glisser-déposer).
+Les fichiers cités sont ceux de la première version. **La maquette, ce sont des captures de la vraie salle** (voir « Captures » à la fin), fidèles au pixel : elles s'importent dans Figma comme des images.
+
+## Ce qui est en ligne, ce qui ne l'est pas encore
+
+Les parties **simulées** (rien d'enregistré ni de partagé) ne s'affichent qu'**en développement et dans les tests** (`GameRoom.preview_features?`, décision du 26 novembre : un joueur en ligne ne rencontre jamais une fonction qui oublie ce qu'elle a fait) :
+
+- le **tour par tour** (« Lancer le tour par tour », la question sur l'initiative, la préparation, les tours, la réorganisation) ;
+- la **fiche rapide** (PV, états, emplacements cochés) : en ligne, un portrait de la barre des combattants ouvre **la fiche complète** du personnage, dans sa fenêtre ;
+- le **plateau** et les boutons **« Placer »** (cartes et créatures) : en ligne, l'écran d'attente du plateau.
+
+En ligne, tout le reste marche pour de vrai : le cadre, les panneaux, les fenêtres de la bibliothèque, « Donner » un objet, la fiche complète, les paramètres de la partie, les réglages de chacun ; le chat, les caméras, les dés et les outils de carte sont annoncés « Bientôt ». Brancher une partie simulée (voir les tableaux « à brancher ») la fait sortir de `preview_features?`.
 
 ## Principes
 
@@ -151,3 +161,25 @@ Rubriques : Participants (et lien d'invitation pour le MJ), Règles de la partie
 - Fenêtres natives (`<dialog>`) : focus pris par la fenêtre, rendu au bouton à la fermeture, Échap et clic à côté ferment.
 - Tout ce qui se fait à la souris se fait au clavier : barre dépliée au focus, réordonner par Alt + flèche, poignée du chat aux flèches.
 - Pas d'animation si l'appareil en demande moins.
+
+## Captures
+
+Dans `docs/prototypes/salle-de-jeu/`, 1440 × 900, chacune en sombre (`-dark`) et en clair (`-light`), prises sur la table « Les Terres de Valdoria » du seed local (MJ : othna ; joueur : Brannoc) :
+
+| Fichier | État |
+|---|---|
+| `01-mj-hors-tour-par-tour` | La salle du MJ au repos : îlots du haut, caméras, barre d'outils repliée, barre des combattants (joueurs seuls), chat |
+| `02-mj-barre-depliee` | La barre d'outils dépliée au survol |
+| `03-mj-panneau-cartes-carte-posee` | Panneau Cartes, une carte posée sur le plateau (« Retirer ») |
+| `04-mj-placer-un-ennemi` | Panneau PNJ et ennemis, une créature en main (bulle de placement), un jeton posé |
+| `05-mj-fenetre-tour-par-tour` | La question « Demander un jet d'initiative à toute la table ? » |
+| `06-mj-preparation` | La préparation avec jet : un joueur en attente, créatures dans la barre, « Prêt » |
+| `07-mj-tours-fiche-rapide` | Les tours : contour doré, fiche rapide d'Elowen (CA, PV, état, emplacement coché) |
+| `08-mj-fenetre-des-etats` | La fenêtre « Ajouter un état » |
+| `09-mj-donner-un-objet` | Panneau Objets et fenêtre « Donner » |
+| `10-mj-visio-au-centre` | La visio au centre, pendant les tours |
+| `11-mj-parametres-de-la-partie` | La fenêtre des paramètres de la partie |
+| `12-joueur-salle` | La salle d'un joueur (Fiche, Dés ; sa place « Vous ») |
+| `13-joueur-sa-fiche-rapide` | Sa propre fiche rapide |
+
+Elles se refont par un script hors du dépôt (Selenium, Chrome sans fenêtre, sur le serveur local) ; à refaire quand la salle change.
