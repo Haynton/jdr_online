@@ -4,7 +4,7 @@
     master, then the players), each a small island of its own, their avatar and their name until the call comes
     (Jitsi); who plays is marked « Vous ». Three sizes: the places 60 px high (as high as the islands), 90 or 135 px,
     16:9 (107, 160 or 240 px wide); when they do not fit, they all shrink together, keeping their shape (decision: a
-    line of cameras never scrolls), and under 60 px high the line folds by itself into a button « Visio », which opens
+    line of cameras never scrolls), and under 60 px high the line folds by itself into a button « Visio » (40 px high, without « Bientôt », a small chevron that says it unfolds), which opens
     the call in the middle (decision). Hovered or reached with the keyboard, a small pill under the line makes them
     smaller or larger, opens the call in the middle, and folds them; folded, the button « Visio » unfolds them.
     In the middle (data-size="stage"), the cameras take the screen between the bar of tools, the islands at the top
@@ -32,16 +32,19 @@
       </li>
     <% end %>
   </ul>
-  <button type="button" hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> flex h-15 items-center gap-2 px-4 text-sm font-medium text-ink hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+  <%# 40 px high, the height of the buttons, without « Bientôt » (Anthony's request: 60 px and the badge were too much
+      for a folded line; the hidden title still says it to screen readers) %>
+  <button type="button" hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> flex h-10 items-center gap-2 px-3.5 text-sm font-medium text-ink hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           aria-controls="game-room-video-places" title="<%= t(".unfold") %>"
           data-video-island-target="unfold" data-action="video-island#unfold">
     <%= render "shared/icons/monitor", css_class: "size-4 text-muted" %>
     <%= t(".title") %>
-    <span class="<%= badge_classes(:pending) %>"><%= t("game_rooms.coming_soon") %></span>
+    <%# A small chevron: the button unfolds the cameras (Anthony's request) %>
+    <%= render "shared/icons/chevron_down", css_class: "size-4 text-muted" %>
   </button>
   <span hidden data-video-island-target="controls"
         class="<%= GameRoomHelper::ISLAND_CLASSES %> mt-1 flex items-center gap-0.5 p-0.5 opacity-0 transition-opacity group-hover/video:opacity-100 group-focus-within/video:opacity-100 group-data-[size=stage]/video:mt-4 group-data-[size=stage]/video:opacity-100">
-    <span class="px-2 text-xs font-medium text-muted"><%= t(".title") %> · <%= t("game_rooms.coming_soon") %></span>
+    <span class="px-2 text-xs font-medium text-muted"><%= t(".title") %></span>
     <span class="contents group-data-[size=stage]/video:hidden">
       <button type="button" class="<%= GameRoomHelper::ISLAND_HEADER_BUTTON_CLASSES %>"
               aria-label="<%= t(".smaller") %>" title="<%= t(".smaller") %>"
