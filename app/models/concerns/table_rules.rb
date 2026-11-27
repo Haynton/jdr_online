@@ -1,8 +1,10 @@
 # The rules of the game the game master picks for a table (game_tables.rules), among the ways its template offers to
 # play them: the way to get the scores of the abilities (AbilityMethods, character_fields.ability_methods) and the way
 # to get the hit points of the levels after the first (HitPointMethods, character_fields.hit_point_methods), the
-# starting equipment (StartingEquipmentMethods, character_fields.starting_equipment_methods). For each one, a way of
-# the template, or the player's choice (decision: the game master may leave it to each player) where it has one
+# starting equipment (StartingEquipmentMethods, character_fields.starting_equipment_methods), what a character
+# created above level 1 gets more (HigherLevelEquipmentMethods, character_fields.higher_level_equipment_methods). For
+# each one, a way of the template, or the player's choice (decision: the game master may leave it to each player)
+# where it has one
 module TableRules
   extend ActiveSupport::Concern
 
@@ -10,7 +12,8 @@ module TableRules
   PLAYER_CHOICE = "player_choice".freeze
   # Each rule (its key in game_tables.rules) and the list of its ways in the template
   RULE_METHODS = { "ability_method" => "ability_methods", "hit_point_method" => "hit_point_methods",
-                   "starting_equipment_method" => "starting_equipment_methods" }.freeze
+                   "starting_equipment_method" => "starting_equipment_methods",
+                   "higher_level_equipment_method" => "higher_level_equipment_methods" }.freeze
   # The rules the game master may leave to the player. Not the starting equipment: its first way already lets the
   # player pick items or gold
   RULES_WITH_PLAYER_CHOICE = %w[ability_method hit_point_method].freeze
@@ -92,6 +95,22 @@ module TableRules
 
   def hit_point_method_choice=(type)
     pick_rule_method("hit_point_method", type)
+  end
+
+  # What a character created above level 1 gets beside its starting equipment
+  def higher_level_equipment_method_choice
+    rule_choice("higher_level_equipment_method")
+  end
+
+  def higher_level_equipment_method_choice=(type)
+    pick_rule_method("higher_level_equipment_method", type)
+  end
+
+  # The tier of the way picked a level reaches ({ "gold", "gold_roll", "magic_items" }), nil below its first tier or
+  # with the normal equipment only
+  def higher_level_equipment_tier(level)
+    method = rule_method_of("higher_level_equipment_method", higher_level_equipment_method_choice)
+    method && HigherLevelEquipmentMethods.find(method["type"])&.tier_for(method, level)
   end
 
   # The starting equipment

@@ -21,6 +21,15 @@
       { "type": "items_only", "label": "Objets seulement", "help": "Chaque joueur prend les objets proposés par sa classe et son historique." },
       { "type": "gold_only", "label": "Or seulement", "help": "Chaque joueur reçoit des pièces d'or et achète son équipement lui-même." }
     ],
+    "higher_level_equipment_methods": [
+      { "type": "by_level", "label": "Selon le niveau", "help": "De l'or et des objets magiques en plus, selon le niveau : 1 objet commun du niveau 2 au niveau 4 ; 500 po + 1d10 × 25 po, 1 commun et 1 peu commun du niveau 5 au niveau 10 ; 5 000 po + 1d10 × 250 po, 2 communs, 3 peu communs et 1 rare du niveau 11 au niveau 16 ; 20 000 po + 1d10 × 250 po, 2 communs, 4 peu communs, 3 rares et 1 très rare à partir du niveau 17.", "tiers": [
+        { "from_level": 2, "magic_items": { "common": 1 } },
+        { "from_level": 5, "gold": 500, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 25 }, "magic_items": { "common": 1, "uncommon": 1 } },
+        { "from_level": 11, "gold": 5000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 3, "rare": 1 } },
+        { "from_level": 17, "gold": 20000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 4, "rare": 3, "very-rare": 1 } }
+      ] },
+      { "type": "normal_only", "label": "Équipement normal seulement", "help": "Le même équipement de départ qu'au niveau 1, sans or ni objet magique en plus." }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },

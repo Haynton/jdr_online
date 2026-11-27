@@ -7,7 +7,8 @@ module SheetTemplates
   # needs, then the checks of its type (the dice, the values, the points of the scores)
   class RuleMethodsCheck < Check
     RULES = { "ability_methods" => AbilityMethods, "hit_point_methods" => HitPointMethods,
-              "starting_equipment_methods" => StartingEquipmentMethods }.freeze
+              "starting_equipment_methods" => StartingEquipmentMethods,
+              "higher_level_equipment_methods" => HigherLevelEquipmentMethods }.freeze
 
     def call
       RULES.flat_map do |rule, registry|
