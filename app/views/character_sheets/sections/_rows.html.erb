@@ -1,22 +1,39 @@
-<%# Saving throws and skills: one tight row each, in two then three columns. Their help is said once, under the
-    title of the section, rather than under one of the rows. When an option of a list can offer some of them (the
-    skills of a class), how many to pick and how many are ticked, written by character_sheet_controller.js, in the
-    colour of an error past the limit when the table limits the skills (data-limited); then what the server refused %>
-<% sheet_section_helps(fields).each do |help| %>
-  <p class="clear-left mb-3 text-sm text-muted"><%= help %></p>
-<% end %>
-<% if sheet_offered_by_a_choice?(fields, all_fields) %>
-  <p hidden role="status" class="clear-left mb-3 text-sm font-medium text-ink data-invalid:text-error-ink"
-     data-character-sheet-target="skillChoices" <%= "data-limited" if skill_choices_limited?(character) %>
-     data-template="<%= t("game_tables.characters.new.skill_choices", option: "%{option}", count: "%{count}",
-                                                                     chosen: "%{chosen}") %>"></p>
-<% end %>
-<% sheet_rows_errors(character, fields).each do |message| %>
-  <p class="clear-left mb-3 text-sm text-error-ink first-letter:uppercase"><%= message %></p>
-<% end %>
-<div class="clear-left grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
-  <% fields.each do |field| %>
-    <%= render "character_sheets/fields/bonus", character: character, field: field, all_fields: all_fields,
-                                                    value: computed[:values][field["key"]] %>
+<%# Saving throws and skills, as the lines of a character sheet (character_sheets/fields/_bonus): one column, two once
+    the section is wide enough, the lines running down each column. When an option of a list can offer some of them
+    (the skills of a class): how many are picked out of how many, written by character_sheet_controller.js (in the
+    colour of an error past the limit when the table limits the skills, data-limited), the others faded once enough are
+    picked (skill_rows_controller.js), a legend of the diamonds; then the help of the lines, said once, and what the
+    server refused %>
+<% offered = sheet_offered_by_a_choice?(fields, all_fields) %>
+<%= tag.div class: "clear-left @container", data: (skill_rows_data(character) if offered) do %>
+  <% if offered %>
+    <p hidden role="status" class="mb-3 pl-3 text-sm font-semibold text-brass data-invalid:text-error-ink"
+       data-character-sheet-target="skillChoices" data-skill-rows-target="count"
+       <%= "data-limited" if skill_choices_limited?(character) %>
+       data-template="<%= t("game_tables.characters.new.skill_choices", option: "%{option}", count: "%{count}",
+                                                                       chosen: "%{chosen}") %>"></p>
   <% end %>
-</div>
+  <% sheet_section_helps(fields).each do |help| %>
+    <p class="mb-3 pl-3 text-sm text-muted"><%= help %></p>
+  <% end %>
+  <% sheet_rows_errors(character, fields).each do |message| %>
+    <p class="mb-3 pl-3 text-sm text-error-ink first-letter:uppercase"><%= message %></p>
+  <% end %>
+  <div class="grid gap-1 @xl:grid-flow-col @xl:grid-cols-2 @xl:grid-rows-[repeat(var(--skill-rows),auto)] @xl:gap-x-4"
+       style="<%= skill_rows_style(fields) %>">
+    <% fields.each do |field| %>
+      <%= render "character_sheets/fields/bonus", character: character, field: field, all_fields: all_fields,
+                                                      value: computed[:values][field["key"]] %>
+    <% end %>
+  </div>
+  <% if offered %>
+    <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-2 pl-3 text-xs text-muted">
+      <% { offered: "to_pick", picked: "picked", given: "given" }.each do |marker, key| %>
+        <li class="flex items-center gap-2">
+          <span class="<%= skill_legend_marker_classes(marker) %>" aria-hidden="true"></span>
+          <%= t("character_sheets.skill_rows.legend.#{key}") %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

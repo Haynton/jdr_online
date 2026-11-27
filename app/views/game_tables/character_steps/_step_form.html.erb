@@ -25,12 +25,15 @@
     </div>
   <% end %>
 
-  <% sections.each_with_index do |(section, fields), position| %>
-    <%= render "character_sheets/sections/section", section: section, fields: fields, character: character,
-                                                all_fields: character.sheet_fields, computed: computed,
-                                                lead: (name_input if position.zero?),
-                                                page_title: character_step_label(step) %>
-  <% end %>
+  <div class="<%= creation_sections_classes(sections) %>">
+    <% sections.each_with_index do |(section, fields), position| %>
+      <%= render "character_sheets/sections/section", section: section, fields: fields, character: character,
+                                                  all_fields: character.sheet_fields, computed: computed,
+                                                  lead: (name_input if position.zero?),
+                                                  page_title: character_step_label(step),
+                                                  side_by_side: sheet_side_by_side?(sections) %>
+    <% end %>
+  </div>
 
   <%# What the step chooses beside its fields: the starting equipment, the spells (CreationStepBehaviors) %>
   <% step.behaviors.each do |behavior| %>

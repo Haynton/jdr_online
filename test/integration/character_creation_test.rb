@@ -87,9 +87,9 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
                   "character[sheet][class]", "character-sheet#applyEffects" do |selects|
       assert_equal class_effects, JSON.parse(selects.first["data-effects"])
     end
-    assert_select "[data-character-sheet-target=bonusRow][data-key=arcana]", text: /Proposée/
+    assert_select "[data-character-sheet-target=bonusRow][data-key=arcana][data-state=choice]"
     assert_select "p[hidden][role=status][data-character-sheet-target=skillChoices]" do |paragraphs|
-      assert_includes paragraphs.first["data-template"], "choisissez"
+      assert_includes paragraphs.first["data-template"], "choisies"
     end
   end
 

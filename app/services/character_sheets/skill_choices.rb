@@ -76,6 +76,12 @@ module CharacterSheets
       end.join(", ")
     end
 
+    # Every field some option of the template may give without picking (the saving throws of a class)
+    def givable_keys
+      @choice_fields.flat_map { |field| field["effects"].values.flat_map { |effects| effects.to_h["proficient"].to_a } }
+                    .uniq
+    end
+
     # Every skill some option of the template may offer: the fields the limit looks at
     def skill_keys
       @choice_fields.flat_map do |field|

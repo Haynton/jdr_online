@@ -71,12 +71,15 @@ module CharacterSheets
     end
 
     # The hidden "0" first: an unchecked box sends nothing on its own. For a bonus, the box is its proficiency
-    # locked: what an option gives, kept ticked by the table: the box is disabled and the hidden value says « 1 »
-    def sheet_check_box(character, field, data: {}, locked: false)
+    # availability: :locked, what an option gives, kept ticked by the table (the box is disabled and the hidden value
+    # says « 1 »); :unavailable, not for this character (a skill its class does not offer: disabled and unticked)
+    def sheet_check_box(character, field, data: {}, availability: :open, css_class: SimpleFormFieldClasses::CHECKBOX)
+      locked = availability == :locked
+      ticked = locked || (availability == :open && FieldTypes::Bonus.proficient?(character.sheet[field["key"]]))
       hidden_field_tag(sheet_field_name(field), locked ? "1" : "0", id: nil) +
-        check_box_tag(sheet_field_name(field), "1", locked || FieldTypes::Bonus.proficient?(character.sheet[field["key"]]),
+        check_box_tag(sheet_field_name(field), "1", ticked,
                       sheet_control_options(character, field)
-                        .merge(class: SimpleFormFieldClasses::CHECKBOX, data: data, disabled: locked.presence))
+                        .merge(class: css_class, data: data, disabled: availability != :open || nil))
     end
 
     private

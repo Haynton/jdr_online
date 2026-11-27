@@ -72,6 +72,7 @@ export default class extends Controller {
 
     const tickedCount = [...offeredKeys].filter((fieldKey) => this.isTicked(fieldKey)).length
     const allowedCount = offers.reduce((total, { effects }) => total + effects.skill_choices.count, 0)
+    paragraph.dataset.allowed = `${allowedCount}`
     paragraph.textContent = paragraph.dataset.template
       .replace("%{option}", offers.map(({ option }) => option).join(", "))
       .replaceAll("%{count}", allowedCount)

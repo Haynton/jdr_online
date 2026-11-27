@@ -17,6 +17,18 @@ module CharacterSheets
       upcoming: "size-[22px] border-field-line bg-page text-muted"
     }.freeze
 
+    # The sections of a step side by side when it holds only saving throws and skills (decision, prototype "Création
+    # façon jeu"): the saving throws in a narrow column on the left, the skills on the right, as on a character sheet
+    def creation_sections_classes(sections)
+      return "contents" unless sheet_side_by_side?(sections)
+
+      "mx-auto grid w-full max-w-5xl gap-10 lg:grid-cols-[20rem_minmax(0,1fr)]"
+    end
+
+    def sheet_side_by_side?(sections)
+      sections.size == 2 && sections.all? { |_section, fields| sheet_section_layout(fields) == :rows }
+    end
+
     def creation_card_classes(extra = nil)
       [CARD_CLASSES, extra].compact.join(" ")
     end

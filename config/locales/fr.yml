@@ -410,6 +410,11 @@ fr:
       lower: "Baisser un score"
       place_on: "Poser sur %{label}"
       start_again: "Recommencer"
+    skill_rows:
+      legend:
+        to_pick: "À choisir"
+        picked: "Choisie"
+        given: "Acquise"
     ability_methods:
       roll:
         no_rerolls: "Un seul lancer : votre MJ ne permet pas de relancer."
@@ -1783,10 +1788,10 @@ fr:
           one: "Sort de niveau 1 (1)"
           other: "Sorts de niveau 1 (%{count})"
       weapon_mastery_choices:
+        masteries_count:
+          one: "Choisissez %{count} sorte d'arme · %{chosen} sur %{count}"
+          other: "Choisissez %{count} sortes d'armes · %{chosen} sur %{count}"
         masteries: "Maîtrises d'armes"
-        masteries_hint:
-          one: "Cochez %{count} sorte d'arme : sa propriété de maîtrise s'ajoute à vos attaques avec elle."
-          other: "Cochez %{count} sortes d'armes : leur propriété de maîtrise s'ajoute à vos attaques avec elles."
         style: "Style de combat"
         style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
@@ -1898,7 +1903,7 @@ fr:
         roll: "Lancer les dés"
         score_column: "Score"
         scores_title: "Vos scores"
-        skill_choices: "%{option} : choisissez %{count} compétences parmi celles marquées « Proposée ». Cochées : %{chosen} sur %{count}."
+        skill_choices: "%{option} · %{chosen} sur %{count} choisies"
         type_scores: "Tapez vos scores dans les tuiles."
     choice_row:
       filter: "Filtrer par thème"

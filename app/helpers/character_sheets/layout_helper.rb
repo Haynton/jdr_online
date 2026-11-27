@@ -32,6 +32,13 @@ module CharacterSheets
     }.freeze
 
     # The fields by section ("Caractéristiques", "Compétences"...), in the order of the template
+    def sheet_section_legend_classes(layout, repeats_page_title)
+      return "sr-only" if repeats_page_title
+      return "float-left mb-3 w-full pl-3 text-xs font-bold tracking-widest text-muted uppercase" if layout == :rows
+
+      "float-left mb-4 w-full text-lg font-semibold tracking-tight text-ink"
+    end
+
     def sheet_sections(fields)
       fields.group_by { |field| field["section"] }
     end

@@ -1,18 +1,20 @@
 <%# The fighting style and the weapon masteries the class gives at the level of the character (decision of 26 November;
-    CharacterSheets::WeaponMasteries), at the step of the skills: the styles as cards to pick one (its rule under its
-    name), then the kinds of weapons as cards to tick, as many as the class gives, each with its mastery property (in
-    brass) and its rule. Sent as character[fighting_style] and character[weapon_mastery_keys][] (an empty value first:
-    every box may be unticked), kept by CreationStepBehaviors::ChoosesWeaponMasteries, checked by the server
+    CharacterSheets::WeaponMasteries), at the step of the skills, in the column of the sheet: the styles as cards to pick
+    one (its rule under its name), then the kinds of weapons to tick, as many as the class gives, grouped by the mastery
+    property they give (in brass, its rule said once: weapon_kinds_by_mastery). The box hidden in each card, a diamond
+    in its place, as on the lines of the skills. Sent as character[fighting_style] and character[weapon_mastery_keys][] (an empty value first: every box may
+    be unticked), kept by CreationStepBehaviors::ChoosesWeaponMasteries, checked by the server
     (CharacterWeaponMasteriesValidator: its errors above the choices). Nothing for a class without either %>
 <% choices = character.weapon_mastery_choices %>
 <% if choices.offered? %>
   <% styles = choices.offered_styles %>
   <% count = choices.allowed_count %>
-  <div class="<%= local_assigns[:after_sections] ? "mt-10" : "mt-2" %> flex flex-col gap-10">
+  <% scope = CharacterSheets::WeaponMasteryChoicesHelper::SCOPE %>
+  <div class="<%= "mt-12" if local_assigns[:after_sections] %> mx-auto flex w-full max-w-6xl flex-col gap-10">
     <% if styles.any? %>
       <fieldset class="min-w-0">
-        <legend class="float-left w-full text-lg leading-7 font-bold text-ink"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.style") %></legend>
-        <p class="clear-left pt-1 text-sm text-muted"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.style_hint") %></p>
+        <legend class="<%= CharacterSheets::WeaponMasteryChoicesHelper::TITLE_CLASSES %>"><%= t("#{scope}.style") %></legend>
+        <p class="clear-left pt-2 text-sm text-muted"><%= t("#{scope}.style_hint") %></p>
         <% character.errors.full_messages_for(:fighting_style).each do |message| %>
           <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
         <% end %>
@@ -20,7 +22,8 @@
           <% styles.each do |style| %>
             <label class="<%= weapon_mastery_card_classes %>">
               <%= radio_button_tag "character[fighting_style]", style.key, character.fighting_style == style.key,
-                                   id: "fighting-style-#{style.key}", class: "mt-1 shrink-0 accent-current" %>
+                                   id: "fighting-style-#{style.key}", class: "peer sr-only" %>
+              <span class="<%= CharacterSheets::WeaponMasteryChoicesHelper::MARKER_CLASSES %>" aria-hidden="true"></span>
               <span class="min-w-0">
                 <span class="block text-sm font-semibold text-ink"><%= style.label %></span>
                 <span class="mt-0.5 block text-xs text-muted"><%= style.help %></span>
@@ -31,27 +34,45 @@
       </fieldset>
     <% end %>
     <% if count.positive? %>
-      <fieldset class="min-w-0">
-        <legend class="float-left w-full text-lg leading-7 font-bold text-ink"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.masteries") %></legend>
-        <p class="clear-left pt-1 text-sm text-muted"><%= t("#{CharacterSheets::WeaponMasteryChoicesHelper::SCOPE}.masteries_hint", count: count) %></p>
+      <% chosen = character.weapon_masteries.to_a.size %>
+      <%= tag.fieldset class: "min-w-0", data: { controller: "pick-limit", action: "change->pick-limit#count",
+                                                 pick_limit_allowed_value: count,
+                                                 pick_limit_template_value: t("#{scope}.masteries_count", count: count,
+                                                                                                         chosen: "__CHOSEN__") } do %>
+        <%# Alone on the page, the title repeats the one of the step (« Armes »): kept for screen readers only %>
+        <legend class="<%= styles.any? ? CharacterSheets::WeaponMasteryChoicesHelper::TITLE_CLASSES : "sr-only" %>"><%= t("#{scope}.masteries") %></legend>
+        <p class="<%= "pt-2" if styles.any? %> clear-left text-sm font-semibold text-brass data-invalid:text-error-ink" role="status"
+           data-pick-limit-target="count"><%= t("#{scope}.masteries_count", count: count, chosen: chosen) %></p>
         <% character.errors.full_messages_for(:weapon_masteries).each do |message| %>
           <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
         <% end %>
         <%= hidden_field_tag "character[weapon_mastery_keys][]", "", id: nil %>
-        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <% choices.offered_kinds.each do |kind| %>
-            <label class="<%= weapon_mastery_card_classes %>">
-              <%= check_box_tag "character[weapon_mastery_keys][]", kind.key, character.weapon_masteries.to_a.include?(kind.key),
-                                id: "weapon-mastery-#{kind.key}", class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
-              <span class="min-w-0">
-                <span class="block text-sm font-semibold text-ink"><%= kind.label %>
-                  <% if kind.mastery %><span class="font-medium text-brass">· <%= kind.mastery %></span><% end %></span>
-                <% if kind.rule %><span class="mt-0.5 block text-xs text-muted"><%= kind.rule %></span><% end %>
-              </span>
-            </label>
+        <%# In columns that flow (decision: in a grid, a short group left a hole under it, beside a long one) %>
+        <div class="mt-3 gap-x-10 lg:columns-2 xl:columns-3">
+          <% weapon_kinds_by_mastery(choices.offered_kinds).each do |mastery, rule, kinds| %>
+            <div class="mb-4 min-w-0 break-inside-avoid">
+              <% if mastery %>
+                <p class="text-sm font-semibold text-brass"><%= mastery %></p>
+              <% end %>
+              <% if rule %>
+                <p class="mt-0.5 text-xs leading-snug text-muted"><%= rule %></p>
+              <% end %>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                <% kinds.each do |kind| %>
+                  <label class="<%= CharacterSheets::WeaponMasteryChoicesHelper::CHIP_CLASSES %>">
+                    <%= check_box_tag "character[weapon_mastery_keys][]", kind.key,
+                                      character.weapon_masteries.to_a.include?(kind.key),
+                                      id: "weapon-mastery-#{kind.key}", class: "peer sr-only",
+                                      data: { pick_limit_target: "box" } %>
+                    <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-brass group-has-checked/pick:bg-brass" aria-hidden="true"></span>
+                    <%= kind.label %>
+                  </label>
+                <% end %>
+              </div>
+            </div>
           <% end %>
         </div>
-      </fieldset>
+      <% end %>
     <% end %>
   </div>
 <% end %>

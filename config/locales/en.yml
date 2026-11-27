@@ -439,6 +439,11 @@ en:
       lower: "Lower a score"
       place_on: "Place on %{label}"
       start_again: "Start again"
+    skill_rows:
+      legend:
+        to_pick: "To pick"
+        picked: "Picked"
+        given: "Given"
     ability_methods:
       roll:
         no_rerolls: "One roll only: your game master does not allow rolling again."
@@ -1812,10 +1817,10 @@ en:
           one: "Level 1 spell (1)"
           other: "Level 1 spells (%{count})"
       weapon_mastery_choices:
+        masteries_count:
+          one: "Pick %{count} kind of weapon · %{chosen} of %{count}"
+          other: "Pick %{count} kinds of weapons · %{chosen} of %{count}"
         masteries: "Weapon masteries"
-        masteries_hint:
-          one: "Tick %{count} kind of weapon: its mastery property adds to your attacks with it."
-          other: "Tick %{count} kinds of weapons: their mastery property adds to your attacks with them."
         style: "Fighting style"
         style_hint: "Pick a style: it applies to all your attacks or to your defense."
       band_label: "Steps of your character"
@@ -1927,7 +1932,7 @@ en:
         roll: "Roll the dice"
         score_column: "Score"
         scores_title: "Your scores"
-        skill_choices: "%{option}: choose %{count} skills among those marked “Suggested”. Ticked: %{chosen} of %{count}."
+        skill_choices: "%{option} · %{chosen} of %{count} picked"
         type_scores: "Type your scores in the tiles."
     choice_row:
       filter: "Filter by theme"

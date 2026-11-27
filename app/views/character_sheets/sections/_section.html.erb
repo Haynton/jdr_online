@@ -5,11 +5,12 @@
     (sheet_lead_in_lists_column?).
     The legend floats, so that it sits in the section and not in the border of the fieldset (see the choice rows).
     page_title: optional, the title of the page; a section of the same name keeps its title for screen readers only
-    ("Personnage" twice, decision) %>
+    ("Personnage" twice, decision). side_by_side: the sections of the step stand in columns, no space above.
+    The saving throws and the skills are titled in small capitals, as on a character sheet %>
 <% layout = sheet_section_layout(fields) %>
 <% repeats_page_title = section == local_assigns[:page_title] %>
-<fieldset class="mt-10 min-w-0 first-of-type:mt-0">
-  <legend class="<%= repeats_page_title ? "sr-only" : "float-left mb-4 w-full text-lg font-semibold tracking-tight text-ink" %>"><%= section %></legend>
+<fieldset class="<%= local_assigns[:side_by_side] ? "min-w-0" : "mt-10 min-w-0 first-of-type:mt-0" %>">
+  <legend class="<%= sheet_section_legend_classes(layout, repeats_page_title) %>"><%= section %></legend>
   <% if local_assigns[:lead] && %i[two_columns described_choices].exclude?(layout) && !sheet_lead_in_lists_column?(fields) %>
     <div class="clear-left max-w-sm"><%= lead %></div>
   <% end %>
