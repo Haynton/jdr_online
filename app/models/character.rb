@@ -39,10 +39,7 @@ class Character < ApplicationRecord
 
   # A player character is made in steps, saved as a draft after each one (CharacterCreationSteps), and complete
   # once the player confirms the summary
-  enum :status, {
-    draft: "draft",
-    complete: "complete"
-  }
+  enum :status, { draft: "draft", complete: "complete" }
 
   # The kinds of the characters of the game master (step "NPCs and enemies")
   GAME_MASTER_KINDS = %w[npc monster companion].freeze

@@ -26,7 +26,7 @@ module GameTables
       field, amount = book.copy_cost(spell)
       return refuse if field && @character.change_money(field, -amount)
 
-      @character.spellbook = @character.spellbook.to_a + book.copies_of([spell.key])
+      @character.spellbook = @character.spellbook.to_a + [book.found_copy_of(spell.key)]
       @character.save!(validate: false)
       record(spell, field, amount)
       render turbo_stream: turbo_stream.refresh(request_id: nil)
