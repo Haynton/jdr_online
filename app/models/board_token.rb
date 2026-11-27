@@ -17,7 +17,7 @@ class BoardToken < ApplicationRecord
 
   before_create :take_placement, unless: -> { character.pc? }
   before_create :keep_one_token_of_a_player_character
-  before_save :take_number_when_first_shown
+  before_save :take_number_when_first_shown, unless: -> { character.pc? }
 
   def self.hidden_at_first?(character)
     !character.pc?

@@ -110,6 +110,21 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_not_includes removed.first.to_html, "/rails/active_storage/"
   end
 
+  test "a player character put, removed then put again keeps its name alone, never « Aria 2 »" do
+    sign_in @game_master
+
+    post game_table_board_tokens_path(@game_table), params: { character_id: @aria.id, column: 2, row: 2 }
+    delete game_table_board_token_path(@game_table, @tavern.board_tokens.sole)
+    players_broadcasts = capture_turbo_stream_broadcasts(@game_table) do
+      post game_table_board_tokens_path(@game_table), params: { character_id: @aria.id, column: 3, row: 2 }
+    end
+
+    assert_response :ok
+    assert_nil @tavern.board_tokens.sole.number
+    shown_tokens = JSON.parse(players_broadcasts.first.at_css("[data-tokens]")["data-tokens"])
+    assert_equal([["Aria", nil]], shown_tokens.map { |token| token.values_at("name", "number") })
+  end
+
   test "a player character still in creation cannot be put on the board" do
     newcomer = create_user("nouveau")
     draft = @game_table.participations.create!(user: newcomer, role: :player)
