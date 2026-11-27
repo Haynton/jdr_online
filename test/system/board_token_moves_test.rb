@@ -68,6 +68,38 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
     wait_for_token_at(4, 1)
   end
 
+  test "Escape, or the token moved by someone else meanwhile, ends a drag and puts the token back" do
+    open_room_as("joueur")
+
+    press_and_move(from: [1, 1], to: [3, 1])
+    find("body").send_keys(:escape)
+    assert_no_selector "[data-room-board-target=moveBubble]"
+    assert_no_selector "[data-drag-ghost]", visible: :all
+    release_pointer
+    assert_equal [1, 1], @aria_token.reload.values_at(:column, :row)
+
+    press_and_move(from: [1, 1], to: [3, 1])
+    assert_selector "[data-drag-ghost]", visible: :all
+    @aria_token.update!(column: 0, row: 0)
+    BoardTokensSender.new(@game_table).call([@aria_token.character])
+    assert_no_selector "[data-drag-ghost]", visible: :all
+    release_pointer
+    assert_equal [0, 0], @aria_token.reload.values_at(:column, :row)
+  end
+
+  test "the ghost of a token with a picture clips it with an id of its own" do
+    picture = file_fixture("map.png").open
+    @aria_token.character.avatar.attach(io: picture, filename: "aria.png", content_type: "image/png")
+    open_room_as("joueur")
+
+    press_and_move(from: [1, 1], to: [3, 1])
+    assert_selector "[data-drag-ghost] clipPath", visible: :all
+    clip_ids = page.evaluate_script("Array.from(document.querySelectorAll('clipPath')).map((clip) => clip.id)")
+    assert_equal 2, clip_ids.uniq.size
+    assert_equal clip_ids.uniq, clip_ids
+    release_pointer
+  end
+
   private
 
   # A room of 10 × 10, a stone wall down column 5 but on its last row

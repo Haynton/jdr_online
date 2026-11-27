@@ -9,19 +9,13 @@
 #
 # The walls, low walls and doors put by hand, the water, the objects are all crossed. A door put in the wall of a
 # floor is its way in. On a map played on a picture, only the cells painted are blocked. Cells counted from 0.
-#
-# The moves of a player's token (decision of 27 November), one step to one of the eight cells around: never into a
-# blocked cell nor across a blocked side; a diagonal step costs 1 when both ways around its corner are free, 2 when it
-# goes around the corner of a wall (only one of them free), and is refused when neither is. Twin of
-# map_editor/board_moves.js: changing one is changing the other
+# Its moves step by step: MapPassage::Steps
 class MapPassage
   DOOR = "door".freeze
   # The four neighbours of a cell
   NEIGHBOUR_OFFSETS = [[1, 0], [-1, 0], [0, 1], [0, -1]].freeze
-  # The eight cells around a cell, for a move
-  STEP_OFFSETS = [-1, 0, 1].product([-1, 0, 1]) - [[0, 0]]
-  # The cost of a diagonal step, by how many ways around its corner are free
-  DIAGONAL_COSTS = { 2 => 1, 1 => 2 }.freeze
+
+  include Steps
 
   def initialize(map)
     @layout = map.layout.to_h
@@ -42,69 +36,7 @@ class MapPassage
     floors.flat_map { |cell_key, floor| blocked_sides_of(cell_position(cell_key), floor) }.uniq.sort
   end
 
-  # The cost of one step to a neighbouring cell, nil when it is refused
-  def step_cost(from, to)
-    return if blocked_cell?(to)
-    return (side_open?(from, to) ? 1 : nil) if from[0] == to[0] || from[1] == to[1]
-
-    corners = [[to[0], from[1]], [from[0], to[1]]]
-    DIAGONAL_COSTS[corners.count { |corner| way_around_open?(from, corner, to) }]
-  end
-
-  # The cost of the cheapest way from a cell to another, step by step (each cost is a whole number: the cells are taken
-  # by increasing cost, Dial's algorithm), nil when no way leads there
-  def path_cost(from, to)
-    best_costs = { from => 0 }
-    cells_by_cost = [[from]]
-    cells_by_cost.each_with_index do |cells, cost|
-      Array(cells).each do |cell|
-        return cost if cell == to
-
-        reach_neighbours(cell, cost, best_costs, cells_by_cost) if best_costs[cell] == cost
-      end
-    end
-    nil
-  end
-
   private
-
-  def reach_neighbours(cell, cost, best_costs, cells_by_cost)
-    steps_from(cell).each do |neighbour, step|
-      reached = cost + step
-      next if best_costs.fetch(neighbour, Float::INFINITY) <= reached
-
-      best_costs[neighbour] = reached
-      (cells_by_cost[reached] ||= []) << neighbour
-    end
-  end
-
-  def steps_from((column, row))
-    STEP_OFFSETS.filter_map do |column_offset, row_offset|
-      neighbour = [column + column_offset, row + row_offset]
-      next unless inside?(neighbour)
-
-      cost = step_cost([column, row], neighbour)
-      [neighbour, cost] if cost
-    end
-  end
-
-  def way_around_open?(from, corner, to)
-    !blocked_cell?(corner) && side_open?(from, corner) && side_open?(corner, to)
-  end
-
-  def blocked_cell?(cell)
-    @blocked_cell_set ||= blocked_cells.to_set
-    @blocked_cell_set.include?(cell)
-  end
-
-  def side_open?(cell, neighbour)
-    @blocked_side_set ||= blocked_sides.to_set
-    !@blocked_side_set.include?([cell, neighbour].map { |position| position.join(",") }.sort.join("|"))
-  end
-
-  def inside?((column, row))
-    column.between?(0, @columns - 1) && row.between?(0, @rows - 1)
-  end
 
   def on_picture?
     @layout["mode"] == "picture"

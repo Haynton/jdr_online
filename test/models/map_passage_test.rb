@@ -51,6 +51,17 @@ class MapPassageTest < ActiveSupport::TestCase
     assert_nil two_walls.step_cost([0, 0], [1, 1])
   end
 
+  test "the cells of the cheapest way, from the start to the arrival" do
+    floors = room_floors(5, 3, walled: { "2,0" => "stone", "2,1" => "stone" })
+    passage = passage_of(floors:, size: [5, 3])
+
+    way = passage.path([0, 0], [4, 0])
+    assert_equal [[0, 0], [4, 0]], [way.first, way.last]
+    assert_includes way, [2, 2]
+    assert_equal [[1, 1]], passage.path([1, 1], [1, 1])
+    assert_nil passage.path([0, 0], [2, 0])
+  end
+
   test "the cheapest way goes around a wall; none leads into a walled room" do
     floors = room_floors(5, 3, walled: { "2,0" => "stone", "2,1" => "stone" })
     around = passage_of(floors:, size: [5, 3])

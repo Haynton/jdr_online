@@ -30,6 +30,17 @@ export default class extends Controller {
     this.closeTokenMenu()
     this.drawTokens()
     this.creaturePlacerTargets.forEach((button) => this.showCreaturePlacer(button))
+    this.followTheDragAfterDrawing()
+  }
+
+  // The tokens drawn again during a drag (a message of the table): the drag goes on, unless someone else moved or took
+  // away the token dragged
+  followTheDragAfterDrawing() {
+    const drag = this.tokenDrag
+    if (!drag?.started) return
+
+    const now = this.tokenData(String(drag.token.id))
+    now && sameCell([now.column, now.row], drag.start) ? this.showDraggedToken(drag) : this.cancelTokenDrag()
   }
 
   creaturePlacerTargetConnected(button) {
@@ -109,6 +120,7 @@ export default class extends Controller {
     if (document.querySelector("dialog[open]")) return
 
     this.closeTokenMenu()
+    this.cancelTokenDrag()
     if (this.creature) this.dropCreature()
   }
 
@@ -252,6 +264,7 @@ export default class extends Controller {
     ghost.setAttribute("data-drag-ghost", "")
     ghost.setAttribute("opacity", ghostOpacity)
     ghost.setAttribute("pointer-events", "none")
+    giveOwnClipIds(ghost)
     tokenGroup.before(ghost)
   }
 
@@ -375,6 +388,17 @@ export default class extends Controller {
 
     Turbo.renderStreamMessage(await response.text())
   }
+}
+
+// A copy of a token keeps the clip of its picture: its own id, an id being unique in the page
+function giveOwnClipIds(copy) {
+  copy.querySelectorAll("clipPath").forEach((clip) => {
+    const ownId = `${clip.id}-ghost`
+    copy.querySelectorAll(`[clip-path="url(#${clip.id})"]`).forEach((clipped) => {
+      clipped.setAttribute("clip-path", `url(#${ownId})`)
+    })
+    clip.id = ownId
+  })
 }
 
 function turboStreamHeaders() {

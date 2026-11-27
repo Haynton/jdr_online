@@ -35,15 +35,29 @@ class BoardTokenMovesTest < ActionDispatch::IntegrationTest
     assert_equal 1, game_master_broadcasts.size
   end
 
-  test "a player never reaches a cell walled off, a blocked cell, a token's cell nor a cell outside the grid" do
-    @tavern.board_tokens.create!(character: @goblin, column: 3, row: 1)
+  test "a player never reaches a cell walled off, a blocked cell nor a cell outside the grid" do
     sign_in @player
 
-    [[8, 1], [2, 2], [3, 1], [10, 1], ["deux", 1]].each do |column, row|
+    [[8, 1], [2, 2], [10, 1], ["deux", 1]].each do |column, row|
       patch game_table_board_token_move_path(@game_table, @aria_token), params: { column:, row: }
       assert_response :unprocessable_content, [column, row].inspect
     end
     assert_equal [1, 1], @aria_token.reload.values_at(:column, :row)
+  end
+
+  test "dropped on a hidden enemy, a player's token stops on the last free cell of its way, without telling why" do
+    @tavern.board_tokens.create!(character: @goblin, column: 4, row: 1, hidden: true)
+    sign_in @player
+
+    players_broadcasts = capture_turbo_stream_broadcasts(@game_table) do
+      patch game_table_board_token_move_path(@game_table, @aria_token), params: { column: 4, row: 1 }
+    end
+
+    assert_response :ok
+    assert_equal [3, 1], @aria_token.reload.values_at(:column, :row)
+    assert_select "turbo-stream[action=replace][target=game-room-board-tokens-player]"
+    assert_select "turbo-stream[action=replace][target=game-room-board-own-tokens]"
+    assert_not_includes players_broadcasts.first.to_html, "Gobelin"
   end
 
   test "a player moves the companions of their character, never another token" do

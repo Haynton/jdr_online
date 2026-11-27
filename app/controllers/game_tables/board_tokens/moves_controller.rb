@@ -1,8 +1,9 @@
 # A token dragged to another cell of the board (decision of 27 November): the game master moves any token, anywhere
 # but on another token; a player only the token of their own character and those of its companions, and only where a
-# way leads (BoardToken#reachable_by_a_player?). Only a person accepted at the table; a token they may not move is a
-# 404, a cell refused a 422. The players see the new place at once (BoardTokensSender), and so does the game master
-# when a player moved: the page of the game master follows only its own clicks otherwise
+# way leads, stopping before a token they cannot see (BoardToken#arrival_for_a_player). Only a person accepted at the
+# table; a token they may not move is a 404, a cell refused a 422. The one who moved gets the tokens drawn again at
+# once (a player's may have stopped short of the cell dropped on); the players see the new place (BoardTokensSender),
+# and so does the game master when a player moved: the page of the game master follows only its own clicks otherwise
 module GameTables
   module BoardTokens
     class MovesController < ApplicationController
@@ -15,7 +16,7 @@ module GameTables
         return head :unprocessable_content unless column && row && move_to(column, row)
 
         send_the_new_place
-        @participation.game_master? ? render("game_tables/board_tokens/show", formats: :turbo_stream) : head(:ok)
+        render(@participation.game_master? ? "game_tables/board_tokens/show" : "update", formats: :turbo_stream)
       end
 
       private
@@ -29,9 +30,10 @@ module GameTables
       end
 
       def move_to(column, row)
-        return false unless @participation.game_master? || @token.reachable_by_a_player?(column, row)
+        arrival = @participation.game_master? ? [column, row] : @token.arrival_for_a_player(column, row)
+        return false unless arrival
 
-        @token.assign_attributes(column:, row:)
+        @token.assign_attributes(column: arrival.first, row: arrival.last)
         @token.save_on_its_cell
       end
 
