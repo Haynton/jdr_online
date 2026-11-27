@@ -20,6 +20,14 @@ class CombatStripTest < ActiveSupport::TestCase
     @strip = CombatStrip.new(GameRoom.new(@game_table.participations.find_by(role: :game_master)))
   end
 
+  test "a player character on the board is a fighter once, as a player" do
+    aria = player_character("Aria")
+    @game_table.board_game_map.board_tokens.create!(character: aria, column: 5, row: 5, hidden: false)
+
+    fighters = CombatStrip.new(GameRoom.new(@game_table.participations.find_by(role: :game_master))).groups
+    assert_equal({ player: 1, enemy: 2 }, fighters.map(&:side).tally)
+  end
+
   test "two enemies of the same kind keep their own roll" do
     roll_initiative(@second_goblin, 18)
     roll_initiative(@first_goblin, 3)
@@ -42,6 +50,12 @@ class CombatStripTest < ActiveSupport::TestCase
   end
 
   private
+
+  def player_character(name, status: :complete)
+    player = User.create!(email: "#{name.downcase}@example.com", username: name.downcase, password: TEST_PASSWORD)
+    participation = @game_table.participations.create!(user: player, role: :player)
+    participation.create_character!(game_table: @game_table, kind: :pc, status:, name:)
+  end
 
   def roll_initiative(character, total)
     ChatMessage.record_event(@game_table, :initiative_rolled, label: "Initiative", character: character.name,

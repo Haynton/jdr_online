@@ -99,17 +99,28 @@ class BoardTokenTest < ActiveSupport::TestCase
     end
   end
 
-  test "a character of a player or of another table is refused" do
+  test "a player character still in creation, or a character of another table, is refused" do
     other_table = GameTableCreator.new(user: User.first, attributes: { name: "Ailleurs" },
                                        sheet_template: SheetTemplate.create!(name: "Autre", locale: "fr")).call
-    strangers = [@game_table.characters.build(kind: :pc, name: "Aria"),
+    strangers = [player_character("Aria", status: :draft),
                  other_table.characters.create!(kind: :monster, name: "Loup")]
 
     strangers.each do |stranger|
       token = @tavern.board_tokens.build(character: stranger, column: 1, row: 1)
 
-      assert token.tap(&:validate).errors.of_kind?(:character, :not_a_creature_of_the_table), stranger.name
+      assert token.tap(&:validate).errors.of_kind?(:character, :not_a_character_of_the_table), stranger.name
     end
+  end
+
+  test "a complete player character has one token on a map, shown to the players at first" do
+    aria = player_character("Aria")
+    @tavern.board_tokens.create!(character: aria, column: 1, row: 1, hidden: BoardToken.hidden_at_first?(aria))
+
+    second = BoardToken.new(game_map: @tavern, character: aria, column: 2, row: 1)
+    assert_not second.save
+    assert second.errors.of_kind?(:character, :already_on_the_map)
+    assert_equal [false], @tavern.board_tokens.reload.map(&:hidden)
+    assert BoardToken.hidden_at_first?(@goblin)
   end
 
   test "the tokens go with their map and with their character" do
@@ -122,5 +133,13 @@ class BoardTokenTest < ActiveSupport::TestCase
 
     @tavern.destroy!
     assert_equal 0, BoardToken.count
+  end
+
+  private
+
+  def player_character(name, status: :complete)
+    player = User.create!(email: "#{name.downcase}@example.com", username: name.downcase, password: TEST_PASSWORD)
+    participation = @game_table.participations.create!(user: player, role: :player)
+    participation.create_character!(game_table: @game_table, kind: :pc, status:, name:)
   end
 end

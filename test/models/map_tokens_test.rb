@@ -42,6 +42,20 @@ class MapTokensTest < ActiveSupport::TestCase
     assert_equal [false, true, true], game_map.placed_tokens.pluck(:hidden)
   end
 
+  test "a complete player character stands on a map once, shown at first; one still in creation is refused" do
+    aria = player_character("Aria")
+    draft = player_character("Brouillon", status: :draft)
+    game_map = map_with(tokens: [token(aria, 1, 1), token(@goblin, 2, 1)])
+
+    assert game_map.valid?, game_map.errors.full_messages.to_sentence
+    assert_equal [false, true], game_map.placed_tokens.pluck(:hidden)
+    refused = { [token(aria, 1, 1), token(aria, 2, 1)] => :player_character_twice,
+                [token(draft, 1, 1)] => :unknown_token_character }
+    refused.each do |tokens, error|
+      assert map_with(tokens:).tap(&:validate).errors.of_kind?(:layout, error), error
+    end
+  end
+
   test "a token hidden by something else than true or false, or with an unknown key, is refused" do
     [token(@goblin, 1, 1).merge("hidden" => "oui"), token(@goblin, 1, 1).merge("hidden" => nil),
      token(@goblin, 1, 1).merge("conditions" => [])].each do |refused_token|
@@ -73,6 +87,12 @@ class MapTokensTest < ActiveSupport::TestCase
   end
 
   private
+
+  def player_character(name, status: :complete)
+    player = User.create!(email: "#{name.downcase}@example.com", username: name.downcase, password: TEST_PASSWORD)
+    participation = @game_table.participations.create!(user: player, role: :player)
+    participation.create_character!(game_table: @game_table, kind: :pc, status:, name:)
+  end
 
   def map_with(tokens:)
     @game_table.game_maps.build(name: "Taverne", columns: 10, rows: 10,

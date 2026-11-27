@@ -62,12 +62,12 @@ class GameMap < ApplicationRecord
   # map (« Gobelin 2 »), in the order they were put; hidden from the players unless the game master shows it
   def placed_tokens
     tokens = layout.to_h.fetch("tokens", [])
-    characters = game_table.npcs.where(id: tokens.pluck("character_id")).index_by(&:id)
+    characters = game_table.characters.placeable_on_the_board.where(id: tokens.pluck("character_id")).index_by(&:id)
     numbers = Hash.new(0)
     tokens.map do |token|
       character = characters.fetch(token["character_id"])
       { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1,
-        hidden: token.fetch("hidden", true) }
+        hidden: token.fetch("hidden") { BoardToken.hidden_at_first?(character) } }
     end
   end
 

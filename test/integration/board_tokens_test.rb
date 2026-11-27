@@ -12,7 +12,7 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
                                     template_snapshot: sheet_template.snapshot)
     @game_table.participations.create!(user: @game_master, role: :game_master)
     participation = @game_table.participations.create!(user: @player, role: :player)
-    participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Aria")
+    @aria = participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Aria")
     @goblin = @game_table.characters.create!(kind: :monster, name: "Gobelin", visible_to_players: false)
     @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
                                             layout: MapTemplate::BLANK_LAYOUT.merge("floors" => room_floors))
@@ -33,6 +33,43 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Gobelin"
     assert_equal 1, players_broadcasts.size
     assert_not_includes players_broadcasts.first.to_html, "Gobelin"
+  end
+
+  test "the game master puts a player character, shown at once, and only once on the map" do
+    sign_in @game_master
+
+    players_broadcasts = capture_turbo_stream_broadcasts(@game_table) do
+      post game_table_board_tokens_path(@game_table), params: { character_id: @aria.id, column: 2, row: 2 }
+    end
+    assert_response :ok
+    assert_not @tavern.board_tokens.sole.hidden?
+    assert_includes players_broadcasts.first.to_html, "Aria"
+
+    post game_table_board_tokens_path(@game_table), params: { character_id: @aria.id, column: 3, row: 2 }
+    assert_response :unprocessable_content
+    assert_equal 1, @tavern.board_tokens.count
+  end
+
+  test "a player character still in creation cannot be put on the board" do
+    newcomer = create_user("nouveau")
+    draft = @game_table.participations.create!(user: newcomer, role: :player)
+                       .create_character!(game_table: @game_table, kind: :pc, status: :draft, name: "Brouillon")
+    sign_in @game_master
+
+    post game_table_board_tokens_path(@game_table), params: { character_id: draft.id, column: 2, row: 2 }
+
+    assert_response :not_found
+  end
+
+  test "a player removed from the table: their token leaves the board of the others at once" do
+    @tavern.board_tokens.create!(character: @aria, column: 2, row: 2, hidden: false)
+
+    players_broadcasts = capture_turbo_stream_broadcasts(@game_table) do
+      @game_table.participations.find_by!(user: @player).destroy!
+    end
+
+    assert_empty @tavern.board_tokens.reload
+    assert_equal 1, players_broadcasts.size
   end
 
   test "shown to the players, the creature goes live to them; hidden again, it leaves them" do

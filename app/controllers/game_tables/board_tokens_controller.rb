@@ -6,8 +6,9 @@ module GameTables
     before_action :set_board_map
 
     def create
-      creature = @game_table.npcs.find(params.require(:character_id))
-      token = @board_map.board_tokens.build(character: creature, column: params[:column], row: params[:row])
+      character = @game_table.characters.placeable_on_the_board.find(params.require(:character_id))
+      token = @board_map.board_tokens.build(character:, column: params[:column], row: params[:row],
+                                            hidden: BoardToken.hidden_at_first?(character))
       return head :unprocessable_content unless token.save_on_its_cell
 
       answer_with_the_tokens

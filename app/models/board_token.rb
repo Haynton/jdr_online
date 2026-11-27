@@ -12,10 +12,15 @@ class BoardToken < ApplicationRecord
   validate :cell_inside_the_grid
   validate :cell_free
   validate :cell_not_blocked, on: :create
-  validate :creature_of_the_table
+  validate :character_of_the_table
 
   before_create :take_placement
+  before_create :keep_one_token_of_a_player_character
   before_save :take_number_when_first_shown
+
+  def self.hidden_at_first?(character)
+    !character.pc?
+  end
 
   def letter
     remaining = placement
@@ -48,6 +53,13 @@ class BoardToken < ApplicationRecord
     self.placement = game_map.take_token_placement
   end
 
+  def keep_one_token_of_a_player_character
+    return unless character.pc? && game_map.board_tokens.exists?(character:)
+
+    errors.add(:character, :already_on_the_map)
+    throw :abort
+  end
+
   def take_number_when_first_shown
     return if hidden? || number
 
@@ -74,10 +86,10 @@ class BoardToken < ApplicationRecord
     errors.add(:base, :outside_grid)
   end
 
-  def creature_of_the_table
+  def character_of_the_table
     return unless game_map && character
-    return if character.game_table_id == game_map.game_table_id && character.kind.in?(Character::GAME_MASTER_KINDS)
+    return if character.game_table_id == game_map.game_table_id && character.placeable_on_the_board?
 
-    errors.add(:character, :not_a_creature_of_the_table)
+    errors.add(:character, :not_a_character_of_the_table)
   end
 end

@@ -147,7 +147,8 @@ en:
               cell_taken: "A token is already on this cell"
               outside_grid: "The token must be on a cell of the map"
             character:
-              not_a_creature_of_the_table: "must be a non-player character or an enemy of this table"
+              not_a_character_of_the_table: "must be a non-player character, an enemy or a complete character of this table"
+              already_on_the_map: "already has its token on this map"
         friendship:
           attributes:
             addressee:
@@ -178,9 +179,10 @@ en:
               invalid_blocked: "holds blocked zones in an unexpected form"
               tokens_without_table: "holds tokens, though it belongs to no table"
               invalid_token: "holds a token in an unexpected form"
-              unknown_token_character: "holds the token of a character who is not a non-player character or an enemy of the table"
+              unknown_token_character: "holds the token of a character who is neither a non-player character, an enemy nor a complete character of the table"
               token_outside_grid: "holds a token outside the grid"
               tokens_overlap: "holds two tokens on the same cell"
+              player_character_twice: "holds two tokens of the same player character"
               token_on_blocked_cell: "holds a token on a blocked zone"
         game_map:
           attributes:

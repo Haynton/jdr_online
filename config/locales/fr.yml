@@ -118,7 +118,8 @@ fr:
               cell_taken: "Un jeton est déjà sur cette case"
               outside_grid: "Le jeton doit être sur une case de la carte"
             character:
-              not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
+              not_a_character_of_the_table: "doit être un PNJ, un ennemi ou un personnage terminé de cette table"
+              already_on_the_map: "a déjà son jeton sur cette carte"
         friendship:
           attributes:
             addressee:
@@ -149,9 +150,10 @@ fr:
               invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
               tokens_without_table: "contient des jetons, alors qu'elle n'appartient à aucune table"
               invalid_token: "contient un jeton qui n'a pas la forme attendue"
-              unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
+              unknown_token_character: "contient le jeton d'un personnage qui n'est ni un PNJ, ni un ennemi, ni un personnage terminé de la table"
               token_outside_grid: "contient un jeton hors de la grille"
               tokens_overlap: "contient deux jetons sur la même case"
+              player_character_twice: "contient deux jetons du même personnage de joueur"
               token_on_blocked_cell: "contient un jeton sur une zone bloquante"
         game_map:
           attributes:
