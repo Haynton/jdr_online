@@ -46,6 +46,17 @@ module TableRules
 
   # The scores of the abilities. A table made before the ways keeps its dice roll (character_fields.ability_roll), as
   # the only way
+  # A roll of the abilities is one of the ways of the template: the game master decides whether the scores are typed by
+  # hand and rolled again (ability_scores_typed, ability_rerolls, step Settings)
+  def asks_ability_roll_settings?
+    ability_methods.any? { |method| method["type"] == AbilityMethods::Roll::KEY }
+  end
+
+  # The template declares feats: the game master turns them on or off (origin_feats, level_feats, step Settings)
+  def asks_feats?
+    feats.any?
+  end
+
   def ability_methods
     return [] if ability_fields.empty?
 

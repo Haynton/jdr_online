@@ -51,6 +51,16 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "fighting_styles") || []
   end
 
+  # The feats of the game (character_fields.feats, CharacterSheets::Feats) and the labels of their categories, in its
+  # copy; [] and {} for a template without
+  def feats
+    template_snapshot.to_h.dig("character_fields", "feats") || []
+  end
+
+  def feat_categories
+    template_snapshot.to_h.dig("character_fields", "feat_categories") || {}
+  end
+
   # The groups of choices classes give (character_fields.class_choices: invocations, metamagic...,
   # CharacterSheets::ClassChoices), [] for a template without: in its copy, like the classes that give them
   def class_choices

@@ -19,11 +19,11 @@ module CharacterWeaponMasteries
     self.weapon_masteries = Array(kind_keys).compact_blank.uniq
   end
 
-  # The effects of the style picked (archery: { "ranged_attack_bonus" => 2 }), {} for none
+  # The effects of the style picked (archery: { "ranged_attack_bonus" => 2 }), with those of the styles its feats give
+  # (CharacterFeats), {} for none
   def fighting_style_effects
-    return {} unless fighting_style
-
-    weapon_mastery_choices.fighting_styles.find { |style| style.key == fighting_style }&.effects || {}
+    picked = weapon_mastery_choices.fighting_styles.find { |style| style.key == fighting_style }&.effects
+    fighting_style_effects_with_feats(picked || {})
   end
 
   # A class changed drops what the new one does not offer

@@ -22,7 +22,7 @@ export default class extends Controller {
 
   count() {
     this.groupTargets.forEach((group) => {
-      const chosenCount = group.querySelectorAll("input[type=checkbox]:checked").length
+      const chosenCount = group.querySelectorAll("input[type=checkbox]:checked:not(:disabled)").length
       const allowedCount = Number(group.dataset.allowed)
       const status = this.statusTargets.find((target) => group.contains(target))
       status.textContent = group.dataset.template.replace("%{chosen}", chosenCount).replace("%{allowed}", allowedCount)

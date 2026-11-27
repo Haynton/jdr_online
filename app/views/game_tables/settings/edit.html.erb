@@ -37,6 +37,11 @@
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "ability_method_choice",
                                                               methods: @game_table.ability_methods %>
             <% end %>
+            <% if @game_table.asks_ability_roll_settings? %>
+              <% %i[ability_scores_typed ability_rerolls].each do |attribute| %>
+                <%= render "game_tables/settings/switch", form: form, attribute: attribute, hint: t(".#{attribute}_hint") %>
+              <% end %>
+            <% end %>
             <% %w[hit_point_method starting_equipment_method].each do |rule| %>
               <% next if @game_table.rule_methods(rule).empty? %>
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
@@ -45,6 +50,13 @@
             <% if @game_table.asks_skill_choices? %>
               <%= render "game_tables/settings/switch", form: form, attribute: :limit_skill_choices,
                                                          hint: t(".limit_skill_choices_hint") %>
+              <%= render "game_tables/settings/switch", form: form, attribute: :players_change_given_choices,
+                                                         hint: t(".players_change_given_choices_hint") %>
+            <% end %>
+            <% if @game_table.asks_feats? %>
+              <% %i[origin_feats level_feats].each do |attribute| %>
+                <%= render "game_tables/settings/switch", form: form, attribute: attribute, hint: t(".#{attribute}_hint") %>
+              <% end %>
             <% end %>
           </div>
         </section>

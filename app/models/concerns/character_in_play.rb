@@ -16,6 +16,7 @@ module CharacterInPlay
     include CharacterHitDice
     include CharacterWeaponMasteries
     include CharacterClassChoices
+    include CharacterFeats
     include CharacterLevels
   end
 end

@@ -131,7 +131,7 @@ module CharacterSheets
     end
 
     def spell_chosen_count(character, group)
-      character.spells.count { |spell| group.keys.include?(spell["key"]) }
+      character.spells.count { |spell| !spell[CharacterSheets::FeatSpells::MARK] && group.keys.include?(spell["key"]) }
     end
   end
 end

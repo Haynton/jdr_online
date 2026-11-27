@@ -2,8 +2,9 @@ module AbilityMethods
   # What every method says of itself: its key, the settings a template gives it, the errors of those settings, and the
   # errors of the scores a player typed (none by default: the scores stay free)
   class Base
-    # Every method has a type, a label and a help, written by the template
-    COMMON_PARAMETERS = %w[type label help].freeze
+    # Every method has a type, a label and a help, written by the template, and may say in a few words what the player
+    # does (summary: « Valeurs fixes à placer : 15, 14… », shown under the choice of the way)
+    COMMON_PARAMETERS = %w[type label help summary].freeze
     OWN_PARAMETERS = [].freeze
     REQUIRED_PARAMETERS = [].freeze
 
@@ -45,6 +46,23 @@ module AbilityMethods
 
     def positive_integer?(value)
       value.is_a?(Integer) && value.positive?
+    end
+
+    # The scores typed placed from given values (an array, the results of a roll): each one of the values, each value
+    # placed as often as it is there. outside, taken: the error types of a score not among them, of a value taken
+    def placement_errors(scores, values, outside:, taken:)
+      refused = scores.reject { |_ability, score| values.include?(score) }
+      refused.map { |ability, _score| [[ability], outside, { values: values.join(", ") }] } +
+        placed_too_often_errors(scores.except(*refused.keys), values, taken)
+    end
+
+    # A value typed more often than given: every ability holding it is refused
+    def placed_too_often_errors(scores, values, taken)
+      scores.group_by { |_ability, score| score }.filter_map do |value, holders|
+        next if holders.size <= values.count(value)
+
+        [holders.map(&:first), taken, { value: value }]
+      end
     end
   end
 end

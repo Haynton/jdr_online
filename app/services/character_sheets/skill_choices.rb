@@ -4,9 +4,11 @@
 # of the template may offer are concerned (the saving throws, ticked by the class, are not)
 module CharacterSheets
   class SkillChoices
-    def initialize(fields:, sheet:)
+    # granted: skills given beside the options (those of a feat: Skilled)
+    def initialize(fields:, sheet:, granted: [])
       @choice_fields = fields.select { |field| field["effects"].present? }
       @sheet = sheet.to_h
+      @granted = granted
     end
 
     # Whether an option picked offers skills to pick: nothing to check before the class is chosen
@@ -26,7 +28,15 @@ module CharacterSheets
 
     # The keys of the skills given by the options picked
     def granted_keys
-      picked_effects.flat_map { |effects| effects["proficient"].to_a }.uniq
+      (picked_effects.flat_map { |effects| effects["proficient"].to_a } + @granted).uniq
+    end
+
+    # Which option picked gives each skill it gives ({ "intimidation" => "Soldat" }): the page says it on its line
+    def given_by
+      @choice_fields.each_with_object({}) do |field, sources|
+        option = @sheet[field["key"]]
+        field["effects"][option].to_h["proficient"].to_a.each { |key| sources[key] ||= option }
+      end
     end
 
     # Every skill some option of the template may offer, ticked on the sheet
@@ -48,6 +58,24 @@ module CharacterSheets
       chosen_keys.size > allowed_count
     end
 
+    # Whether the skills chosen share out between the options picked, each taking its own in its list (a human ranger:
+    # 3 of the list of the ranger, 1 of every skill; two skills outside the list of the ranger do not fit)
+    def fit_offers?
+      slots = offers.flat_map do |effects|
+        Array.new(effects.dig("skill_choices", "count").to_i, effects.dig("skill_choices", "from").to_a)
+      end
+      holders = {}
+      chosen_keys.all? { |key| place(key, slots, holders, []) }
+    end
+
+    # The options picked that offer skills, with how many each: "Rôdeur : 3, Humain : 1"
+    def offers_text
+      @choice_fields.filter_map do |field|
+        count = field["effects"][@sheet[field["key"]]].to_h.dig("skill_choices", "count")
+        "#{@sheet[field['key']]} : #{count}" if count
+      end.join(", ")
+    end
+
     # Every skill some option of the template may offer: the fields the limit looks at
     def skill_keys
       @choice_fields.flat_map do |field|
@@ -56,6 +84,19 @@ module CharacterSheets
     end
 
     private
+
+    # Puts a skill in a slot of its list, moving the skill already there to another slot when it may go elsewhere
+    def place(key, slots, holders, visited)
+      slots.each_index.any? do |index|
+        next false if visited.include?(index) || slots[index].exclude?(key)
+
+        visited << index
+        holder = holders[index]
+        next false unless holder.nil? || place(holder, slots, holders, visited)
+
+        holders[index] = key
+      end
+    end
 
     def offers
       picked_effects.select { |effects| effects["skill_choices"] }

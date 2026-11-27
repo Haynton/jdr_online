@@ -45,10 +45,10 @@ module LevelUpChoices
     FieldTypes.of(subclass_field).sheet_list_choices(subclass_field, sheet_at_level)
   end
 
-  # { "points" => 2, "max_per_ability" => 2 } when its class improves the abilities at this level, nil otherwise
+  # The improvement of its class when it gives a feat at this level (its levels, its epic levels: 19), nil otherwise
   def improvement
     declared = class_effects["ability_score_improvement"]
-    declared if declared.to_h["levels"].to_a.include?(level)
+    declared if (declared.to_h["levels"].to_a + declared.to_h["epic_levels"].to_a).include?(level)
   end
 
   def ability_fields

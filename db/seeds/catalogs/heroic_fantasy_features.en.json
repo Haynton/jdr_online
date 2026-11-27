@@ -263,6 +263,20 @@
     {"key":"adrenaline-rush","name":"Adrenaline Rush","description":"As a Bonus Action, you Dash and gain your Proficiency Bonus in Temporary HP, as many times as your Proficiency Bonus per Short or Long Rest."},
     {"key":"relentless-endurance","name":"Relentless Endurance","description":"Reduced to 0 HP but not killed, you drop to 1 HP instead. Once per Long Rest."},
     {"key":"fiendish-legacy","name":"Fiendish Legacy","description":"Your legacy (Abyssal, Chthonic or Infernal) grants a resistance and spells, more at levels 3 and 5, always prepared."},
-    {"key":"otherworldly-presence","name":"Otherworldly Presence","description":"You know the Thaumaturgy cantrip, cast with the ability of your Fiendish Legacy."}
+    {"key":"otherworldly-presence","name":"Otherworldly Presence","description":"You know the Thaumaturgy cantrip, cast with the ability of your Fiendish Legacy."},
+    {"key":"skilled","name":"Skilled","description":"You gain proficiency in three skills or tools of your choice. Repeatable."},
+    {"key":"ability-score-improvement","name":"Ability Score Improvement","description":"+2 to one ability score, or +1 to two, never above 20. Repeatable."},
+    {"key":"grappler","name":"Grappler","description":"+1 Strength or Dexterity (20 at most). An Unarmed Strike can both damage and grapple; Advantage against a creature you grapple, which you move at no extra cost."},
+    {"key":"archery","name":"Archery","description":"+2 to attack rolls with Ranged weapons."},
+    {"key":"defense","name":"Defense","description":"+1 to Armor Class while you wear Light, Medium or Heavy armor."},
+    {"key":"great-weapon-fighting","name":"Great Weapon Fighting","description":"With a Melee weapon held in two hands (Two-Handed or Versatile), a 1 or 2 on a damage die counts as a 3."},
+    {"key":"two-weapon-fighting","name":"Two-Weapon Fighting","description":"The extra attack of a Light weapon adds your ability modifier to its damage."},
+    {"key":"boon-of-combat-prowess","name":"Boon of Combat Prowess","description":"+1 to an ability score (30 at most). When you miss an attack, you can hit instead, once until your next turn."},
+    {"key":"boon-of-dimensional-travel","name":"Boon of Dimensional Travel","description":"+1 to an ability score (30 at most). Right after the Attack or Magic action, you teleport up to 30 feet."},
+    {"key":"boon-of-fate","name":"Boon of Fate","description":"+1 to an ability score (30 at most). When a creature within 60 feet succeeds or fails a D20 Test, you add or subtract 2d4, once per rest or Initiative."},
+    {"key":"boon-of-irresistible-offense","name":"Boon of Irresistible Offense","description":"+1 Strength or Dexterity (30 at most). Your Bludgeoning, Piercing and Slashing damage ignores Resistance; on a 20, extra damage equal to that score."},
+    {"key":"boon-of-spell-recall","name":"Boon of Spell Recall","description":"+1 Intelligence, Wisdom or Charisma (30 at most). A level 1–4 slot isn't spent if 1d4 rolls its level."},
+    {"key":"boon-of-the-night-spirit","name":"Boon of the Night Spirit","description":"+1 to an ability score (30 at most). In Dim Light or Darkness, you turn Invisible as a Bonus Action and resist damage but Psychic and Radiant."},
+    {"key":"boon-of-truesight","name":"Boon of Truesight","description":"+1 to an ability score (30 at most). You have Truesight out to 60 feet."}
   ]
 }

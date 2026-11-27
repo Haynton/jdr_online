@@ -1,5 +1,11 @@
 <%# The dice roll: "Roll the dice", the server rolls (ability_roll_controller.js, AbilityRollsController), the results
-    as chips, placed from the list of each tile. An aid: the player may roll again or type their own scores %>
+    as chips, placed from the list of each tile. The player may roll again or type their own scores, unless the table
+    turns it off (GameTable#ability_rerolls, #ability_scores_typed): then the guide says so %>
+<% game_table = character.game_table %>
+<% limits = [(:no_typing unless game_table.ability_scores_typed), (:no_rerolls unless game_table.ability_rerolls)].compact %>
+<% limits.each do |limit| %>
+  <p class="mt-2 text-sm text-muted"><%= t("character_sheets.ability_methods.roll.#{limit}") %></p>
+<% end %>
 <div hidden class="mt-4" data-ability-roll-target="controls">
   <button type="button" class="<%= button_classes(:secondary) %>" data-ability-roll-target="button" data-action="ability-roll#roll">
     <%= render "shared/icons/dices" %>

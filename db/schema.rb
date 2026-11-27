@@ -100,6 +100,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_235000) do
     t.jsonb "weapon_masteries", default: [], null: false
     t.integer "level_up_to"
     t.jsonb "class_choices", default: {}, null: false
+    t.jsonb "feats", default: [], null: false
+    t.jsonb "ability_rolls"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"
@@ -182,6 +184,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_235000) do
     t.jsonb "rules", default: {}, null: false
     t.boolean "limit_skill_choices", default: true, null: false
     t.bigint "board_game_map_id"
+    t.boolean "origin_feats", default: true, null: false
+    t.boolean "level_feats", default: true, null: false
+    t.boolean "ability_scores_typed", default: true, null: false
+    t.boolean "ability_rerolls", default: false, null: false
+    t.boolean "players_change_given_choices", default: false, null: false
     t.index ["board_game_map_id"], name: "index_game_tables_on_board_game_map_id"
     t.index ["invite_token"], name: "index_game_tables_on_invite_token", unique: true
     t.index ["sheet_template_id"], name: "index_game_tables_on_sheet_template_id"

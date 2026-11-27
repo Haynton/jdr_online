@@ -61,19 +61,22 @@ module CharacterSheets
     end
 
     # A number between "−" and "+" (character_sheets/fields/_stepper), in a tile or a box
-    def sheet_stepper_input(character, field, data: {}, autocomplete: nil, bounds: nil)
-      options = sheet_number_options(character, field).merge(class: STEPPER_INPUT_CLASSES, autocomplete: autocomplete,
-                                                             data: { number_stepper_target: "input", **data })
+    # input_options: autocomplete, readonly (a score placed from a roll only)
+    def sheet_stepper_input(character, field, data: {}, bounds: nil, **input_options)
+      options = sheet_number_options(character, field)
+                .merge(class: STEPPER_INPUT_CLASSES, **input_options.compact_blank,
+                       data: { number_stepper_target: "input", **data })
       options.merge!(min: bounds.first, max: bounds.last) if bounds
       number_field_tag(sheet_field_name(field), sheet_field_value(character, field), options)
     end
 
     # The hidden "0" first: an unchecked box sends nothing on its own. For a bonus, the box is its proficiency
-    def sheet_check_box(character, field, data: {})
-      hidden_field_tag(sheet_field_name(field), "0", id: nil) +
-        check_box_tag(sheet_field_name(field), "1", FieldTypes::Bonus.proficient?(character.sheet[field["key"]]),
+    # locked: what an option gives, kept ticked by the table: the box is disabled and the hidden value says « 1 »
+    def sheet_check_box(character, field, data: {}, locked: false)
+      hidden_field_tag(sheet_field_name(field), locked ? "1" : "0", id: nil) +
+        check_box_tag(sheet_field_name(field), "1", locked || FieldTypes::Bonus.proficient?(character.sheet[field["key"]]),
                       sheet_control_options(character, field)
-                        .merge(class: SimpleFormFieldClasses::CHECKBOX, data: data))
+                        .merge(class: SimpleFormFieldClasses::CHECKBOX, data: data, disabled: locked.presence))
     end
 
     private

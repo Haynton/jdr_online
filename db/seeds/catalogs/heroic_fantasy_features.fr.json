@@ -263,6 +263,20 @@
     {"key":"adrenaline-rush","name":"Poussée d'adrénaline","description":"Par une action bonus, vous foncez et gagnez votre bonus de maîtrise en PV temporaires, autant de fois que votre bonus de maîtrise par repos court ou long."},
     {"key":"relentless-endurance","name":"Endurance implacable","description":"Réduit à 0 PV sans être tué, vous restez à 1 PV. Une fois par repos long."},
     {"key":"fiendish-legacy","name":"Héritage fiélon","description":"Votre héritage (abyssal, chthonien ou infernal) vous donne une résistance et des sorts, d'autres aux niveaux 3 et 5, toujours préparés."},
-    {"key":"otherworldly-presence","name":"Présence d'outre-monde","description":"Vous connaissez le sort mineur Thaumaturgie, lancé avec la caractéristique de votre héritage fiélon."}
+    {"key":"otherworldly-presence","name":"Présence d'outre-monde","description":"Vous connaissez le sort mineur Thaumaturgie, lancé avec la caractéristique de votre héritage fiélon."},
+    {"key":"skilled","name":"Doué","description":"Vous maîtrisez trois compétences ou outils de votre choix. Prenable plusieurs fois."},
+    {"key":"ability-score-improvement","name":"Amélioration de caractéristique","description":"+2 à une caractéristique, ou +1 à deux, sans dépasser 20. Prenable plusieurs fois."},
+    {"key":"grappler","name":"Lutteur","description":"+1 en Force ou en Dextérité (20 au plus). Une frappe à mains nues peut à la fois blesser et agripper ; avantage contre une créature que vous agrippez, que vous déplacez sans effort."},
+    {"key":"archery","name":"Archerie","description":"+2 aux jets d'attaque avec une arme à distance."},
+    {"key":"defense","name":"Défense","description":"+1 à la classe d'armure tant que vous portez une armure légère, intermédiaire ou lourde."},
+    {"key":"great-weapon-fighting","name":"Combat avec une arme à deux mains","description":"Avec une arme de corps à corps tenue à deux mains (À deux mains ou Polyvalente), un 1 ou un 2 sur un dé de dégâts compte comme un 3."},
+    {"key":"two-weapon-fighting","name":"Combat à deux armes","description":"L'attaque supplémentaire d'une arme Légère ajoute votre modificateur de caractéristique à ses dégâts."},
+    {"key":"boon-of-combat-prowess","name":"Faveur de prouesse au combat","description":"+1 à une caractéristique (30 au plus). Quand vous ratez une attaque, vous pouvez la réussir, une fois jusqu'à votre prochain tour."},
+    {"key":"boon-of-dimensional-travel","name":"Faveur de voyage dimensionnel","description":"+1 à une caractéristique (30 au plus). Juste après l'action Attaquer ou Magie, vous vous téléportez jusqu'à 9 mètres."},
+    {"key":"boon-of-fate","name":"Faveur du destin","description":"+1 à une caractéristique (30 au plus). Quand une créature à 18 mètres réussit ou rate un test au d20, vous ajoutez ou retirez 2d4, une fois par repos ou initiative."},
+    {"key":"boon-of-irresistible-offense","name":"Faveur d'attaque irrésistible","description":"+1 en Force ou Dextérité (30 au plus). Vos dégâts contondants, perforants et tranchants ignorent la résistance ; sur un 20, des dégâts en plus égaux à ce score."},
+    {"key":"boon-of-spell-recall","name":"Faveur de rappel des sorts","description":"+1 en Intelligence, Sagesse ou Charisme (30 au plus). Un emplacement de niveau 1 à 4 n'est pas dépensé si 1d4 donne son niveau."},
+    {"key":"boon-of-the-night-spirit","name":"Faveur de l'esprit de la nuit","description":"+1 à une caractéristique (30 au plus). Dans la pénombre ou les ténèbres, vous devenez invisible par une action bonus et résistez aux dégâts sauf psychiques et radiants."},
+    {"key":"boon-of-truesight","name":"Faveur de vision véritable","description":"+1 à une caractéristique (30 au plus). Vous voyez avec vision véritable à 18 mètres."}
   ]
 }

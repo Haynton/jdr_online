@@ -31,6 +31,11 @@ module CharacterSheets
       @play_state.fighting_style_effects
     end
 
+    # The effects of its feats ({ "initiative_proficiency" => true }), {} for none
+    def feat_effects
+      @play_state.feat_effects
+    end
+
     # nil while the ability has no score
     def modifier(ability_key)
       @modifiers[ability_key]

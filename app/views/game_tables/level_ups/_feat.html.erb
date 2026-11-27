@@ -1,0 +1,30 @@
+<%# The feat taken at a level that improves the abilities (LevelUpFeat, decision of 27 November): every feat the
+    character may take as a card with its category and its summary (the Ability Score Improvement first ticked), a feat
+    that gives spells one card per list (CharacterSheets::FeatCards), then what the one picked asks, prepared for each
+    and shown as soon as it is picked (choice_blocks_controller.js): points to share on the abilities, skills to pick,
+    the spells of its list %>
+<% cards = level_up.feat_cards %>
+<div class="flex flex-col gap-8" data-controller="choice-blocks">
+  <fieldset class="min-w-0" aria-describedby="level_up_feat_key_error">
+    <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.feat.title") %></legend>
+    <p class="mt-2 text-sm text-muted"><%= t("game_tables.level_ups.feat.rule") %></p>
+    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <% cards.each do |card| %>
+        <%= render "game_tables/character_steps/feat_card", card: card, field_name: "level_up[feat_key]",
+                                                            checked: level_up.feat_key == card.value, id_prefix: "level-up-feat",
+                                                            category: level_up.feat_list.category_label(card.feat) %>
+      <% end %>
+    </div>
+    <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :feat_key %>
+  </fieldset>
+  <% cards.reject(&:taken?).each do |card| %>
+    <% feat = card.feat %>
+    <% next unless level_up.increase_settings(feat) || level_up.feat_skill_count(feat).positive? || card.list %>
+    <%= tag.div class: "flex flex-col gap-8", hidden: card.value != level_up.feat_key,
+                data: { choice_blocks_target: "block", choice_value: card.value } do %>
+      <%= render "game_tables/level_ups/improvement", level_up: level_up, feat: feat if level_up.increase_settings(feat) %>
+      <%= render "game_tables/level_ups/feat_skills", level_up: level_up, feat: feat if level_up.feat_skill_count(feat).positive? %>
+      <%= render "game_tables/level_ups/feat_spells", level_up: level_up, card: card if card.list %>
+    <% end %>
+  <% end %>
+</div>

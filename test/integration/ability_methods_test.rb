@@ -106,6 +106,37 @@ class AbilityMethodsIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal "Lia", character.name
   end
 
+  test "without rolls again, the server gives back the roll kept; without typing, the scores come from it" do
+    pick("roll")
+    @game_table.update!(ability_rerolls: false, ability_scores_typed: false)
+    sign_in @player
+    post game_table_ability_roll_path(@game_table)
+    first_roll = response.parsed_body["results"]
+    assert response.parsed_body["final"]
+    post game_table_ability_roll_path(@game_table)
+    assert_equal first_roll, response.parsed_body["results"]
+
+    get game_table_character_step_path(@game_table, "sheet")
+    assert_select "input#character_sheet_strength[readonly]"
+    totals = first_roll.pluck("total")
+    send_scores({ strength: totals.max + 1 })
+    assert_response :unprocessable_content
+    send_scores({ strength: totals[0], dexterity: totals[1], constitution: totals[2] })
+    assert_equal totals.first(3), character.ability_scores.values_at("strength", "dexterity", "constitution")
+  end
+
+  test "by default, as the rules: one roll kept, any score typed (real dice); the table may allow rolling again" do
+    pick("roll")
+    sign_in @player
+    post game_table_ability_roll_path(@game_table)
+    assert response.parsed_body["final"]
+    @game_table.update!(ability_rerolls: true)
+    post game_table_ability_roll_path(@game_table)
+    assert_not response.parsed_body["final"]
+    send_scores({ strength: 3, dexterity: 18 })
+    assert_equal({ "strength" => 3, "dexterity" => 18 }, character.ability_scores)
+  end
+
   private
 
   def pick(type)

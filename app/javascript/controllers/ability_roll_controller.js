@@ -9,7 +9,8 @@ import { Controller } from "@hotwired/stimulus"
 // roll (the server checks each value is placed once, AbilityMethods::StandardArray)
 export default class extends Controller {
   static targets = ["controls", "button", "buttonLabel", "results", "chipTemplate", "choice"]
-  static values = { url: String, rerollLabel: String, placeholder: String, preset: Array }
+  static values = { url: String, rerollLabel: String, placeholder: String, preset: Array, rolled: Array,
+                    rerolls: { type: Boolean, default: true } }
 
   // The lists of the tiles show from the start, disabled until a roll: the tiles keep their height
   connect() {
@@ -22,6 +23,7 @@ export default class extends Controller {
       choice.hidden = false
     })
     if (this.presetValue.length > 0) this.offerPreset()
+    if (this.rolledValue.length > 0) this.showRoll(this.rolledValue)
   }
 
   offerPreset() {
@@ -37,13 +39,20 @@ export default class extends Controller {
       if (!response.ok) return
 
       const { results } = await response.json()
-      this.rolledResults = results
-      this.showResults()
-      this.offerResults()
-      this.buttonLabelTarget.textContent = this.rerollLabelValue
+      this.showRoll(results)
     } finally {
       this.buttonTarget.disabled = false
     }
+  }
+
+  // The results of a roll, new or kept by the server (rolled); once rolled, no « Relancer » when the table turns rolls
+  // again off (the server would give the same roll back anyway)
+  showRoll(results) {
+    this.rolledResults = results
+    this.showResults()
+    this.offerResults()
+    this.buttonLabelTarget.textContent = this.rerollLabelValue
+    if (!this.rerollsValue) this.buttonTarget.hidden = true
   }
 
   // A result chosen in a tile goes into its score, with the bonus of the background the score shows

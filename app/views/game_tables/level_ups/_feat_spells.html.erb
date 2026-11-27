@@ -1,0 +1,14 @@
+<%# The spells of the card picked at a level gained (Magic Initiate : Druide): the rule of the list, then the ability to
+    cast them and the spells of that list, sent as level_up[feat_spells][by_list][<list>] (LevelUpFeat reads the list
+    in the card picked) %>
+<% settings = level_up.spell_settings(card.feat) %>
+<% picks = level_up.feat_key == card.value ? level_up.feat_spell_picks.to_h : {} %>
+<div class="flex flex-col gap-4">
+  <p class="text-sm text-muted">
+    <%= t("game_tables.character_steps.feat_spells.list_hint", count: settings["cantrips"].to_i + settings["level_one"].to_i) %>
+  </p>
+  <%= render "game_tables/character_steps/feat_spell_picks", character: level_up.character, list: card.list, settings: settings,
+                                                             field_name: "level_up[feat_spells][by_list][#{card.list}]",
+                                                             picks: picks, known: level_up.known_spells %>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :feat_spells %>
+</div>

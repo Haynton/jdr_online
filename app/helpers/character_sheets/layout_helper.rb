@@ -90,6 +90,16 @@ module CharacterSheets
     end
 
     # The messages the server gave about these rows (CharacterSkillChoicesValidator), each said once
+    # What gives a saving throw or a skill without picking it (the class, the background, a feat), written on its line:
+    # it counts in none of the skills to pick (decision of 27 November: a box ticked with no word puzzled the player)
+    def sheet_given_by(character, field)
+      return unless character.is_a?(Character) && character.pc?
+
+      @sheet_given_by ||= {}
+      @sheet_given_by[character.id] ||= character.skill_choices.given_by.merge(character.feat_skill_sources)
+      @sheet_given_by[character.id][field["key"]]
+    end
+
     def sheet_rows_errors(character, fields)
       fields.flat_map { |field| character.errors[:"sheet.#{field['key']}"] }.uniq
     end
