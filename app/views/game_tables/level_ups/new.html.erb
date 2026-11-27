@@ -1,6 +1,7 @@
 <%# The level the game master gave a player's character (LevelUp, GameTables::LevelUpsController), in the window of
     the room (the frame of the sheet): the features of that level, then only the choices it asks (hit points, subclass,
-    ability improvement, skills of the subclass, expertise, options of the groups of choices of the class), each with
+    ability improvement, skills of the subclass, expertise, a spell of a feat to replace, options of the groups of
+    choices of the class), each with
     its error under it. What a subclass brings (its skills, its choices) shows as soon as it is picked in the list
     (choice_blocks_controller.js); the new spells and weapon masteries afterwards, in their own windows. Opened directly or without JavaScript, a page with « Retour à la partie » %>
 <% title = t(".title", level: @level_up.level) %>
@@ -44,6 +45,7 @@
         <% end %>
         <%= render "game_tables/level_ups/feat", level_up: @level_up if @level_up.feat_level? %>
         <%= render "game_tables/level_ups/expertise", level_up: @level_up if @level_up.expertise_count.positive? %>
+        <%= render "game_tables/level_ups/feat_spell_swaps", level_up: @level_up if @level_up.swappable_feats.any? %>
         <%= render "game_tables/level_ups/error", level_up: @level_up, attribute: :class_choices %>
         <% if (class_groups = @level_up.class_choice_groups_to_pick(nil)).any? %>
           <%= render "game_tables/character_steps/class_choices", character: @character, groups: class_groups,

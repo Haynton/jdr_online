@@ -27,9 +27,20 @@ module LevelUpFeat
     @feat_spell_picks = CharacterSheets::FeatSpells.picks_from(picks)
   end
 
-  # What a feat gives to pick in spells ({ "lists", "cantrips", "level_one", "abilities" }), nil for none
+  # What a feat gives to pick in spells ({ "lists", "cantrips", "level_one", "abilities" }), only the lists no feat it
+  # took has, nil for none
   def spell_settings(for_feat = feat)
-    for_feat&.effects&.dig("spell_picks")
+    settings = for_feat&.effects&.dig("spell_picks")
+    settings && character.feat_spells.open_settings(settings, source: feat_source)
+  end
+
+  # The spells it knows already, never picked again for the feat ({ key => where it comes from })
+  def known_spells
+    @known_spells ||= character.feat_spells.known_elsewhere(except: feat_source)
+  end
+
+  def feat_source
+    CharacterSheets::FeatSpells.source_of("level" => level)
   end
 
   def feat_skill_keys=(keys)
@@ -41,8 +52,12 @@ module LevelUpFeat
     improvement.present?
   end
 
+  # Only the improvement when the table turns the feats at the levels off (GameTable#level_feats)
   def offered_feats
-    @offered_feats ||= feat_list.offered(level: level, epic: epic_level?)
+    @offered_feats ||= begin
+      offered = feat_list.offered(level: level, epic: epic_level?)
+      character.game_table.level_feats ? offered : offered.select { |candidate| candidate.key == DEFAULT_FEAT }
+    end
   end
 
   def feat(key = feat_key)
@@ -120,7 +135,7 @@ module LevelUpFeat
   end
 
   def feat_spells_picked
-    errors_found = character.feat_spells.errors_for(feat_spell_picks.to_h, spell_settings)
+    errors_found = character.feat_spells.errors_for(feat_spell_picks.to_h, spell_settings, known: known_spells)
     errors_found.each { |error| errors.add(:feat_spells, error) }
   end
 

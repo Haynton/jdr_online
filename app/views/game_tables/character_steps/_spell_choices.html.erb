@@ -83,6 +83,8 @@
       </section>
     <% end %>
 
+    <%# The spells a feat gives already (Magic Initiate), ticked and disabled with where they come from %>
+    <% known_by_feats = character.feat_spells.known_elsewhere(except: CharacterSheets::FeatSpells::CLASS_SOURCE) %>
     <% groups.each do |group| %>
       <%= tag.fieldset class: "min-w-0", data: spell_group_data(group) do %>
         <%# The legend floats (as in game_tables/_choice_row): a legend in place sits in the border of the fieldset, and
@@ -102,7 +104,8 @@
             <%# Each card at its own height (items-start): an open description does not stretch the cards beside it %>
             <ul class="mt-3 grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
               <% spells.each do |spell| %>
-                <%= render "game_tables/character_steps/spell_choice", character: character, spell: spell %>
+                <%= render "game_tables/character_steps/spell_choice", character: character, spell: spell,
+                                                                       known_as: known_by_feats[spell.key] %>
               <% end %>
             </ul>
           </div>

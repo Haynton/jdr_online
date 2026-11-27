@@ -93,6 +93,79 @@ class FeatsTest < ActiveSupport::TestCase
     assert_equal "Magicien", character.feats.last["spell_list"]
   end
 
+  test "Magic Initiate taken again takes another list, and a spell known already is refused" do
+    acolyte = build_character("class" => "Guerrier", "background" => "Acolyte", "species" => "Humain",
+                              "feats" => [{ "key" => "magic-initiate", "source" => "background", "spell_list" => "Clerc",
+                                            "spell_ability" => "wisdom", "cantrips" => %w[guidance sacred-flame],
+                                            "spell" => "bless" }])
+    settings = acolyte.feat_spells.open_settings(acolyte.feat_list.find("magic-initiate").effects["spell_picks"],
+                                                 source: CharacterFeats::SPECIES_SOURCE)
+    assert_equal %w[Druide Magicien], settings["lists"]
+    assert_equal "Initié à la magie (Acolyte)", acolyte.feat_spells.known_elsewhere(except: "species")["guidance"]
+
+    acolyte.checks_feat_spells = true
+    acolyte.choose_species_feat({ "key" => "magic-initiate", "feat_spells" => {
+      "spell_list" => "Druide", "by_list" => { "Druide" => { "spell_ability" => "wisdom", "cantrips" => %w[guidance druidcraft],
+                                                             "spell" => "cure-wounds" } }
+    } })
+    assert acolyte.tap(&:validate).errors.of_kind?(:feats, :spell_known)
+  end
+
+  test "a spell picked for the class and given by a feat is refused" do
+    cleric = build_character("class" => "Clerc", "background" => "Acolyte", "level" => 1,
+                             "feats" => [{ "key" => "magic-initiate", "source" => "background", "spell_list" => "Clerc",
+                                           "spell_ability" => "wisdom", "cantrips" => %w[guidance sacred-flame],
+                                           "spell" => "bless" }])
+    cleric.choose_spells(%w[guidance])
+    assert cleric.tap(&:validate).errors.of_kind?(:spells, :spell_known_twice)
+  end
+
+  test "a level gained replaces a spell of a feat by another of the same level, not by one known already" do
+    character = build_character("class" => "Guerrier", "subclass" => "Champion", "level" => 4,
+                                "feats" => [{ "key" => "magic-initiate", "level" => 4, "spell_list" => "Magicien",
+                                              "spell_ability" => "intelligence", "cantrips" => %w[light mage-hand],
+                                              "spell" => "shield" }])
+    character.update_columns(level_up_to: 5)
+    refused = LevelUp.new(character: character, feat_spell_swaps: { "level-4" => { "from" => "light", "to" => "sleep" } })
+    assert refused.tap(&:validate).errors.of_kind?(:feat_spell_swaps, :not_allowed)
+    known = LevelUp.new(character: character, feat_spell_swaps: { "level-4" => { "from" => "light", "to" => "mage-hand" } })
+    assert_not known.valid?
+
+    level_up = LevelUp.new(character: character, feat_spell_swaps: { "level-4" => { "from" => "light", "to" => "minor-illusion" } })
+    assert level_up.save, level_up.errors.full_messages.to_sentence
+    assert_equal %w[minor-illusion mage-hand], character.reload.feats.first["cantrips"]
+    assert_includes character.spells.pluck("key"), "minor-illusion"
+  end
+
+  test "a table without origin feats gives no feat by the background, none to pick for the human" do
+    @game_table.update!(origin_feats: false)
+    acolyte = build_character("class" => "Guerrier", "background" => "Acolyte", "species" => "Humain")
+    assert_nil acolyte.origin_feat_spells
+    assert_nil acolyte.feat_choice_settings
+    assert_empty acolyte.feat_list.taken_keys
+  end
+
+  test "a table without feats at the levels offers only the improvement" do
+    @game_table.update!(level_feats: false)
+    character = build_character("class" => "Guerrier", "subclass" => "Champion", "level" => 3, "strength" => 13)
+    character.update_columns(level_up_to: 4)
+    assert_equal ["ability-score-improvement"], LevelUp.new(character: character).offered_feats.map(&:key)
+  end
+
+  test "what an option gives stays ticked, unless the table lets the players change it" do
+    character = build_character("class" => "Barbare", "background" => "Soldat", "level" => 1)
+    character.update_columns(sheet: character.sheet.merge("strength_save" => false, "intimidation" => false))
+    character.keep_given_ticked
+    assert_equal [true, true], character.sheet.values_at("strength_save", "intimidation")
+    assert character.given_locked?("intimidation")
+
+    @game_table.update!(players_change_given_choices: true)
+    character.update_columns(sheet: character.sheet.merge("intimidation" => false))
+    character.reload.keep_given_ticked
+    assert_equal false, character.sheet["intimidation"]
+    assert_not character.given_locked?("intimidation")
+  end
+
   private
 
   def build_character(values)

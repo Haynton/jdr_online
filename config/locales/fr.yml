@@ -34,11 +34,14 @@ fr:
               not_picked:
                 one: "Choisissez 1 compétence."
                 other: "Choisissez %{count} compétences."
+            feat_spell_swaps:
+              not_allowed: "Remplacez un sort du don par un autre du même niveau, de sa liste, que vous ne connaissez pas encore."
             feat_spells:
               cantrips: "Choisissez les sorts mineurs du don, dans sa liste."
               spell: "Choisissez le sort de niveau 1 du don, dans sa liste."
               spell_ability: "Choisissez la caractéristique pour lancer ces sorts."
               spell_list: "Choisissez une liste de sorts."
+              spell_known: "Un de ces sorts est déjà connu par ailleurs : choisissez-en un autre."
             expertise_keys:
               not_picked:
                 one: "Choisissez 1 compétence."
@@ -93,7 +96,12 @@ fr:
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
         starting_equipment_method_choice: "Équipement de départ"
+        ability_rerolls: "Relancer les dés des caractéristiques"
+        ability_scores_typed: "Scores des caractéristiques tapés à la main"
+        level_feats: "Dons aux niveaux supérieurs"
+        origin_feats: "Dons d'origine"
         limit_skill_choices: "Limiter les compétences au choix de la classe"
+        players_change_given_choices: "Les joueurs peuvent changer ce que donnent leurs choix"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -114,6 +122,8 @@ fr:
         attack_without_name: "chaque attaque doit avoir un nom"
         too_many_attacks: "%{count} attaques au plus"
         ability_bonus_too_high: "dépasse %{count} avec le bonus"
+        not_a_rolled_result: "à choisir parmi vos résultats : %{values}"
+        rolled_result_taken: "%{value} est déjà placé sur une autre caractéristique"
         not_in_standard_array: "à choisir parmi %{values}"
         outside_point_buy: "de %{minimum} à %{maximum} en achat de points"
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
@@ -189,6 +199,7 @@ fr:
               spell: "demandent un sort de niveau 1 de la liste du don"
               spell_ability: "demandent la caractéristique pour lancer les sorts du don"
               spell_list: "demandent une liste de sorts du don"
+              spell_known: "comptent un sort déjà connu par ailleurs : choisissez-en un autre"
             fighting_style:
               not_offered: "n'est pas proposé par votre classe à ce niveau"
             weapon_masteries:
@@ -203,6 +214,7 @@ fr:
             hit_point_rolls:
               not_rolled: "Lancez vos dés de vie avant de terminer."
             ability_scores:
+              roll_first: "Lancez les dés : vos scores se choisissent parmi les résultats."
               too_many_points:
                 one: "Retirez 1 point pour continuer."
                 other: "Retirez %{count} points pour continuer."
@@ -214,6 +226,7 @@ fr:
             spells:
               spell_not_offered: "Un sort choisi n'est pas proposé à votre classe et à votre niveau."
               too_many_spells: "Trop de sorts choisis dans « %{group} » : %{count} au plus."
+              spell_known_twice: "« %{spell} » est déjà connu par un autre choix : décochez-le ici."
         game_table:
           attributes:
             board_game_map:
@@ -343,6 +356,10 @@ fr:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
+    ability_methods:
+      roll:
+        no_rerolls: "Un seul lancer : votre MJ ne permet pas de relancer."
+        no_typing: "Vos scores se choisissent parmi les résultats : votre MJ ne permet pas de les taper à la main."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -1538,10 +1555,17 @@ fr:
         rule:
           one: "Votre sous-classe vous fait maîtriser 1 compétence de plus."
           other: "Votre sous-classe vous fait maîtriser %{count} compétences de plus."
+      feat_spell_swaps:
+        cantrips: "Sorts mineurs"
+        from: "Sort à remplacer"
+        hint: "Facultatif : vous pouvez remplacer un sort de chaque don par un autre du même niveau, dans la même liste."
+        level_one: "Sorts de niveau 1"
+        none: "Aucun, je garde mes sorts"
+        title: "Sorts de vos dons"
+        to: "Par"
       feat:
         title: "Don"
         rule: "Prenez l'amélioration de caractéristique, ou un autre don dont vous remplissez les conditions."
-        spell_list: "Liste de sorts"
         skills:
           one: "Choisissez 1 compétence que vous ne maîtrisez pas encore."
           other: "Choisissez %{count} compétences que vous ne maîtrisez pas encore."
@@ -1605,10 +1629,25 @@ fr:
         title: "Don d'origine"
       feat_spells:
         ability: "Caractéristique pour les lancer"
+        background_hint:
+          one: "Votre sort vient de la liste du %{list}, fixée par votre historique : vous pourrez le changer à chaque niveau gagné."
+          other: "Vos %{count} sorts viennent de la liste du %{list}, fixée par votre historique : vous pourrez en changer un à chaque niveau gagné."
         cantrips:
           one: "Sort mineur (1)"
           other: "Sorts mineurs (%{count})"
-        hint: "Votre don d'origine vous donne des sorts de la liste « %{list} » : choisissez-les, et la caractéristique pour les lancer."
+        given_by_background: "Donné par votre historique (%{option})"
+        chosen_through_species: "Choisi grâce à votre espèce (%{option})"
+        known:
+          always_prepared: "un sort toujours préparé"
+          class: "vos sorts de classe"
+          feat: "%{feat} (%{origin})"
+          level: "niveau %{level}"
+        known_as: "Déjà connu : %{source}"
+        list_hint:
+          one: "Votre sort vient d'une liste, fixée pour toujours : vous pourrez le changer à chaque niveau gagné."
+          other: "Vos %{count} sorts viennent d'une même liste, fixée pour toujours : vous pourrez en changer un à chaque niveau gagné."
+        list_question: "De quelle classe viennent ces sorts ?"
+        lists_taken: "Vous avez déjà ce don avec la liste %{lists} : celui-ci en prend une autre."
         spell:
           one: "Sort de niveau 1 (1)"
           other: "Sorts de niveau 1 (%{count})"
@@ -1700,6 +1739,7 @@ fr:
         increase: "Augmenter %{label}"
         modifier: "Modificateur"
         note_html: "%{labels} : %{text}"
+        given_by: "Donnée par %{source}"
         offered: "Proposée"
         method_legend: "Méthode"
         place_result: "Attribuer"
@@ -1922,7 +1962,13 @@ fr:
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
+        ability_rerolls_hint: "Avec le lancer de dés, le joueur peut relancer autant qu'il veut. Éteint : un seul lancer, gardé."
+        ability_scores_typed_hint: "Avec le lancer de dés, le joueur peut taper ses scores (de vrais dés à la table). Éteint : seulement les résultats lancés ici."
+        method_summary: " : %{summary}."
+        level_feats_hint: "Aux niveaux 4, 8, 12… un joueur peut prendre un don au lieu de l'amélioration de caractéristique, et une faveur épique au niveau 19. Éteint : l'amélioration seulement."
+        origin_feats_hint: "L'historique donne son don (Initié à la magie pour l'Acolyte…), l'Humain en choisit un. Les personnages déjà créés gardent les leurs."
         limit_skill_choices_hint: "Un joueur ne coche pas plus de compétences que sa classe n'en propose, et seulement parmi elles. Éteint : le nombre reste une aide."
+        players_change_given_choices_hint: "Les sauvegardes de la classe, les compétences de l'historique ou d'un don sont cochées d'office. Allumé : le joueur peut les décocher (règle maison)."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."

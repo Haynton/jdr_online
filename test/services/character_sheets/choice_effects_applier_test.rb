@@ -31,4 +31,22 @@ class ChoiceEffectsApplierTest < ActiveSupport::TestCase
     assert_equal({ "species" => "Nain", "history" => false, "speed" => 12 },
                  applier.call("species" => "Nain", "history" => false, "speed" => 12))
   end
+
+  test "another class unticks the skills picked in the list of the old one, keeps those of the background, and its expertise" do
+    fields = [{ "key" => "class", "type" => "choice", "effects" => {
+                "Barbare" => { "skill_choices" => { "count" => 2, "from" => %w[intimidation nature survival] } },
+                "Roublard" => { "skill_choices" => { "count" => 4, "from" => %w[stealth acrobatics] },
+                                "expertise_choices" => [{ "level" => 1, "count" => 2 }] }
+              } },
+              { "key" => "background", "type" => "choice", "effects" => { "Soldat" => { "proficient" => %w[intimidation] } } }]
+    sheet = { "class" => "Barbare", "background" => "Soldat", "intimidation" => true, "nature" => true, "survival" => true }
+    applier = CharacterSheets::ChoiceEffectsApplier.new(fields: fields, previous_sheet: sheet)
+    assert_equal({ "class" => "Roublard", "background" => "Soldat", "intimidation" => true },
+                 applier.call(sheet.merge("class" => "Roublard")))
+
+    rogue = { "class" => "Roublard", "background" => "Soldat", "stealth" => "expertise", "intimidation" => true }
+    applier = CharacterSheets::ChoiceEffectsApplier.new(fields: fields, previous_sheet: rogue)
+    assert_equal({ "class" => "Barbare", "background" => "Soldat", "intimidation" => true },
+                 applier.call(rogue.merge("class" => "Barbare")))
+  end
 end

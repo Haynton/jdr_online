@@ -31,6 +31,14 @@ module CharacterSheets
       (picked_effects.flat_map { |effects| effects["proficient"].to_a } + @granted).uniq
     end
 
+    # Which option picked gives each skill it gives ({ "intimidation" => "Soldat" }): the page says it on its line
+    def given_by
+      @choice_fields.each_with_object({}) do |field, sources|
+        option = @sheet[field["key"]]
+        field["effects"][option].to_h["proficient"].to_a.each { |key| sources[key] ||= option }
+      end
+    end
+
     # Every skill some option of the template may offer, ticked on the sheet
     def ticked_keys
       skill_keys.select { |key| FieldTypes::Bonus.proficient?(@sheet[key]) }

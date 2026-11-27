@@ -6,9 +6,9 @@
   "description": "Compatible 5e édition · Licence SRD 5.2.1.",
   "character_fields": {
     "ability_methods": [
-      { "type": "roll", "label": "Lancer de dés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
-      { "type": "standard_array", "label": "Tableau standard", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },
-      { "type": "point_buy", "label": "Achat de points", "help": "Dépensez 27 points : chaque score commence à 8 et monte jusqu'à 15. Un score de 14 coûte 7 points, un score de 15 en coûte 9.", "points": 27,
+      { "type": "roll", "label": "Lancer de dés", "summary": "4d6 par caractéristique, les 3 meilleurs dés gardés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
+      { "type": "standard_array", "label": "Tableau standard", "summary": "Valeurs fixes à placer : 15, 14, 13, 12, 10, 8", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },
+      { "type": "point_buy", "label": "Achat de points", "summary": "27 points à répartir entre vos scores, de 8 à 15", "help": "Dépensez 27 points : chaque score commence à 8 et monte jusqu'à 15. Un score de 14 coûte 7 points, un score de 15 en coûte 9.", "points": 27,
         "costs": { "8": 0, "9": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 7, "15": 9 } }
     ],
     "hit_point_methods": [
@@ -58,7 +58,7 @@
     "feat_categories": {"origin": "Don d'origine", "general": "Don général", "fighting_style": "Don de style de combat", "epic_boon": "Faveur épique"},
     "feats": [
       {"key": "alert", "category": "origin", "effects": {"initiative_proficiency": true}},
-      {"key": "magic-initiate", "category": "origin", "repeatable": true, "effects": {"spell_picks": {"lists": ["Clerc", "Druide", "Magicien"], "cantrips": 2, "level_one": 1, "abilities": ["intelligence", "wisdom", "charisma"]}}},
+      {"key": "magic-initiate", "category": "origin", "repeatable": true, "effects": {"spell_picks": {"lists": ["Clerc", "Druide", "Magicien"], "list_descriptions": {"Clerc": "Lumière, soins et protection divine.", "Druide": "Nature, soins, bêtes et éléments.", "Magicien": "Arcanes, attaque et utilité."}, "cantrips": 2, "level_one": 1, "abilities": ["intelligence", "wisdom", "charisma"]}}},
       {"key": "savage-attacker", "category": "origin"},
       {"key": "skilled", "category": "origin", "repeatable": true, "effects": {"skill_picks": {"count": 3}}},
       {"key": "ability-score-improvement", "category": "general", "min_level": 4, "repeatable": true, "effects": {"ability_increase": {"points": 2, "max_per_ability": 2, "maximum": 20}}},

@@ -1,14 +1,15 @@
-# A player's character reaching the level the game master gave it (characters.level_up_to, decision of 26 November),
-# in a window of the game room: only the choices that level asks. Its hit points, by the average or a roll of the hit
-# die (the way of the table, or the player's when the table leaves it to them); its subclass when the level reaches
-# it; at a level that improves the abilities, a feat (LevelUpFeat: the improvement by default); the expertise its class
-# gives at that level. The new spells and weapon masteries are picked afterwards, in « Changer mes sorts » and
-# « Changer mes maîtrises ». A form object, its errors under each choice; CharacterSheets::LevelUpApplier makes the
-# change
+# A player's character reaching the level the game master gave it (characters.level_up_to, decision of 26 November), in
+# a window of the game room: only the choices that level asks. Its hit points, by the average or a roll of the hit die
+# (the way of the table, or the player's when the table leaves it to them); its subclass when the level reaches it; at a
+# level that improves the abilities, a feat (LevelUpFeat: the improvement by default); the expertise its class gives at
+# that level; a spell of a feat replaced, if the player wants (LevelUpFeatSpellSwaps). The new spells and weapon
+# masteries are picked afterwards, in « Changer mes sorts » and « Changer mes maîtrises ». A form object, its errors
+# under each choice; CharacterSheets::LevelUpApplier makes the change
 class LevelUp
   include ActiveModel::Model
   include LevelUpChoices
   include LevelUpFeat
+  include LevelUpFeatSpellSwaps
 
   attr_reader :character, :level, :expertise_keys, :class_choices, :skill_keys
   attr_accessor :hit_point_choice, :subclass

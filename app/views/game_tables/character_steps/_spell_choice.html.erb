@@ -6,11 +6,12 @@
     which hides the fold instead: without JavaScript, the details still open under the card. Never inside the label: a
     click on "Details" must not tick the box. data-level, -school and -casting are read by the filters
     (spell_choices_controller.js). A spell always prepared (always_prepared) has its box ticked and disabled: it is
-    never sent, the server copies it %>
+    never sent, the server copies it; so is a spell a feat gives already (known_as: where it comes from, written under
+    its name) %>
 <% box_id = spell_box_id(spell) %>
 <%= tag.li class: CharacterSheets::SpellChoicesHelper::SPELL_ROW_CLASSES, data: spell_card_data(spell) do %>
   <div class="flex items-start gap-2.5">
-    <% if local_assigns[:always_prepared] %>
+    <% if local_assigns[:always_prepared] || local_assigns[:known_as] %>
       <%= check_box_tag nil, spell.key, true, id: box_id, disabled: true, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
                                                aria: { describedby: "#{box_id}_summary" } %>
     <% else %>
@@ -22,6 +23,9 @@
       <%= label_tag box_id, spell.name, class: "block truncate text-[15px] leading-5 font-semibold text-ink",
                                         title: spell.name %>
       <p id="<%= box_id %>_summary" class="mt-0.5 truncate text-xs text-muted"><%= spell_summary_line(spell) %></p>
+      <% if local_assigns[:known_as] %>
+        <p class="mt-0.5 text-xs text-brass"><%= t("game_tables.character_steps.feat_spells.known_as", source: known_as) %></p>
+      <% end %>
     </div>
   </div>
   <div class="relative mt-2">

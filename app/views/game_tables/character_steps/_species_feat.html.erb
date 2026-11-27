@@ -9,6 +9,9 @@
 <section class="mt-10 flex min-w-0 flex-col gap-6" data-controller="choice-blocks">
   <div>
     <h2 class="text-lg leading-7 font-bold text-ink"><%= t("game_tables.character_steps.species_feat.title") %></h2>
+    <p class="pt-1 text-sm text-brass">
+      <%= t("game_tables.character_steps.feat_spells.chosen_through_species", option: character.feat_origin("source" => CharacterFeats::SPECIES_SOURCE)) %>
+    </p>
     <p class="pt-1 text-sm text-muted"><%= t("game_tables.character_steps.species_feat.hint") %></p>
     <% unless character.origin_feat_spells %>
       <% character.errors.full_messages_for(:feats).each do |message| %>
@@ -30,7 +33,8 @@
   </div>
   <% character.species_feat_offers.each do |feat| %>
     <% skills = feat.effects.dig("skill_picks", "count").to_i %>
-    <% spells = feat.effects["spell_picks"] %>
+    <% raw_spells = feat.effects["spell_picks"] %>
+    <% spells = raw_spells && character.feat_spells.open_settings(raw_spells, source: CharacterFeats::SPECIES_SOURCE) %>
     <% next unless skills.positive? || spells %>
     <% picked = entry["key"] == feat.key ? entry : {} %>
     <%= tag.div class: "flex flex-col gap-6", hidden: entry["key"] != feat.key, data: { choice_blocks_target: "block", choice_value: feat.key } do %>
@@ -53,23 +57,15 @@
       <% end %>
       <% if spells %>
         <div class="flex flex-col gap-6" data-controller="choice-blocks">
-          <fieldset class="min-w-0">
-            <legend class="text-sm font-semibold text-ink"><%= t("game_tables.level_ups.feat.spell_list") %></legend>
-            <div class="mt-2 inline-flex flex-wrap gap-1 rounded-lg bg-field p-1">
-              <% Array(spells["lists"]).each do |list| %>
-                <label class="<%= LevelUpsHelper::CHOICE_CLASSES %>">
-                  <%= radio_button_tag "character[species_feat][feat_spells][spell_list]", list, picked["spell_list"] == list, id: nil,
-                                       class: "sr-only", data: { choice_blocks_target: "choice", action: "choice-blocks#show" } %>
-                  <%= list %>
-                </label>
-              <% end %>
-            </div>
-          </fieldset>
+          <%= render "game_tables/character_steps/feat_spell_list_choice", settings: spells, all_lists: raw_spells["lists"],
+                                                                           field_name: "character[species_feat][feat_spells][spell_list]",
+                                                                           picked: picked["spell_list"] %>
           <% Array(spells["lists"]).each do |list| %>
             <%= tag.div hidden: picked["spell_list"] != list, data: { choice_blocks_target: "block", choice_value: list } do %>
               <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: list, settings: spells,
                                                                          field_name: "character[species_feat][feat_spells][by_list][#{list}]",
-                                                                         picks: picked["spell_list"] == list ? picked : {} %>
+                                                                         picks: picked["spell_list"] == list ? picked : {},
+                                                                         known: character.feat_spells.known_elsewhere(except: CharacterFeats::SPECIES_SOURCE) %>
             <% end %>
           <% end %>
         </div>

@@ -48,7 +48,7 @@ module CharacterSheets
 
     def list_groups
       picked_options.filter_map do |field, option|
-        reached = self.class.keys_of(field.dig("effects", option)).select { |named| named.level <= level }
+        reached = shown_keys_of(field.dig("effects", option)).select { |named| named.level <= level }
         next if reached.empty?
 
         Group.new(label: field["label"], option: option, features: reached.map { |named| feature(named) })
@@ -58,10 +58,16 @@ module CharacterSheets
     # Every feature of every option of field, with its catalog name and summary: the summary of the choices shows them
     # all, from their level
     def features_of(field, option)
-      self.class.keys_of(field.dig("effects", option)).map { |named| feature(named) }
+      shown_keys_of(field.dig("effects", option)).map { |named| feature(named) }
     end
 
     private
+
+    # The origin feat of an option is left out when the table turns the origin feats off (GameTable#origin_feats)
+    def shown_keys_of(effects)
+      named = self.class.keys_of(effects)
+      @character.game_table.origin_feats ? named : named.reject { |feature| feature.kind == :feat }
+    end
 
     # The feats taken (beside the origin feat of the background, shown with it), by their category (« Don général »)
     def feat_groups

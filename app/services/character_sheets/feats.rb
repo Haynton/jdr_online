@@ -31,7 +31,9 @@ module CharacterSheets
     def offered(level:, epic: false, categories: nil, ignoring: nil)
       allowed = categories || (COMMON_CATEGORIES + (epic ? [EPIC_CATEGORY] : []))
       taken = origin_feat_keys + taken_entries.reject { |entry| ignoring && entry["source"] == ignoring }.pluck("key")
-      declared.select { |feat| allowed.include?(feat.category) && available?(feat, level, taken) }
+      declared.select do |feat|
+        allowed.include?(feat.category) && available?(feat, level, taken) && lists_left?(feat, ignoring)
+      end
     end
 
     # The keys of every feat it has: the origin feat of its background, then those it took
@@ -83,6 +85,12 @@ module CharacterSheets
         (feat.repeatable || taken.exclude?(feat.key))
     end
 
+    # A feat that gives spells from a list has one its other feats did not take (Magic Initiate: another list each time)
+    def lists_left?(feat, source)
+      lists = feat.effects.dig("spell_picks", "lists")
+      lists.nil? || (Array(lists) - @character.feat_spells.taken_lists(except: source)).any?
+    end
+
     def ability_minimum_met?(minimum)
       return true unless minimum
 
@@ -94,7 +102,10 @@ module CharacterSheets
       effect_key.nil? || picked_effects.any? { |effects| effects.key?(effect_key) }
     end
 
+    # None when the table turns the origin feats off (GameTable#origin_feats)
     def origin_feat_keys
+      return [] unless @game_table.origin_feats
+
       picked_effects.filter_map { |effects| effects.dig(ChoiceEffects::OriginFeat::KEY, "key") }
     end
 

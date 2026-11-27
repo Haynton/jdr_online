@@ -4,11 +4,13 @@ import { Controller } from "@hotwired/stimulus"
 // metres), within its min and max.
 // Nothing typed yet: "+" and "−" start from the min. After each step the field sends an input event, like typing,
 // so that what follows it (the live calculation of a character sheet) updates. The buttons are rendered hidden
-// and shown here: without JavaScript, the value is typed
+// and shown here: without JavaScript, the value is typed. A field read only (a score placed from a roll) keeps them hidden
 export default class extends Controller {
   static targets = ["input", "button"]
 
   connect() {
+    if (this.inputTarget.readOnly) return
+
     this.buttonTargets.forEach((button) => { button.hidden = false })
   }
 

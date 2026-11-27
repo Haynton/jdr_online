@@ -78,6 +78,8 @@ class Character < ApplicationRecord
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
                                                       .call(sheet.except(*step.field_keys).merge(filled_values))
+    keep_feat_skills_ticked
+    keep_given_ticked if pc?
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
     self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }

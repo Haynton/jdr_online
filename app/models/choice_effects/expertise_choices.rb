@@ -2,7 +2,8 @@ module ChoiceEffects
   # The expertise an option gives (decision of 26 November, SRD 5.2.1: the rogue, the bard, the ranger, the wizard
   # scholar): from a level of the character, a count of skills it is proficient in whose proficiency bonus counts twice,
   # chosen at the step of the skills; from: the skills it may pick among (the wizard), any of its proficient skills
-  # otherwise. Counted and checked by CharacterSheets::ExpertiseChoices
+  # otherwise. Counted and checked by CharacterSheets::ExpertiseChoices. When the option changes (another class), every
+  # expertise goes back to a plain proficiency: it is picked again at the step of the skills
   class ExpertiseChoices < Base
     KEY = "expertise_choices".freeze
     TARGET_TYPE = "bonus".freeze
@@ -16,6 +17,12 @@ module ChoiceEffects
       return [] if value.is_a?(Array) && value.all? { |entry| valid_entry?(entry) }
 
       [[:unknown_effect_value, { effect: KEY, value: value.to_s.truncate(60) }]]
+    end
+
+    def apply(sheet, previous_value, _picked_value, **)
+      return if previous_value.blank?
+
+      sheet.each_key { |field_key| sheet[field_key] = true if FieldTypes::Bonus.expertise?(sheet[field_key]) }
     end
 
     def facts(value, _fields_by_key)

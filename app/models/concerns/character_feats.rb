@@ -5,6 +5,7 @@
 # the sheet (Character#computed_sheet_values)
 module CharacterFeats
   extend ActiveSupport::Concern
+  include CharacterFeatOrigins
 
   def feat_list
     CharacterSheets::Feats.new(self)
@@ -26,6 +27,8 @@ module CharacterFeats
   # The origin feat of an option picked (the background) that gives spells to pick (Magic Initiate), with its fixed
   # list: { feat:, settings: } (the settings of the feat, its list narrowed to the one of the option), nil otherwise
   def origin_feat_spells
+    return unless game_table.origin_feats
+
     origin = sheet_fields.filter_map { |field| field.dig("effects", sheet[field["key"]].to_s, "origin_feat") }.first
     feat = origin && feat_list.find(origin["key"])
     settings = feat&.effects&.dig("spell_picks")
@@ -58,6 +61,8 @@ module CharacterFeats
 
   # The feat an option picked lets it pick (the human: an origin feat), { "categories" }, nil otherwise
   def feat_choice_settings
+    return unless game_table.origin_feats
+
     sheet_fields.filter_map { |field| field.dig("effects", sheet[field["key"]].to_s, ChoiceEffects::FeatChoice::KEY) }
                 .first
   end
@@ -83,6 +88,11 @@ module CharacterFeats
     self.feats = entry ? others + [entry] : others
     tick_skills(entry.to_h["skills"])
     sync_feat_spells
+  end
+
+  # The skills its feats give (Skilled) stay ticked when another class unticks those picked in its old list
+  def keep_feat_skills_ticked
+    tick_skills(feat_list.skill_keys)
   end
 
   # An option changed (the species) drops the feat it no longer lets pick

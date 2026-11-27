@@ -1,8 +1,8 @@
 # Checks the origin feats of a player's character at its creation (decision of 27 November): the spells the origin feat
 # of its background gives (Magic Initiate: a list the feat offers, an ability among its own, as many cantrips and level
-# 1 spells as it gives, CharacterSheets::FeatSpells), and the feat its species lets pick (the human: one offered, with
-# its skills and spells). On the step that asks them and when the character is done (a draft may wait); a feat taken
-# at a level gained is checked by LevelUp. An error on feats
+# 1 spells as it gives, none it knows elsewhere, CharacterSheets::FeatSpells), and the feat its species lets pick (the
+# human: one offered, with its skills and spells). On the step that asks them and when the character is done (a draft
+# may wait); a feat taken at a level gained is checked by LevelUp. An error on feats
 class CharacterFeatSpellsValidator < ActiveModel::Validator
   def validate(character)
     return unless character.pc? && checked?(character)
@@ -17,7 +17,9 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     given = character.origin_feat_spells
     return unless given
 
-    errors = character.feat_spells.errors_for(character.origin_feat_picks, given[:settings])
+    spells = character.feat_spells
+    known = spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE)
+    errors = spells.errors_for(character.origin_feat_picks, given[:settings], known: known)
     errors.each { |error| character.errors.add(:feats, error) }
   end
 
@@ -30,8 +32,19 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     return character.errors.add(:feats, :species_feat) unless feat
 
     check_feat_skills(character, feat, entry)
+    check_species_feat_spells(character, feat, entry)
+  end
+
+  # In a list no other feat took, none of them a spell it knows elsewhere
+  def check_species_feat_spells(character, feat, entry)
     settings = feat.effects["spell_picks"]
-    character.feat_spells.errors_for(entry, settings).each { |error| character.errors.add(:feats, error) } if settings
+    return unless settings
+
+    source = CharacterFeats::SPECIES_SOURCE
+    spells = character.feat_spells
+    errors = spells.errors_for(entry, spells.open_settings(settings, source: source),
+                               known: spells.known_elsewhere(except: source))
+    errors.each { |error| character.errors.add(:feats, error) }
   end
 
   def check_feat_skills(character, feat, entry)

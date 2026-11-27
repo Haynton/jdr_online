@@ -63,11 +63,14 @@ en:
               not_picked:
                 one: "Choose 1 skill."
                 other: "Choose %{count} skills."
+            feat_spell_swaps:
+              not_allowed: "Replace a spell of the feat with another of the same level, from its list, that you do not know yet."
             feat_spells:
               cantrips: "Pick the cantrips of the feat, in its list."
               spell: "Pick the level 1 spell of the feat, in its list."
               spell_ability: "Pick the ability to cast these spells."
               spell_list: "Pick a spell list."
+              spell_known: "One of these spells is already known elsewhere: pick another one."
             expertise_keys:
               not_picked:
                 one: "Choose 1 skill."
@@ -122,7 +125,12 @@ en:
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
         starting_equipment_method_choice: "Starting equipment"
+        ability_rerolls: "Roll the ability dice again"
+        ability_scores_typed: "Ability scores typed by hand"
+        level_feats: "Feats at higher levels"
+        origin_feats: "Origin feats"
         limit_skill_choices: "Limit skills to the class choice"
+        players_change_given_choices: "Players may change what their choices give"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -143,6 +151,8 @@ en:
         attack_without_name: "each attack needs a name"
         too_many_attacks: "%{count} attacks at most"
         ability_bonus_too_high: "goes past %{count} with the bonus"
+        not_a_rolled_result: "to pick among your results: %{values}"
+        rolled_result_taken: "%{value} is already placed on another ability"
         not_in_standard_array: "pick one of %{values}"
         outside_point_buy: "from %{minimum} to %{maximum} with point buy"
         standard_array_value_taken: "%{value} is already placed on another ability"
@@ -218,6 +228,7 @@ en:
               spell: "ask a level 1 spell of the list of the feat"
               spell_ability: "ask the ability to cast the spells of the feat"
               spell_list: "ask a spell list of the feat"
+              spell_known: "count a spell already known elsewhere: pick another one"
             fighting_style:
               not_offered: "is not offered by your class at this level"
             weapon_masteries:
@@ -232,6 +243,7 @@ en:
             hit_point_rolls:
               not_rolled: "Roll your hit dice before finishing."
             ability_scores:
+              roll_first: "Roll the dice: your scores are picked among the results."
               too_many_points:
                 one: "Take off 1 point to continue."
                 other: "Take off %{count} points to continue."
@@ -243,6 +255,7 @@ en:
             spells:
               spell_not_offered: "A spell chosen is not offered to your class and level."
               too_many_spells: "Too many spells chosen in “%{group}”: %{count} at most."
+              spell_known_twice: "“%{spell}” is already known through another choice: untick it here."
         game_table:
           attributes:
             board_game_map:
@@ -372,6 +385,10 @@ en:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
+    ability_methods:
+      roll:
+        no_rerolls: "One roll only: your game master does not allow rolling again."
+        no_typing: "Your scores are picked among the results: your game master does not allow typing them."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -1567,10 +1584,17 @@ en:
         rule:
           one: "Your subclass makes you proficient in 1 more skill."
           other: "Your subclass makes you proficient in %{count} more skills."
+      feat_spell_swaps:
+        cantrips: "Cantrips"
+        from: "Spell to replace"
+        hint: "Optional: you may replace one spell of each feat with another of the same level, from the same list."
+        level_one: "Level 1 spells"
+        none: "None, I keep my spells"
+        title: "Spells of your feats"
+        to: "With"
       feat:
         title: "Feat"
         rule: "Take the Ability Score Improvement, or another feat you qualify for."
-        spell_list: "Spell list"
         skills:
           one: "Pick 1 skill you are not proficient in yet."
           other: "Pick %{count} skills you are not proficient in yet."
@@ -1634,10 +1658,25 @@ en:
         title: "Origin feat"
       feat_spells:
         ability: "Ability to cast them"
+        background_hint:
+          one: "Your spell comes from the %{list} list, set by your background: you may change it at each level gained."
+          other: "Your %{count} spells come from the %{list} list, set by your background: you may change one at each level gained."
         cantrips:
           one: "Cantrip (1)"
           other: "Cantrips (%{count})"
-        hint: "Your origin feat gives you spells of the “%{list}” list: pick them, and the ability to cast them."
+        given_by_background: "Given by your background (%{option})"
+        chosen_through_species: "Picked through your species (%{option})"
+        known:
+          always_prepared: "a spell always prepared"
+          class: "your class spells"
+          feat: "%{feat} (%{origin})"
+          level: "level %{level}"
+        known_as: "Already known: %{source}"
+        list_hint:
+          one: "Your spell comes from one list, set for good: you may change it at each level gained."
+          other: "Your %{count} spells come from one list, set for good: you may change one at each level gained."
+        list_question: "Which class do these spells come from?"
+        lists_taken: "You already have this feat with the %{lists} list: this one takes another."
         spell:
           one: "Level 1 spell (1)"
           other: "Level 1 spells (%{count})"
@@ -1729,6 +1768,7 @@ en:
         increase: "Increase %{label}"
         modifier: "Modifier"
         note_html: "%{labels}: %{text}"
+        given_by: "Given by %{source}"
         offered: "Suggested"
         method_legend: "Method"
         place_result: "Assign"
@@ -1951,7 +1991,13 @@ en:
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
+        ability_rerolls_hint: "With the dice roll, the player may roll again as often as they like. Off: one roll only, kept."
+        ability_scores_typed_hint: "With the dice roll, the player may type their scores (real dice at the table). Off: only the results rolled here."
+        method_summary: ": %{summary}."
+        level_feats_hint: "At levels 4, 8, 12… a player may take a feat instead of the ability score improvement, and an epic boon at level 19. Off: the improvement only."
+        origin_feats_hint: "The background gives its feat (Magic Initiate for the Acolyte…), the Human picks one. Characters already made keep theirs."
         limit_skill_choices_hint: "A player ticks no more skills than their class offers, and only among them. Off: the number is only a guide."
+        players_change_given_choices_hint: "The saving throws of the class, the skills of the background or of a feat are ticked for them. On: the player may untick them (house rule)."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."

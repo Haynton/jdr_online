@@ -1,0 +1,42 @@
+<%# A spell of each feat taken that gave spells (Magic Initiate) may be replaced at a level gained, by one of the same
+    level of its list (LevelUpFeatSpellSwaps), if the player wants: « Aucun » keeps it. The spells it knows already are
+    not offered. Native selects drawn like the other lists (CollectionSelectInput) %>
+<% known = @character.feat_spells.known_elsewhere %>
+<section class="flex flex-col gap-4">
+  <div>
+    <h3 class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t(".title") %></h3>
+    <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
+  </div>
+  <% level_up.swappable_feats.each do |feat| %>
+    <% swap = level_up.feat_spell_swaps.to_h[feat.source].to_h %>
+    <% field_name = "level_up[feat_spell_swaps][#{feat.source}]" %>
+    <% from_id = "level_up_feat_spell_swaps_#{feat.source}_from" %>
+    <% to_id = "level_up_feat_spell_swaps_#{feat.source}_to" %>
+    <fieldset class="min-w-0">
+      <legend class="text-sm font-semibold text-ink"><%= feat.label %></legend>
+      <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:max-w-2xl">
+        <div>
+          <label for="<%= from_id %>" class="text-xs text-muted"><%= t(".from") %></label>
+          <div class="relative mt-1">
+            <%= select_tag "#{field_name}[from]", options_for_select(feat.spells.map { |spell| [spell.name, spell.key] }, swap["from"]),
+                           include_blank: t(".none"), id: from_id,
+                           class: "#{SimpleFormFieldClasses::INPUT} #{CollectionSelectInput::SELECT_CLASSES}" %>
+            <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+          </div>
+        </div>
+        <div>
+          <label for="<%= to_id %>" class="text-xs text-muted"><%= t(".to") %></label>
+          <div class="relative mt-1">
+            <% groups = [[t(".cantrips"), feat.offer.cantrips], [t(".level_one"), feat.offer.spells]].map do |label, spells|
+                 [label, spells.reject { |spell| known.key?(spell.key) }.map { |spell| [spell.name, spell.key] }]
+               end %>
+            <%= select_tag "#{field_name}[to]", grouped_options_for_select(groups, swap["to"]), include_blank: true, id: to_id,
+                           class: "#{SimpleFormFieldClasses::INPUT} #{CollectionSelectInput::SELECT_CLASSES}" %>
+            <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  <% end %>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :feat_spell_swaps %>
+</section>

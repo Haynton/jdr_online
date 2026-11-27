@@ -1,8 +1,10 @@
 <%# The spells a feat gives in one list (Magic Initiate, CharacterSheets::FeatSpells): the ability to cast them, then
     the cantrips to tick and the level 1 spell to pick, each a card with its school, its details on demand in the window
-    of the page. Sent under field_name ([spell_ability], [cantrips][], [spell]); picks: what was picked before %>
+    of the page. Sent under field_name ([spell_ability], [cantrips][], [spell]); picks: what was picked before; known:
+    the spells known elsewhere, their box disabled with where they come from (CharacterSheets::FeatSpellsHelper) %>
 <% offer = character.feat_spells.offer(list) %>
 <% picks = local_assigns.fetch(:picks, {}) %>
+<% known = local_assigns.fetch(:known, {}) %>
 <div class="flex flex-col gap-6">
   <fieldset class="min-w-0">
     <legend class="text-sm font-semibold text-ink"><%= t("game_tables.character_steps.feat_spells.ability") %></legend>
@@ -22,6 +24,17 @@
       <% if kind == :cantrips %><%= hidden_field_tag "#{field_name}[cantrips][]", "", id: nil %><% end %>
       <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
         <% spells.each do |spell| %>
+          <% if (source = known[spell.key]) %>
+            <div class="<%= CharacterSheets::FeatSpellsHelper::KNOWN_CARD_CLASSES %>">
+              <%= check_box_tag nil, spell.key, true, id: nil, disabled: true, aria: { label: spell.name },
+                                class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
+              <span class="min-w-0">
+                <span class="block truncate text-sm font-semibold text-muted"><%= spell.name %></span>
+                <span class="block text-xs text-muted"><%= t("game_tables.character_steps.feat_spells.known_as", source: source) %></span>
+              </span>
+            </div>
+            <% next %>
+          <% end %>
           <label class="<%= weapon_mastery_card_classes %>">
             <% if kind == :cantrips %>
               <%= check_box_tag "#{field_name}[cantrips][]", spell.key, Array(picks["cantrips"]).include?(spell.key), id: nil,

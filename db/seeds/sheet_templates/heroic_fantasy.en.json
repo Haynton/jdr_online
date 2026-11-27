@@ -6,9 +6,9 @@
   "description": "5E compatible · SRD 5.2.1 license.",
   "character_fields": {
     "ability_methods": [
-      { "type": "roll", "label": "Dice roll", "help": "Roll 4d6 for each ability and keep the 3 highest dice. You may also roll real dice and type your scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
-      { "type": "standard_array", "label": "Standard array", "help": "Place 15, 14, 13, 12, 10 and 8, one value per ability.", "values": [15, 14, 13, 12, 10, 8] },
-      { "type": "point_buy", "label": "Point buy", "help": "Spend 27 points: each score starts at 8 and goes up to 15. A score of 14 costs 7 points, a score of 15 costs 9.", "points": 27,
+      { "type": "roll", "label": "Dice roll", "summary": "4d6 per ability, the 3 highest dice kept", "help": "Roll 4d6 for each ability and keep the 3 highest dice. You may also roll real dice and type your scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
+      { "type": "standard_array", "label": "Standard array", "summary": "Fixed values to place: 15, 14, 13, 12, 10, 8", "help": "Place 15, 14, 13, 12, 10 and 8, one value per ability.", "values": [15, 14, 13, 12, 10, 8] },
+      { "type": "point_buy", "label": "Point buy", "summary": "27 points to share between your scores, from 8 to 15", "help": "Spend 27 points: each score starts at 8 and goes up to 15. A score of 14 costs 7 points, a score of 15 costs 9.", "points": 27,
         "costs": { "8": 0, "9": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 7, "15": 9 } }
     ],
     "hit_point_methods": [
@@ -58,7 +58,7 @@
     "feat_categories": {"origin": "Origin feat", "general": "General feat", "fighting_style": "Fighting Style feat", "epic_boon": "Epic Boon"},
     "feats": [
       {"key": "alert", "category": "origin", "effects": {"initiative_proficiency": true}},
-      {"key": "magic-initiate", "category": "origin", "repeatable": true, "effects": {"spell_picks": {"lists": ["Cleric", "Druid", "Wizard"], "cantrips": 2, "level_one": 1, "abilities": ["intelligence", "wisdom", "charisma"]}}},
+      {"key": "magic-initiate", "category": "origin", "repeatable": true, "effects": {"spell_picks": {"lists": ["Cleric", "Druid", "Wizard"], "list_descriptions": {"Cleric": "Light, healing and divine protection.", "Druid": "Nature, healing, beasts and elements.", "Wizard": "Arcana, offense and utility."}, "cantrips": 2, "level_one": 1, "abilities": ["intelligence", "wisdom", "charisma"]}}},
       {"key": "savage-attacker", "category": "origin"},
       {"key": "skilled", "category": "origin", "repeatable": true, "effects": {"skill_picks": {"count": 3}}},
       {"key": "ability-score-improvement", "category": "general", "min_level": 4, "repeatable": true, "effects": {"ability_increase": {"points": 2, "max_per_ability": 2, "maximum": 20}}},

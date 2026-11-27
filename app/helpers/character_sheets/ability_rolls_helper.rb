@@ -35,7 +35,7 @@ module CharacterSheets
     def ability_method_data(character)
       method = character.ability_method_in_use
       case method&.dig("type")
-      when AbilityMethods::Roll::KEY then ability_roll_data(character.game_table)
+      when AbilityMethods::Roll::KEY then ability_roll_data(character)
       when AbilityMethods::StandardArray::KEY then standard_array_data(method)
       when AbilityMethods::PointBuy::KEY then point_buy_data(method)
       else {}
@@ -60,7 +60,13 @@ module CharacterSheets
       bounds = ability_score_bounds(character)
       data = { character_sheet_target: "score", ability: field["key"], modifier_rule: field["modifier"],
                typed_max: bounds&.last }
-      sheet_stepper_input(character, field, autocomplete: "off", data: data.compact, bounds: bounds)
+      sheet_stepper_input(character, field, autocomplete: "off", data: data.compact, bounds: bounds,
+                                            readonly: placed_only?(character))
+    end
+
+    # The table turns the scores typed by hand off with a roll: a score is only placed from the results
+    def placed_only?(character)
+      ability_method_type(character) == AbilityMethods::Roll::KEY && !character.game_table.ability_scores_typed
     end
 
     # The bounds of a score typed with a point buy (8 to 15), nil for the other ways
@@ -73,10 +79,14 @@ module CharacterSheets
 
     private
 
-    def ability_roll_data(game_table)
+    # The roll kept shows again (ability_rolls), and « Relancer » goes once rolled when the table turns rolls again off
+    def ability_roll_data(character)
+      game_table = character.game_table
       { controller: "ability-roll", ability_roll_url_value: game_table_ability_roll_path(game_table),
         ability_roll_reroll_label_value: t("game_tables.characters.new.reroll"),
-        ability_roll_placeholder_value: t("game_tables.characters.new.place_result") }
+        ability_roll_placeholder_value: t("game_tables.characters.new.place_result"),
+        ability_roll_rolled_value: Array(character.ability_rolls).to_json,
+        ability_roll_rerolls_value: game_table.ability_rerolls }
     end
 
     def standard_array_data(method)
