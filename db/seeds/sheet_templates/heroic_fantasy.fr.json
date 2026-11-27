@@ -5,6 +5,7 @@
   "banner_color": "gold",
   "description": "Compatible 5e édition · Licence SRD 5.2.1.",
   "character_fields": {
+    "attunement": {"limit": 3},
     "ability_methods": [
       { "type": "roll", "label": "Lancer de dés", "summary": "4d6 par caractéristique, les 3 meilleurs dés gardés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
       { "type": "standard_array", "label": "Tableau standard", "summary": "Valeurs fixes à placer : 15, 14, 13, 12, 10, 8", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },
@@ -329,7 +330,7 @@
   },
   "item_fields": {
     "fields": [
-      { "key": "category", "filter": true, "label": "Catégorie", "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Potion", "Trésor"] },
+      {"key": "category", "filter": true, "label": "Catégorie", "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Potion", "Trésor", "Objet merveilleux", "Anneau", "Baguette", "Bâton", "Sceptre", "Parchemin"]},
       { "key": "damage", "label": "Dégâts", "type": "text" },
       { "key": "weapon_properties", "label": "Propriétés", "type": "text" },
       { "key": "armor_class", "label": "Classe d'armure", "type": "text" },
@@ -339,14 +340,23 @@
       { "key": "armor_bonus", "label": "Bonus de CA", "type": "number", "min": 0, "max": 10, "help": "Ajouté à la CA tant qu'il est équipé (un bouclier : 2)." },
       { "key": "damage_dice", "label": "Dés de dégâts", "type": "text", "short": true, "help": "Par exemple 1d8 : le modificateur de la caractéristique de l'attaque s'y ajoute." },
       { "key": "versatile_dice", "label": "Dés à deux mains", "type": "text", "short": true, "help": "Pour une arme polyvalente, par exemple 1d10 : une seconde attaque, à deux mains, tant qu'aucun bouclier n'est équipé." },
-      {"key": "weapon_kind", "label": "Sorte d'arme", "type": "choice", "options": ["daggers", "handaxes", "javelins", "maces", "quarterstaffs", "sickles", "spears", "shortbows", "flails", "greataxes", "greatswords", "longswords", "scimitars", "shortswords", "longbows"], "labels": ["Dagues", "Hachettes", "Javelines", "Masses d'armes", "Bâtons", "Serpes", "Lances", "Arcs courts", "Fléaux d'armes", "Haches à deux mains", "Épées à deux mains", "Épées longues", "Cimeterres", "Épées courtes", "Arcs longs"], "help": "La sorte que nomment les maîtrises des classes et les maîtrises d'armes."},
+      {"key": "weapon_kind", "label": "Sorte d'arme", "type": "choice", "options": ["daggers", "handaxes", "javelins", "maces", "quarterstaffs", "sickles", "spears", "shortbows", "flails", "greataxes", "greatswords", "longswords", "scimitars", "shortswords", "longbows", "clubs", "greatclubs", "light-hammers", "darts", "light-crossbows", "slings", "battleaxes", "glaives", "halberds", "lances", "mauls", "morningstars", "pikes", "rapiers", "tridents", "warhammers", "war-picks", "whips", "blowguns", "hand-crossbows", "heavy-crossbows", "muskets", "pistols"], "labels": ["Dagues", "Hachettes", "Javelines", "Masses d'armes", "Bâtons", "Serpes", "Lances", "Arcs courts", "Fléaux d'armes", "Haches à deux mains", "Épées à deux mains", "Épées longues", "Cimeterres", "Épées courtes", "Arcs longs", "Gourdins", "Massues", "Marteaux légers", "Fléchettes", "Arbalètes légères", "Frondes", "Haches d'armes", "Coutilles", "Hallebardes", "Lances d'arçon", "Maillets d'armes", "Morgensterns", "Piques", "Rapières", "Tridents", "Marteaux de guerre", "Pics de guerre", "Fouets", "Sarbacanes", "Arbalètes de poing", "Arbalètes lourdes", "Mousquets", "Pistolets"], "help": "La sorte que nomment les maîtrises des classes et les maîtrises d'armes."},
       {"key": "mastery", "label": "Propriété de maîtrise", "type": "choice", "options": ["cleave", "graze", "nick", "push", "sap", "slow", "topple", "vex"], "labels": ["Enchaînement", "Écorchure", "Coup double", "Repoussement", "Sape", "Ralentissement", "Renversement", "Harcèlement"], "descriptions": {"cleave": "Si vous touchez une créature au corps à corps, vous pouvez faire une attaque de corps à corps avec cette arme contre une seconde créature à 1,50 mètre de la première et à votre portée ; touchée, elle subit les dégâts de l'arme, sans le modificateur de caractéristique (sauf s'il est négatif). Une fois par tour.", "graze": "Si votre attaque avec cette arme rate une créature, vous pouvez lui infliger des dégâts égaux au modificateur de caractéristique de l'attaque, du type de l'arme.", "nick": "L'attaque supplémentaire de la propriété Légère peut se faire pendant l'action Attaquer au lieu d'une action bonus. Une fois par tour.", "push": "Si vous touchez une créature de taille G ou moins, vous pouvez la repousser jusqu'à 3 mètres en ligne droite.", "sap": "Si vous touchez une créature, elle a le désavantage à sa prochaine attaque avant le début de votre prochain tour.", "slow": "Si vous touchez une créature et lui infligez des dégâts, vous pouvez réduire sa vitesse de 3 mètres jusqu'au début de votre prochain tour (pas plus de 3 mètres en tout).", "topple": "Si vous touchez une créature, vous pouvez l'obliger à réussir un jet de sauvegarde de Constitution (DD 8 + modificateur de l'attaque + bonus de maîtrise) ou tomber à terre.", "vex": "Si vous touchez une créature et lui infligez des dégâts, vous avez l'avantage à votre prochaine attaque contre elle avant la fin de votre prochain tour."}, "help": "Utilisable par un personnage qui maîtrise cette sorte d'arme (maîtrises d'armes)."},
       { "key": "damage_type", "label": "Type de dégâts", "type": "text", "short": true },
       { "key": "finesse", "label": "Finesse", "type": "boolean", "help": "L'attaque utilise la meilleure de la Force et de la Dextérité." },
       { "key": "ranged", "label": "À distance", "type": "boolean", "help": "L'attaque utilise la Dextérité au lieu de la Force." },
       { "key": "effect", "label": "Effet", "type": "text" },
+      {"key": "rarity", "label": "Rareté", "type": "choice", "filter": true, "options": ["common", "uncommon", "rare", "very-rare", "legendary", "artifact", "varies"], "labels": ["Commune", "Peu commune", "Rare", "Très rare", "Légendaire", "Artefact", "Variable"]},
+      {"key": "attunement", "label": "Demande un lien", "type": "boolean"},
+      {"key": "magic_bonus", "label": "Bonus magique", "type": "number", "min": 1, "max": 3, "help": "Une arme ou des munitions : à l'attaque et aux dégâts. Une armure ou un bouclier : à la CA."},
+      {"key": "item_ac_bonus", "label": "Bonus de CA", "type": "number", "min": 1, "max": 5, "help": "Ajouté à la CA tant que l'objet est lié (ou porté, s'il ne demande pas de lien)."},
+      {"key": "sets_ability", "label": "Caractéristique fixée", "type": "choice", "options": ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"], "labels": ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"]},
+      {"key": "sets_ability_score", "label": "Score fixé", "type": "number", "min": 1, "max": 30, "help": "La caractéristique vaut ce score tant que l'objet est lié, sauf si elle est déjà plus haute."},
+      {"key": "ammunition", "label": "Munitions", "type": "boolean", "internal": true},
+      {"key": "applies_to", "label": "Se pose sur", "type": "choice", "internal": true, "options": ["weapon", "armor", "shield", "ammunition"]},
+      {"key": "applies_to_keys", "label": "Objets visés", "type": "text", "internal": true},
       { "key": "weight", "label": "Poids (kg)", "type": "number", "min": 0, "max": 1000, "step": 0.001 },
-      { "key": "value", "label": "Valeur (po)", "type": "number", "min": 0, "max": 100000, "step": 0.01 },
+      { "key": "value", "label": "Valeur (po)", "type": "number", "min": 0, "max": 100000, "step": 0.001 },
       { "key": "group", "label": "Groupe", "type": "choice", "internal": true, "options": ["musical_instrument", "artisan_tools", "gaming_set", "holy_symbol"] }
     ]
   },

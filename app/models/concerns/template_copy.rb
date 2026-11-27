@@ -81,6 +81,13 @@ module TemplateCopy
     declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
   end
 
+  # How many magic items a character may be attuned to at a time (character_fields.attunement: limit, Attunable), read
+  # in the template as it is now like the conditions; nil for no limit
+  def attunement_limit
+    declared = sheet_template&.character_fields.to_h["attunement"]
+    (declared || template_snapshot.to_h.dig("character_fields", "attunement")).to_h["limit"]
+  end
+
   # The dice of the game room (character_fields.dice_rolls: its modes, the die they apply to, its initiative), read in
   # the template as it is now like the conditions; none for a template that does not declare them
   def dice_rolls

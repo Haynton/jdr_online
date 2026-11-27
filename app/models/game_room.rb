@@ -112,6 +112,13 @@ class GameRoom
   def items
     return CatalogEntry.none unless game_master?
 
-    Catalogs::TableCatalog.new(game_table).entries("item").reorder(:name)
+    Catalogs::TableCatalog.new(game_table).entries("item").where.not("properties ? 'applies_to'").reorder(:name)
+  end
+
+  # The magic the game master may put on an item when giving it (Catalogs::Enchantments)
+  def enchantments
+    return [] unless game_master?
+
+    Catalogs::Enchantments.new(game_table).all
   end
 end

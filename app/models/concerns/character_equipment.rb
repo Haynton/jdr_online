@@ -28,8 +28,29 @@ module CharacterEquipment
     items.select(&:equipped)
   end
 
-  # The values of what it wears and holds, for the rules (the armour class)
+  # The values of what it wears and holds, for the rules (the armour class), without the magic of an item not attuned
   def equipped_item_properties
-    equipped_items.map(&:properties)
+    equipped_items.map(&:rule_properties)
+  end
+
+  # What its magic items give the rules (Attunable): a bonus to the armour class, and the abilities they set to a score
+  # (the highest of each). An armour, a shield or a weapon counts once equipped, another item while carried
+  def magic_effects
+    return {} unless pc? && complete?
+
+    working = inventory_items.to_a.select { |item| item.magic_active? && (!item.equippable? || item.equipped) }
+    { "armor_class_bonus" => working.sum { |item| item.properties["item_ac_bonus"].to_i },
+      "abilities" => abilities_set_by(working) }
+  end
+
+  private
+
+  def abilities_set_by(items)
+    items.each_with_object({}) do |item, abilities|
+      ability = item.properties["sets_ability"]
+      next unless ability
+
+      abilities[ability] = [abilities[ability].to_i, item.properties["sets_ability_score"].to_i].max
+    end
   end
 end

@@ -4,7 +4,8 @@
     Its « −1 » (a small button with its border, decision: a bare − read as an empty value) takes one away (GameTables::InventoryItemsController, saved; decision: one at a time, the last one asked
     first), and the server redraws this block in place (#game-room-inventory). An amount is taken out of a number kept
     with it (the gold spent: GameTables::InventoryValuesController, never more than the character has; refused, its
-    error under its field, value_errors). An armour, a shield or a weapon has a switch « Équipé » (equip_switch). A
+    error under its field, value_errors). An armour, a shield or a weapon has a switch « Équipé » (equip_switch), a
+    magic item that requires attunement a switch « Lié » (attune_switch), the count of those attuned above them. A
     character made before the inventory
     existed has none: the panel says so %>
 <% character = game_room.own_character %>
@@ -57,20 +58,34 @@
   <%# Two groups (decision of 26 November: mixed, the gear and the small things read badly): what is worn and held
       (an armour, a shield, a weapon: Equippable), with its switch under the one heading « Équipé », then the rest %>
   <% gear, bag = items.partition(&:equippable?) %>
+  <% if items.any?(&:requires_attunement?) %>
+    <% limit = game_room.game_table.attunement_limit %>
+    <p class="mt-5 text-xs text-muted"><%= t(".attuned_count", count: items.count(&:attuned), limit: limit || "—") %></p>
+    <% if local_assigns[:attunement_error] %>
+      <p class="<%= SimpleFormFieldClasses::ERROR %>" role="alert"><%= attunement_error %></p>
+    <% end %>
+  <% end %>
   <% [["gear", gear], ["bag", bag]].each do |group, group_items| %>
     <% next if group_items.empty? %>
+    <% attune_column = group_items.any?(&:requires_attunement?) %>
     <section class="mt-5 first:mt-0" aria-labelledby="game-room-inventory-<%= group %>">
       <div class="mb-2 flex items-end gap-3">
         <h3 id="game-room-inventory-<%= group %>" class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t(".#{group}") %></h3>
+        <%# The headings of the columns of the switches; each switch says its own name to screen readers %>
+        <% if attune_column %>
+          <span aria-hidden="true" class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> text-center text-[10px] font-semibold tracking-wider whitespace-nowrap text-muted uppercase"><%= t("game_rooms.panels.attune_switch.attuned") %></span>
+        <% end %>
         <% if group == "gear" %>
-          <%# The heading of the column of the switches; each switch says its own name to screen readers %>
           <span aria-hidden="true" class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> text-center text-[10px] font-semibold tracking-wider whitespace-nowrap text-muted uppercase"><%= t("game_rooms.panels.equip_switch.equipped") %></span>
+        <% end %>
+        <% if attune_column || group == "gear" %>
           <span aria-hidden="true" class="w-10 shrink-0"></span>
         <% end %>
       </div>
       <ul class="flex flex-col gap-2">
         <% group_items.each do |item| %>
-          <%= render "game_rooms/panels/inventory_item", game_table: game_room.game_table, item: item %>
+          <%= render "game_rooms/panels/inventory_item", game_table: game_room.game_table, item: item,
+                                                         attune_column: attune_column %>
         <% end %>
       </ul>
     </section>
