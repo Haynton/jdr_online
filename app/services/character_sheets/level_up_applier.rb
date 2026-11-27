@@ -33,6 +33,7 @@ module CharacterSheets
                                              .call(new_sheet)
       @character.class_choices = @level_up.future_character.class_choices
       @character.feats = @level_up.feats_with_swaps + [@level_up.feat_entry].compact
+      @character.spellbook = @character.spellbook.to_a + @level_up.spellbook_additions
       @character.sync_feat_spells
       @character.spells = @character.spell_choices.keep_offered(@character.spells.to_a)
       @character.level_up_to = nil

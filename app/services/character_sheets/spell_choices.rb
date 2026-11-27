@@ -6,8 +6,8 @@
 # from the catalog of the table (Catalogs::TableCatalog: its template's, changed by its game master).
 # Beside the groups, the spells an option always prepares from a level (always_prepared_spells: the domain spells of
 # the Life domain), which count in no group and cannot be chosen there.
-# Known limit: the spellbook of the wizard (6 spells, some of them prepared) comes later; here every class prepares
-# its spells from the list of its class
+# A class with a spellbook (the wizard) prepares among the spells written in it (CharacterSheets::Spellbook); its group
+# still offers every spell of its levels, those the book may hold
 module CharacterSheets
   class CharacterSheets::SpellChoices
     # A group of the template with what the class gives at this level: its key, its label and help (the words of the

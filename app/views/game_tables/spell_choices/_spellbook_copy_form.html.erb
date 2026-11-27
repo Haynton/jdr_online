@@ -1,0 +1,6 @@
+<%# The form the controls of « Copier un sort dans le grimoire » send (game_tables/spell_choices/_spellbook_copy), written
+    after the list of the spells: a form cannot hold another %>
+<% if @character.spellbook_of_class.any? %>
+  <%= form_with url: game_table_spellbook_copy_path(@game_table), id: "spellbook-copy-form", class: "hidden" do %>
+  <% end %>
+<% end %>

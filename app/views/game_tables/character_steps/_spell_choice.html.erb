@@ -9,9 +9,19 @@
     never sent, the server copies it; so is a spell a feat gives already (known_as: where it comes from, written under
     its name) %>
 <% box_id = spell_box_id(spell) %>
-<%= tag.li class: CharacterSheets::SpellChoicesHelper::SPELL_ROW_CLASSES, data: spell_card_data(spell) do %>
+<% book = local_assigns[:book] %>
+<%= tag.li class: "group/spell #{CharacterSheets::SpellChoicesHelper::SPELL_ROW_CLASSES}", data: spell_card_data(spell) do %>
   <div class="flex items-start gap-2.5">
-    <% if local_assigns[:always_prepared] || local_assigns[:known_as] %>
+    <% if book && local_assigns[:book_locked] %>
+      <%# In the game room, the book holds it: its box ticked and disabled, only « Préparé » changes %>
+      <%= check_box_tag nil, spell.key, true, id: box_id, disabled: true, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
+                        aria: { describedby: "#{box_id}_summary" }, data: { book_box: true } %>
+    <% elsif book && !local_assigns[:known_as] %>
+      <%# A spell of the spellbook: the box writes it in the book; « Préparé » shows once it is written %>
+      <%= check_box_tag "character[spellbook_keys][]", spell.key, book.include?(spell.key), id: box_id,
+                        class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
+                        aria: { describedby: "#{box_id}_summary" }, data: { count_for: "book", book_box: true } %>
+    <% elsif local_assigns[:always_prepared] || local_assigns[:known_as] %>
       <%= check_box_tag nil, spell.key, true, id: box_id, disabled: true, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px",
                                                aria: { describedby: "#{box_id}_summary" } %>
     <% else %>
@@ -25,6 +35,17 @@
       <p id="<%= box_id %>_summary" class="mt-0.5 truncate text-xs text-muted"><%= spell_summary_line(spell) %></p>
       <% if local_assigns[:known_as] %>
         <p class="mt-0.5 text-xs text-brass"><%= t("game_tables.character_steps.feat_spells.known_as", source: known_as) %></p>
+      <% end %>
+      <% if book && !local_assigns[:known_as] %>
+        <%# On every card of the book, its place kept (decision: a line shown only once written made the card grow and
+            shifted the row), disabled until the spell is written in the book (spell_choices_controller.js) %>
+        <% writable = local_assigns[:book_locked] || book.include?(spell.key) %>
+        <label class="mt-1.5 flex w-fit cursor-pointer items-center gap-2 text-xs font-medium text-ink has-disabled:cursor-not-allowed has-disabled:text-muted">
+          <%= check_box_tag "character[spell_keys][]", spell.key, writable && spell_chosen?(character, spell), id: "#{box_id}_prepared",
+                            disabled: !writable, class: SimpleFormFieldClasses::CHECKBOX,
+                            data: { count_for: "prepared", prepared_box: true } %>
+          <%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.prepared") %>
+        </label>
       <% end %>
     </div>
   </div>

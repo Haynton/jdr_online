@@ -20,12 +20,22 @@ export default class extends Controller {
     this.element.removeEventListener("change", this.count)
   }
 
-  count() {
-    this.groupTargets.forEach((group) => {
-      const chosenCount = group.querySelectorAll("input[type=checkbox]:checked:not(:disabled)").length
-      const allowedCount = Number(group.dataset.allowed)
-      const status = this.statusTargets.find((target) => group.contains(target))
-      status.textContent = group.dataset.template.replace("%{chosen}", chosenCount).replace("%{allowed}", allowedCount)
+  // Each count of a group: by default every box ticked; the spellbook of a wizard counts its own boxes and the spells
+  // prepared theirs (data-count-for). « Préparé » is enabled once the spell is in the book, unticked when it goes
+  count(event) {
+    const bookBox = event?.target?.closest?.("[data-book-box]")
+    const preparedBox = bookBox?.closest("li").querySelector("[data-prepared-box]")
+    if (preparedBox) {
+      preparedBox.disabled = !bookBox.checked
+      if (!bookBox.checked) preparedBox.checked = false
+    }
+    this.statusTargets.forEach((status) => {
+      const group = this.groupTargets.find((target) => target.contains(status))
+      const boxes = status.dataset.countFor ? `input[data-count-for="${status.dataset.countFor}"]` : "input[type=checkbox]"
+      const chosenCount = group.querySelectorAll(`${boxes}:checked:not(:disabled)`).length
+      const allowedCount = Number(status.dataset.allowed ?? group.dataset.allowed)
+      const template = status.dataset.template ?? group.dataset.template
+      status.textContent = template.replace("%{chosen}", chosenCount).replace("%{allowed}", allowedCount)
       status.toggleAttribute("data-invalid", chosenCount > allowedCount)
     })
   }

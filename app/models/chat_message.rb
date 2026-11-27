@@ -12,7 +12,7 @@ class ChatMessage < ApplicationRecord
     item_given money_given spells_changed dice_rolled dice_rolled_by_game_master initiative_rolled
     death_save_success death_save_failure death_save_critical_failure death_save_revived death_save_stable
     death_save_dead death_save_hit resource_used resource_pool_used spell_slot_spent hit_die_spent
-    weapon_masteries_changed level_granted level_reached level_reached_rolled class_choices_changed
+    weapon_masteries_changed level_granted level_reached level_reached_rolled class_choices_changed spell_copied
   ].freeze
   FEED_TARGET = "game-room-chat-feed".freeze
 

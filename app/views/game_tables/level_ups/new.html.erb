@@ -46,6 +46,7 @@
         <%= render "game_tables/level_ups/feat", level_up: @level_up if @level_up.feat_level? %>
         <%= render "game_tables/level_ups/expertise", level_up: @level_up if @level_up.expertise_count.positive? %>
         <%= render "game_tables/level_ups/feat_spell_swaps", level_up: @level_up if @level_up.swappable_feats.any? %>
+        <%= render "game_tables/level_ups/spellbook", level_up: @level_up if @level_up.spellbook_additions? %>
         <%= render "game_tables/level_ups/error", level_up: @level_up, attribute: :class_choices %>
         <% if (class_groups = @level_up.class_choice_groups_to_pick(nil)).any? %>
           <%= render "game_tables/character_steps/class_choices", character: @character, groups: class_groups,

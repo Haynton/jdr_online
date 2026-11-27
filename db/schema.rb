@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_130000) do
     t.jsonb "class_choices", default: {}, null: false
     t.jsonb "feats", default: [], null: false
     t.jsonb "ability_rolls"
+    t.jsonb "spellbook", default: [], null: false
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"
