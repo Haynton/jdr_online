@@ -10,6 +10,7 @@ class Character < ApplicationRecord
   include CharacterDraftSaving
   include CharacterSpellbook
   include CharacterHitPoints
+  include CharacterHigherLevelEquipment
   include CharacterInPlay
   include PlacedOnMaps
   include CharacterDescription
@@ -104,7 +105,8 @@ class Character < ApplicationRecord
       [field["key"], FieldTypes.of(field).initial_value(value)] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
-    inventory_items << starting_inventory
+    add_higher_level_gold
+    inventory_items << with_starting_magic_items(starting_inventory)
     self.status = :complete
   end
 

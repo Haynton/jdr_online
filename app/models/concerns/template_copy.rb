@@ -81,6 +81,13 @@ module TemplateCopy
     declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
   end
 
+  # What is paid without being carried (character_fields.price_lists: the inn, a lifestyle, a hireling...), shown to the
+  # game master in the game room; read in the template as it is now like the conditions
+  def price_lists
+    declared = sheet_template&.character_fields.to_h["price_lists"]
+    declared || template_snapshot.to_h.dig("character_fields", "price_lists") || []
+  end
+
   # How many magic items a character may be attuned to at a time (character_fields.attunement: limit, Attunable), read
   # in the template as it is now like the conditions; nil for no limit
   def attunement_limit

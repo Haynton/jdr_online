@@ -9,7 +9,8 @@ module CharacterDraftSaving
   def save_draft_step(step, sheet_values:, name: nil, **choices)
     saved_values = { sheet: sheet.deep_dup, name: self.name, spells: spells.deep_dup,
                      fighting_style: fighting_style, weapon_masteries: weapon_masteries.deep_dup,
-                     class_choices: class_choices.deep_dup }
+                     class_choices: class_choices.deep_dup, feats: feats.deep_dup,
+                     starting_magic_items: starting_magic_items.deep_dup }
     fill_step(step, sheet_values: sheet_values, name: name, **choices)
     self.required_sheet_fields = nil
     restore_refused_values(saved_values) if invalid?

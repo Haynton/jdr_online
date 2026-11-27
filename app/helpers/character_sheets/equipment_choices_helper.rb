@@ -59,7 +59,7 @@ module CharacterSheets
     def equipment_option_checked?(choice, option)
       return equipment_option_chosen?(choice, option) if choice.chosen_key
 
-      option == (choice.options.find { |candidate| candidate["items"].present? } || choice.options.first)
+      option == choice.default_option
     end
 
     def equipment_option_panel_classes(option)

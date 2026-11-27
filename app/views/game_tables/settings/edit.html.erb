@@ -44,7 +44,7 @@
                 <%= render "game_tables/settings/switch", form: form, attribute: attribute, hint: t(".#{attribute}_hint") %>
               <% end %>
             <% end %>
-            <% %w[hit_point_method starting_equipment_method].each do |rule| %>
+            <% %w[hit_point_method starting_equipment_method higher_level_equipment_method].each do |rule| %>
               <% next if @game_table.rule_methods(rule).empty? %>
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
                                                               methods: @game_table.rule_methods(rule) %>

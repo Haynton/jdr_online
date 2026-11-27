@@ -58,6 +58,21 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-panel-npcs", text: /Gobelin/
   end
 
+  test "the game master reads the price lists of the template, a player never" do
+    lists = [{ "key" => "inn", "label" => "Auberge (une nuit)",
+               "lines" => [{ "label" => "Modeste", "price" => "5 pa", "note" => "Un lit propre" }] }]
+    @game_table.sheet_template.update!(character_fields: @game_table.sheet_template.character_fields
+                                                          .merge("price_lists" => lists))
+    sign_in @game_master
+    get game_table_path(@game_table)
+    assert_equal GAME_MASTER_TOOLS.dup.insert(4, "Prix"), tool_names
+    assert_select "#game-room-panel-prices", text: /Auberge \(une nuit\).*Modeste.*5 pa.*Un lit propre/m
+
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_select "#game-room-panel-prices", count: 0
+  end
+
   test "the strip of the fighters shows the players out of the turns, the game master may start them" do
     sign_in @game_master
     get game_table_path(@game_table)

@@ -34,7 +34,7 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
     wait_for_token_at(3, 1)
     using_session(:game_master) do
       assert_selector "#game-room-board-game-master [data-board-token-id='#{@aria_token.id}']", visible: :all
-      assert_equal [3, 1], token_cell_shown("#game-room-board-tokens-game-master")
+      assert_token_shown_at([3, 1], "#game-room-board-tokens-game-master")
     end
   end
 
@@ -139,9 +139,14 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
     flunk "the token is at #{@aria_token.values_at(:column, :row)}, not at #{[column, row]}"
   end
 
-  def token_cell_shown(tokens_selector)
-    tokens = JSON.parse(find(tokens_selector, visible: :all)["data-tokens"])
-    tokens.find { |token| token["id"] == @aria_token.id }.values_at("column", "row")
+  # Read again until the stream arrives: an element replaced meanwhile gives no attribute (nil) to Capybara
+  def assert_token_shown_at(cell, tokens_selector)
+    assert_selector tokens_selector, visible: :all do |tokens_element|
+      tokens_json = tokens_element["data-tokens"]
+      tokens_json && JSON.parse(tokens_json).any? do |token|
+        token["id"] == @aria_token.id && token.values_at("column", "row") == cell
+      end
+    end
   end
 
   def open_room_as(username)

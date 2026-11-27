@@ -22,6 +22,15 @@
       { "type": "items_only", "label": "Items only", "help": "Each player takes the items offered by their class and background." },
       { "type": "gold_only", "label": "Gold only", "help": "Each player gets gold pieces and buys their equipment themselves." }
     ],
+    "higher_level_equipment_methods": [
+      { "type": "by_level", "label": "By level", "help": "More gold and magic items by level: 1 common item at levels 2 to 4; 500 GP + 1d10 × 25 GP, 1 common and 1 uncommon at levels 5 to 10; 5,000 GP + 1d10 × 250 GP, 2 common, 3 uncommon and 1 rare at levels 11 to 16; 20,000 GP + 1d10 × 250 GP, 2 common, 4 uncommon, 3 rare and 1 very rare from level 17.", "tiers": [
+        { "from_level": 2, "magic_items": { "common": 1 } },
+        { "from_level": 5, "gold": 500, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 25 }, "magic_items": { "common": 1, "uncommon": 1 } },
+        { "from_level": 11, "gold": 5000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 3, "rare": 1 } },
+        { "from_level": 17, "gold": 20000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 4, "rare": 3, "very-rare": 1 } }
+      ] },
+      { "type": "normal_only", "label": "Normal equipment only", "help": "The same starting equipment as at level 1, with no more gold nor magic item." }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },
@@ -48,6 +57,13 @@
       { "key": "restrained", "label": "Restrained", "description": "Your Speed is 0 and can't increase. Attack rolls against you have Advantage, and your attack rolls have Disadvantage. You have Disadvantage on Dexterity saving throws." },
       { "key": "stunned", "label": "Stunned", "description": "You have the Incapacitated condition and automatically fail Strength and Dexterity saving throws. Attack rolls against you have Advantage." },
       { "key": "unconscious", "label": "Unconscious", "description": "You have the Incapacitated and Prone conditions, and you drop what you're holding. Your Speed is 0, you automatically fail Strength and Dexterity saving throws, attack rolls against you have Advantage, and any hit from within 5 feet is a Critical Hit. You're unaware of your surroundings." }
+    ],
+    "price_lists": [
+      {"key": "inn", "label": "Inn (one night)", "lines": [{"label": "Squalid", "price": "7 CP"}, {"label": "Poor", "price": "1 SP"}, {"label": "Modest", "price": "5 SP"}, {"label": "Comfortable", "price": "8 SP"}, {"label": "Wealthy", "price": "2 GP"}, {"label": "Aristocratic", "price": "4 GP"}]},
+      {"key": "meals", "label": "Meals", "lines": [{"label": "Squalid", "price": "1 CP"}, {"label": "Poor", "price": "2 CP"}, {"label": "Modest", "price": "1 SP"}, {"label": "Comfortable", "price": "2 SP"}, {"label": "Wealthy", "price": "3 SP"}, {"label": "Aristocratic", "price": "6 SP"}]},
+      {"key": "lifestyle", "label": "Lifestyle (per day)", "lines": [{"label": "Wretched", "price": "free", "note": "Sleeping outside, living on charity"}, {"label": "Squalid", "price": "1 SP"}, {"label": "Poor", "price": "2 SP"}, {"label": "Modest", "price": "1 GP"}, {"label": "Comfortable", "price": "2 GP"}, {"label": "Wealthy", "price": "4 GP", "note": "With servants"}, {"label": "Aristocratic", "price": "10 GP", "note": "Your wealth gets noticed"}]},
+      {"key": "services", "label": "Hirelings and services", "lines": [{"label": "Skilled hireling", "price": "2 GP per day", "note": "A mercenary, an artisan, a scribe"}, {"label": "Untrained hireling", "price": "2 SP per day", "note": "A porter, a laborer"}, {"label": "Messenger", "price": "2 CP per mile"}, {"label": "Stabling", "price": "5 SP per day"}, {"label": "Ship passage, hammock", "price": "5 SP per day"}, {"label": "Ship passage, cabin", "price": "2 GP per day"}, {"label": "Ship repair", "price": "20 GP per HP", "note": "One day per HP; half in a shipyard"}, {"label": "Barding for a mount", "price": "4 × the armor", "note": "Twice its weight"}]},
+      {"key": "spellcasting", "label": "Spellcasting services", "lines": [{"label": "Cantrip", "price": "30 GP", "note": "Village, town or city"}, {"label": "Level 1", "price": "50 GP", "note": "Village, town or city"}, {"label": "Level 2", "price": "200 GP", "note": "Village, town or city"}, {"label": "Level 3", "price": "300 GP", "note": "Town or city"}, {"label": "Levels 4 and 5", "price": "2,000 GP", "note": "Town or city"}, {"label": "Levels 6 to 8", "price": "20,000 GP", "note": "City only"}, {"label": "Level 9", "price": "100,000 GP", "note": "City only, plus costly components"}]}
     ],
     "dice_rolls": {
       "modes": [
@@ -332,7 +348,7 @@
   },
   "item_fields": {
     "fields": [
-      {"key": "category", "filter": true, "label": "Category", "section": "General", "listed": true, "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Potion", "Treasure", "Wondrous item", "Ring", "Wand", "Staff", "Rod", "Scroll"]},
+      {"key": "category", "filter": true, "label": "Category", "section": "General", "listed": true, "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Mount", "Tack", "Vehicle", "Food and drink", "Potion", "Treasure", "Wondrous item", "Ring", "Wand", "Staff", "Rod", "Scroll"]},
       {"key": "damage", "label": "Damage", "section": "Weapon", "shown_with": {"field": "category", "values": ["Weapon"]}, "type": "text"},
       {"key": "weapon_properties", "label": "Properties", "section": "Weapon", "shown_with": {"field": "category", "values": ["Weapon"]}, "type": "text"},
       {"key": "armor_class", "label": "Armor class", "section": "Protection", "shown_with": {"field": "category", "values": ["Armor", "Shield"]}, "type": "text"},
