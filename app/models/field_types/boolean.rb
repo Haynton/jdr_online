@@ -29,5 +29,10 @@ module FieldTypes
     def summary_text(value, _field)
       I18n.t(value ? "answer_yes" : "answer_no", scope: "game_tables.character_steps.summary")
     end
+
+    # Beside the name, its label when it is true ("Demande un lien"), nothing otherwise
+    def listed_text(value, field)
+      field["label"] if value == true
+    end
   end
 end

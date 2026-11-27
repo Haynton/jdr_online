@@ -397,6 +397,7 @@ en:
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
           wrong_effect_target: "%{part} › %{field} › %{option}: the effect “%{effect}” must name “%{expected}” fields (%{target})"
           wrong_reference: "%{part} › %{field}: “%{parameter}” must name a “%{expected}” field (%{target})"
+          invalid_shown_with: "%{part} › %{field}: “shown_with” must name a list of the same part and some of its options"
         user:
           attributes:
             avatar: *avatar_errors
@@ -1128,8 +1129,8 @@ en:
         hint: "The field that gives the level of the character."
         label: "Level field"
       listed:
-        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP)."
-        label: "Shown in the NPC list"
+        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP), or under the name of an item, in its window (Ring · Rare · Requires attunement)."
+        label: "Shown beside the name"
       max:
         hint: "The highest value allowed. Optional."
         label: "Maximum"
@@ -1183,6 +1184,12 @@ en:
       section:
         hint: "The group of the sheet where the field shows."
         label: "Section"
+      shown_with:
+        hint: "The field only shows for some values of a list (the damage of an item, for a weapon only)."
+        label: "Shown depending on a list"
+      unit:
+        hint: "What the number counts, written in its field (kg, gp)."
+        label: "Unit"
       short:
         hint: "A single line instead of a text area."
         label: "Short text"

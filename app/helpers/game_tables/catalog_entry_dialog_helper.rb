@@ -65,11 +65,22 @@ module GameTables
     end
 
     def boxed_cell?(field)
-      sheet_flow_group(field) == :boxes
+      catalog_flow_group(field) == :boxes
+    end
+
+    # Its place in the grid of the window: as on a sheet, but a number is a field beside the lists
+    # (FieldTypes::Base#form_flow_group)
+    def catalog_flow_group(field)
+      FieldTypes.of(field).form_flow_group(field)
+    end
+
+    # Its look in the window: a number with its "−" and "+" inside its field (FieldTypes::Base#form_partial_for)
+    def catalog_field_partial(field)
+      FieldTypes.of(field).form_partial_for(field)
     end
 
     def catalog_entry_cell_classes(field)
-      group = sheet_flow_group(field)
+      group = catalog_flow_group(field)
       return CELL_CLASSES.fetch(group, PICKS_CELL_CLASSES) unless group == :picks
 
       short_picks?(field) ? SHORT_PICKS_CELL_CLASSES : PICKS_CELL_CLASSES
@@ -88,12 +99,12 @@ module GameTables
 
     def catalog_group_rank(field)
       groups = CharacterSheets::LayoutHelper::FLOW_GROUPS
-      group = short_picks?(field) ? :lists : sheet_flow_group(field)
+      group = short_picks?(field) ? :lists : catalog_flow_group(field)
       groups.index(group) || groups.size
     end
 
     def short_picks?(field)
-      sheet_flow_group(field) == :picks && field["options"].to_a.size <= SHORT_PICKS_COUNT
+      catalog_flow_group(field) == :picks && field["options"].to_a.size <= SHORT_PICKS_COUNT
     end
 
     # The table's own entry changes the original of its template (same key): "Changed"; one of its own: "Added"

@@ -25,12 +25,17 @@ module FieldParameters
     # The level from which a list is asked (the subclass, from level 3)
     "from_level" => :integer,
     "options" => :lines, "granted" => :lines, "labels" => :lines,
+    # What a number counts, written in its field in a plain form (kg, po)
+    "unit" => :text,
     "column" => :choice, "from_table" => :choice, "on_rest" => :choice, "modifier" => :choice, "rule" => :choice,
     # Set once and for all: the key names the field everywhere (forms, sheets saved), the type its whole behavior;
     # the effects and the descriptions of the options will have their own editor
     "key" => :fixed, "type" => :fixed, "effects" => :fixed, "descriptions" => :fixed,
     # The options of a list for each option of the list it depends on (the subclasses of each class)
-    "options_by" => :fixed
+    "options_by" => :fixed,
+    # Shown only for some values of a list of the same part: { "field" => "category", "values" => [...] } (the damage
+    # of an item for a weapon only, in the window of a catalog entry)
+    "shown_with" => :fixed
   }.freeze
 
   # What the game master tunes on a template duplicated from a working one (decision: the window of a field asks only
@@ -39,9 +44,10 @@ module FieldParameters
   # is added, or in the editor from scratch). The others build the sheet (section, column, asked at creation,
   # internal, shown on the summary only, the rule of a value and the fields it reads...): changed on a duplicated
   # template they would break its creation, they belong to the editor from scratch (later)
-  TUNED = %w[help abbreviation min max step options count granted total max_per_ability].freeze
-  # Tuned only where the field already has one: an abbreviation names an ability (FOR), a step a speed in half metres
-  SHOWN_WHEN_SET = %w[abbreviation step].freeze
+  TUNED = %w[help abbreviation unit min max step options count granted total max_per_ability].freeze
+  # Tuned only where the field already has one: an abbreviation names an ability (FOR), a step a speed in half metres,
+  # a unit what a number counts (kg)
+  SHOWN_WHEN_SET = %w[abbreviation step unit].freeze
 
   # Whether the game master tunes this setting of this field on a duplicated template
   def self.tuned?(parameter, field)

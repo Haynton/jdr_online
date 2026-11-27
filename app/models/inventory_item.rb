@@ -39,9 +39,18 @@ class InventoryItem < ApplicationRecord
   def self.enchanted(entry, enchantment, quantity)
     bonus = enchantment.key.match(/-plus-(\d)\z/)
     name = bonus ? "#{entry.name} +#{bonus[1]}" : "#{entry.name}, #{enchantment.name}"
-    magic = enchantment.properties.except("category", "applies_to", "applies_to_keys")
     new(key: "#{entry.key}+#{enchantment.key}", name: name.truncate(NAME_MAX_LENGTH), quantity: quantity,
         description: [entry.description, enchantment.description].compact_blank.join("\n\n"),
-        properties: entry.properties.merge(magic))
+        properties: enchanted_properties(entry.properties, enchantment.properties))
   end
+
+  # The values of the magic over those of the item, but its weight stays the item's, and its value is the sum of both
+  # (SRD 5.2.1: a +1 longsword is worth the 400 GP of an uncommon magic item plus the 15 GP of the longsword)
+  def self.enchanted_properties(item, magic)
+    properties = item.merge(magic.except("category", "applies_to", "applies_to_keys", "value", "weight"))
+    values = [item["value"], magic["value"]].compact
+    properties["value"] = values.sum if values.any?
+    properties
+  end
+  private_class_method :enchanted_properties
 end

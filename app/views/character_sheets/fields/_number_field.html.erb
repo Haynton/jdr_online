@@ -1,0 +1,29 @@
+<%# A number in a plain form (the window of a catalog entry; FieldTypes::Number#form_partial_for): its label, then a
+    field like the others with "−" and "+" inside it, named after the field ("Diminuer Poids"), and its unit beside the
+    value (« kg », said to screen readers with the label); its help and its error under it, as for a list. The buttons
+    are shown by number_stepper_controller.js: without JavaScript, the number is typed (CharacterSheets::NumberFieldHelper) %>
+<% error = sheet_field_error(character, field) %>
+<% hint = sheet_field_hint(field) %>
+<%= tag.div class: "#{SimpleFormFieldClasses::FIELD_BLOCK} w-full", data: sheet_help_bubble_block_data(hint) do %>
+  <%= render "character_sheets/fields/label", field: field, hint: hint %>
+  <%= tag.div class: CharacterSheets::NumberFieldHelper::FIELD_CLASSES, data: number_field_stepper_data(field) do %>
+    <button type="button" hidden class="<%= CharacterSheets::NumberFieldHelper::BUTTON_CLASSES %>"
+            aria-label="<%= t("game_tables.characters.new.decrease", label: field["label"]) %>"
+            data-number-stepper-target="button" data-action="number-stepper#decrease">
+      <%= render "shared/icons/minus" %>
+    </button>
+    <%= number_field_input(character, field) %>
+    <% if field["unit"] %>
+      <span class="<%= CharacterSheets::NumberFieldHelper::UNIT_CLASSES %>" aria-hidden="true"><%= field["unit"] %></span>
+    <% end %>
+    <button type="button" hidden class="<%= CharacterSheets::NumberFieldHelper::BUTTON_CLASSES %>"
+            aria-label="<%= t("game_tables.characters.new.increase", label: field["label"]) %>"
+            data-number-stepper-target="button" data-action="number-stepper#increase">
+      <%= render "shared/icons/plus" %>
+    </button>
+  <% end %>
+  <%= render "character_sheets/fields/hint", field: field, hint: hint %>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+<% end %>

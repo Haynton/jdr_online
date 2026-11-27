@@ -6,7 +6,10 @@ module FieldTypes
     include NumberChecks
 
     KEY = "number".freeze
-    OWN_PARAMETERS = %w[min max step labels from_table initial_from].freeze
+    OWN_PARAMETERS = %w[min max step labels unit from_table initial_from].freeze
+    # In a plain form (the window of a catalog entry): a field like the others, with its "−" and "+" inside it and its
+    # unit (decision of 27 November: the box of a sheet broke the grid of the window, beside the lists)
+    FORM_PARTIAL = "character_sheets/fields/number_field".freeze
     REFERENCES = { "initial_from" => "computed" }.freeze
 
     def partial
@@ -19,6 +22,14 @@ module FieldTypes
 
     def flow_group(field)
       field["labels"] ? :lists : super
+    end
+
+    def form_partial_for(field)
+      field["labels"] ? INPUT_PARTIAL : FORM_PARTIAL
+    end
+
+    def form_flow_group(_field)
+      :lists
     end
 
     def list_choices(field)
@@ -56,6 +67,12 @@ module FieldTypes
 
     def minimum(field)
       field["min"]
+    end
+
+    # Beside the name, a number says what it counts: its abbreviation, or its label ("Bonus magique +1", "CA +2")
+    def listed_text(value, field)
+      name = field["abbreviation"] || field["label"]
+      "#{name} #{summary_text(value, field)}"
     end
   end
 end
