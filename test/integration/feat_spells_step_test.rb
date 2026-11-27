@@ -58,6 +58,17 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test "the skills of the origin feat of the human are skills only, never a saving throw" do
+    @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
+    sign_in @player
+    patch game_table_character_step_path(@game_table, "feats"),
+          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" },
+                                 species_feat: { key: "skilled",
+                                                 skills: %w[strength_save dexterity_save constitution_save] } } }
+    assert_response :unprocessable_content
+    assert_not @character.reload.sheet["dexterity_save"]
+  end
+
   test "the trait of the human adds one skill of any list, but only one outside the list of its class" do
     @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
     sign_in @player

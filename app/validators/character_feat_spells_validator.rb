@@ -47,9 +47,12 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     errors.each { |error| character.errors.add(:feats, error) }
   end
 
+  # As many skills as the feat gives, and only skills: a key of another bonus field (a saving throw) sent by hand is
+  # refused, as at a level gained (LevelUpFeat#feat_skills_picked)
   def check_feat_skills(character, feat, entry)
     count = feat.effects.dig("skill_picks", "count").to_i
-    return if count.zero? || Array(entry["skills"]).size == count
+    skills = Array(entry["skills"])
+    return if count.zero? || (skills.size == count && (skills - character.skill_choices.skill_keys).empty?)
 
     character.errors.add(:feats, :skills, count: count)
   end
