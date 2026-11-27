@@ -51,6 +51,23 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert_equal ["Gobelin", 2], [token.reload.displayed_name, token.shown_number]
   end
 
+  test "renaming a token never changes the numbers of the others, nor the next one given" do
+    first, second, third = [1, 2, 3].map do |column|
+      @tavern.board_tokens.create!(character: @goblin, column:, row: 1, hidden: false)
+    end
+    hidden = @tavern.board_tokens.create!(character: @goblin, column: 4, row: 1)
+
+    second.update!(name: "Chef gobelin")
+    hidden.update!(name: "Gobelin espion")
+    assert_equal [nil, nil, 3], [first, second, third].each(&:reload).map(&:shown_number)
+    assert_equal [1, 2, 3], [first, second, third].map(&:number)
+
+    hidden.update!(hidden: false, name: nil)
+    assert_equal 4, hidden.reload.shown_number
+    second.update!(name: nil)
+    assert_equal 2, second.reload.shown_number
+  end
+
   test "a name longer than 60 characters is refused" do
     token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
 
