@@ -8,7 +8,7 @@ module GameTables
     def create
       creature = @game_table.npcs.find(params.require(:character_id))
       token = @board_map.board_tokens.build(character: creature, column: params[:column], row: params[:row])
-      return head :unprocessable_content unless token.save
+      return head :unprocessable_content unless token.save_on_its_cell
 
       answer_with_the_tokens
     end

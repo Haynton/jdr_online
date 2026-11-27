@@ -26,6 +26,13 @@ class BoardToken < ApplicationRecord
     letters
   end
 
+  def save_on_its_cell
+    save
+  rescue ActiveRecord::RecordNotUnique
+    errors.add(:base, :cell_taken)
+    false
+  end
+
   def shown_number
     number unless name || number.nil? || number == 1
   end

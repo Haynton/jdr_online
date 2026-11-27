@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_220000) do
     t.integer "number"
     t.string "name", limit: 60
     t.index ["character_id"], name: "index_board_tokens_on_character_id"
+    t.index ["game_map_id", "column", "row"], name: "index_board_tokens_on_cell", unique: true
     t.index ["game_map_id"], name: "index_board_tokens_on_game_map_id"
     t.check_constraint "\"column\" >= 0 AND \"row\" >= 0", name: "board_tokens_cell_check"
   end

@@ -4,11 +4,11 @@ class BoardTokenCopier
   end
 
   def call
-    return if @game_map.tokens_copied?
+    @game_map.with_lock do
+      next if @game_map.tokens_copied?
 
-    GameMap.transaction do
       @game_map.placed_tokens.each { |placed_token| copy(placed_token) }
-      @game_map.update!(tokens_copied_at: Time.current)
+      @game_map.update_column(:tokens_copied_at, Time.current)
     end
   end
 

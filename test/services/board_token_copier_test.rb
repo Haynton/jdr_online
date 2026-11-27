@@ -32,6 +32,25 @@ class BoardTokenCopierTest < ActiveSupport::TestCase
     assert_empty @tavern.board_tokens
   end
 
+  test "two placings of the map at once copy the tokens once" do
+    late_placing = GameMap.find(@tavern.id)
+    BoardTokenCopier.new(@tavern).call
+
+    BoardTokenCopier.new(late_placing).call
+
+    assert_equal 2, @tavern.board_tokens.count
+  end
+
+  test "a map saved before a newer rule of the drawing still gets its tokens copied" do
+    @tavern.update_columns(layout: @tavern.layout.merge("floors" => @tavern.layout["floors"].merge("9,9" => "lava")))
+    assert_not @tavern.reload.valid?
+
+    BoardTokenCopier.new(@tavern).call
+
+    assert_equal 2, @tavern.board_tokens.count
+    assert_predicate @tavern.reload, :tokens_copied?
+  end
+
   test "a token of the editor left on the empty ground is not copied, and the others are" do
     @tavern.layout["floors"].delete("1,1")
     @tavern.save!

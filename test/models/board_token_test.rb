@@ -25,6 +25,16 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert @tavern.board_tokens.build(character: @goblin, column: 3, row: 2).valid?
   end
 
+  test "two tokens put at once on the same cell: the database refuses the second, said as a cell taken" do
+    @tavern.board_tokens.create!(character: @goblin, column: 2, row: 2)
+    late_token = BoardToken.new(game_map: @tavern, character: @goblin, column: 2, row: 2)
+    late_token.define_singleton_method(:cell_free) { nil }
+
+    assert_not late_token.save_on_its_cell
+    assert late_token.errors.of_kind?(:base, :cell_taken)
+    assert_equal 1, @tavern.board_tokens.count
+  end
+
   test "a token is never put on the empty ground nor on a blocked zone, but one already there may change" do
     @tavern.layout["floors"].delete("5,5")
     @tavern.layout["blocked"] = ["6,6"]
