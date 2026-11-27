@@ -28,12 +28,15 @@ module CharacterFeatOrigins
     key && feat_list.find(key)
   end
 
-  # The origin feats of its creation, to show them: [feat, entry (what was picked for it), its source]
+  # The origin feats of its creation and those it took at a level (at its creation or gained), to show them: [feat,
+  # entry (what was picked for it), its source (nil for a level)]
   def origin_feats_taken
     background = background_feat && [background_feat, origin_feat_picks, CharacterFeats::BACKGROUND_SOURCE]
     species = species_feat_entry.presence
     species &&= [feat_list.find(species["key"]), species, CharacterFeats::SPECIES_SOURCE]
-    [background, species].compact.select(&:first)
+    levels = level_feat_entries.sort_by { |entry| entry["level"].to_i }
+                               .map { |entry| [feat_list.find(entry["key"]), entry, nil] }
+    ([background, species] + levels).compact.select(&:first)
   end
 
   # Which feat gives each skill its feats give ({ "arcana" => "Doué (Humain)" })

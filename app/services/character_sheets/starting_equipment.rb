@@ -12,6 +12,16 @@ module CharacterSheets
       def chosen_option
         options.find { |option| option["key"] == chosen_key }
       end
+
+      # The option ticked before any choice: the first one with items, otherwise the first one
+      def default_option
+        options.find { |option| option["items"].present? } || options.first
+      end
+
+      # The option the page shows ticked: the one chosen, the default one before a choice
+      def shown_option
+        chosen_key ? chosen_option : default_option
+      end
     end
 
     # An item of the equipment: its catalog entry, how many, a note ("de prières")
@@ -38,6 +48,11 @@ module CharacterSheets
     # Every item of the options chosen, the items of your choice once picked
     def chosen_items
       choices.flat_map { |choice| items_of(choice.chosen_option, choice.picks) }
+    end
+
+    # The items of the options the page shows ticked: those chosen, the default ones before a choice
+    def shown_items
+      choices.flat_map { |choice| items_of(choice.shown_option, choice.picks) }
     end
 
     def gold

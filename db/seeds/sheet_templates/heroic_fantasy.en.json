@@ -21,6 +21,15 @@
       { "type": "items_only", "label": "Items only", "help": "Each player takes the items offered by their class and background." },
       { "type": "gold_only", "label": "Gold only", "help": "Each player gets gold pieces and buys their equipment themselves." }
     ],
+    "higher_level_equipment_methods": [
+      { "type": "by_level", "label": "By level", "help": "More gold and magic items by level: 1 common item at levels 2 to 4; 500 GP + 1d10 × 25 GP, 1 common and 1 uncommon at levels 5 to 10; 5,000 GP + 1d10 × 250 GP, 2 common, 3 uncommon and 1 rare at levels 11 to 16; 20,000 GP + 1d10 × 250 GP, 2 common, 4 uncommon, 3 rare and 1 very rare from level 17.", "tiers": [
+        { "from_level": 2, "magic_items": { "common": 1 } },
+        { "from_level": 5, "gold": 500, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 25 }, "magic_items": { "common": 1, "uncommon": 1 } },
+        { "from_level": 11, "gold": 5000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 3, "rare": 1 } },
+        { "from_level": 17, "gold": 20000, "gold_roll": { "dice": 1, "sides": 10, "multiplier": 250 }, "magic_items": { "common": 2, "uncommon": 4, "rare": 3, "very-rare": 1 } }
+      ] },
+      { "type": "normal_only", "label": "Normal equipment only", "help": "The same starting equipment as at level 1, with no more gold nor magic item." }
+    ],
     "creation_steps": [
       { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },

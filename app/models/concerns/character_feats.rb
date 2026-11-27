@@ -6,6 +6,7 @@
 module CharacterFeats
   extend ActiveSupport::Concern
   include CharacterFeatOrigins
+  include CharacterLevelFeats
 
   def feat_list
     CharacterSheets::Feats.new(self)

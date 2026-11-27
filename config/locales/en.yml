@@ -125,6 +125,7 @@ en:
         name: "Character name"
         owner_character: "Character"
         spells: "Spells"
+        starting_magic_items: "Starting magic items"
       game_table:
         board_game_map: "Map on the board"
         cover_image: "Cover"
@@ -134,6 +135,7 @@ en:
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
         starting_equipment_method_choice: "Starting equipment"
+        higher_level_equipment_method_choice: "Equipment at higher levels"
         ability_rerolls: "Roll the ability dice again"
         ability_scores_typed: "Ability scores typed by hand"
         level_feats: "Feats at higher levels"
@@ -238,11 +240,14 @@ en:
               too_many:
                 one: "“%{group}”: %{count} at most"
                 other: "“%{group}”: %{count} at most"
+            starting_magic_items:
+              not_picked: "need the item of rarity “%{rarity}”"
             feats:
               cantrips: "include cantrips to review: pick as many as the feat gives, in its list"
               skills:
                 one: "ask 1 skill of the feat"
                 other: "ask %{count} skills of the feat"
+              level_feat: "of level %{level}: %{detail}"
               species_feat: "ask an origin feat of the list"
               spell: "ask a level 1 spell of the list of the feat"
               spell_ability: "ask the ability to cast the spells of the feat"
@@ -300,6 +305,7 @@ en:
           invalid_ability_method_dice: "The method “%{method}”: the dice (dice, sides, keep_highest) must be positive whole numbers, keeping no more dice than rolled"
           invalid_rule_method_label: "The method “%{method}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_point_buy: "The method “%{method}”: the points must be a positive whole number, and each score a whole cost"
+          invalid_equipment_tiers: "The way “%{method}”: it needs tiers, each from a level higher than the one before, with gold, a roll (dice, sides, multiplier) and magic items by rarity in positive whole numbers"
           invalid_standard_array: "The method “%{method}”: it needs one value per ability (%{count} in all), positive whole numbers"
           missing_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is required"
           unknown_rule_method: "The method “%{type}” (%{rule}) is unknown"
@@ -1236,6 +1242,7 @@ en:
         ability_methods: "ability scores"
         hit_point_methods: "hit points"
         starting_equipment_methods: "starting equipment"
+        higher_level_equipment_methods: "equipment at higher levels"
       field_types:
         ability: "ability"
         ability_bonuses: "ability bonuses"
@@ -1751,6 +1758,8 @@ en:
         with_list: "%{feat}: %{list}"
       origin_feats:
         background_title: "Feat from your background"
+        level_hint: "Your character starts at level %{level}: it takes the feats of the levels its class improves, as if it had gained them."
+        level_title: "Level %{level} feat"
         nothing_to_pick: "Nothing to pick: this feat is already yours."
       feat_spells:
         ability: "Ability to cast them"
@@ -1782,6 +1791,15 @@ en:
         style: "Fighting style"
         style_hint: "Pick a style: it applies to all your attacks or to your defense."
       band_label: "Steps of your character"
+      magic_item_choices:
+        enchantment_hint: "A magic weapon or armour goes on an item of your starting equipment: change your equipment above, then save, to see others."
+        gold: "+ %{amount} gold pieces and %{roll}, rolled when you finish your character."
+        gold_fixed: "+ %{amount} gold pieces."
+        gold_roll: "%{dice}d%{sides} × %{multiplier} gold pieces"
+        gold_rolled_only: "+ %{roll}, rolled when you finish your character."
+        hint: "Your character starts at level %{level}: it gets more gold and magic items."
+        numbered_place: "%{rarity} %{number}"
+        title: "Starting magic items"
       equipment_choices:
         armor_class: "AC %{value}"
         choose_prompt: "Choose…"
@@ -2087,6 +2105,7 @@ en:
         game: "Game"
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
+        higher_level_equipment_method_choice_hint: "What a character created above level 1 gets more: gold (part of it rolled at the end of the creation) and magic items to pick, by its level."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
         ability_rerolls_hint: "With the dice roll, the player may roll again as often as they like. Off: one roll only, kept."
         ability_scores_typed_hint: "With the dice roll, the player may type their scores (real dice at the table). Off: only the results rolled here."

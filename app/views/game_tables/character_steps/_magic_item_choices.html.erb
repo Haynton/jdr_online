@@ -1,0 +1,37 @@
+<%# What a character created above level 1 gets more (decision of 27 November, CharacterHigherLevelEquipment): the gold
+    of its level (its rolled part rolled by the server when the character is done), then one list per magic item its
+    level gives, by rarity: a magic item of the table, or a magic put on an item of its equipment (« Épée longue +1 »),
+    sent as character[starting_magic_items][<place>]. Nothing at level 1, or with the normal equipment only %>
+<% tier = character.higher_level_equipment_tier %>
+<% if tier %>
+  <% places = character.magic_item_places %>
+  <section class="mt-12 flex min-w-0 flex-col gap-4" aria-labelledby="starting-magic-items-title">
+    <div>
+      <h2 id="starting-magic-items-title" class="text-lg leading-7 font-bold text-ink"><%= t("#{CharacterSheets::MagicItemChoicesHelper::SCOPE}.title") %></h2>
+      <p class="pt-1 text-sm text-muted"><%= t("#{CharacterSheets::MagicItemChoicesHelper::SCOPE}.hint", level: character.current_level) %></p>
+    </div>
+    <% if (gold_text = higher_level_gold_text(tier)) %>
+      <p class="text-sm font-medium text-brass"><%= gold_text %></p>
+    <% end %>
+    <% character.errors.full_messages_for(:starting_magic_items).each do |message| %>
+      <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
+    <% end %>
+    <% if places.any? %>
+      <ul class="grid max-w-3xl gap-4 sm:grid-cols-2">
+        <% places.each do |place| %>
+          <% select_id = "starting-magic-item-#{place.key}" %>
+          <li>
+            <%= label_tag select_id, magic_item_place_label(character, place, places), class: "text-xs font-medium text-muted" %>
+            <div class="relative mt-1">
+              <%= select_tag "character[starting_magic_items][#{place.key}]", magic_item_options(character, place),
+                             include_blank: t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.choose_prompt"), id: select_id,
+                             class: CharacterSheets::FieldsHelper::SELECT_CLASSES %>
+              <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+      <p class="text-sm text-muted"><%= t("#{CharacterSheets::MagicItemChoicesHelper::SCOPE}.enchantment_hint") %></p>
+    <% end %>
+  </section>
+<% end %>
