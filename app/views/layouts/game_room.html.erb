@@ -22,6 +22,7 @@
          data-action="keydown.esc->game-room-panels#close keydown.esc@window->room-board#dropCreatureWithKeys">
       <%= game_table_stream_from(@game_room.game_table) %>
       <%= game_table_stream_from(@game_room.game_table, game_master_only: true) if @game_room.game_master? %>
+      <%= game_table_stream_from(@game_room.game_table, participation: @game_room.participation) unless @game_room.game_master? %>
       <main class="absolute inset-0">
         <%= render "shared/flashes" %>
         <%= yield %>

@@ -1,5 +1,6 @@
 <% content_for :title, @game_table.name %>
 <%= render "game_rooms/board", game_table: @game_table, game_master: @game_room.game_master? %>
+<%= render "game_rooms/board_own_tokens", game_table: @game_table, participation: @game_room.participation unless @game_room.game_master? %>
 <% if @game_room.game_master? %>
   <p hidden class="<%= GameRoomHelper::ISLAND_CLASSES %> absolute top-22 left-1/2 z-40 -translate-x-1/2 px-4 py-2 text-sm text-ink"
      role="status" data-room-board-target="hint">

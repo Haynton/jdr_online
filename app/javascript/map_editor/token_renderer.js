@@ -3,7 +3,7 @@
 // name, and its number when the same character has several tokens on the map (a band: « Gobelin 2 »)
 import { cellSize } from "map_editor/square_grid"
 import { createSvgElement } from "map_editor/svg"
-import { enemyToken, npcToken, ink, tokenLetters, allowedMark } from "map_editor/palette"
+import { enemyToken, npcToken, playerToken, ink, tokenLetters, allowedMark } from "map_editor/palette"
 
 const tokenRadius = cellSize * 0.4
 const hiddenTokenOpacity = 0.5
@@ -64,15 +64,33 @@ export function drawHiddenMark(group, centerX, centerY) {
                              stroke: tokenLetters, "stroke-width": 0.8, "stroke-linecap": "round" }, group)
 }
 
-export function drawToken(group, centerX, centerY, { name, kind }, number = null) {
+export function drawToken(group, centerX, centerY, { id, name, kind, picture }, number = null) {
   createSvgElement("circle", { cx: centerX, cy: centerY + 1, r: tokenRadius, fill: ink, opacity: 0.25 }, group)
-  createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius, fill: kind === "monster" ? enemyToken : npcToken,
-                               stroke: tokenLetters, "stroke-width": 1.4 }, group)
-  const letters = createSvgElement("text", { x: centerX, y: centerY, "text-anchor": "middle", "dominant-baseline": "central",
-                                             fill: tokenLetters, "font-size": 8, "font-weight": 700,
-                                             "font-family": "Inter, sans-serif" }, group)
-  letters.textContent = initialsOf(name)
+  createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius, fill: tokenColorOf(kind) }, group)
+  if (picture) {
+    drawPicture(group, centerX, centerY, picture, `board-token-picture-${id}`)
+  } else {
+    const letters = createSvgElement("text", { x: centerX, y: centerY, "text-anchor": "middle",
+                                               "dominant-baseline": "central", fill: tokenLetters, "font-size": 8,
+                                               "font-weight": 700, "font-family": "Inter, sans-serif" }, group)
+    letters.textContent = initialsOf(name)
+  }
+  createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius, fill: "none", stroke: tokenLetters,
+                               "stroke-width": 1.4 }, group)
   if (number) drawNumber(group, centerX + tokenRadius * 0.75, centerY - tokenRadius * 0.75, number)
+}
+
+function tokenColorOf(kind) {
+  if (kind === "monster") return enemyToken
+  return kind === "pc" ? playerToken : npcToken
+}
+
+function drawPicture(group, centerX, centerY, url, clipId) {
+  const clip = createSvgElement("clipPath", { id: clipId }, group)
+  createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius }, clip)
+  createSvgElement("image", { href: url, x: centerX - tokenRadius, y: centerY - tokenRadius, width: tokenRadius * 2,
+                              height: tokenRadius * 2, preserveAspectRatio: "xMidYMid slice",
+                              "clip-path": `url(#${clipId})` }, group)
 }
 
 function drawNumber(group, centerX, centerY, number) {

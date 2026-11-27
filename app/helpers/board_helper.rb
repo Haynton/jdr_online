@@ -38,9 +38,18 @@ module BoardHelper
   end
 
   def board_tokens_json(game_map, game_master:)
-    tokens = game_map.board_tokens.includes(:character)
+    tokens = game_map.board_tokens.includes(character: { avatar_attachment: :blob })
     seen_tokens = game_master ? tokens : tokens.reject(&:hidden?)
     seen_tokens.map { |token| board_token_data(token, game_master:) }.to_json
+  end
+
+  # The tokens of a player's own character hidden from the others: only on their own stream (BoardTokensSender)
+  def board_own_tokens_data(game_table, participation)
+    board_map = game_table.board_game_map
+    character = participation.character
+    tokens = board_map && character ? board_map.board_tokens.where(character:, hidden: true) : BoardToken.none
+    { room_board_target: "tokens", game_map_id: board_map&.id,
+      tokens: tokens.map { |token| board_token_data(token, game_master: false) }.to_json }
   end
 
   def board_blocked_cells_json(game_map)
@@ -63,9 +72,15 @@ module BoardHelper
   private
 
   def board_token_data(token, game_master:)
-    { id: token.id, name: token.displayed_name, kind: token.character.kind, column: token.column, row: token.row,
+    character = token.character
+    { id: token.id, name: token.displayed_name, kind: character.kind, column: token.column, row: token.row,
       number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
-      custom_name: (token.name if game_master), character_name: (token.character.name if game_master) }
+      picture: board_token_picture(character), custom_name: (token.name if game_master),
+      character_name: (character.name if game_master) }
+  end
+
+  def board_token_picture(character)
+    rails_blob_path(character.avatar, only_path: true) if character.pc? && character.avatar.attached?
   end
 
   def game_master_board_data(board_map)
@@ -79,6 +94,7 @@ module BoardHelper
 
   def shared_board_data(board_map, kept_keys)
     game_map_preview_data(board_map).merge(room_board_target: "map", board_zoom_target: "map",
+                                           game_map_id: board_map.id,
                                            map_preview_layout_value: board_map.layout.except(*kept_keys).to_json,
                                            map_preview_token_characters_value: {}.to_json)
   end

@@ -36,7 +36,14 @@ export default class extends Controller {
   drawTokens() {
     if (!this.hasMapTarget || !this.hasTokensTarget) return
 
-    renderBoardTokens(this.tokensLayer(), JSON.parse(this.tokensTarget.dataset.tokens))
+    renderBoardTokens(this.tokensLayer(), this.tokensOfTheMap())
+  }
+
+  tokensOfTheMap() {
+    const mapId = this.mapTarget.dataset.gameMapId
+    return this.tokensTargets
+      .filter((element) => !element.dataset.gameMapId || element.dataset.gameMapId === mapId)
+      .flatMap((element) => JSON.parse(element.dataset.tokens))
   }
 
   tokensLayer() {

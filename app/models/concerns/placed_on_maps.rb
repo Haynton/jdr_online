@@ -20,7 +20,7 @@ module PlacedOnMaps
 
   def send_new_look_to_players
     board_map = game_table.board_game_map
-    BoardTokensSender.new(game_table).call if board_map&.board_tokens&.exists?(character_id: id)
+    BoardTokensSender.new(game_table).call([self]) if board_map&.board_tokens&.exists?(character_id: id)
   end
 
   def destroyed_with_its_table?

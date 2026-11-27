@@ -82,6 +82,19 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     using_session(:player) { assert_selector "[data-board-token-id][data-name='Chef gobelin']", visible: :all }
   end
 
+  test "hidden by the game master, the token of a player character stays, faded, for its own player, live" do
+    aria = @game_table.characters.find_by(name: "Aria")
+    @game_table.board_game_map.board_tokens.create!(character: aria, column: 2, row: 2, hidden: false)
+    using_session(:player) { open_room_as("joueur") }
+    open_room_as("maitre")
+
+    using_session(:player) { assert_selector "[data-board-token-id][data-name=Aria][data-hidden=false]", visible: :all }
+    find(game_master_token("[data-name=Aria]"), visible: :all).click
+    within("[data-room-board-target=tokenMenu]") { click_on "Cacher aux joueurs" }
+
+    using_session(:player) { assert_selector "[data-board-token-id][data-name=Aria][data-hidden=true]", visible: :all }
+  end
+
   private
 
   def create_user(username)

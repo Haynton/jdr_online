@@ -109,13 +109,15 @@ class GameMap < ApplicationRecord
     game_table.reload
     BoardMapChanger.send_board(game_table)
     BoardMapChanger.send_board(game_table, game_master: true)
+    BoardTokensSender.new(game_table).send_own_tokens_to_every_player
   end
 
   def drop_board_tokens_outside_the_grid
     outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))
+    characters = outside.includes(:character).map(&:character).uniq
     return if outside.delete_all.zero?
 
-    BoardTokensSender.new(game_table).call if game_table.board_game_map_id == id
+    BoardTokensSender.new(game_table).call(characters) if game_table.board_game_map_id == id
   end
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet

@@ -27,5 +27,6 @@ class BoardMapChanger
       BoardTokenCopier.new(@game_map).call if @game_map
     end
     self.class.send_board(@game_table)
+    BoardTokensSender.new(@game_table).send_own_tokens_to_every_player
   end
 end

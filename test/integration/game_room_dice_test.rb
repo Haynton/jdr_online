@@ -97,7 +97,10 @@ class GameRoomDiceTest < ActionDispatch::IntegrationTest
 
     sign_in @player
     get game_table_path(@game_table)
-    assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 1
+    player_streams = css_select("turbo-cable-stream-source[channel=GameTableChannel]").map do |source|
+      Turbo.signed_stream_verifier.verified(source["signed-stream-name"], purpose: GameTableChannel::SIGNATURE_PURPOSE)
+    end
+    assert_not_includes player_streams, "#{@game_table.to_gid_param}:#{GameTableChannel::GAME_MASTER_AUDIENCE}"
   end
 
   test "the panel offers the dice, the modes of the template, and the hidden roll to the game master only" do

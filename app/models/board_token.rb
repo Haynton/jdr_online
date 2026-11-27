@@ -14,7 +14,7 @@ class BoardToken < ApplicationRecord
   validate :cell_not_blocked, on: :create
   validate :character_of_the_table
 
-  before_create :take_placement
+  before_create :take_placement, unless: -> { character.pc? }
   before_create :keep_one_token_of_a_player_character
   before_save :take_number_when_first_shown
 

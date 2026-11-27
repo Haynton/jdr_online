@@ -16,7 +16,7 @@ class BoardMapLiveTest < ApplicationSystemTestCase
 
   test "the map put on the board by the game master shows live in the room of the player" do
     using_session(:player) do
-      open_room_as("joueur", streams: 1)
+      open_room_as("joueur", streams: 2) # the stream of the table, and the player's own (their hidden token)
       assert_text "Le MJ n'a pas encore posé de carte sur le plateau."
     end
     open_room_as("maitre", streams: 2) # the stream of the table, and the one of the game master (hidden rolls)

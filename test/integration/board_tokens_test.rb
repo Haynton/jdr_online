@@ -50,6 +50,49 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_equal 1, @tavern.board_tokens.count
   end
 
+  test "hidden by the game master, a player character leaves the others but stays, faded, for its own player" do
+    token = @tavern.board_tokens.create!(character: @aria, column: 2, row: 2, hidden: false)
+    participation = @aria.participation
+    sign_in @game_master
+
+    own_stream = capture_turbo_stream_broadcasts([@game_table, participation]) do
+      shared = capture_turbo_stream_broadcasts(@game_table) do
+        patch game_table_board_token_path(@game_table, token), params: { hidden: true }
+      end
+      assert_not_includes shared.first.to_html, "Aria"
+    end
+    assert_equal 1, own_stream.size
+    assert_equal([[token.id, true]], own_tokens_in(own_stream.first).map { |own| own.values_at("id", "hidden") })
+  end
+
+  test "the room of a player holds their own hidden token, and never the one of another player" do
+    @tavern.board_tokens.create!(character: @aria, column: 2, row: 2, hidden: true)
+    other_player = create_user("autre")
+    @game_table.participations.create!(user: other_player, role: :player)
+               .create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Brann")
+
+    sign_in @player
+    get game_table_path(@game_table)
+    assert_equal ["Aria"], JSON.parse(css_select("#game-room-board-own-tokens").first["data-tokens"]).pluck("name")
+
+    sign_in other_player
+    get game_table_path(@game_table)
+    assert_equal [], JSON.parse(css_select("#game-room-board-own-tokens").first["data-tokens"])
+  end
+
+  test "a player character shows its picture and takes no letter: the next creature still gets A" do
+    @aria.avatar.attach(fixture_file_upload("map.png", "image/png"))
+    @tavern.board_tokens.create!(character: @aria, column: 2, row: 2, hidden: false)
+    @tavern.board_tokens.create!(character: @goblin, column: 3, row: 2)
+    sign_in @game_master
+
+    get game_table_path(@game_table)
+
+    aria_token, goblin_token = JSON.parse(css_select("#game-room-board-tokens-game-master").first["data-tokens"])
+    assert_match %r{\A/rails/active_storage/}, aria_token["picture"]
+    assert_equal ["", "A"], [aria_token["letter"], goblin_token["letter"]]
+  end
+
   test "a player character still in creation cannot be put on the board" do
     newcomer = create_user("nouveau")
     draft = @game_table.participations.create!(user: newcomer, role: :player)
@@ -205,6 +248,10 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def own_tokens_in(broadcast)
+    JSON.parse(broadcast.at_css("[data-tokens]")["data-tokens"])
+  end
 
   def player_tokens
     JSON.parse(css_select("#game-room-board-tokens-player").first["data-tokens"])
