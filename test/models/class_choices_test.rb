@@ -34,7 +34,8 @@ class ClassChoicesTest < ActiveSupport::TestCase
     character = warlock(level: 1, class_choices: { "eldritch_invocations" => ["witch-sight"] })
     assert character.tap(&:validate).errors.of_kind?(:class_choices, :not_offered)
 
-    character = warlock(level: 5, class_choices: { "eldritch_invocations" => %w[eldritch-mind eldritch-mind] })
+    # Each option once (decision of 27 November), the four the rules let take twice included
+    character = warlock(level: 5, class_choices: { "eldritch_invocations" => %w[agonizing-blast agonizing-blast] })
     assert character.tap(&:validate).errors.of_kind?(:class_choices, :repeated)
   end
 

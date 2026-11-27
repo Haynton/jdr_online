@@ -5,7 +5,7 @@
 # it picked. The groups are declared once by the template (character_fields.class_choices): no rule of a game here
 module CharacterSheets
   class ClassChoices
-    Option = Data.define(:key, :label, :description, :min_level, :requires, :repeatable, :effects)
+    Option = Data.define(:key, :label, :description, :min_level, :requires, :effects)
     Group = Data.define(:key, :label, :help, :changes, :allowed_count, :options, :picked) do
       def offered_keys
         options.map(&:key)
@@ -50,8 +50,7 @@ module CharacterSheets
 
     def option_of(option)
       Option.new(key: option["key"], label: option["label"], description: option["description"],
-                 min_level: option["min_level"].to_i, requires: option["requires"],
-                 repeatable: option["repeatable"] == true, effects: option["effects"].to_h)
+                 min_level: option["min_level"].to_i, requires: option["requires"], effects: option["effects"].to_h)
     end
 
     # Its level reached, and the option it requires picked

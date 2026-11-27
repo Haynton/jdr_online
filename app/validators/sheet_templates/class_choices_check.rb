@@ -1,12 +1,13 @@
 module SheetTemplates
   # The choices of their own that classes give (character_fields.class_choices), when the template declares them: each
   # group a key, a label, its rule (help), when it may change (CHANGES) and its options, each a key, a label, its
-  # summary (description), and what may limit or repeat it (min_level, requires: another option of the group,
-  # repeatable) and its effects (EFFECTS); and every group an option of a list gives (the effect class_choices) is one
+  # summary (description), what may limit it (min_level, requires: another option of the group) and its effects
+  # (EFFECTS; an option is taken once, decision of 27 November: the rare invocation the rules let take twice, the game
+  # master judges); and every group an option of a list gives (the effect class_choices) is one
   # of them
   class ClassChoicesCheck < Check
     GROUP_PARAMETERS = %w[key label help changes options].freeze
-    OPTION_PARAMETERS = %w[key label description min_level requires repeatable effects].freeze
+    OPTION_PARAMETERS = %w[key label description min_level requires effects].freeze
     # When the player may change a choice: at a level gained (one), after a short or a long rest
     CHANGES = %w[level_up_one short_rest long_rest].freeze
     # What an option may do to the sheet: the spells it always prepares, by level (the land of the circle)
