@@ -1,0 +1,24 @@
+<%# What is paid without being carried, for the game master (decision of 27 November): each price list the template
+    declares (TemplateCopy#price_lists: the inn, the meals, a lifestyle, hirelings and services, spells cast for you),
+    its lines with their price written in the words of the game and their short note. Read only; what is bought and
+    carried (a horse, a cart, a meal to take away) is an item of the catalog, in the panel « Objets » %>
+<div class="flex flex-col gap-6">
+  <% game_room.game_table.price_lists.each do |list| %>
+    <section aria-labelledby="price-list-<%= list["key"] %>">
+      <h3 id="price-list-<%= list["key"] %>" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= list["label"] %></h3>
+      <dl class="mt-2 divide-y divide-line border-y border-line">
+        <% list["lines"].each do |line| %>
+          <div class="py-2">
+            <div class="flex items-baseline justify-between gap-4 text-sm">
+              <dt class="min-w-0 text-ink"><%= line["label"] %></dt>
+              <dd class="shrink-0 font-medium text-ink tabular-nums"><%= line["price"] %></dd>
+            </div>
+            <% if line["note"].present? %>
+              <p class="mt-0.5 text-xs text-muted"><%= line["note"] %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </dl>
+    </section>
+  <% end %>
+</div>
