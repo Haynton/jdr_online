@@ -2,8 +2,9 @@
     (layouts/character_creation): only this area scrolls, under the centered title of the step; the buttons stay in
     their bar at the bottom (_actions, sticky). Then the fields of the sections of this step, laid out by type like a
     sheet of a game (CharacterSheets::FieldsHelper), or the summary. The values worked out from the others follow what
-    the player types (character_sheet_controller.js), and the server works them out the same way (@computed_sheet_values) %>
-<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    the player types (character_sheet_controller.js), and the server works them out the same way (@computed_sheet_values).
+    relative: a box hidden in a card (sr-only, absolute) stays in this area, never past it %>
+<div class="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
   <div class="@container flex min-h-full flex-1 flex-col px-4 pt-6 sm:px-8">
     <%= render "game_tables/character_steps/title", title: character_step_label(@step), lede: @step.intro %>
     <% if @step.summary? %>
