@@ -93,6 +93,23 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_equal ["", "A"], [aria_token["letter"], goblin_token["letter"]]
   end
 
+  test "a player changes or removes the picture of their character: its token changes at once for the whole table" do
+    @tavern.board_tokens.create!(character: @aria, column: 2, row: 2, hidden: false)
+    sign_in @player
+
+    game_master_broadcasts = capture_turbo_stream_broadcasts([@game_table, GameTableChannel::GAME_MASTER_AUDIENCE]) do
+      players_broadcasts = capture_turbo_stream_broadcasts(@game_table) do
+        picture = fixture_file_upload("map.png", "image/png")
+        patch character_avatar_path(@aria), params: { character: { avatar: picture } }, as: :turbo_stream
+      end
+      assert_includes players_broadcasts.first.to_html, "/rails/active_storage/"
+    end
+    assert_equal 1, game_master_broadcasts.size
+
+    removed = capture_turbo_stream_broadcasts(@game_table) { delete character_avatar_path(@aria), as: :turbo_stream }
+    assert_not_includes removed.first.to_html, "/rails/active_storage/"
+  end
+
   test "a player character still in creation cannot be put on the board" do
     newcomer = create_user("nouveau")
     draft = @game_table.participations.create!(user: newcomer, role: :player)

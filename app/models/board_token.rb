@@ -55,7 +55,10 @@ class BoardToken < ApplicationRecord
   end
 
   def keep_one_token_of_a_player_character
-    return unless character.pc? && game_map.board_tokens.exists?(character:)
+    return unless character.pc?
+
+    game_map.lock!
+    return unless game_map.board_tokens.exists?(character:)
 
     errors.add(:character, :already_on_the_map)
     throw :abort

@@ -16,12 +16,17 @@ module PlacedOnMaps
     kind.in?(Character::GAME_MASTER_KINDS) || (pc? && complete?)
   end
 
-  private
-
+  # Its name, its kind or its picture changed: its tokens on the board, at once, for the players and the game master
   def send_new_look_to_players
     board_map = game_table.board_game_map
-    BoardTokensSender.new(game_table).call([self]) if board_map&.board_tokens&.exists?(character_id: id)
+    return unless board_map&.board_tokens&.exists?(character_id: id)
+
+    sender = BoardTokensSender.new(game_table)
+    sender.call([self])
+    sender.send_game_master_tokens
   end
+
+  private
 
   def destroyed_with_its_table?
     destroyed_by_association&.active_record == GameTable
