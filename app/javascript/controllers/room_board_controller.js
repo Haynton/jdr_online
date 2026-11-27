@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 import { createSvgElement } from "map_editor/svg"
 import { renderBoardTokens } from "map_editor/token_renderer"
-import { passageOf, wayTowards, sameCell } from "map_editor/board_moves"
+import { passageOf, wayTowards, pathCost, sameCell } from "map_editor/board_moves"
 
 const CELL_SIZE = 24
 const clickMovementTolerance = 5
@@ -154,9 +154,26 @@ export default class extends Controller {
 
     if (!drag.started) this.closeTokenMenu()
     drag.started = true
-    drag.way = wayTowards(drag.way, this.cellInsideTheGrid(event), drag.passage)
+    drag.way = this.wayTo(drag, this.cellInsideTheGrid(event))
     this.showDraggedToken(drag)
-    this.showDistance(drag.way.at(-1).cost, event)
+    this.showDistance(this.distanceTo(drag), event)
+  }
+
+  // Straight from the start when nothing stops it, else on from where the token is: a wall stops it, and the player
+  // goes around it by hand
+  wayTo(drag, target) {
+    const straight = wayTowards([drag.way[0]], target, drag.passage)
+    return sameCell(straight.at(-1).cell, target) ? straight : wayTowards(drag.way, target, drag.passage)
+  }
+
+  // The cheapest way from the start, as the server counts it, never the whole way of the pointer
+  distanceTo(drag) {
+    const arrival = drag.way.at(-1).cell
+    if (drag.distanceCell && sameCell(drag.distanceCell, arrival)) return drag.distance
+
+    drag.distanceCell = arrival
+    drag.distance = pathCost(drag.way[0].cell, arrival, drag.passage, this.gridSize()) ?? drag.way.at(-1).cost
+    return drag.distance
   }
 
   dropToken(event) {
@@ -212,8 +229,13 @@ export default class extends Controller {
 
   cellInsideTheGrid(event) {
     const [column, row] = this.cellAt(event)
+    const [columns, rows] = this.gridSize()
+    return [Math.min(Math.max(column, 0), columns - 1), Math.min(Math.max(row, 0), rows - 1)]
+  }
+
+  gridSize() {
     const { mapPreviewColumnsValue: columns, mapPreviewRowsValue: rows } = this.mapTarget.dataset
-    return [Math.min(Math.max(column, 0), Number(columns) - 1), Math.min(Math.max(row, 0), Number(rows) - 1)]
+    return [Number(columns), Number(rows)]
   }
 
   showDraggedToken(drag) {

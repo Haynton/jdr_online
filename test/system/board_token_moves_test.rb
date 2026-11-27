@@ -36,6 +36,17 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
     end
   end
 
+  test "far away then back near the start, the distance is the one from the start, not the whole way of the pointer" do
+    open_room_as("joueur")
+
+    press_and_move(from: [1, 1], to: [4, 8])
+    page.driver.browser.action.move_to_location(*screen_point(2, 1)).perform
+    assert_selector "[data-room-board-target=moveBubble]", text: "1,5 m"
+    release_pointer
+
+    wait_for_token_at(2, 1)
+  end
+
   test "dragged straight at a wall, a player's token stops just before it" do
     open_room_as("joueur")
 
