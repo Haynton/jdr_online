@@ -78,9 +78,20 @@ export default class extends Controller {
       .replaceAll("%{count}", allowedCount)
       .replace("%{chosen}", tickedCount)
     const chosenKeys = [...offeredKeys].filter((fieldKey) => this.isTicked(fieldKey))
+    this.markUnfit(offeredKeys, chosenKeys, offers)
     const isPastLimit = tickedCount > allowedCount || this.notOfferedTicked(offeredKeys) ||
       !skillsFitOffers(chosenKeys, offers)
     paragraph.toggleAttribute("data-invalid", paragraph.hasAttribute("data-limited") && isPastLimit)
+  }
+
+  // A skill offered but not ticked that could no longer fit with those ticked (the class offers its list, the human one
+  // of any: two skills out of the list of the class leave no room): data-unfit, faded by skill_rows_controller.js
+  markUnfit(offeredKeys, chosenKeys, offers) {
+    this.bonusRowTargets.forEach((row) => {
+      const key = row.dataset.key
+      const unfit = offeredKeys.has(key) && !chosenKeys.includes(key) && !skillsFitOffers([...chosenKeys, key], offers)
+      row.toggleAttribute("data-unfit", unfit)
+    })
   }
 
   // A skill some option of the template may offer, ticked, that the options picked neither offer nor give: refused
