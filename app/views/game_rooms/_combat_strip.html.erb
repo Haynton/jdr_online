@@ -27,7 +27,7 @@
 <% groups = room_combat_strip.groups %>
 <% if groups.any? %>
   <% initiative_ranks = room_combat_strip.initiative_ranks %>
-  <div class="absolute right-4 bottom-4 z-30 hidden max-w-[calc(100%-11.25rem)] flex-col-reverse items-end md:flex lg:right-88 lg:max-w-[calc(100%-32.25rem)]"
+  <div class="absolute right-4 bottom-4 z-30 hidden max-w-[calc(100%-14.25rem)] flex-col-reverse items-end md:flex lg:right-88 lg:max-w-[calc(100%-35.25rem)]"
        data-controller="combat-strip" data-combat-strip-round-text-value="<%= t(".round", count: "__ROUND__") %>"
        data-combat-strip-conditions-title-value="<%= t(".conditions_title", name: "__NAME__") %>"
        data-combat-strip-waiting-one-value="<%= t(".preparing_waiting", count: 1) %>"

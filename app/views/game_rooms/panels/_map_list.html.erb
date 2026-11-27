@@ -36,6 +36,13 @@
             <% end %>
           </div>
         </div>
+        <% if board_map?(game_room, game_map) %>
+          <%= button_to t("game_rooms.board.clear_tokens"), game_table_board_clearing_path(game_room.game_table),
+                        class: "#{button_classes(:secondary, size: :compact, full_width: true)} h-8 text-xs",
+                        form_class: "border-t border-line px-3 py-2.5",
+                        form: { data: { turbo_confirm: t("game_rooms.board.clear_tokens_question", name: game_map.name),
+                                        confirm_button: t("game_rooms.board.clear_tokens"), confirm_variant: "danger" } } %>
+        <% end %>
       </li>
     <% end %>
   </ul>

@@ -12,8 +12,11 @@ class CombatStripTest < ActiveSupport::TestCase
     tokens = [@first_goblin, @second_goblin].each_with_index.map do |goblin, column|
       { "character_id" => goblin.id, "column" => column, "row" => 0 }
     end
-    @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
-                                  layout: MapTemplate::BLANK_LAYOUT.merge("tokens" => tokens))
+    floors = (0..9).to_a.product((0..9).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }
+    tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
+                                           layout: MapTemplate::BLANK_LAYOUT.merge("floors" => floors,
+                                                                                   "tokens" => tokens))
+    BoardMapChanger.new(@game_table, tavern).call
     @strip = CombatStrip.new(GameRoom.new(@game_table.participations.find_by(role: :game_master)))
   end
 

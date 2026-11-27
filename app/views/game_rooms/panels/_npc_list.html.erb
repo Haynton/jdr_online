@@ -15,8 +15,7 @@
             <span class="block truncate text-sm font-semibold text-ink" title="<%= npc.name %>"><%= npc.name %></span>
             <span class="block truncate text-xs text-muted"><%= npc_facts(game_table, npc) %></span>
           <% end %>
-          <% if GameRoom.preview_features? %>
-          <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %> h-7 shrink-0 px-2.5 text-xs select-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+          <button type="button" hidden aria-pressed="false" class="<%= board_map_button_classes %> shrink-0 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
                   aria-label="<%= t("game_rooms.board.place_creature", name: npc.name) %>"
                   data-place-label="<%= t("game_rooms.board.place_creature", name: npc.name) %>"
                   data-needs-map-label="<%= t("game_rooms.board.needs_map") %>"
@@ -25,7 +24,6 @@
                   data-room-board-kind-param="<%= npc.kind %>">
             <%= t("game_rooms.board.place") %>
           </button>
-          <% end %>
         </li>
       <% end %>
     </ul>

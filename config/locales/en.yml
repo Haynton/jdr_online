@@ -75,6 +75,11 @@ en:
               not_found: "no player has this username"
   activerecord:
     attributes:
+      board_token:
+        character: "Character"
+        column: "Column"
+        name: "Name"
+        row: "Row"
       map_template:
         columns: "Columns"
         layout: "Map drawing"
@@ -144,6 +149,14 @@ en:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"
       models:
+        board_token:
+          attributes:
+            base:
+              cell_blocked: "A token cannot stand on this cell"
+              cell_taken: "A token is already on this cell"
+              outside_grid: "The token must be on a cell of the map"
+            character:
+              not_a_creature_of_the_table: "must be a non-player character or an enemy of this table"
         friendship:
           attributes:
             addressee:
@@ -856,11 +869,15 @@ en:
       save: "Save"
       rename: "Rename the map"
     size: "%{columns} × %{rows} cells"
+    token_menu:
+      label: "Token"
+      starts_hidden: "Hidden from the players at first"
+      starts_shown: "Shown to the players at first"
     token_tools:
       bestiary_hint: "A creature is copied into your table when you put its first token."
       bestiary_title: "Bestiary"
       empty: "None yet."
-      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away."
+      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away. A token is hidden from the players at first: put the tool down with a right click, then click the token to show it from the start of the game."
       no_match: "No character or creature matches this search."
       search: "Search a character or a creature"
       table_title: "Non-player characters and enemies of the table"
@@ -1196,9 +1213,21 @@ en:
       reach: "Reach level %{level}"
       waiting: "Level %{level} waiting for the player's choices."
     board:
+      clear_tokens: "Remove all the tokens"
+      clear_tokens_question: "Remove all the tokens of “%{name}”? They will not come back on this map."
+      hide_token: "Hide from the players"
+      remove_token: "Remove from the board"
+      rename_token: "Rename"
+      save_token_name: "Save the name"
+      show_token: "Show to the players"
+      token_menu: "Token"
+      token_name: "Name of the token"
+      token_name_hint: "Empty: the name of the character."
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
-      hint: "Click the map to place “%{name}”. Escape or right click to stop."
+      hand: "Move the map"
+      hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
+      hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"

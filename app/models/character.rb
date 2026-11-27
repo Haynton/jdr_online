@@ -22,6 +22,7 @@ class Character < ApplicationRecord
   belongs_to :participation, optional: true
   # What it carries: the starting equipment, copied when the character is complete
   has_many :inventory_items, dependent: :destroy
+  has_many :board_tokens, dependent: :delete_all
   # Only for a companion: the player character it is given to. None yet: it stays with the game master
   belongs_to :owner_character, class_name: "Character", optional: true, inverse_of: :companions
   # The companions given to this player character: they go back to the game master when it goes

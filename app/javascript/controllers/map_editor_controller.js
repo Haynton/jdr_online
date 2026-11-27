@@ -12,6 +12,7 @@ import { drawFloorSample } from "map_editor/floor_sample"
 import { defaultPicture, fittedPicture, isFitted, rowsOverPicture, sliders } from "map_editor/picture_settings"
 import { addMapPatterns } from "map_editor/patterns"
 import { isTouchpadSlide, wheelPixels, pinchShape } from "map_editor/gestures"
+import { isTyping } from "map_editor/typing"
 import { createSvgElement, polygonPath, rounded } from "map_editor/svg"
 import { allowedMark, refusedMark, voidGround } from "map_editor/palette"
 import { edgeOf, doorKey } from "map_edges"
@@ -64,13 +65,14 @@ const zoomStep = 1.25
 const deletingKeys = ["Delete", "Backspace"]
 // The room kept between the floating pieces and the map, in pixels
 const floatingRoom = 8
+const clickTolerance = 5
 
 export default class extends Controller {
   static targets = ["board", "drawing", "pointerMarks", "toolbar", "tool", "swatch", "status", "figures",
                      "undoButton", "redoButton", "clearButton", "rotationLabel", "columnsInput", "rowsCount",
                      "saveState", "zoomButtons", "presetPreview", "makingChoice", "drawingPanel", "picturePanel",
                      "drawingTools", "cellPixels", "pictureSlider", "gridSize", "tableTokens", "tableTokensEmpty",
-                     "tokenTemplate", "brushSize"]
+                     "tokenTemplate", "brushSize", "tokenMenu", "tokenMenuTitle", "tokenStateChoice"]
   static values = { layout: Object, columns: Number, rows: Number, url: String, saveFailedMessage: String,
                     figureLabels: Object, rotationLabel: String, savingLabel: String, savedLabel: String,
                     shrinkQuestion: String, clearQuestion: String, replaceQuestion: String, pictureUrl: String,
@@ -258,6 +260,7 @@ export default class extends Controller {
   }
 
   useTool(tool) {
+    this.closeTokenMenu()
     this.tool = tool
     this.pressCurrentTool()
     this.hidePointer()
@@ -338,6 +341,8 @@ export default class extends Controller {
     this.boardTarget.setPointerCapture(event.pointerId)
     this.activePointers.set(event.pointerId, [event.clientX, event.clientY])
     if (this.activePointers.size === 2) return this.startPinch()
+    this.closeTokenMenu()
+    if (this.tool === noTool && event.button === 0) this.tokenPressedAt = [event.clientX, event.clientY]
     // On a picture there is nothing to draw: dragging moves the map
     if (this.movesTheMap(event)) {
       // The middle button would otherwise start the scrolling of the browser
@@ -366,6 +371,54 @@ export default class extends Controller {
     this.panningFrom = null
     this.showBoardCursor()
     this.finishStroke()
+    if (this.tokenPressedAt) this.openTokenMenuAfterPress(event)
+  }
+
+  openTokenMenuAfterPress(event) {
+    const [pressedX, pressedY] = this.tokenPressedAt
+    this.tokenPressedAt = null
+    if (!this.hasTokenMenuTarget || Math.hypot(event.clientX - pressedX, event.clientY - pressedY) > clickTolerance) {
+      return
+    }
+
+    const [column, row] = this.grid.cellAt(...this.boardPoint(event))
+    if (this.layout.tokenAt(column, row)) this.openTokenMenu(column, row, event)
+  }
+
+  openTokenMenu(column, row, event) {
+    const token = this.layout.tokenAt(column, row)
+    this.tokenMenuCell = [column, row]
+    this.tokenMenuTitleTarget.textContent = this.tokenCharactersValue[token.character_id]?.name ?? ""
+    const startsHidden = this.layout.tokenStartsHidden(column, row)
+    this.tokenStateChoiceTargets.forEach((choice) => {
+      choice.setAttribute("aria-checked", String((choice.dataset.hidden === "true") === startsHidden))
+    })
+    this.placeTokenMenuAt(event)
+    this.tokenMenuTarget.hidden = false
+    this.tokenStateChoiceTargets.find((choice) => choice.ariaChecked === "true")?.focus({ focusVisible: false })
+  }
+
+  placeTokenMenuAt(event) {
+    const room = this.tokenMenuTarget.parentElement.getBoundingClientRect()
+    const menuWidth = this.tokenMenuTarget.offsetWidth || 256
+    const left = Math.min(event.clientX - room.left + floatingRoom, room.width - menuWidth - floatingRoom)
+    this.tokenMenuTarget.style.left = `${Math.max(floatingRoom, left)}px`
+    this.tokenMenuTarget.style.top = `${event.clientY - room.top}px`
+  }
+
+  chooseTokenState(event) {
+    const [column, row] = this.tokenMenuCell
+    const before = this.layout.snapshot()
+    if (this.layout.startTokenHidden(column, row, event.currentTarget.dataset.hidden === "true")) {
+      this.render()
+      this.keepChange(before)
+    }
+    this.closeTokenMenu()
+  }
+
+  closeTokenMenu() {
+    this.tokenMenuCell = null
+    if (this.hasTokenMenuTarget) this.tokenMenuTarget.hidden = true
   }
 
   finishStroke() {
@@ -391,6 +444,7 @@ export default class extends Controller {
   goBackTo(snapshot) {
     if (!snapshot) return
 
+    this.closeTokenMenu()
     this.useGridSize(this.layout.restore(snapshot))
     this.render()
     this.showHistory()
@@ -908,10 +962,6 @@ function presetOf(element) {
 
 function jsonHeaders() {
   return { "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content, Accept: "application/json" }
-}
-
-function isTyping(event) {
-  return Boolean(event.target.closest?.("input, textarea, select, [contenteditable]"))
 }
 
 // Hours and minutes in the language of the page
