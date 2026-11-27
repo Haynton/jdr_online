@@ -5,6 +5,10 @@
 # prepared. No rule of a game is written here: the class declares it
 module CharacterSheets
   class Spellbook
+    # A spell copied into the book during the game (a scroll found) is marked: it never counts in the size of the book,
+    # which only bounds the spells written at creation and at the levels gained
+    COPIED = "copied".freeze
+
     def initialize(character)
       @character = character
       @spell_choices = character.spell_choices
@@ -49,6 +53,16 @@ module CharacterSheets
       spell_keys.to_a.compact_blank.uniq.map { |key| @spell_choices.copy_of(key) || { "key" => key } }
     end
 
+    # A copy of a spell found in the game, marked as copied (COPIED)
+    def found_copy_of(spell_key)
+      copies_of([spell_key]).first.merge(COPIED => true)
+    end
+
+    # The spells written at creation and at the levels gained, those the size of the book bounds
+    def written_count
+      Array(@character.spellbook).count { |spell| !spell[COPIED] }
+    end
+
     # The spells it may copy into its book (a spell found in the game): those of its group not written yet, nor known
     # otherwise
     def copyable
@@ -63,12 +77,12 @@ module CharacterSheets
       field && [field, cost["per_level"].to_i * spell.properties["level"].to_i]
     end
 
-    # The errors of the book: a spell its group does not offer, more spells than its size, a spell prepared that it does
-    # not hold
+    # The errors of the book: a spell its group does not offer, more spells written than its size (the spells copied
+    # in the game aside), a spell prepared that it does not hold
     def errors
       found = []
       found << [:spellbook_not_offered, {}] if (keys - group.keys).any?
-      found << [:spellbook_too_full, { label: label, count: size }] if keys.size > size
+      found << [:spellbook_too_full, { label: label, count: size }] if written_count > size
       found << [:prepared_outside_spellbook, { label: label }] if prepared_outside.any?
       found
     end
