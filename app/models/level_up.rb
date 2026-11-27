@@ -10,6 +10,7 @@ class LevelUp
   include LevelUpChoices
   include LevelUpFeat
   include LevelUpFeatSpellSwaps
+  include LevelUpSpellbook
 
   attr_reader :character, :level, :expertise_keys, :class_choices, :skill_keys
   attr_accessor :hit_point_choice, :subclass

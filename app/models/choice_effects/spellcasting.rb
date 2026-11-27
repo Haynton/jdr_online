@@ -5,11 +5,14 @@ module ChoiceEffects
   # CharacterSheets::SpellChoices; that each table a group names is there is checked by SheetTemplates::SpellGroupsCheck.
   # A table of lists gives, for each level, a number per level of spell: the spell slots (character_fields.spell_slots,
   # count_from; heroic fantasy: slots, [4, 3, 2] at level 5), read by CharacterSheets::SpellSlots and checked by
-  # SheetTemplates::SpellSlotsCheck
+  # SheetTemplates::SpellSlotsCheck. A spellbook (the wizard: spellbook) holds the level 1+ spells the character knows,
+  # start at creation and per_level more at each level gained, and the group prepares_from prepares among them
+  # (CharacterSheets::Spellbook)
   class Spellcasting < Base
     KEY = "spellcasting".freeze
     TARGET_TYPE = "ability".freeze
     LEVELS = 20
+    SPELLBOOK_PARAMETERS = %w[label help start per_level prepares_from copy_cost].freeze
 
     def target_keys(value)
       [value.to_h["ability"].to_s]
@@ -22,7 +25,8 @@ module ChoiceEffects
       number_tables.reject { |_name, table| level_table?(table) }
                    .map { |name, _table| [:invalid_level_table, { table: name }] } +
         slot_tables.reject { |_name, table| self.class.slot_table?(table) }
-                   .map { |name, _table| [:invalid_slot_table, { table: name }] }
+                   .map { |name, _table| [:invalid_slot_table, { table: name }] } +
+        spellbook_errors(value.to_h["spellbook"])
     end
 
     def facts(value, fields_by_key)
@@ -42,6 +46,23 @@ module ChoiceEffects
     end
 
     private
+
+    def spellbook_errors(spellbook)
+      return [] if spellbook.nil? || valid_spellbook?(spellbook)
+
+      [[:invalid_spellbook, {}]]
+    end
+
+    def valid_spellbook?(spellbook)
+      spellbook.is_a?(Hash) && (spellbook.keys - SPELLBOOK_PARAMETERS).empty? && spellbook["label"].present? &&
+        [spellbook["start"], spellbook["per_level"]].all? { |count| count.is_a?(Integer) && !count.negative? } &&
+        spellbook["prepares_from"].is_a?(String) && valid_copy_cost?(spellbook["copy_cost"])
+    end
+
+    # What copying a spell found costs, per level of the spell, in a coin of the sheet (currency: its key)
+    def valid_copy_cost?(cost)
+      cost.nil? || (cost.is_a?(Hash) && cost["per_level"].is_a?(Integer) && cost["currency"].is_a?(String))
+    end
 
     def level_table?(table)
       self.class.level_table?(table)

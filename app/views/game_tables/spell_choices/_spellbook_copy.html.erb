@@ -1,0 +1,27 @@
+<%# Copying into the spellbook a spell found during the game (GameTables::SpellbookCopiesController): the spells of the
+    wizard not written yet, each with its level and its cost, taken from the purse. Its controls send the form written
+    after the list of the spells (spellbook-copy-form: a form cannot hold another) %>
+<% book = character.spellbook_of_class %>
+<% options = book.copyable.map do |spell|
+     field, amount = book.copy_cost(spell)
+     cost = field ? t(".cost", count: amount, coin: field["abbreviation"] || field["label"]) : nil
+     [[spell.name, t(".level", level: spell.properties["level"]), cost].compact.join(" · "), spell.key]
+   end %>
+<section class="mt-10 flex flex-col gap-3" aria-labelledby="spellbook-copy-title">
+  <div>
+    <h3 id="spellbook-copy-title" class="text-lg leading-7 font-bold text-ink"><%= t(".title", label: book.label) %></h3>
+    <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
+  </div>
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="relative w-full max-w-md">
+      <%= select_tag :spell_key, options_for_select(options), id: "spellbook-copy-spell", form: "spellbook-copy-form",
+                     aria: { label: t(".spell"), invalid: (true if @copy_error) },
+                     class: "#{SimpleFormFieldClasses::INPUT} #{CollectionSelectInput::SELECT_CLASSES}" %>
+      <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+    </div>
+    <%= button_tag t(".submit"), type: "submit", form: "spellbook-copy-form", class: button_classes(:secondary) %>
+  </div>
+  <% if @copy_error %>
+    <p class="text-sm text-error-ink" role="alert"><%= @copy_error %></p>
+  <% end %>
+</section>

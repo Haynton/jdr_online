@@ -102,6 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_235000) do
     t.jsonb "class_choices", default: {}, null: false
     t.jsonb "feats", default: [], null: false
     t.jsonb "ability_rolls"
+    t.jsonb "spellbook", default: [], null: false
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
     t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"

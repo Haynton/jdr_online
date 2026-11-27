@@ -1,0 +1,25 @@
+<%# The spells a wizard writes in its spellbook at this level (LevelUpSpellbook): its spells of the levels with spell
+    slots, not written yet, each a card with its level and school; as many to tick as its class says %>
+<% book = level_up.new_spellbook %>
+<fieldset class="min-w-0" aria-describedby="level_up_spellbook_keys_error">
+  <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>">
+    <%= t(".title", count: level_up.spellbook_count, label: book.label) %>
+  </legend>
+  <p class="mt-1 text-sm text-muted"><%= book.help %></p>
+  <%= hidden_field_tag "level_up[spellbook_keys][]", "", id: nil %>
+  <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+    <% level_up.spellbook_candidates.each do |spell| %>
+      <label class="<%= weapon_mastery_card_classes %>">
+        <%= check_box_tag "level_up[spellbook_keys][]", spell.key, Array(level_up.spellbook_keys).include?(spell.key), id: nil,
+                          class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
+        <span class="min-w-0">
+          <span class="block truncate text-sm font-semibold text-ink"><%= spell.name %></span>
+          <span class="block truncate text-xs text-muted">
+            <%= t(".level", level: spell.properties["level"]) %> · <%= spell.properties["school"] %>
+          </span>
+        </span>
+      </label>
+    <% end %>
+  </div>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :spellbook_keys %>
+</fieldset>

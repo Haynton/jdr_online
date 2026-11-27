@@ -63,6 +63,10 @@ en:
               not_picked:
                 one: "Choose 1 skill."
                 other: "Choose %{count} skills."
+            spellbook_keys:
+              not_picked:
+                one: "Pick %{count} spell for your %{label}."
+                other: "Pick %{count} spells for your %{label}."
             feat_spell_swaps:
               not_allowed: "Replace a spell of the feat with another of the same level, from its list, that you do not know yet."
             feat_spells:
@@ -270,6 +274,9 @@ en:
             spells:
               spell_not_offered: "A spell chosen is not offered to your class and level."
               too_many_spells: "Too many spells chosen in “%{group}”: %{count} at most."
+              prepared_outside_spellbook: "A spell prepared is not in your %{label}: tick it in the %{label} first."
+              spellbook_not_offered: "A spell of the spellbook is not offered to your class and level."
+              spellbook_too_full: "Too many spells in “%{label}”: %{count} at most."
               spell_known_twice: "“%{spell}” is already known through another choice: untick it here."
         game_table:
           attributes:
@@ -326,6 +333,7 @@ en:
           invalid_label: "%{part} › %{field}: the label must be filled in, on one line, in %{count} characters at most"
           invalid_level_entries: "%{part} › %{field} › %{option}: the effect “%{effect}” must give a list for each level, from 1 to 20"
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
+          invalid_spellbook: "%{part} › %{field} › %{option}: the spellbook needs a label, a number of spells at start and per level, and the group of spells that prepares from it"
           invalid_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” must give, for each of the 20 levels, a list of whole numbers, 0 or more"
           invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -1311,6 +1319,7 @@ en:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
         money_given: "The GM gave %{count} %{coin} to %{character}."
+        spell_copied: "%{character} copies “%{spell}” into their spellbook (%{count} %{coin})."
         spells_changed: "%{character} changes their spells: %{changes}."
         dice_rolled: "%{roller} rolls %{notation}: %{dice} → %{total}"
         dice_rolled_by_game_master: "The GM rolls %{notation}: %{dice} → %{total}"
@@ -1629,6 +1638,11 @@ en:
         none: "None, I keep my spells"
         title: "Spells of your feats"
         to: "With"
+      spellbook:
+        level: "Level %{level}"
+        title:
+          one: "Add %{count} spell to your %{label}"
+          other: "Add %{count} spells to your %{label}"
       feat:
         title: "Feat"
         rule: "Take the Ability Score Improvement, or another feat you qualify for."
@@ -1659,7 +1673,17 @@ en:
         save: "Save"
         subtitle: "The fighting style and weapon masteries of %{name}, within what their class and level give. The change is written in the chat."
         title: "Change my masteries"
+    spellbook_copies:
+      create:
+        not_enough: "Not enough gold to copy this spell."
     spell_choices:
+      spellbook_copy:
+        cost: "%{count} %{coin}"
+        hint: "A spell found in an adventure (a scroll…): its cost is taken from your purse, and the copy is written in the chat of the table."
+        level: "level %{level}"
+        spell: "Spell to copy"
+        submit: "Copy"
+        title: "Copy a spell into your %{label}"
       edit:
         back: "Back to the game"
         cancel: "Cancel"
@@ -1756,6 +1780,9 @@ en:
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
       spell_choices:
+        unprepared_spellbook: "Also in your %{label}"
+        book_chosen: "%{label}: %{chosen} of %{allowed}"
+        prepared: "Prepared"
         always_prepared: "Always prepared spells"
         always_prepared_hint: "Given by %{sources}: they do not count among the spells to choose."
         casting_time: "Casting time: %{text}"

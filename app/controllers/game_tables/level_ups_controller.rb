@@ -33,7 +33,7 @@ module GameTables
       params.fetch(:level_up, {})
             .permit(:hit_point_choice, :subclass, :feat_key, ability_increases: {}, class_choices: {}, feat_spells: {},
                                                              feat_spell_swaps: {}, expertise_keys: [], skill_keys: [],
-                                                             feat_skill_keys: [])
+                                                             feat_skill_keys: [], spellbook_keys: [])
     end
   end
 end

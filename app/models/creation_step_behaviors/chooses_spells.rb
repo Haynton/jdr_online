@@ -12,13 +12,15 @@ module CreationStepBehaviors
       "character_sheets/summary/spells"
     end
 
-    def fill(character, spell_keys: nil, **)
+    def fill(character, spell_keys: nil, spellbook_keys: nil, **)
+      character.choose_spellbook(spellbook_keys)
       character.choose_spells(spell_keys)
     end
 
-    # A class changed on another step drops the spells it does not offer
+    # A class changed on another step drops the spells it does not offer, and the spellbook of a class without one
     def keep_offered(character)
       character.spells = character.spell_choices.keep_offered(character.spells)
+      character.keep_offered_spellbook
     end
   end
 end
