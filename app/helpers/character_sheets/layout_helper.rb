@@ -41,14 +41,20 @@ module CharacterSheets
     # options picked; abilities: tiles in a grid, with the dice roll; rows: saving throws and skills, their help said
     # once; two_columns: a section with fields in its right column (column: aside, the personality); flow: anything else
     def sheet_section_layout(fields)
-      return :option_cards if fields.first&.dig("icons")
-      return :described_choices if fields.any? { |field| field["descriptions"] }
+      return choices_section_layout(fields) if choices_section_layout(fields)
       return :abilities if abilities_section?(fields)
       return :rows if rows_section?(fields)
       return :two_columns if fields.any? { |field| sheet_field_aside?(field) }
       return :split if split_section?(fields)
 
       :flow
+    end
+
+    # The lists picked on the first pages: as cards when they have icons, beside their summary when they are described
+    def choices_section_layout(fields)
+      return :option_cards if fields.first&.dig("icons")
+
+      :described_choices if fields.any? { |field| field["descriptions"] }
     end
 
     # The abilities, with the bonus of the background placed on them (ability_bonuses) when the template has one

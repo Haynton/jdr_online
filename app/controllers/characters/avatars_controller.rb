@@ -40,15 +40,16 @@ module Characters
       picker = helpers.character_avatar_picker(@character.reload, error: error, layout: picker_layout)
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace("character-avatar-body", partial: "shared/avatar_picker_body",
-                                                          locals: { picker: picker }),
-            turbo_stream.replace("creation-hero-avatar", partial: "game_tables/character_steps/hero_avatar",
-                                                         locals: { character: @character })
-          ], status: error ? :unprocessable_content : :ok
+          render turbo_stream: picker_streams(picker), status: error ? :unprocessable_content : :ok
         end
         format.html { redirect_back fallback_location: character_path(@character), alert: error }
       end
+    end
+
+    def picker_streams(picker)
+      [turbo_stream.replace("character-avatar-body", partial: "shared/avatar_picker_body", locals: { picker: picker }),
+       turbo_stream.replace("creation-hero-avatar", partial: "game_tables/character_steps/hero_avatar",
+                                                    locals: { character: @character })]
     end
   end
 end
