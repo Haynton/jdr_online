@@ -5,10 +5,10 @@
 class GameRoom
   # The bar of the room (maquette C, decision of 26 November): its tools in groups, each group under a short name.
   # The map tools come with their own branch (« Bientôt » until then); the initiative roll will join the panel of
-  # the dice (decision); the prices of what is paid without being carried (the inn, a hireling) only when the template
-  # declares them (TemplateCopy#price_lists)
+  # the dice (decision); the budget of an encounter and the prices of what is paid without being carried (the inn, a
+  # hireling) only when the template declares them (TemplateCopy#encounters, #rule_sheets, #price_lists)
   GAME_MASTER_TOOL_GROUPS = {
-    "map" => %w[maps map_tools], "library" => %w[npcs items prices], "dice" => %w[dice]
+    "map" => %w[maps map_tools], "library" => %w[npcs items encounter rules prices], "dice" => %w[dice]
   }.freeze
   # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
   # their character in a fight, their skills, their inventory, their spells, their features, the rest of their sheet
@@ -87,10 +87,13 @@ class GameRoom
               .sort_by { |participation| [participation.game_master? ? 0 : 1, participation.user.username.downcase] }
   end
 
+  # The budget of an encounter, the rule sheets and the prices only when the template declares them
   def game_master_tool_groups
-    return GAME_MASTER_TOOL_GROUPS if game_table.price_lists.any?
-
-    GAME_MASTER_TOOL_GROUPS.transform_values { |panels| panels - %w[prices] }
+    missing = []
+    missing << "encounter" if game_table.encounters.blank?
+    missing << "rules" if game_table.rule_sheets.empty?
+    missing << "prices" if game_table.price_lists.empty?
+    GAME_MASTER_TOOL_GROUPS.transform_values { |panels| panels - missing }
   end
 
   def empty_player_panels

@@ -1,0 +1,60 @@
+<%# The budget of a combat encounter, for the game master (decision of 27 November, SRD 5.2.1; EncounterBudget): the
+    levels of the finished characters of the players, the budget of each difficulty, then the creatures added (from
+    the NPCs and enemies of the table, then its bestiary, found by a search), their experience points added up and the
+    difficulty they make. Nothing is saved: a tool to prepare (encounter_controller.js). Without JavaScript, the
+    budgets and the experience points of each creature stay readable %>
+<% budget = EncounterBudget.new(game_room.game_table) %>
+<% levels = budget.party_levels %>
+<div class="flex flex-col gap-5" data-controller="encounter"
+     data-encounter-difficulties-value="<%= budget.difficulties.map { |difficulty| { label: difficulty.label, budget: difficulty.budget } }.to_json %>"
+     data-encounter-above-value="<%= t("game_rooms.panels.encounter.above", difficulty: budget.difficulties.last.label) %>"
+     data-encounter-difficulty-value="<%= t("game_rooms.panels.encounter.difficulty") %>">
+  <p class="text-sm text-muted"><%= encounter_party_text(levels) %></p>
+  <dl class="grid grid-cols-3 gap-2">
+    <% budget.difficulties.each do |difficulty| %>
+      <div class="rounded-lg border border-line bg-surface px-2 py-1.5" title="<%= difficulty.help %>">
+        <dt class="truncate text-[11px] font-semibold tracking-wider text-muted uppercase"><%= difficulty.label %></dt>
+        <dd class="text-sm font-semibold text-ink tabular-nums"><%= t("game_rooms.panels.encounter.xp", count: number_with_delimiter(difficulty.budget)) %></dd>
+      </div>
+    <% end %>
+  </dl>
+
+  <section aria-labelledby="encounter-chosen-title" class="flex flex-col gap-2">
+    <h3 id="encounter-chosen-title" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.panels.encounter.chosen") %></h3>
+    <p class="text-sm text-muted" data-encounter-target="empty"><%= t("game_rooms.panels.encounter.empty") %></p>
+    <ul class="flex flex-col divide-y divide-line" data-encounter-target="chosen"></ul>
+    <p class="flex items-baseline justify-between gap-3 border-t border-line pt-2 text-sm" role="status" data-encounter-target="summary" hidden>
+      <span class="font-semibold text-ink" data-encounter-target="total"></span>
+      <span class="font-medium text-brass" data-encounter-target="verdict"></span>
+    </p>
+  </section>
+
+  <section aria-labelledby="encounter-creatures-title" class="flex flex-col gap-2" data-controller="catalog-search">
+    <h3 id="encounter-creatures-title" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.panels.encounter.creatures") %></h3>
+    <div data-catalog-search-target="tools" hidden>
+      <label for="encounter-search" class="sr-only"><%= t("game_rooms.panels.encounter.search") %></label>
+      <input type="search" id="encounter-search" autocomplete="off" placeholder="<%= t("game_rooms.panels.encounter.search") %>"
+             class="<%= SimpleFormFieldClasses::INPUT %>" data-catalog-search-target="search" data-action="input->catalog-search#filter">
+    </div>
+    <ul class="flex max-h-72 flex-col overflow-y-auto" data-catalog-search-target="group">
+      <% budget.creatures.each do |creature| %>
+        <%= render "game_rooms/encounters/creature", creature: creature %>
+      <% end %>
+    </ul>
+    <p class="text-sm text-muted" data-catalog-search-target="noMatch" hidden><%= t("game_rooms.panels.encounter.no_match") %></p>
+  </section>
+
+  <template data-encounter-target="line">
+    <li class="flex items-center gap-2 py-1.5 text-sm">
+      <span class="min-w-0 flex-1 leading-tight break-words text-ink" data-encounter-line="name"></span>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %> size-7" data-action="encounter#remove" data-encounter-line="remove">
+        <%= render "shared/icons/minus" %>
+      </button>
+      <span class="w-6 text-center tabular-nums" data-encounter-line="count"></span>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %> size-7" data-action="encounter#addAgain" data-encounter-line="add">
+        <%= render "shared/icons/plus" %>
+      </button>
+      <span class="w-16 shrink-0 text-right text-muted tabular-nums" data-encounter-line="xp"></span>
+    </li>
+  </template>
+</div>
