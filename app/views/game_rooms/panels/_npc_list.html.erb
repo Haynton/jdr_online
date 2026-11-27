@@ -20,7 +20,8 @@
                   data-place-label="<%= t("game_rooms.board.place_creature", name: npc.name) %>"
                   data-needs-map-label="<%= t("game_rooms.board.needs_map") %>"
                   data-room-board-target="creaturePlacer" data-action="room-board#takeCreature"
-                  data-room-board-id-param="<%= npc.id %>" data-room-board-name-param="<%= npc.name %>">
+                  data-room-board-id-param="<%= npc.id %>" data-room-board-name-param="<%= npc.name %>"
+                  data-room-board-kind-param="<%= npc.kind %>">
             <%= t("game_rooms.board.place") %>
           </button>
         </li>
