@@ -4,6 +4,10 @@
 module LevelUpChoices
   extend ActiveSupport::Concern
 
+  included do
+    include LevelUpSubclassChoices
+  end
+
   HIT_POINT_CHOICES = %w[average roll].freeze
 
   delegate :game_table, to: :character
@@ -66,6 +70,27 @@ module LevelUpChoices
     allowed = expertise_entries.flat_map { |entry| Array(entry["from"]) }
     keys = character.skill_choices.skill_keys.select { |key| allowed.empty? || allowed.include?(key) }
     character.sheet_fields.select { |field| keys.include?(field["key"]) && proficient_only?(field["key"]) }
+  end
+
+  # The groups of choices with options to pick at this level (invocations, metamagic, a land), read on the character
+  # as it will be with that subclass (by default the one picked in the window)
+  def class_choice_groups_to_pick(for_subclass = subclass)
+    @class_choice_groups_to_pick ||= {}
+    @class_choice_groups_to_pick[for_subclass] ||= begin
+      groups = future_character(for_subclass).class_choice_groups.groups
+      groups.select { |group| group.allowed_count > Array(character.class_choices.to_h[group.key]).size }
+    end
+  end
+
+  # The character as it will be: the new level, that subclass, and the choices of the window for the groups it is
+  # given (those sent for another subclass are left out)
+  def future_character(for_subclass = subclass)
+    future = character.dup
+    picked_subclass = subclass_field && for_subclass.present? ? { subclass_field["key"] => for_subclass } : {}
+    future.sheet = sheet_at_level.merge(picked_subclass)
+    given = future.class_choice_groups.groups.map(&:key)
+    future.class_choices = character.class_choices.to_h.merge(class_choices.to_h.slice(*given))
+    future
   end
 
   # The class list read by the rule of the hit points (its class_from), nil without that rule

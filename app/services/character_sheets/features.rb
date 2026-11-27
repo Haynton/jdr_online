@@ -39,8 +39,13 @@ module CharacterSheets
       @character = character
     end
 
-    # A group per list with an option picked that names features, in the order of the sheet; none without
+    # A group per list with an option picked that names features, in the order of the sheet, then a group per group of
+    # choices of the class with options picked (its invocations, its metamagic); none without
     def call
+      list_groups + class_choice_groups
+    end
+
+    def list_groups
       picked_options.filter_map do |field, option|
         reached = self.class.keys_of(field.dig("effects", option)).select { |named| named.level <= level }
         next if reached.empty?
@@ -56,6 +61,18 @@ module CharacterSheets
     end
 
     private
+
+    def class_choice_groups
+      @character.class_choice_groups.groups.filter_map do |group|
+        options = group.picked_options
+        next if options.empty?
+
+        features = options.map do |option|
+          Feature.new(key: option.key, level: 1, name: option.label, description: option.description, kind: :choice)
+        end
+        Group.new(label: group.label, option: nil, features: features)
+      end
+    end
 
     def picked_options
       @character.sheet_fields.filter_map do |field|

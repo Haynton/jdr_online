@@ -74,6 +74,16 @@
     <% end %>
   <% end %>
 
+  <%# The groups of choices of the class (invocations, metamagic...), changed in the window of the room (decision of
+      27 November) %>
+  <% if character.class_choice_groups.offered? %>
+    <%= link_to edit_game_table_class_choice_path(game_room.game_table), class: button_classes(:secondary, full_width: true),
+                                                                       data: character_sheet_dialog_link_data do %>
+      <%= render "shared/icons/pencil" %>
+      <%= t(".change_class_choices") %>
+    <% end %>
+  <% end %>
+
   <%# The whole sheet is opened only to change what may change (decision of 26 November: every piece of information is
       in a panel), in the window of the room (characters/edit in its frame) %>
   <%= link_to edit_character_path(character), class: button_classes(:secondary, full_width: true),

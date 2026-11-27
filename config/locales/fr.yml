@@ -20,6 +20,14 @@ fr:
             ability_increases:
               not_shared: "Répartissez exactement %{points} points."
               above_maximum: "%{ability} dépasserait %{maximum}."
+            class_choices:
+              not_picked:
+                one: "« %{group} » : choisissez-en 1."
+                other: "« %{group} » : choisissez-en %{count}."
+            skill_keys:
+              not_picked:
+                one: "Choisissez 1 compétence de votre sous-classe."
+                other: "Choisissez %{count} compétences de votre sous-classe."
             expertise_keys:
               not_picked:
                 one: "Choisissez 1 compétence."
@@ -63,6 +71,7 @@ fr:
         description: "Description"
         name: "Nom"
       character:
+        class_choices: "Choix de classe"
         fighting_style: "Style de combat"
         weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
@@ -167,6 +176,12 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            class_choices:
+              not_offered: "comptent une option que votre classe ne donne pas à ce niveau"
+              repeated: "« %{group} » : une option ne se prend qu'une fois"
+              too_many:
+                one: "« %{group} » : %{count} au plus"
+                other: "« %{group} » : %{count} au plus"
             fighting_style:
               not_offered: "n'est pas proposé par votre classe à ce niveau"
             weapon_masteries:
@@ -286,6 +301,11 @@ fr:
           invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
           missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
           unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_class_choices: "Les choix de classe : le réglage doit être une liste de groupes"
+          invalid_class_choice_group: "Le groupe de choix « %{group} » : une clé, un libellé sur une ligne, un moment pour le changer et des options"
+          invalid_class_choice_option: "%{group} › %{option} : une clé, un libellé sur une ligne, un résumé, un niveau de 1 à 20, une option requise du même groupe et des effets connus"
+          unknown_class_choice_group: "%{part} › %{field} › %{option} : le groupe de choix « %{group} » n'existe pas"
+          unknown_class_choice_parameter: "Les choix de classe : le réglage « %{parameter} » est inconnu"
           invalid_fighting_styles: "Les styles de combat : le réglage doit être une liste de styles"
           invalid_fighting_style: "Le style de combat « %{style} » : une clé, un libellé sur une ligne, et des effets connus"
           unknown_fighting_style: "%{part} › %{field} › %{option} : le style de combat « %{style} » n'existe pas"
@@ -1202,6 +1222,7 @@ fr:
         level_granted: "Le MJ donne le niveau %{level} à %{character}."
         level_reached: "%{character} passe au niveau %{level} : +%{hit_points} PV."
         level_reached_rolled: "%{character} passe au niveau %{level} : dé de vie %{roll}, +%{hit_points} PV."
+        class_choices_changed: "%{character} change ses choix de classe : %{changes}."
         weapon_masteries_changed: "%{character} change ses maîtrises : %{changes}."
         spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
         hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
@@ -1297,6 +1318,7 @@ fr:
       close: "Fermer %{name}"
     panels:
       character:
+        change_class_choices: "Changer mes choix de classe"
         change_masteries: "Changer mes maîtrises"
         abilities: "Caractéristiques"
         edit_sheet: "Modifier ma fiche"
@@ -1522,6 +1544,11 @@ fr:
         title: "Points de vie"
         average: "Moyenne : +%{points} PV"
         roll: "Lancer le d%{sides}"
+      skills:
+        title: "Compétences"
+        rule:
+          one: "Votre sous-classe vous fait maîtriser 1 compétence de plus."
+          other: "Votre sous-classe vous fait maîtriser %{count} compétences de plus."
       improvement:
         title: "Amélioration de caractéristique"
         rule: "Répartissez %{points} points, sans dépasser le maximum d'une caractéristique."
@@ -1530,6 +1557,14 @@ fr:
         rule:
           one: "Choisissez 1 compétence maîtrisée : son bonus de maîtrise compte double."
           other: "Choisissez %{count} compétences maîtrisées : leur bonus de maîtrise compte double."
+    class_choices:
+      edit:
+        back: "Retour à la partie"
+        cancel: "Annuler"
+        close: "Fermer"
+        save: "Enregistrer"
+        subtitle: "Les choix que donne la classe de %{name} (invocations, métamagie...), dans ce que permet son niveau. Le changement s'écrit dans le chat."
+        title: "Changer mes choix de classe"
     weapon_mastery_choices:
       edit:
         back: "Retour à la partie"
@@ -1563,6 +1598,12 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      class_choices:
+        count:
+          one: "Choisissez-en 1."
+          other: "Choisissez-en %{count}."
+        min_level: "Niveau %{level}"
+        requires: "Demande %{option}"
       weapon_mastery_choices:
         masteries: "Maîtrises d'armes"
         masteries_hint:

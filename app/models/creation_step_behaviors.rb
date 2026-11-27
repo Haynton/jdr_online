@@ -6,7 +6,7 @@
 module CreationStepBehaviors
   ALL = [
     CreationStepBehaviors::ChoosesEquipment, CreationStepBehaviors::ChoosesSpells,
-    CreationStepBehaviors::ChoosesWeaponMasteries
+    CreationStepBehaviors::ChoosesWeaponMasteries, CreationStepBehaviors::ChoosesClassChoices
   ].freeze
 
   def self.all

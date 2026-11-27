@@ -4,8 +4,8 @@
     (GameRoom#tool_groups) %>
 <div class="flex flex-col gap-5">
   <% character_feature_groups(game_room.own_character).each do |group| %>
-    <section aria-label="<%= t("character_sheets.features.group", list: group.label, option: group.option) %>">
-      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t("character_sheets.features.group", list: group.label, option: group.option) %></h3>
+    <section aria-label="<%= feature_group_title(group) %>">
+      <h3 class="text-xs font-semibold tracking-wider text-muted uppercase"><%= feature_group_title(group) %></h3>
       <ul class="mt-2 flex flex-col gap-1">
         <% group.features.each do |feature| %>
           <li><%= render "character_sheets/features/line", feature: feature %></li>

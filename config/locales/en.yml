@@ -49,6 +49,14 @@ en:
             ability_increases:
               not_shared: "Share exactly %{points} points."
               above_maximum: "%{ability} would go above %{maximum}."
+            class_choices:
+              not_picked:
+                one: "“%{group}”: pick 1."
+                other: "“%{group}”: pick %{count}."
+            skill_keys:
+              not_picked:
+                one: "Pick 1 skill of your subclass."
+                other: "Pick %{count} skills of your subclass."
             expertise_keys:
               not_picked:
                 one: "Choose 1 skill."
@@ -92,6 +100,7 @@ en:
         description: "Description"
         name: "Name"
       character:
+        class_choices: "Class choices"
         fighting_style: "Fighting style"
         weapon_masteries: "Weapon masteries"
         name: "Character name"
@@ -196,6 +205,12 @@ en:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            class_choices:
+              not_offered: "include an option your class does not give at this level"
+              repeated: "“%{group}”: an option is taken only once"
+              too_many:
+                one: "“%{group}”: %{count} at most"
+                other: "“%{group}”: %{count} at most"
             fighting_style:
               not_offered: "is not offered by your class at this level"
             weapon_masteries:
@@ -315,6 +330,11 @@ en:
           invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
           missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
           unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
+          invalid_class_choices: "The class choices: the setting must be a list of groups"
+          invalid_class_choice_group: "The group of choices “%{group}”: a key, a label on one line, when it changes and options"
+          invalid_class_choice_option: "%{group} › %{option}: a key, a label on one line, a summary, a level from 1 to 20, a required option of the same group and known effects"
+          unknown_class_choice_group: "%{part} › %{field} › %{option}: the group of choices “%{group}” does not exist"
+          unknown_class_choice_parameter: "The class choices: the setting “%{parameter}” is unknown"
           invalid_fighting_styles: "The fighting styles: the setting must be a list of styles"
           invalid_fighting_style: "The fighting style “%{style}”: a key, a label on one line, and known effects"
           unknown_fighting_style: "%{part} › %{field} › %{option}: the fighting style “%{style}” does not exist"
@@ -1231,6 +1251,7 @@ en:
         level_granted: "The GM gives level %{level} to %{character}."
         level_reached: "%{character} reaches level %{level}: +%{hit_points} HP."
         level_reached_rolled: "%{character} reaches level %{level}: hit die %{roll}, +%{hit_points} HP."
+        class_choices_changed: "%{character} changes their class choices: %{changes}."
         weapon_masteries_changed: "%{character} changes their masteries: %{changes}."
         spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
         hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
@@ -1326,6 +1347,7 @@ en:
       close: "Close %{name}"
     panels:
       character:
+        change_class_choices: "Change my class choices"
         change_masteries: "Change my masteries"
         abilities: "Abilities"
         edit_sheet: "Edit my sheet"
@@ -1551,6 +1573,11 @@ en:
         title: "Hit points"
         average: "Average: +%{points} HP"
         roll: "Roll the d%{sides}"
+      skills:
+        title: "Skills"
+        rule:
+          one: "Your subclass makes you proficient in 1 more skill."
+          other: "Your subclass makes you proficient in %{count} more skills."
       improvement:
         title: "Ability Score Improvement"
         rule: "Share %{points} points, never above the maximum of an ability."
@@ -1559,6 +1586,14 @@ en:
         rule:
           one: "Choose 1 proficient skill: its proficiency bonus counts twice."
           other: "Choose %{count} proficient skills: their proficiency bonus counts twice."
+    class_choices:
+      edit:
+        back: "Back to the game"
+        cancel: "Cancel"
+        close: "Close"
+        save: "Save"
+        subtitle: "The choices the class of %{name} gives (invocations, metamagic...), within what its level allows. The change is written in the chat."
+        title: "Change my class choices"
     weapon_mastery_choices:
       edit:
         back: "Back to the game"
@@ -1592,6 +1627,12 @@ en:
         played_by: "Played by %{username}"
         title: "Character sheet"
     character_steps:
+      class_choices:
+        count:
+          one: "Pick 1."
+          other: "Pick %{count}."
+        min_level: "Level %{level}"
+        requires: "Requires %{option}"
       weapon_mastery_choices:
         masteries: "Weapon masteries"
         masteries_hint:

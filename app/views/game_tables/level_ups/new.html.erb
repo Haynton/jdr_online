@@ -1,14 +1,15 @@
 <%# The level the game master gave a player's character (LevelUp, GameTables::LevelUpsController), in the window of
     the room (the frame of the sheet): the features of that level, then only the choices it asks (hit points, subclass,
-    ability improvement, expertise), each with its error under it; the new spells and weapon masteries afterwards, in
-    their own windows. Opened directly or without JavaScript, a page with « Retour à la partie » %>
+    ability improvement, skills of the subclass, expertise, options of the groups of choices of the class), each with
+    its error under it. What a subclass brings (its skills, its choices) shows as soon as it is picked in the list
+    (level_up_subclass_controller.js); the new spells and weapon masteries afterwards, in their own windows. Opened directly or without JavaScript, a page with « Retour à la partie » %>
 <% title = t(".title", level: @level_up.level) %>
 <% subtitle = t(".subtitle", name: @character.name) %>
 <% form = capture do %>
   <%= form_with url: game_table_level_up_path(@game_table), scope: :level_up,
                 class: character_sheet_in_dialog? ? "flex min-h-0 flex-1 flex-col" : "flex flex-1 flex-col" do %>
     <div class="<%= character_sheet_in_dialog? ? "min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-8" : "contents" %>">
-      <div class="flex flex-col gap-8" data-controller="details-dialog">
+      <div class="flex flex-col gap-8" data-controller="details-dialog level-up-subclass">
         <%= render "shared/details_dialog", id: "level-up-details" %>
         <% features = level_up_features(@level_up) %>
         <% if features.any? %>
@@ -25,6 +26,25 @@
         <%= render "game_tables/level_ups/subclass", level_up: @level_up if @level_up.subclass_field %>
         <%= render "game_tables/level_ups/improvement", level_up: @level_up if @level_up.improvement %>
         <%= render "game_tables/level_ups/expertise", level_up: @level_up if @level_up.expertise_count.positive? %>
+        <%= render "game_tables/level_ups/error", level_up: @level_up, attribute: :class_choices %>
+        <% if (class_groups = @level_up.class_choice_groups_to_pick(nil)).any? %>
+          <%= render "game_tables/character_steps/class_choices", character: @character, groups: class_groups,
+                                                                   field_name: "level_up[class_choices]", errors: [] %>
+        <% end %>
+        <%# What each subclass brings, prepared in advance and shown as soon as it is picked in the list
+            (level_up_subclass_controller.js); without JavaScript, the one picked shows when the window comes back %>
+        <% @level_up.subclass_extras.each do |extra| %>
+          <%= tag.div class: "flex flex-col gap-8", hidden: extra[:subclass] != @level_up.subclass,
+                      data: { level_up_subclass_target: "block", subclass: extra[:subclass] } do %>
+            <% if @level_up.skill_count(extra[:subclass]).positive? %>
+              <%= render "game_tables/level_ups/skills", level_up: @level_up, for_subclass: extra[:subclass] %>
+            <% end %>
+            <% if extra[:groups].any? %>
+              <%= render "game_tables/character_steps/class_choices", character: @character, groups: extra[:groups],
+                                                                       field_name: "level_up[class_choices]", errors: [] %>
+            <% end %>
+          <% end %>
+        <% end %>
         <% if level_up_picks_later?(@character) %>
           <p class="text-sm text-muted"><%= t(".picks_later") %></p>
         <% end %>

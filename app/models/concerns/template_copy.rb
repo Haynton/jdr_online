@@ -51,6 +51,12 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "fighting_styles") || []
   end
 
+  # The groups of choices classes give (character_fields.class_choices: invocations, metamagic...,
+  # CharacterSheets::ClassChoices), [] for a template without: in its copy, like the classes that give them
+  def class_choices
+    template_snapshot.to_h.dig("character_fields", "class_choices") || []
+  end
+
   # How the weapons of a character attack (character_fields.weapon_attacks, CharacterSheets::WeaponAttacks), nil for a
   # template without: in its copy, like the fields of the sheet they read
   def weapon_attacks
