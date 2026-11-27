@@ -6,6 +6,16 @@ class BoardMapChanger
     game_master ? GAME_MASTER_BOARD_ID : PLAYER_BOARD_ID
   end
 
+  def self.send_board(game_table, game_master: false)
+    audience = game_master ? [game_table, GameTableChannel::GAME_MASTER_AUDIENCE] : [game_table]
+    Turbo::StreamsChannel.broadcast_replace_to(
+      *audience,
+      target: board_id(game_master:),
+      partial: "game_rooms/board",
+      locals: { game_table:, game_master: }
+    )
+  end
+
   def initialize(game_table, game_map)
     @game_table = game_table
     @game_map = game_map
@@ -16,17 +26,6 @@ class BoardMapChanger
       @game_table.update!(board_game_map: @game_map)
       BoardTokenCopier.new(@game_map).call if @game_map
     end
-    send_board_to_players
-  end
-
-  private
-
-  def send_board_to_players
-    Turbo::StreamsChannel.broadcast_replace_to(
-      @game_table,
-      target: PLAYER_BOARD_ID,
-      partial: "game_rooms/board",
-      locals: { game_table: @game_table, game_master: false }
-    )
+    self.class.send_board(@game_table)
   end
 end

@@ -29,6 +29,8 @@ class GameMap < ApplicationRecord
   validate :image_is_a_picture
 
   after_update_commit :drop_board_tokens_outside_the_grid, if: -> { saved_change_to_columns? || saved_change_to_rows? }
+  before_destroy :note_whether_on_the_board
+  after_destroy_commit :send_empty_board, if: :was_on_the_board, unless: :destroyed_by_association
 
   # A copy of a map of « Mes cartes », drawn in the editor (or played on its picture), rather than an image alone
   def drawn?
@@ -96,6 +98,18 @@ class GameMap < ApplicationRecord
   end
 
   private
+
+  attr_reader :was_on_the_board
+
+  def note_whether_on_the_board
+    @was_on_the_board = game_table.board_game_map_id == id
+  end
+
+  def send_empty_board
+    game_table.reload
+    BoardMapChanger.send_board(game_table)
+    BoardMapChanger.send_board(game_table, game_master: true)
+  end
 
   def drop_board_tokens_outside_the_grid
     outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))

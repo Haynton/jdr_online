@@ -78,6 +78,13 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert_equal 2, second.reload.shown_number
   end
 
+  test "a token is hidden or shown, nothing else" do
+    token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
+
+    assert_not token.update(hidden: "")
+    assert token.errors.of_kind?(:hidden, :inclusion)
+  end
+
   test "a name longer than 60 characters is refused" do
     token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
 

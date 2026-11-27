@@ -78,6 +78,36 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
     assert_empty @tavern.board_tokens.reload
   end
 
+  test "an enemy renamed or turned into an NPC changes on the board of the players at once, if it stands on it" do
+    @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1, hidden: false)
+    @game_table.update!(board_game_map: @tavern)
+    wolf = @game_table.characters.create!(kind: :monster, name: "Loup")
+
+    assert_turbo_stream_broadcasts(@game_table, count: 2) do
+      @goblin.update!(name: "Chef de guerre")
+      @goblin.update!(kind: :npc)
+    end
+    unseen_changes = capture_turbo_stream_broadcasts(@game_table) do
+      @goblin.update!(gm_notes: "Lâche")
+      wolf.update!(name: "Grand loup")
+    end
+    assert_empty unseen_changes
+  end
+
+  test "the map of the board deleted: the board goes empty for the players and for the game master at once" do
+    @game_table.update!(board_game_map: @tavern)
+    other_map = @game_table.game_maps.create!(name: "Cave", columns: 10, rows: 10, layout: MapTemplate::BLANK_LAYOUT)
+
+    assert_empty(capture_turbo_stream_broadcasts(@game_table) { other_map.destroy! })
+    players = capture_turbo_stream_broadcasts(@game_table) do
+      assert_turbo_stream_broadcasts([@game_table, GameTableChannel::GAME_MASTER_AUDIENCE], count: 1) do
+        @tavern.destroy!
+      end
+    end
+    assert_equal(["game-room-board-player"], players.map { |stream| stream["target"] })
+    assert_nil @game_table.reload.board_game_map
+  end
+
   private
 
   def place_goblins(count, from_column: 1)
