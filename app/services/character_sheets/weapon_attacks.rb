@@ -1,12 +1,12 @@
 # The attacks of the weapons a player's character holds (decision of 26 November), in the form of the attacks of a
-# creature ({ name, to_hit, damage }: FieldTypes::Attacks), so that the room shows them the same way. The template
-# says how they are worked out (character_fields.weapon_attacks, checked by SheetTemplates::WeaponAttacksCheck): a
-# melee weapon uses melee_ability (Strength), a ranged one ranged_ability (Dexterity), a finesse one the better of the
-# two; the bonus to hit adds the proficiency bonus when the class (training_from) has the training the weapon needs,
-# and the bonus of its fighting style to a ranged weapon (Archery); a kind of weapon it has the mastery of names its
-# mastery property# (its category, or its kind: the shortswords of a rogue);
-# the damage is its dice plus the same modifier. A versatile weapon gives a second line, with two hands, while no
-# shield is equipped (decision: the player takes the line that fits how they hold it)
+# creature ({ name, to_hit, damage }: FieldTypes::Attacks), so that the room shows them the same way. The template says
+# how they are worked out (character_fields.weapon_attacks, checked by SheetTemplates::WeaponAttacksCheck): a melee
+# weapon uses melee_ability (Strength), a ranged one ranged_ability (Dexterity), a finesse one the better of the two;
+# the bonus to hit adds the proficiency bonus when the class (training_from) has the training the weapon needs, and the
+# bonus of its fighting style to a ranged weapon (Archery); a kind of weapon it has the mastery of names its mastery
+# property# (its category, or its kind: the shortswords of a rogue); the damage is its dice plus the same modifier. Both
+# add the magic bonus of the weapon (+1, once attuned: Attunable). A versatile weapon gives a second line, with two
+# hands, while no shield is equipped (decision: the player takes the line that fits how they hold it)
 module CharacterSheets
   class WeaponAttacks
     def initialize(character)
@@ -25,7 +25,7 @@ module CharacterSheets
     private
 
     def lines_of(weapon, holds_shield)
-      modifier = modifier_for(weapon.properties)
+      modifier = modifier_for(weapon.properties) + weapon.magic_bonus
       to_hit = modifier + proficiency_for(weapon.properties) + style_bonus(weapon.properties)
       lines = [attack_line(weapon.name, to_hit, weapon.properties["damage_dice"], modifier, weapon.properties)]
       two_handed_dice = weapon.properties["versatile_dice"]

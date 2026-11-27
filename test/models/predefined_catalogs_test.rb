@@ -66,12 +66,13 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     weapons_and_armor = catalogs.first.select { |item| item.dig("properties", "training") }
 
     assert_equal(*catalogs.map { |entries| entries.map { |item| item["properties"].slice(*rule_values) } })
-    assert_equal 20, weapons_and_armor.size
-    assert_equal({ "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8" },
+    assert_equal 51, weapons_and_armor.size
+    assert_equal({ "battleaxe" => "1d10", "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8",
+                   "trident" => "1d10", "war-pick" => "1d10", "warhammer" => "1d10" },
                  catalogs.first.select { |item| item.dig("properties", "versatile_dice") }
                                .to_h { |item| [item["key"], item.dig("properties", "versatile_dice")] })
     weapons_and_armor.select { |item| item.dig("properties", "training").end_with?("weapons") }.each do |weapon|
-      assert_match(/\A\d+d\d+\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
+      assert_match(/\A\d+(d\d+)?\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
       assert weapon.dig("properties", "damage").start_with?(weapon.dig("properties", "damage_dice")), weapon["key"]
     end
   end
@@ -130,7 +131,9 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
   end
 
   test "every item of a starting equipment is in the catalog, and every group of your choice has items" do
-    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }.each do |catalog_file|
+    # The magic items are a catalog of items of their own, never in a starting equipment
+    item_files = CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }
+    item_files.reject { |catalog_file| catalog_file.basename.to_s.include?("_magic.") }.each do |catalog_file|
       items = read_json(catalog_file)["entries"]
       groups = items.filter_map { |item| item.dig("properties", "group") }.uniq
       template = create_template_of(catalog_file)

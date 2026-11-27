@@ -3,12 +3,16 @@
 # the shield one at a time, Equippable), or takes one of an item out (destroy; decision of 26 November: one at a time,
 # an arrow shot or a potion drunk; the last one, asked first, removes the line). Saved: only a player accepted at the
 # table, and only an item of their own character; anyone else gets a 404. The answer redraws the panel in place, which
-# stays open, and the armour class and the attacks it changes go to the whole table
+# stays open, and the armour class and the attacks it changes go to the whole table. A magic item that requires it is
+# attuned the same way (a switch « Lié », Attunable)
 module GameTables
   class InventoryItemsController < ApplicationController
     before_action :set_participation_and_item
 
+    # Equips or takes off (equipped), or attunes or ends the attunement (attuned: a magic item that requires it, as
+    # many at a time as the template says; past that, the panel says so)
     def update
+      return attune if params.key?(:attuned)
       raise ActiveRecord::RecordNotFound unless @inventory_item.equippable?
 
       @inventory_item.equip(params[:equipped] == "1")
@@ -18,6 +22,14 @@ module GameTables
     def destroy
       @inventory_item.take_one_away
       redraw_inventory
+    end
+
+    def attune
+      raise ActiveRecord::RecordNotFound unless @inventory_item.requires_attunement?
+
+      limit = @participation.game_table.attunement_limit
+      error = @inventory_item.attune(params[:attuned] == "1", limit: limit)
+      redraw_inventory(attunement_error: error && t(".too_many_attuned", count: limit))
     end
 
     private
@@ -30,14 +42,15 @@ module GameTables
 
     # The panel in place, and what the equipment changes (the armour class, the attacks) for the whole table, as the
     # hit points are (game_tables/character_vitals/_streams)
-    def redraw_inventory
+    def redraw_inventory(attunement_error: nil)
       game_room = GameRoom.new(@participation)
       character = @participation.character.reload
       shared = render_to_string(partial: "game_tables/character_vitals/streams", formats: [:turbo_stream],
                                 locals: { character: character })
       Turbo::StreamsChannel.broadcast_stream_to(@participation.game_table, content: shared)
       inventory = turbo_stream.replace("game-room-inventory", partial: "game_rooms/panels/inventory",
-                                                              locals: { game_room: game_room })
+                                                              locals: { game_room: game_room,
+                                                                        attunement_error: attunement_error })
       render turbo_stream: [inventory, shared].join
     end
   end

@@ -36,6 +36,11 @@ module CharacterSheets
       @play_state.feat_effects
     end
 
+    # What its magic items give ({ "armor_class_bonus" => 1, "abilities" => { "constitution" => 19 } }), {} for none
+    def magic_effects
+      @play_state.magic_effects
+    end
+
     # nil while the ability has no score
     def modifier(ability_key)
       @modifiers[ability_key]

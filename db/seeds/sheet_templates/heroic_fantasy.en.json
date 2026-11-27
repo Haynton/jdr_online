@@ -5,6 +5,7 @@
   "banner_color": "gold",
   "description": "5E compatible · SRD 5.2.1 license.",
   "character_fields": {
+    "attunement": {"limit": 3},
     "ability_methods": [
       { "type": "roll", "label": "Dice roll", "summary": "4d6 per ability, the 3 highest dice kept", "help": "Roll 4d6 for each ability and keep the 3 highest dice. You may also roll real dice and type your scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
       { "type": "standard_array", "label": "Standard array", "summary": "Fixed values to place: 15, 14, 13, 12, 10, 8", "help": "Place 15, 14, 13, 12, 10 and 8, one value per ability.", "values": [15, 14, 13, 12, 10, 8] },
@@ -329,7 +330,7 @@
   },
   "item_fields": {
     "fields": [
-      { "key": "category", "filter": true, "label": "Category", "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Potion", "Treasure"] },
+      {"key": "category", "filter": true, "label": "Category", "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Potion", "Treasure", "Wondrous item", "Ring", "Wand", "Staff", "Rod", "Scroll"]},
       { "key": "damage", "label": "Damage", "type": "text" },
       { "key": "weapon_properties", "label": "Properties", "type": "text" },
       { "key": "armor_class", "label": "Armor class", "type": "text" },
@@ -339,14 +340,23 @@
       { "key": "armor_bonus", "label": "AC bonus", "type": "number", "min": 0, "max": 10, "help": "Added to the AC while it is equipped (a shield: 2)." },
       { "key": "damage_dice", "label": "Damage dice", "type": "text", "short": true, "help": "For example 1d8: the modifier of the ability of the attack is added to it." },
       { "key": "versatile_dice", "label": "Two-handed dice", "type": "text", "short": true, "help": "For a versatile weapon, for example 1d10: a second attack, with two hands, while no shield is equipped." },
-      {"key": "weapon_kind", "label": "Kind of weapon", "type": "choice", "options": ["daggers", "handaxes", "javelins", "maces", "quarterstaffs", "sickles", "spears", "shortbows", "flails", "greataxes", "greatswords", "longswords", "scimitars", "shortswords", "longbows"], "labels": ["Daggers", "Handaxes", "Javelins", "Maces", "Quarterstaffs", "Sickles", "Spears", "Shortbows", "Flails", "Greataxes", "Greatswords", "Longswords", "Scimitars", "Shortswords", "Longbows"], "help": "The kind the trainings of the classes and the weapon masteries name."},
+      {"key": "weapon_kind", "label": "Kind of weapon", "type": "choice", "options": ["daggers", "handaxes", "javelins", "maces", "quarterstaffs", "sickles", "spears", "shortbows", "flails", "greataxes", "greatswords", "longswords", "scimitars", "shortswords", "longbows", "clubs", "greatclubs", "light-hammers", "darts", "light-crossbows", "slings", "battleaxes", "glaives", "halberds", "lances", "mauls", "morningstars", "pikes", "rapiers", "tridents", "warhammers", "war-picks", "whips", "blowguns", "hand-crossbows", "heavy-crossbows", "muskets", "pistols"], "labels": ["Daggers", "Handaxes", "Javelins", "Maces", "Quarterstaffs", "Sickles", "Spears", "Shortbows", "Flails", "Greataxes", "Greatswords", "Longswords", "Scimitars", "Shortswords", "Longbows", "Clubs", "Greatclubs", "Light hammers", "Darts", "Light crossbows", "Slings", "Battleaxes", "Glaives", "Halberds", "Lances", "Mauls", "Morningstars", "Pikes", "Rapiers", "Tridents", "Warhammers", "War picks", "Whips", "Blowguns", "Hand crossbows", "Heavy crossbows", "Muskets", "Pistols"], "help": "The kind the trainings of the classes and the weapon masteries name."},
       {"key": "mastery", "label": "Mastery property", "type": "choice", "options": ["cleave", "graze", "nick", "push", "sap", "slow", "topple", "vex"], "labels": ["Cleave", "Graze", "Nick", "Push", "Sap", "Slow", "Topple", "Vex"], "descriptions": {"cleave": "If you hit a creature with a melee attack, you can make a melee attack with this weapon against a second creature within 5 feet of the first and within your reach; on a hit it takes the weapon's damage, without your ability modifier unless it is negative. Once per turn.", "graze": "If your attack with this weapon misses a creature, you can deal it damage equal to the ability modifier of the attack, of the weapon's type.", "nick": "The extra attack of the Light property can be made as part of the Attack action instead of a Bonus Action. Once per turn.", "push": "If you hit a creature that is Large or smaller, you can push it up to 10 feet straight away from you.", "sap": "If you hit a creature, it has Disadvantage on its next attack roll before the start of your next turn.", "slow": "If you hit a creature and deal damage to it, you can reduce its Speed by 10 feet until the start of your next turn (no more than 10 feet in all).", "topple": "If you hit a creature, you can force it to succeed on a Constitution saving throw (DC 8 + the modifier of the attack + your proficiency bonus) or have the Prone condition.", "vex": "If you hit a creature and deal damage to it, you have Advantage on your next attack roll against it before the end of your next turn."}, "help": "Usable by a character with the mastery of this kind of weapon (weapon masteries)."},
       { "key": "damage_type", "label": "Damage type", "type": "text", "short": true },
       { "key": "finesse", "label": "Finesse", "type": "boolean", "help": "The attack uses the better of Strength and Dexterity." },
       { "key": "ranged", "label": "Ranged", "type": "boolean", "help": "The attack uses Dexterity instead of Strength." },
       { "key": "effect", "label": "Effect", "type": "text" },
+      {"key": "rarity", "label": "Rarity", "type": "choice", "filter": true, "options": ["common", "uncommon", "rare", "very-rare", "legendary", "artifact", "varies"], "labels": ["Common", "Uncommon", "Rare", "Very rare", "Legendary", "Artifact", "Varies"]},
+      {"key": "attunement", "label": "Requires attunement", "type": "boolean"},
+      {"key": "magic_bonus", "label": "Magic bonus", "type": "number", "min": 1, "max": 3, "help": "A weapon or ammunition: to attack and damage rolls. Armor or a shield: to AC."},
+      {"key": "item_ac_bonus", "label": "AC bonus", "type": "number", "min": 1, "max": 5, "help": "Added to AC while the item is attuned (or carried, when it needs no attunement)."},
+      {"key": "sets_ability", "label": "Ability set", "type": "choice", "options": ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"], "labels": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]},
+      {"key": "sets_ability_score", "label": "Score set", "type": "number", "min": 1, "max": 30, "help": "The ability has this score while the item is attuned, unless it is already higher."},
+      {"key": "ammunition", "label": "Ammunition", "type": "boolean", "internal": true},
+      {"key": "applies_to", "label": "Goes on", "type": "choice", "internal": true, "options": ["weapon", "armor", "shield", "ammunition"]},
+      {"key": "applies_to_keys", "label": "Items aimed at", "type": "text", "internal": true},
       { "key": "weight", "label": "Weight (lb)", "type": "number", "min": 0, "max": 2000, "step": 0.001 },
-      { "key": "value", "label": "Value (gp)", "type": "number", "min": 0, "max": 100000, "step": 0.01 },
+      { "key": "value", "label": "Value (gp)", "type": "number", "min": 0, "max": 100000, "step": 0.001 },
       { "key": "group", "label": "Group", "type": "choice", "internal": true, "options": ["musical_instrument", "artisan_tools", "gaming_set", "holy_symbol"] }
     ]
   },

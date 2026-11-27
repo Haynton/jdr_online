@@ -55,7 +55,8 @@
               <button type="button" hidden class="<%= button_classes(:secondary, size: :compact) %> h-7 shrink-0 px-2.5 text-xs select-none"
                       aria-haspopup="dialog" aria-label="<%= t(".give_item", item: item.name) %>"
                       data-item-gift-target="opener" data-action="item-gift#open"
-                      data-item-gift-key-param="<%= item.key %>" data-item-gift-name-param="<%= item.name %>">
+                      data-item-gift-key-param="<%= item.key %>" data-item-gift-name-param="<%= item.name %>"
+                      data-item-gift-kind-param="<%= Catalogs::Enchantments.kind_of(item.properties) %>">
                 <%= t(".give") %>
               </button>
             <% end %>

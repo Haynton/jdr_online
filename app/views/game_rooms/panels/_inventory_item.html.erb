@@ -1,7 +1,8 @@
 <%# A line of the inventory of a player's character (game_rooms/panels/_inventory): its name on one line, with how
     many, its damage or armour class under it, its description at hand (summary/_entry_details); then for an armour, a
-    shield or a weapon its switch « Équipé » (game_rooms/panels/_equip_switch, in the column of its heading), and its
-    « −1 » (GameTables::InventoryItemsController) %>
+    shield or a weapon its switch « Équipé » (game_rooms/panels/_equip_switch, in the column of its heading), a magic item
+    that requires attunement its switch « Lié » (attune_column: the group has that column), and its « −1 »
+    (GameTables::InventoryItemsController) %>
 <li class="flex items-center gap-3">
   <div class="min-w-0 flex-1">
     <%= render layout: "character_sheets/summary/entry_details",
@@ -14,6 +15,11 @@
       </span>
     <% end %>
   </div>
+  <% if local_assigns[:attune_column] %>
+    <div class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> flex justify-center">
+      <%= render "game_rooms/panels/attune_switch", game_table: game_table, item: item if item.requires_attunement? %>
+    </div>
+  <% end %>
   <% if item.equippable? %>
     <div class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> flex justify-center">
       <%= render "game_rooms/panels/equip_switch", game_table: game_table, item: item %>

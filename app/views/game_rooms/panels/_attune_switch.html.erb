@@ -1,0 +1,15 @@
+<%# Attunes the character to a magic item that requires it, or ends it (GameTables::InventoryItemsController, Attunable):
+    sent as soon as it is switched, the panel redrawn by the answer (refused past the limit of the template). Drawn like
+    the switch « Équipé » (game_rooms/panels/_equip_switch); « Lié » is written once, over the column %>
+<% switch_id = "attune-item-#{item.id}" %>
+<%= form_with url: game_table_inventory_item_path(game_table, item), method: :patch, class: "flex shrink-0 items-center",
+              data: { controller: "auto-submit", action: "change->auto-submit#submit" } do %>
+  <%= hidden_field_tag :attuned, "0", id: nil %>
+  <span class="relative inline-flex shrink-0">
+    <%= check_box_tag :attuned, "1", item.attuned, id: switch_id, role: "switch",
+                      title: t(".attune", name: item.name), aria: { label: t(".attune", name: item.name) },
+                      class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+    <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+    <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+  </span>
+<% end %>
