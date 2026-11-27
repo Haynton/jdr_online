@@ -101,15 +101,16 @@ class BoardMapTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-board-game-master", count: 0
   end
 
-  test "the game master sees the map with its tokens and what stops a token" do
-    @game_table.update!(board_game_map: @tavern)
+  test "the game master sees the map with what stops a token, its tokens apart from the drawing" do
+    BoardMapChanger.new(@game_table, @tavern).call
     sign_in @game_master
 
     get game_table_path(@game_table)
 
     assert_select "#game-room-board-game-master svg[data-map-preview-show-natural-blocks-value=true]" do |boards|
-      assert_equal 1, JSON.parse(boards.first["data-map-preview-layout-value"])["tokens"].size
+      assert_nil JSON.parse(boards.first["data-map-preview-layout-value"])["tokens"]
     end
+    assert_select "#game-room-board-tokens-game-master[data-tokens*=Gobelin]"
     assert_select "#game-room-board-player", count: 0
   end
 
