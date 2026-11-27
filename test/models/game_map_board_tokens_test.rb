@@ -19,7 +19,7 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
     third.update!(hidden: false)
     first.update!(hidden: false)
 
-    assert_equal [2, nil, 1], [first, second, third].map { |token| token.reload.number }
+    assert_equal [2, nil, 1], [first, second, third].each(&:reload).map(&:number)
     assert_equal [2, nil, nil], [first, second, third].map(&:shown_number)
   end
 
@@ -31,7 +31,7 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
     fourth = place_goblins(1, from_column: 5).first
     fourth.update!(hidden: false)
 
-    assert_equal [1, 3, 4], [first, third, fourth].map { |token| token.reload.number }
+    assert_equal [1, 3, 4], [first, third, fourth].each(&:reload).map(&:number)
   end
 
   test "a letter is given once when the token is put, and never moves" do
@@ -40,8 +40,18 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
     third.update!(hidden: false)
     third.update!(hidden: true)
 
-    assert_equal %w[B C], [second, third].map { |token| token.reload.letter }
+    assert_equal %w[B C], [second, third].each(&:reload).map(&:letter)
     assert_equal "D", place_goblins(1, from_column: 5).first.letter
+  end
+
+  test "each token of the map has its own letter, whatever its character; the numbers stay by character" do
+    wolf = @game_table.characters.create!(kind: :monster, name: "Loup")
+    goblin = place_goblins(1).first
+    wolves = [2, 3].map { |column| @tavern.board_tokens.create!(character: wolf, column:, row: 1, hidden: false) }
+    goblin.update!(hidden: false)
+
+    assert_equal %w[A B C], [goblin, *wolves].map(&:letter)
+    assert_equal [1, 1, 2], [goblin, *wolves].each(&:reload).map(&:number)
   end
 
   test "a smaller grid takes away the tokens outside it and tells the players" do

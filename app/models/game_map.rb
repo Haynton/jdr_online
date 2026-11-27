@@ -73,12 +73,18 @@ class GameMap < ApplicationRecord
     tokens_copied_at.present?
   end
 
-  def count_token(character_id, kind)
+  def take_token_placement
     with_lock do
-      counts = token_counters.fetch(character_id.to_s, {})
-      next_count = counts.fetch(kind, 0) + 1
-      update_columns(token_counters: token_counters.merge(character_id.to_s => counts.merge(kind => next_count)))
-      next_count
+      increment!(:tokens_placed)
+      tokens_placed
+    end
+  end
+
+  def take_token_number(character_id)
+    with_lock do
+      next_number = token_counters.dig(character_id.to_s, "revealed").to_i + 1
+      update_columns(token_counters: token_counters.merge(character_id.to_s => { "revealed" => next_number }))
+      next_number
     end
   end
 

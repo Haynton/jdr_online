@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -153,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_200000) do
     t.jsonb "layout"
     t.datetime "tokens_copied_at"
     t.jsonb "token_counters", default: {}, null: false
+    t.integer "tokens_placed", default: 0, null: false
     t.index ["game_table_id"], name: "index_game_maps_on_game_table_id"
     t.index ["map_template_id"], name: "index_game_maps_on_map_template_id"
     t.check_constraint "columns IS NULL OR columns >= 10 AND columns <= 60", name: "game_maps_columns_check"

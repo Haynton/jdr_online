@@ -37,13 +37,13 @@ class BoardToken < ApplicationRecord
   private
 
   def take_placement
-    self.placement = game_map.count_token(character_id, "placed")
+    self.placement = game_map.take_token_placement
   end
 
   def take_number_when_first_shown
     return if hidden? || number
 
-    self.number = game_map.count_token(character_id, "revealed")
+    self.number = game_map.take_token_number(character_id)
   end
 
   def cell_not_blocked
