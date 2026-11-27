@@ -9,7 +9,7 @@ const menuGap = 8
 
 export default class extends Controller {
   static targets = ["map", "tokens", "creaturePlacer", "hint", "hintName", "tokenMenu", "tokenMenuTitle",
-                    "tokenVisibilityButton"]
+                    "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput"]
   static values = { hint: String, tokensUrl: String, showLabel: String, hideLabel: String }
 
   mapTargetConnected() {
@@ -130,8 +130,10 @@ export default class extends Controller {
   }
 
   openTokenMenu(token) {
-    this.menuToken = { id: token.dataset.boardTokenId, hidden: token.dataset.hidden === "true" }
+    this.menuToken = { id: token.dataset.boardTokenId, hidden: token.dataset.hidden === "true",
+                       customName: token.dataset.customName, characterName: token.dataset.characterName }
     this.tokenMenuTitleTarget.textContent = token.dataset.name
+    this.tokenRenameFormTarget.hidden = true
     this.tokenVisibilityButtonTarget.textContent = this.menuToken.hidden ? this.showLabelValue : this.hideLabelValue
     this.placeTokenMenuBeside(token)
     this.tokenMenuTarget.hidden = false
@@ -163,6 +165,23 @@ export default class extends Controller {
     if (!this.menuToken) return
 
     this.sendTokenRequest(this.tokenUrl(), "DELETE")
+  }
+
+  openTokenRename() {
+    if (!this.menuToken) return
+
+    this.tokenNameInputTarget.value = this.menuToken.customName
+    this.tokenNameInputTarget.placeholder = this.menuToken.characterName
+    this.tokenRenameFormTarget.hidden = false
+    this.tokenNameInputTarget.focus()
+    this.tokenNameInputTarget.select()
+  }
+
+  renameToken(event) {
+    event.preventDefault()
+    if (!this.menuToken) return
+
+    this.sendTokenRequest(this.tokenUrl(), "PATCH", { name: this.tokenNameInputTarget.value })
   }
 
   tokenUrl() {

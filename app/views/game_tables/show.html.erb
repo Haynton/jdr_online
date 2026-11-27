@@ -10,7 +10,18 @@
     <p class="truncate px-2.5 pt-1 pb-1.5 text-xs font-semibold text-muted" data-room-board-target="tokenMenuTitle"></p>
     <button type="button" role="menuitem" class="<%= BoardHelper::TOKEN_MENU_ITEM_CLASSES %> text-ink"
             data-room-board-target="tokenVisibilityButton" data-action="room-board#toggleTokenVisibility"></button>
+    <button type="button" role="menuitem" class="<%= BoardHelper::TOKEN_MENU_ITEM_CLASSES %> text-ink"
+            data-room-board-target="tokenRenameButton" data-action="room-board#openTokenRename"><%= t("game_rooms.board.rename_token") %></button>
     <button type="button" role="menuitem" class="<%= BoardHelper::TOKEN_MENU_ITEM_CLASSES %> text-error-ink"
             data-action="room-board#removeToken"><%= t("game_rooms.board.remove_token") %></button>
+    <form hidden class="flex flex-col gap-2 px-2.5 pt-1 pb-1.5" data-room-board-target="tokenRenameForm"
+          data-action="submit->room-board#renameToken">
+      <label for="board-token-name" class="<%= SimpleFormFieldClasses::LABEL %>"><%= t("game_rooms.board.token_name") %></label>
+      <input id="board-token-name" type="text" maxlength="<%= BoardToken::NAME_MAX_LENGTH %>" autocomplete="off"
+             class="<%= SimpleFormFieldClasses::INPUT %>" aria-describedby="board-token-name-hint"
+             data-room-board-target="tokenNameInput">
+      <p id="board-token-name-hint" class="text-xs text-muted"><%= t("game_rooms.board.token_name_hint") %></p>
+      <button type="submit" class="<%= button_classes(:secondary, size: :compact, full_width: true) %>"><%= t("game_rooms.board.save_token_name") %></button>
+    </form>
   </div>
 <% end %>

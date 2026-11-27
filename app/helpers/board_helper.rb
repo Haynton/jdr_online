@@ -63,8 +63,9 @@ module BoardHelper
   private
 
   def board_token_data(token, game_master:)
-    { id: token.id, name: token.character.name, kind: token.character.kind, column: token.column, row: token.row,
-      number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden? }
+    { id: token.id, name: token.displayed_name, kind: token.character.kind, column: token.column, row: token.row,
+      number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
+      custom_name: (token.name if game_master), character_name: (token.character.name if game_master) }
   end
 
   def game_master_board_data(board_map)

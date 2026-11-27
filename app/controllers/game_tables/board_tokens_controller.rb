@@ -15,7 +15,8 @@ module GameTables
 
     def update
       token = @board_map.board_tokens.find(params[:id])
-      token.update!(hidden: ActiveModel::Type::Boolean.new.cast(params.require(:hidden)))
+      return head :unprocessable_content unless token.update(params.permit(:hidden, :name))
+
       answer_with_the_tokens
     end
 

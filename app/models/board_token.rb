@@ -1,7 +1,12 @@
 class BoardToken < ApplicationRecord
+  NAME_MAX_LENGTH = 60
+
   belongs_to :game_map
   belongs_to :character
 
+  normalizes :name, with: ->(name) { name.strip.presence }
+
+  validates :name, length: { maximum: NAME_MAX_LENGTH }
   validates :column, :row, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :cell_inside_the_grid
   validate :cell_free
@@ -22,7 +27,11 @@ class BoardToken < ApplicationRecord
   end
 
   def shown_number
-    number unless number.nil? || number == 1
+    number unless name || number.nil? || number == 1
+  end
+
+  def displayed_name
+    name || character.name
   end
 
   private

@@ -52,6 +52,27 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_not_includes hidden.first.to_html, "Gobelin"
   end
 
+  test "the game master renames a token, live for the players when it is shown; a player may not" do
+    token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1, hidden: false)
+    sign_in @game_master
+
+    renamed = capture_turbo_stream_broadcasts(@game_table) do
+      patch game_table_board_token_path(@game_table, token), params: { name: "Chef gobelin" }
+    end
+    assert_response :ok
+    assert_equal ["Chef gobelin", false], [token.reload.name, token.hidden?]
+    assert_includes renamed.first.to_html, "Chef gobelin"
+
+    patch game_table_board_token_path(@game_table, token), params: { name: "a" * 61 }
+    assert_response :unprocessable_content
+    assert_equal "Chef gobelin", token.reload.name
+
+    sign_in @player
+    patch game_table_board_token_path(@game_table, token), params: { name: "Gobelin peureux" }
+    assert_response :not_found
+    assert_equal "Chef gobelin", token.reload.name
+  end
+
   test "the game master removes a token, or all the tokens of the board" do
     token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
     @tavern.board_tokens.create!(character: @goblin, column: 2, row: 1)

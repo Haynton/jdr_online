@@ -64,6 +64,24 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     assert_no_selector "[data-room-board-target=hint]"
   end
 
+  test "the game master renames a token from its menu, and the player sees the new name live" do
+    goblin = @game_table.characters.find_by(name: "Gobelin")
+    @game_table.board_game_map.board_tokens.create!(character: goblin, column: 3, row: 3, hidden: false)
+    using_session(:player) { open_room_as("joueur") }
+    open_room_as("maitre")
+
+    find(game_master_token, visible: :all).click
+    within("[data-room-board-target=tokenMenu]") do
+      click_on "Renommer"
+      assert_equal "Gobelin", find_field("Nom du jeton")[:placeholder]
+      fill_in "Nom du jeton", with: "Chef gobelin"
+      click_on "Enregistrer le nom"
+    end
+
+    assert_selector game_master_token("[data-name='Chef gobelin']"), visible: :all
+    using_session(:player) { assert_selector "[data-board-token-id][data-name='Chef gobelin']", visible: :all }
+  end
+
   private
 
   def create_user(username)

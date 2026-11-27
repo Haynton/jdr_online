@@ -41,6 +41,7 @@ fr:
       board_token:
         character: "Personnage"
         column: "Colonne"
+        name: "Nom"
         row: "Ligne"
       map_template:
         columns: "Colonnes"
@@ -1167,8 +1168,12 @@ fr:
       clear_tokens_question: "Retirer tous les jetons de « %{name} » ? Ils ne reviendront pas sur cette carte."
       hide_token: "Cacher aux joueurs"
       remove_token: "Retirer du plateau"
+      rename_token: "Renommer"
+      save_token_name: "Enregistrer le nom"
       show_token: "Montrer aux joueurs"
       token_menu: "Jeton"
+      token_name: "Nom du jeton"
+      token_name_hint: "Vide : le nom du personnage."
       empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
       empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
       hand: "Déplacer la carte"

@@ -70,6 +70,7 @@ en:
       board_token:
         character: "Character"
         column: "Column"
+        name: "Name"
         row: "Row"
       map_template:
         columns: "Columns"
@@ -1196,8 +1197,12 @@ en:
       clear_tokens_question: "Remove all the tokens of “%{name}”? They will not come back on this map."
       hide_token: "Hide from the players"
       remove_token: "Remove from the board"
+      rename_token: "Rename"
+      save_token_name: "Save the name"
       show_token: "Show to the players"
       token_menu: "Token"
+      token_name: "Name of the token"
+      token_name_hint: "Empty: the name of the character."
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
       hand: "Move the map"

@@ -35,7 +35,8 @@ export function renderBoardTokens(layer, tokens) {
   layer.replaceChildren()
   tokens.forEach((token) => {
     const tokenGroup = createSvgElement("g", { "data-board-token-id": token.id, "data-hidden": token.hidden,
-                                               "data-name": token.name }, layer)
+                                               "data-name": token.name, "data-custom-name": token.custom_name ?? "",
+                                               "data-character-name": token.character_name ?? "" }, layer)
     const centerX = (token.column + 0.5) * cellSize
     const centerY = (token.row + 0.5) * cellSize
     const drawing = createSvgElement("g", { opacity: token.hidden ? hiddenTokenOpacity : 1 }, tokenGroup)
