@@ -28,6 +28,12 @@ fr:
               not_picked:
                 one: "Choisissez 1 compétence de votre sous-classe."
                 other: "Choisissez %{count} compétences de votre sous-classe."
+            feat_key:
+              inclusion: "Choisissez un don de la liste."
+            feat_skill_keys:
+              not_picked:
+                one: "Choisissez 1 compétence."
+                other: "Choisissez %{count} compétences."
             expertise_keys:
               not_picked:
                 one: "Choisissez 1 compétence."
@@ -291,6 +297,8 @@ fr:
           invalid_class_choice_option: "%{group} › %{option} : une clé, un libellé sur une ligne, un résumé, un niveau de 1 à 20, une option requise du même groupe et des effets connus"
           unknown_class_choice_group: "%{part} › %{field} › %{option} : le groupe de choix « %{group} » n'existe pas"
           unknown_class_choice_parameter: "Les choix de classe : le réglage « %{parameter} » est inconnu"
+          invalid_feats: "Les dons : le réglage doit être une liste de dons, avec leurs familles nommées"
+          invalid_feat: "Le don « %{feat} » : une clé, une famille connue, un niveau de 1 à 20, des conditions et des effets connus"
           invalid_fighting_styles: "Les styles de combat : le réglage doit être une liste de styles"
           invalid_fighting_style: "Le style de combat « %{style} » : une clé, un libellé sur une ligne, et des effets connus"
           unknown_fighting_style: "%{part} › %{field} › %{option} : le style de combat « %{style} » n'existe pas"
@@ -854,6 +862,7 @@ fr:
       no_field: "—"
       rules:
         ability_modifier: "Le modificateur de %{ability}."
+        initiative_bonus: "Le modificateur de %{ability}, plus le %{proficiency} quand un don le donne (Vigilance)."
         hit_dice_by_class: "Un dé par niveau (%{level}), dont la taille dépend de la classe choisie (%{class})."
         hit_points_by_level: "Au premier niveau, le plus grand résultat du dé de vie de la classe (%{class}) plus le modificateur de %{ability} ; à chaque niveau suivant (%{level}), la moyenne du dé plus ce modificateur."
         proficiency_by_level: "D'après le niveau (%{level}), selon les paliers du modèle."
@@ -1067,6 +1076,7 @@ fr:
         label: "Règle de calcul"
         values:
           ability_modifier: "Modificateur d'une caractéristique"
+          initiative_bonus: "Initiative"
           hit_dice_by_class: "Dés de vie selon la classe"
           hit_points_by_level: "Points de vie selon le niveau"
           proficiency_by_level: "Bonus de maîtrise selon le niveau"
@@ -1501,7 +1511,7 @@ fr:
         later: "Plus tard"
         picks_later: "Vos nouveaux sorts et maîtrises d'armes se choisissent ensuite, dans « Changer mes sorts » et « Changer mes maîtrises »."
         submit: "Passer au niveau %{level}"
-        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau, le chat dira le résultat."
+        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau."
         title: "Niveau %{level}"
       hit_points:
         title: "Points de vie"
@@ -1512,9 +1522,15 @@ fr:
         rule:
           one: "Votre sous-classe vous fait maîtriser 1 compétence de plus."
           other: "Votre sous-classe vous fait maîtriser %{count} compétences de plus."
+      feat:
+        title: "Don"
+        rule: "Prenez l'amélioration de caractéristique, ou un autre don dont vous remplissez les conditions."
+        skills:
+          one: "Choisissez 1 compétence que vous ne maîtrisez pas encore."
+          other: "Choisissez %{count} compétences que vous ne maîtrisez pas encore."
       improvement:
-        title: "Amélioration de caractéristique"
-        rule: "Répartissez %{points} points, sans dépasser le maximum d'une caractéristique."
+        title: "Caractéristiques"
+        rule: "Répartissez %{points} points, sans dépasser %{maximum}."
       expertise:
         title: "Expertise"
         rule:

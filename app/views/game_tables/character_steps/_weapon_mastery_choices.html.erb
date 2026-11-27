@@ -16,7 +16,7 @@
         <% character.errors.full_messages_for(:fighting_style).each do |message| %>
           <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
         <% end %>
-        <div class="mt-4 grid grid-cols-1 items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <% styles.each do |style| %>
             <label class="<%= weapon_mastery_card_classes %>">
               <%= radio_button_tag "character[fighting_style]", style.key, character.fighting_style == style.key,
@@ -38,7 +38,7 @@
           <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
         <% end %>
         <%= hidden_field_tag "character[weapon_mastery_keys][]", "", id: nil %>
-        <div class="mt-4 grid grid-cols-1 items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <% choices.offered_kinds.each do |kind| %>
             <label class="<%= weapon_mastery_card_classes %>">
               <%= check_box_tag "character[weapon_mastery_keys][]", kind.key, character.weapon_masteries.to_a.include?(kind.key),

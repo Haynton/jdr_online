@@ -27,11 +27,12 @@ module CharacterSheets
     private
 
     def write_choices
-      new_sheet = @character.sheet.merge(level_values, subclass_values, improved_scores, expertise_values,
-                                         @level_up.chosen_skill_keys.index_with(true))
+      new_sheet = @character.sheet.merge(level_values, subclass_values, expertise_values,
+                                         (@level_up.chosen_skill_keys + @level_up.feat_skill_keys).index_with(true))
       @character.sheet = ChoiceEffectsApplier.new(fields: @character.sheet_fields, previous_sheet: @character.sheet)
                                              .call(new_sheet)
       @character.class_choices = @level_up.future_character.class_choices
+      @character.feats = Array(@character.feats) + [@level_up.feat_entry].compact
       @character.spells = @character.spell_choices.keep_offered(@character.spells.to_a)
       @character.level_up_to = nil
     end
@@ -44,13 +45,6 @@ module CharacterSheets
     def subclass_values
       field = @level_up.subclass_field
       field ? { field["key"] => @level_up.subclass } : {}
-    end
-
-    # The score typed is raised: the bonus of the background stays apart
-    def improved_scores
-      @level_up.ability_increases.to_h do |key, points|
-        [key, @character.sheet[key].to_i + points]
-      end
     end
 
     def expertise_values

@@ -1,4 +1,5 @@
-# The features, traits and feats a character has (decision of 26 November): those the options it picked name in their
+# The features, traits and feats a character has (decision of 26 November; the feats taken at a level gained and the
+# options of the groups of choices of its class since 27 November): those the options it picked name in their
 # effects (features_by_level of the class and the subclass, traits of the species, origin_feat of the background),
 # up to its level, read with their name and short summary in the catalog of features of its table
 # (Catalogs::TableCatalog, kind feature: our words, in the language of the template). No rule of a game is written
@@ -42,7 +43,7 @@ module CharacterSheets
     # A group per list with an option picked that names features, in the order of the sheet, then a group per group of
     # choices of the class with options picked (its invocations, its metamagic); none without
     def call
-      list_groups + class_choice_groups
+      list_groups + class_choice_groups + feat_groups
     end
 
     def list_groups
@@ -61,6 +62,18 @@ module CharacterSheets
     end
 
     private
+
+    # The feats taken (beside the origin feat of the background, shown with it), by their category (« Don général »)
+    def feat_groups
+      feats = @character.feat_list
+      taken = feats.taken_entries.filter_map { |entry| feats.find(entry["key"]) }
+      taken.group_by { |feat| feats.category_label(feat) }.map do |label, category_feats|
+        features = category_feats.map do |feat|
+          Feature.new(key: feat.key, level: 1, name: feat.name, description: feat.description, kind: :feat_taken)
+        end
+        Group.new(label: label, option: nil, features: features)
+      end
+    end
 
     def class_choice_groups
       @character.class_choice_groups.groups.filter_map do |group|

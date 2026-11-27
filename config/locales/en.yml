@@ -57,6 +57,12 @@ en:
               not_picked:
                 one: "Pick 1 skill of your subclass."
                 other: "Pick %{count} skills of your subclass."
+            feat_key:
+              inclusion: "Choose a feat of the list."
+            feat_skill_keys:
+              not_picked:
+                one: "Choose 1 skill."
+                other: "Choose %{count} skills."
             expertise_keys:
               not_picked:
                 one: "Choose 1 skill."
@@ -320,6 +326,8 @@ en:
           invalid_class_choice_option: "%{group} › %{option}: a key, a label on one line, a summary, a level from 1 to 20, a required option of the same group and known effects"
           unknown_class_choice_group: "%{part} › %{field} › %{option}: the group of choices “%{group}” does not exist"
           unknown_class_choice_parameter: "The class choices: the setting “%{parameter}” is unknown"
+          invalid_feats: "The feats: the setting must be a list of feats, with their categories named"
+          invalid_feat: "The feat “%{feat}”: a key, a known category, a level from 1 to 20, known needs and effects"
           invalid_fighting_styles: "The fighting styles: the setting must be a list of styles"
           invalid_fighting_style: "The fighting style “%{style}”: a key, a label on one line, and known effects"
           unknown_fighting_style: "%{part} › %{field} › %{option}: the fighting style “%{style}” does not exist"
@@ -883,6 +891,7 @@ en:
       no_field: "—"
       rules:
         ability_modifier: "The modifier of %{ability}."
+        initiative_bonus: "The modifier of %{ability}, plus the %{proficiency} when a feat gives it (Alert)."
         hit_dice_by_class: "One die per level (%{level}), its size set by the class chosen (%{class})."
         hit_points_by_level: "At first level, the highest roll of the hit die of the class (%{class}) plus the modifier of %{ability}; at each level after (%{level}), the average of the die plus that modifier."
         proficiency_by_level: "From the level (%{level}), following the thresholds of the template."
@@ -1096,6 +1105,7 @@ en:
         label: "Computing rule"
         values:
           ability_modifier: "Modifier of an ability"
+          initiative_bonus: "Initiative"
           hit_dice_by_class: "Hit dice by class"
           hit_points_by_level: "Hit points by level"
           proficiency_by_level: "Proficiency bonus by level"
@@ -1530,7 +1540,7 @@ en:
         later: "Later"
         picks_later: "Your new spells and weapon masteries are picked afterwards, in “Change my spells” and “Change my masteries”."
         submit: "Reach level %{level}"
-        subtitle: "The GM gives a level to %{name}. Make the choices of that level; the chat will say the result."
+        subtitle: "The GM gives a level to %{name}. Make the choices of that level."
         title: "Level %{level}"
       hit_points:
         title: "Hit points"
@@ -1541,9 +1551,15 @@ en:
         rule:
           one: "Your subclass makes you proficient in 1 more skill."
           other: "Your subclass makes you proficient in %{count} more skills."
+      feat:
+        title: "Feat"
+        rule: "Take the Ability Score Improvement, or another feat you qualify for."
+        skills:
+          one: "Pick 1 skill you are not proficient in yet."
+          other: "Pick %{count} skills you are not proficient in yet."
       improvement:
-        title: "Ability Score Improvement"
-        rule: "Share %{points} points, never above the maximum of an ability."
+        title: "Abilities"
+        rule: "Share %{points} points, never above %{maximum}."
       expertise:
         title: "Expertise"
         rule:

@@ -51,7 +51,7 @@ class ClassChoicesRoomTest < ActionDispatch::IntegrationTest
     sign_in @player
     get new_game_table_level_up_path(@game_table)
 
-    assert_select "[data-level-up-subclass-target=block][data-subclass=Chasseur][hidden]" do
+    assert_select "[data-choice-blocks-target=block][data-choice-value=Chasseur][hidden]" do
       assert_select "legend", text: "Proie du chasseur"
     end
 

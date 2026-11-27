@@ -126,7 +126,7 @@ class Character < ApplicationRecord
   def computed_sheet_values
     play_state = CharacterSheets::PlayState.new(hit_point_rolls: hit_point_rolls_for_rules,
                                                 equipped_items: equipped_item_properties,
-                                                fighting_style_effects: fighting_style_effects)
+                                                fighting_style_effects: fighting_style_effects, **feat_play_values)
     CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, level_thresholds: game_table.level_thresholds,
                                     play_state: play_state).call
   end

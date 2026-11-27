@@ -30,8 +30,9 @@ module GameTables
     end
 
     def level_up_params
-      params.fetch(:level_up, {}).permit(:hit_point_choice, :subclass, ability_increases: {}, class_choices: {},
-                                                                       expertise_keys: [], skill_keys: [])
+      params.fetch(:level_up, {})
+            .permit(:hit_point_choice, :subclass, :feat_key, ability_increases: {}, class_choices: {},
+                                                             expertise_keys: [], skill_keys: [], feat_skill_keys: [])
     end
   end
 end

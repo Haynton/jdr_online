@@ -30,11 +30,13 @@ module CharacterSheets
       @fields.select { |field| field["type"] == "ability" }
     end
 
-    # The score typed, plus the bonus placed on it (the bonus is kept apart, decision)
+    # The score typed, plus the bonus placed on it and the points of its feats (both kept apart, decisions)
     def ability_scores
       ability_fields.to_h do |field|
         score = @sheet[field["key"]]
-        [field["key"], score.is_a?(Integer) ? score + ability_bonuses[field["key"]].to_i : nil]
+        next [field["key"], nil] unless score.is_a?(Integer)
+
+        [field["key"], score + ability_bonuses[field["key"]].to_i + @play_state.ability_increases[field["key"]].to_i]
       end
     end
 
