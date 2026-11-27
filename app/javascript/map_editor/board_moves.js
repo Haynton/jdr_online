@@ -23,23 +23,28 @@ export function stepCost(from, to, passage) {
   return diagonalCosts[openWays] ?? null
 }
 
-// The way of the token as the pointer goes: back to a cell already on it, the way stops there; further, it walks
-// towards the pointer one step at a time and stops before a step refused (a wall stops the token).
-// way: [{ cell: [column, row], cost }], the cost counted from the start
-export function wayTowards(way, target, passage) {
-  const known = way.findIndex(({ cell }) => sameCell(cell, target))
-  if (known >= 0) return way.slice(0, known + 1)
-
-  const walked = [...way]
-  while (!sameCell(walked.at(-1).cell, target)) {
-    const { cell, cost } = walked.at(-1)
-    const next = [cell[0] + Math.sign(target[0] - cell[0]), cell[1] + Math.sign(target[1] - cell[1])]
-    const step = stepCost(cell, next, passage)
-    if (step === null) break
-
-    walked.push({ cell: next, cost: cost + step })
+// Where the token gets to, walking from the cell it is on towards the pointer one step at a time, never jumping: a
+// diagonal step first, else the straight step along the longer way to go, else the other one; it stops where no step
+// brings it closer (a wall stops it, in both directions). Each step brings it closer: the walk always ends
+export function walkTowards(cell, target, passage) {
+  let current = cell
+  let next = closerStep(current, target, passage)
+  while (next) {
+    current = next
+    next = closerStep(current, target, passage)
   }
-  return walked
+  return current
+}
+
+function closerStep(cell, target, passage) {
+  const columnStep = Math.sign(target[0] - cell[0])
+  const rowStep = Math.sign(target[1] - cell[1])
+  const alongColumns = Math.abs(target[0] - cell[0]) >= Math.abs(target[1] - cell[1])
+  const straightSteps = alongColumns ? [[columnStep, 0], [0, rowStep]] : [[0, rowStep], [columnStep, 0]]
+  return [[columnStep, rowStep], ...straightSteps]
+    .filter(([columnOffset, rowOffset]) => columnOffset !== 0 || rowOffset !== 0)
+    .map(([columnOffset, rowOffset]) => [cell[0] + columnOffset, cell[1] + rowOffset])
+    .find((neighbour) => stepCost(cell, neighbour, passage) !== null)
 }
 
 // The cost of the cheapest way from a cell to another, as the server counts it (each cost a whole number: the cells

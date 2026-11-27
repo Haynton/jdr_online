@@ -47,6 +47,16 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
     wait_for_token_at(2, 1)
   end
 
+  test "once around a wall, the pointer brought back across it leaves the token on its side of the wall" do
+    open_room_as("joueur")
+
+    press_and_move(from: [1, 1], to: [4, 9])
+    [[6, 9], [6, 1], [3, 1]].each { |cell| page.driver.browser.action.move_to_location(*screen_point(*cell)).perform }
+    release_pointer
+
+    wait_for_token_at(6, 1)
+  end
+
   test "dragged straight at a wall, a player's token stops just before it" do
     open_room_as("joueur")
 

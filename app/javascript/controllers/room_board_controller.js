@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 import { createSvgElement } from "map_editor/svg"
 import { renderBoardTokens } from "map_editor/token_renderer"
-import { passageOf, wayTowards, pathCost, sameCell } from "map_editor/board_moves"
+import { passageOf, walkTowards, pathCost, sameCell } from "map_editor/board_moves"
 
 const CELL_SIZE = 24
 const clickMovementTolerance = 5
@@ -144,7 +144,8 @@ export default class extends Controller {
 
     event.preventDefault()
     this.tokenDrag = { token, pointerId: event.pointerId, pressedAt: [event.clientX, event.clientY], started: false,
-                       way: [{ cell: [token.column, token.row], cost: 0 }], passage: this.passageForMoves() }
+                       start: [token.column, token.row], cell: [token.column, token.row],
+                       passage: this.passageForMoves() }
   }
 
   dragToken(event) {
@@ -154,25 +155,17 @@ export default class extends Controller {
 
     if (!drag.started) this.closeTokenMenu()
     drag.started = true
-    drag.way = this.wayTo(drag, this.cellInsideTheGrid(event))
+    drag.cell = walkTowards(drag.cell, this.cellInsideTheGrid(event), drag.passage)
     this.showDraggedToken(drag)
     this.showDistance(this.distanceTo(drag), event)
   }
 
-  // Straight from the start when nothing stops it, else on from where the token is: a wall stops it, and the player
-  // goes around it by hand
-  wayTo(drag, target) {
-    const straight = wayTowards([drag.way[0]], target, drag.passage)
-    return sameCell(straight.at(-1).cell, target) ? straight : wayTowards(drag.way, target, drag.passage)
-  }
-
   // The cheapest way from the start, as the server counts it, never the whole way of the pointer
   distanceTo(drag) {
-    const arrival = drag.way.at(-1).cell
-    if (drag.distanceCell && sameCell(drag.distanceCell, arrival)) return drag.distance
+    if (drag.distanceCell && sameCell(drag.distanceCell, drag.cell)) return drag.distance
 
-    drag.distanceCell = arrival
-    drag.distance = pathCost(drag.way[0].cell, arrival, drag.passage, this.gridSize()) ?? drag.way.at(-1).cost
+    drag.distanceCell = drag.cell
+    drag.distance = pathCost(drag.start, drag.cell, drag.passage, this.gridSize()) ?? 0
     return drag.distance
   }
 
@@ -183,11 +176,9 @@ export default class extends Controller {
     this.endTokenDrag()
     if (!drag.started) return
 
-    const arrival = drag.way.at(-1).cell
-    const start = drag.way[0].cell
-    if (sameCell(arrival, start) || this.cellHoldsAnotherToken(arrival, drag.token.id)) return this.drawTokens()
+    if (sameCell(drag.cell, drag.start) || this.cellHoldsAnotherToken(drag.cell, drag.token.id)) return this.drawTokens()
 
-    const [column, row] = arrival
+    const [column, row] = drag.cell
     this.sendTokenRequest(`${this.tokensUrlValue}/${drag.token.id}/move`, "PATCH", { column, row })
   }
 
@@ -242,7 +233,7 @@ export default class extends Controller {
     const tokenGroup = this.mapTarget.querySelector(`[data-board-token-id="${drag.token.id}"]`)
     if (!tokenGroup) return
 
-    const [column, row] = drag.way.at(-1).cell
+    const [column, row] = drag.cell
     tokenGroup.setAttribute("transform", `translate(${(column - drag.token.column) * CELL_SIZE} ${(row - drag.token.row) * CELL_SIZE})`)
     tokenGroup.parentElement.appendChild(tokenGroup)
   }
