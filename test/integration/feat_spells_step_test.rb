@@ -20,8 +20,8 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
   test "the acolyte picks the spells of Magic Initiate in the cleric list at the step of the feats" do
     sign_in @player
     get game_table_character_step_path(@game_table, "feats")
-    assert_select "h2", text: "Don de votre historique"
-    assert_select "p", text: "Initié à la magie : Clerc"
+    assert_select "h2", text: /\AInitié à la magie : Clerc\s+Don de votre historique · Donné par votre historique \(Acolyte\)/
+    assert_select "label input[type=radio][name='character[feat_spells][spell_ability]'][value=wisdom]"
     assert_select "input[name='character[feat_spells][cantrips][]'][value=?]", "sacred-flame"
     assert_select "input[name='character[feat_spells][spell]'][value=?]", "bless"
 
@@ -34,15 +34,16 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
     assert_equal %w[bless guidance sacred-flame], @character.reload.spells.pluck("key").sort
   end
 
-  test "the human picks an origin feat at the step of the feats, and its skills are not class picks" do
+  test "the human picks an origin feat on a step of its own, after the feats, and its skills are not class picks" do
     @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
     sign_in @player
-    get game_table_character_step_path(@game_table, "feats")
+    pick_background_spells
+    assert_redirected_to game_table_character_step_path(@game_table, "species_feat")
+    get game_table_character_step_path(@game_table, "species_feat")
     assert_select "input[name='character[species_feat][key]'][value=?]", "skilled"
 
-    patch game_table_character_step_path(@game_table, "feats"),
-          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" },
-                                 species_feat: { key: "skilled", skills: %w[arcana history stealth] } } }
+    patch game_table_character_step_path(@game_table, "species_feat"),
+          params: { character: { species_feat: { key: "skilled", skills: %w[arcana history stealth] } } }
     @character.reload
     entry = @character.feats.find { |feat| feat["source"] == "species" }
     assert_equal %w[arcana history stealth], entry["skills"]
@@ -52,18 +53,18 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
   test "the human must pick what its origin feat asks" do
     @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
     sign_in @player
-    patch game_table_character_step_path(@game_table, "feats"),
-          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" },
-                                 species_feat: { key: "skilled", skills: %w[arcana] } } }
+    pick_background_spells
+    patch game_table_character_step_path(@game_table, "species_feat"),
+          params: { character: { species_feat: { key: "skilled", skills: %w[arcana] } } }
     assert_response :unprocessable_content
   end
 
   test "the skills of the origin feat of the human are skills only, never a saving throw" do
     @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
     sign_in @player
-    patch game_table_character_step_path(@game_table, "feats"),
-          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" },
-                                 species_feat: { key: "skilled",
+    pick_background_spells
+    patch game_table_character_step_path(@game_table, "species_feat"),
+          params: { character: { species_feat: { key: "skilled",
                                                  skills: %w[strength_save dexterity_save constitution_save] } } }
     assert_response :unprocessable_content
     assert_not @character.reload.sheet["dexterity_save"]
@@ -88,10 +89,19 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
     @character.update!(sheet: @character.sheet.merge("background" => "Criminel"))
     sign_in @player
     get game_table_character_step_path(@game_table, "feats")
-    assert_select "p", text: "Vigilance"
+    assert_select "h2 span", text: "Vigilance"
     assert_select "p", text: "Rien à choisir : ce don est déjà à vous."
 
     @game_table.update!(origin_feats: false)
     assert_not_includes @character.reload.creation_steps.all.map(&:key), "feats"
+  end
+
+  private
+
+  # The spells of the background's feat, picked: the step of the feats is done, the one of the species' feat opens
+  def pick_background_spells
+    patch game_table_character_step_path(@game_table, "feats"),
+          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame],
+                                                 spell: "bless" } } }
   end
 end

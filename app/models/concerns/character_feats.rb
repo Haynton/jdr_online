@@ -16,7 +16,9 @@ module CharacterFeats
   SPECIES_SOURCE = "species".freeze
 
   included do
-    attr_accessor :checks_feat_spells
+    # Set by the step that asks them: the feats of the background and of the levels (step « Dons »), the feat the
+    # species lets pick (its own step); all of them once the character is done
+    attr_accessor :checks_feat_spells, :checks_species_feat
 
     validates_with CharacterFeatSpellsValidator
   end

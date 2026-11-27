@@ -1,0 +1,8 @@
+<%# The page of a spell in the book of a feat (_feat_spell_picks): its name, its line (school, casting, range, duration),
+    where it is known already, then its details (_spell_details) %>
+<p class="text-lg font-bold tracking-tight text-ink"><%= spell.name %></p>
+<p class="mt-0.5 text-xs text-muted"><%= spell_summary_line(spell) %></p>
+<% if local_assigns[:known_source] %>
+  <p class="mt-1 text-xs font-semibold text-brass"><%= t("game_tables.character_steps.feat_spells.known_as", source: known_source) %></p>
+<% end %>
+<div class="mt-4"><%= render "game_tables/character_steps/spell_details", spell: spell %></div>

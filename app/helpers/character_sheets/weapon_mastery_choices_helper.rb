@@ -11,6 +11,8 @@ module CharacterSheets
       hover:border-field-line hover:bg-surface has-checked:border-chosen-line has-checked:bg-primary-soft
       has-checked:[&_.text-muted]:text-ink has-checked:[&_.text-brass]:text-primary-soft-ink
       has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring
+      has-disabled:cursor-not-allowed has-disabled:opacity-45 has-disabled:hover:border-line
+      has-disabled:hover:bg-transparent
     ].join(" ").freeze
 
     # The diamond of a card whose box is hidden in it (the weapon masteries), as on the lines of the skills

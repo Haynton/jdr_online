@@ -90,7 +90,7 @@ fr:
         name: "Nom"
       character:
         class_choices: "Choix de classe"
-        feats: "Don"
+        feats: "Vos dons"
         fighting_style: "Style de combat"
         weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
@@ -1766,6 +1766,11 @@ fr:
         level_title: "Don du niveau %{level}"
         nothing_to_pick: "Rien à choisir : ce don est déjà à vous."
       feat_spells:
+        recommended: "Recommandée"
+        known_short: "Déjà connu"
+        preview_hint: "Survolez ou touchez un sort de la liste pour lire ce qu'il fait."
+        modifier: "Modificateur %{value}"
+        chosen: "%{chosen} sur %{count}"
         ability: "Caractéristique pour les lancer"
         background_hint:
           one: "Votre sort vient de la liste du %{list}, fixée par votre historique : vous pourrez le changer à chaque niveau gagné."

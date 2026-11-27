@@ -8,15 +8,16 @@
 <% skill_fields = character.sheet_fields.select do |field|
      character.skill_choices.skill_keys.include?(field["key"]) && known_skills.exclude?(field["key"])
    end %>
-<section class="flex min-w-0 flex-col gap-6" data-controller="choice-blocks">
-  <div>
-    <h2 class="text-lg leading-7 font-bold text-ink"><%= t("game_tables.character_steps.species_feat.title") %></h2>
-    <p class="pt-1 text-sm text-brass">
-      <%= t("game_tables.character_steps.feat_spells.chosen_through_species", option: character.feat_origin("source" => CharacterFeats::SPECIES_SOURCE)) %>
-    </p>
-    <p class="pt-1 text-sm text-muted"><%= t("game_tables.character_steps.species_feat.hint") %></p>
-  </div>
-  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+<%# On its own step (CreationStepBehaviors::ChoosesSpeciesFeat): the title and the introduction of the step say what
+    it is, the section only says where the feat comes from %>
+<section class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6" data-controller="choice-blocks">
+  <%= render "game_tables/character_steps/feat_errors", character: character %>
+  <h2 class="text-xs font-semibold text-brass">
+    <span class="sr-only"><%= t("game_tables.character_steps.species_feat.title") %> ·</span>
+    <%= t("game_tables.character_steps.feat_spells.chosen_through_species", option: character.feat_origin("source" => CharacterFeats::SPECIES_SOURCE)) %>
+  </h2>
+  <%# Every card of the same height, whatever its row (auto-rows-fr): the rows of the feats with a list were taller %>
+  <div class="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
     <% cards.each do |card| %>
       <%= render "game_tables/character_steps/feat_card", card: card, field_name: "character[species_feat][key]",
                                                           checked: picked_value == card.value, id_prefix: "species-feat" %>
@@ -29,21 +30,28 @@
     <% picked = picked_value == card.value ? entry : {} %>
     <%= tag.div class: "flex flex-col gap-6", hidden: picked_value != card.value, data: { choice_blocks_target: "block", choice_value: card.value } do %>
       <% if skills.positive? %>
-        <fieldset class="min-w-0">
-          <legend class="text-sm font-semibold text-ink"><%= t("game_tables.level_ups.feat.skills", count: skills) %></legend>
+        <%# As many skills as the feat gives: a count, the others faded once enough are ticked (pick_limit_controller.js) %>
+        <%= tag.fieldset class: "min-w-0",
+                         data: { controller: "pick-limit", action: "change->pick-limit#count", pick_limit_allowed_value: skills,
+                                 pick_limit_template_value: t("game_tables.character_steps.feat_spells.chosen", count: skills,
+                                                                                                                chosen: "__CHOSEN__") } do %>
+          <legend class="<%= CharacterSheets::WeaponMasteryChoicesHelper::TITLE_CLASSES %>"><%= t("game_tables.level_ups.feat.skills", count: skills) %></legend>
+          <p class="clear-left pt-1 text-sm font-semibold text-brass data-invalid:text-error-ink" role="status" data-pick-limit-target="count">
+            <%= t("game_tables.character_steps.feat_spells.chosen", count: skills, chosen: Array(picked["skills"]).size) %>
+          </p>
           <%= hidden_field_tag "character[species_feat][skills][]", "", id: nil %>
-          <ul class="mt-2 grid gap-x-6 gap-y-2 sm:grid-cols-2 xl:grid-cols-3">
+          <div class="clear-left flex flex-wrap gap-1.5 pt-3">
             <% skill_fields.each do |field| %>
-              <li>
-                <label class="flex items-center gap-2 text-sm text-ink">
-                  <%= check_box_tag "character[species_feat][skills][]", field["key"], Array(picked["skills"]).include?(field["key"]),
-                                    id: "species-feat-skill-#{field["key"]}", class: SimpleFormFieldClasses::CHECKBOX %>
-                  <%= field["label"] %>
-                </label>
-              </li>
+              <label class="<%= CharacterSheets::WeaponMasteryChoicesHelper::CHIP_CLASSES %>">
+                <%= check_box_tag "character[species_feat][skills][]", field["key"], Array(picked["skills"]).include?(field["key"]),
+                                  id: "species-feat-skill-#{field["key"]}", class: "peer sr-only",
+                                  data: { pick_limit_target: "box" } %>
+                <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-brass group-has-checked/pick:bg-brass" aria-hidden="true"></span>
+                <%= field["label"] %>
+              </label>
             <% end %>
-          </ul>
-        </fieldset>
+          </div>
+        <% end %>
       <% end %>
       <% if card.list %>
         <p class="text-sm text-muted">

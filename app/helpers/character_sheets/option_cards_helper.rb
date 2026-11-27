@@ -34,12 +34,11 @@ module CharacterSheets
     end
 
     # The fields under a list drawn as cards: those that depend on it (options_from: the lineage of the species), and,
-    # under the last of several lists, the fields that depend on none (the size, under the species: decision, alone
-    # at the foot of the page it was far from what it goes with)
+    # under the last list, the fields that depend on none (the size, under the species: decision, alone at the foot of
+    # the page it was far from what it goes with; beside the lineage)
     def option_card_following_fields(fields, card_field)
-      card_fields = option_card_fields(fields)
       following = fields.select { |field| field["options_from"] == card_field["key"] && !field["icons"] }
-      following += option_card_other_fields(fields) if card_fields.size > 1 && card_field == card_fields.last
+      following += option_card_other_fields(fields) if card_field == option_card_fields(fields).last
       following
     end
 
@@ -47,11 +46,6 @@ module CharacterSheets
     def option_card_other_fields(fields)
       card_keys = option_card_fields(fields).pluck("key")
       fields.reject { |field| field["icons"] || card_keys.include?(field["options_from"]) }
-    end
-
-    # After the lists, when there is a single one (the subclass is under the class, as it depends on it)
-    def option_card_trailing_fields(fields)
-      option_card_fields(fields).size > 1 ? [] : option_card_other_fields(fields)
     end
 
     def option_card_columns_classes(field, side_by_side)

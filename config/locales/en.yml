@@ -119,7 +119,7 @@ en:
         name: "Name"
       character:
         class_choices: "Class choices"
-        feats: "Feat"
+        feats: "Your feats"
         fighting_style: "Fighting style"
         weapon_masteries: "Weapon masteries"
         name: "Character name"
@@ -1795,6 +1795,11 @@ en:
         level_title: "Level %{level} feat"
         nothing_to_pick: "Nothing to pick: this feat is already yours."
       feat_spells:
+        recommended: "Recommended"
+        known_short: "Already known"
+        preview_hint: "Hover or touch a spell of the list to read what it does."
+        modifier: "Modifier %{value}"
+        chosen: "%{chosen} of %{count}"
         ability: "Ability to cast them"
         background_hint:
           one: "Your spell comes from the %{list} list, set by your background: you may change it at each level gained."

@@ -38,9 +38,12 @@ class CharacterCreationSteps
                        behaviors: [])]
   end
 
-  # The blocks of the summary sheet: every step shown, the ones with nothing to fill in comprised
+  # The blocks of the summary sheet: every step shown, the ones with nothing to fill in comprised, but a step whose
+  # behaviors show nothing there and that asks no field (the feat of the species: in the block of the feats)
   def summary_blocks
-    shown_steps
+    shown_steps.reject do |step|
+      step.fields.empty? && step.behaviors.any? && step.behaviors.none?(&:summary_partial)
+    end
   end
 
   def find(key)

@@ -1,16 +1,18 @@
 # Checks the origin feats of a player's character at its creation (decision of 27 November): the spells the origin feat
 # of its background gives (Magic Initiate: a list the feat offers, an ability among its own, as many cantrips and level
 # 1 spells as it gives, none it knows elsewhere, CharacterSheets::FeatSpells), and the feat its species lets pick (the
-# human: one offered, with its skills and spells). On the step that asks them and when the character is done (a draft
-# may wait); the feats of the levels it starts above (CharacterLevelFeats); a feat taken at a level gained is checked
-# by LevelUp. An error on feats
+# human: one offered, with its skills and spells). On the step that asks them (each its own: checks_feat_spells,
+# checks_species_feat) and when the character is done (a draft may wait); the feats of the levels it starts above
+# (CharacterLevelFeats); a feat taken at a level gained is checked by LevelUp. An error on feats
 class CharacterFeatSpellsValidator < ActiveModel::Validator
   def validate(character)
-    return unless character.pc? && checked?(character)
+    return unless character.pc?
 
-    check_background_feat(character)
-    check_species_feat(character)
-    check_level_feats(character)
+    if checked?(character, character.checks_feat_spells)
+      check_background_feat(character)
+      check_level_feats(character)
+    end
+    check_species_feat(character) if checked?(character, character.checks_species_feat)
   end
 
   private
@@ -69,7 +71,8 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     end
   end
 
-  def checked?(character)
-    character.checks_feat_spells || (character.complete? && character.status_changed?)
+  # On the step that asks them (asked_here), or when the character is done
+  def checked?(character, asked_here)
+    asked_here || (character.complete? && character.status_changed?)
   end
 end

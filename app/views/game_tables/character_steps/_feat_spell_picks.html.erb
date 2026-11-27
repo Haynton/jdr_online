@@ -1,54 +1,102 @@
-<%# The spells a feat gives in one list (Magic Initiate, CharacterSheets::FeatSpells): the ability to cast them, then
-    the cantrips to tick and the level 1 spell to pick, each a card with its school, its details on demand in the window
-    of the page. Sent under field_name ([spell_ability], [cantrips][], [spell]); picks: what was picked before; known:
-    the spells known elsewhere, their box disabled with where they come from (CharacterSheets::FeatSpellsHelper) %>
+<%# The spells a feat gives in one list (Magic Initiate, CharacterSheets::FeatSpells): the ability to cast them, three
+    cards with their modifier, the best one recommended; then a book of spells of a fixed height (decision: the page
+    itself no longer scrolls for them): on the left a compact list that scrolls in its frame, the cantrips to tick (how
+    many are ticked out of how many, the others faded once enough are, pick_limit_controller.js) then the level 1 spell
+    to pick, one line each, its box hidden in it; on the right the page of the spell under the pointer, touched or
+    reached with the keyboard (spell_preview_controller.js), the first one picked at first. Sent under field_name
+    ([spell_ability], [cantrips][], [spell]); picks: what was picked before; known: the spells known elsewhere, faded
+    with where they come from (CharacterSheets::FeatSpellsHelper) %>
 <% offer = character.feat_spells.offer(list) %>
 <% picks = local_assigns.fetch(:picks, {}) %>
 <% known = local_assigns.fetch(:known, {}) %>
-<div class="flex flex-col gap-6">
-  <fieldset class="min-w-0">
-    <legend class="text-sm font-semibold text-ink"><%= t("game_tables.character_steps.feat_spells.ability") %></legend>
-    <div class="mt-2 inline-flex flex-wrap gap-1 rounded-lg bg-field p-1">
-      <% Array(settings["abilities"]).each do |ability| %>
-        <% field = character.sheet_fields.find { |candidate| candidate["key"] == ability } %>
-        <label class="<%= LevelUpsHelper::CHOICE_CLASSES %>">
-          <%= radio_button_tag "#{field_name}[spell_ability]", ability, picks["spell_ability"] == ability, id: nil, class: "sr-only" %>
-          <%= field&.dig("label") || ability %>
+<% abilities = feat_spell_abilities(character, settings) %>
+<% groups = [[:cantrips, offer.cantrips, settings["cantrips"].to_i], [:spell, offer.spells, settings["level_one"].to_i]] %>
+<% first_spell = feat_spell_first_read(groups, picks) %>
+<div class="flex min-w-0 flex-col gap-4">
+  <%# The ability on one line: its title, then one pill per ability, its modifier, the best one recommended %>
+  <fieldset class="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+    <legend class="sr-only"><%= t("game_tables.character_steps.feat_spells.ability") %></legend>
+    <span class="text-xs font-bold tracking-widest text-muted uppercase" aria-hidden="true"><%= t("game_tables.character_steps.feat_spells.ability") %></span>
+    <span class="flex flex-wrap gap-2">
+      <% abilities.each do |ability| %>
+        <label class="<%= CharacterSheets::WeaponMasteryChoicesHelper::CHIP_CLASSES %>">
+          <%= radio_button_tag "#{field_name}[spell_ability]", ability.key, picks["spell_ability"] == ability.key, id: nil,
+                               class: "peer sr-only" %>
+          <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-brass group-has-checked/pick:bg-brass" aria-hidden="true"></span>
+          <span class="font-semibold"><%= ability.label %></span>
+          <% if ability.modifier %>
+            <span class="tabular-nums"><%= format_bonus(ability.modifier) %></span>
+          <% end %>
+          <% if ability.recommended %>
+            <span class="text-xs font-semibold text-brass group-has-checked/pick:text-primary-soft-ink">· <%= t("game_tables.character_steps.feat_spells.recommended") %></span>
+          <% end %>
         </label>
       <% end %>
-    </div>
+    </span>
   </fieldset>
-  <% [[:cantrips, offer.cantrips, settings["cantrips"]], [:spell, offer.spells, settings["level_one"]]].each do |kind, spells, count| %>
-    <fieldset class="min-w-0">
-      <legend class="text-sm font-semibold text-ink"><%= t("game_tables.character_steps.feat_spells.#{kind}", count: count) %></legend>
-      <% if kind == :cantrips %><%= hidden_field_tag "#{field_name}[cantrips][]", "", id: nil %><% end %>
-      <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-        <% spells.each do |spell| %>
-          <% if (source = known[spell.key]) %>
-            <div class="<%= CharacterSheets::FeatSpellsHelper::KNOWN_CARD_CLASSES %>">
-              <%= check_box_tag nil, spell.key, true, id: nil, disabled: true, aria: { label: spell.name },
-                                class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
-              <span class="min-w-0">
-                <span class="block truncate text-sm font-semibold text-muted"><%= spell.name %></span>
-                <span class="block text-xs text-muted"><%= t("game_tables.character_steps.feat_spells.known_as", source: source) %></span>
+
+  <div class="<%= CharacterSheets::FeatSpellsHelper::BOOK_CLASSES %>" data-controller="spell-preview">
+    <div class="relative max-h-80 min-h-0 overflow-y-auto border-b border-line lg:max-h-none lg:border-r lg:border-b-0">
+      <% groups.each do |kind, spells, count| %>
+        <% limited = kind == :cantrips %>
+        <%= tag.fieldset class: "min-w-0",
+                         data: (limited ? { controller: "pick-limit", action: "change->pick-limit#count",
+                                            pick_limit_allowed_value: count,
+                                            pick_limit_template_value: t("game_tables.character_steps.feat_spells.chosen", count: count,
+                                                                                                                           chosen: "__CHOSEN__") } : {}) do %>
+          <legend class="sr-only"><%= t("game_tables.character_steps.feat_spells.#{kind}", count: count) %></legend>
+          <%# The title of the group stays at the top of the list while it scrolls %>
+          <div class="sticky top-0 z-10 flex items-baseline justify-between gap-3 border-b border-line bg-page px-4 py-2" aria-hidden="true">
+            <span class="text-xs font-bold tracking-widest text-muted uppercase"><%= t("game_tables.character_steps.feat_spells.#{kind}", count: count) %></span>
+            <% if limited %>
+              <span class="text-xs font-semibold text-brass data-invalid:text-error-ink" data-pick-limit-target="count">
+                <%= t("game_tables.character_steps.feat_spells.chosen", count: count, chosen: Array(picks["cantrips"]).size) %>
               </span>
-            </div>
-            <% next %>
-          <% end %>
-          <label class="<%= weapon_mastery_card_classes %>">
-            <% if kind == :cantrips %>
-              <%= check_box_tag "#{field_name}[cantrips][]", spell.key, Array(picks["cantrips"]).include?(spell.key), id: nil,
-                                class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
-            <% else %>
-              <%= radio_button_tag "#{field_name}[spell]", spell.key, picks["spell"] == spell.key, id: nil, class: "mt-1 shrink-0 accent-current" %>
             <% end %>
-            <span class="min-w-0">
-              <span class="block truncate text-sm font-semibold text-ink"><%= spell.name %></span>
-              <span class="block truncate text-xs text-muted"><%= spell.properties["school"] %></span>
-            </span>
-          </label>
+          </div>
+          <% if limited %>
+            <%= hidden_field_tag "#{field_name}[cantrips][]", "", id: nil %>
+          <% end %>
+          <ul class="py-1">
+            <% spells.each do |spell| %>
+              <% known_source = known[spell.key] %>
+              <li data-spell-preview-item>
+                <% if known_source %>
+                  <div class="<%= CharacterSheets::FeatSpellsHelper::BOOK_KNOWN_ROW_CLASSES %>" tabindex="0"
+                       data-action="mouseenter->spell-preview#show focusin->spell-preview#show click->spell-preview#show">
+                    <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-field-line" aria-hidden="true"></span>
+                    <span class="truncate"><%= spell.name %></span>
+                    <span class="ml-auto shrink-0 text-xs"><%= t("game_tables.character_steps.feat_spells.known_short") %></span>
+                  </div>
+                <% else %>
+                  <label class="<%= CharacterSheets::FeatSpellsHelper::BOOK_ROW_CLASSES %>"
+                         data-action="mouseenter->spell-preview#show focusin->spell-preview#show change->spell-preview#show">
+                    <% if limited %>
+                      <%= check_box_tag "#{field_name}[cantrips][]", spell.key, Array(picks["cantrips"]).include?(spell.key), id: nil,
+                                        class: "peer sr-only", data: { pick_limit_target: "box" } %>
+                    <% else %>
+                      <%= radio_button_tag "#{field_name}[spell]", spell.key, picks["spell"] == spell.key, id: nil, class: "peer sr-only" %>
+                    <% end %>
+                    <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-brass group-has-checked/pick:bg-brass" aria-hidden="true"></span>
+                    <span class="truncate font-medium"><%= spell.name %></span>
+                    <span class="ml-auto shrink-0 text-xs text-muted group-has-checked/pick:text-primary-soft-ink"><%= spell.properties["school"] %></span>
+                  </label>
+                <% end %>
+                <template data-spell-preview-target="details">
+                  <%= render "game_tables/character_steps/feat_spell_reading", spell: spell, known_source: known_source %>
+                </template>
+              </li>
+            <% end %>
+          </ul>
         <% end %>
-      </div>
-    </fieldset>
-  <% end %>
+      <% end %>
+    </div>
+    <div class="max-h-80 min-h-0 overflow-y-auto p-5 lg:max-h-none lg:p-6" aria-live="polite" data-spell-preview-target="panel">
+      <% if first_spell %>
+        <%= render "game_tables/character_steps/feat_spell_reading", spell: first_spell, known_source: known[first_spell.key] %>
+      <% else %>
+        <p class="text-sm text-muted"><%= t("game_tables.character_steps.feat_spells.preview_hint") %></p>
+      <% end %>
+    </div>
+  </div>
 </div>

@@ -5,8 +5,8 @@
 <% category = local_assigns[:category] %>
 <% if card.taken? %>
   <div class="<%= CharacterSheets::FeatSpellsHelper::KNOWN_CARD_CLASSES %>">
-    <%= radio_button_tag nil, card.value, false, id: nil, disabled: true, aria: { label: card.name },
-                         class: "mt-1 shrink-0 accent-current" %>
+    <%= radio_button_tag nil, card.value, false, id: nil, disabled: true, aria: { label: card.name }, class: "sr-only" %>
+    <span class="mt-1.5 size-2.5 shrink-0 rotate-45 rounded-[2px] border border-field-line" aria-hidden="true"></span>
     <span class="min-w-0">
       <span class="block text-sm font-semibold text-muted"><%= card.name %></span>
       <span class="mt-0.5 block text-xs text-muted"><%= t("game_tables.character_steps.feat_cards.taken", source: card.taken_by) %></span>
@@ -15,8 +15,9 @@
 <% else %>
   <label class="<%= weapon_mastery_card_classes %>">
     <%= radio_button_tag field_name, card.value, checked, id: "#{id_prefix}-#{card.value.parameterize}",
-                         class: "mt-1 shrink-0 accent-current",
+                         class: "peer sr-only",
                          data: { choice_blocks_target: "choice", action: "choice-blocks#show" } %>
+    <span class="<%= CharacterSheets::WeaponMasteryChoicesHelper::MARKER_CLASSES %>" aria-hidden="true"></span>
     <span class="min-w-0">
       <span class="block text-sm font-semibold text-ink"><%= card.name %></span>
       <% if category %>

@@ -3,7 +3,7 @@
     (the class) on one centered column, six cards by line; several (the background and the species) side by side on a
     wide section, each with its title, one under the other on a narrow one. A field that depends on one of them (the
     lineage on the species, options_from) goes under it; the other fields of the section (the size) under the last
-    of several lists, after a single one.
+    list, beside it.
     The cards are radio buttons, sent with the form; option_cards_controller.js keeps the hidden fields the page reads
     in step (CharacterSheets::OptionCardsHelper), and described_choices_controller.js shows the options picked %>
 <% card_fields = option_card_fields(fields) %>
@@ -19,11 +19,4 @@
                  side_by_side: side_by_side, following_fields: option_card_following_fields(fields, field) %>
     <% end %>
   </div>
-  <% other_fields = option_card_trailing_fields(fields) %>
-  <% if other_fields.any? %>
-    <div class="w-full max-w-sm">
-      <%= render "character_sheets/sections/flow", character: character, fields: other_fields,
-                                                   all_fields: all_fields, computed: computed %>
-    </div>
-  <% end %>
 </div>

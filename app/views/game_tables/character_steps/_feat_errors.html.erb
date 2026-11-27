@@ -1,0 +1,11 @@
+<%# What the server refused in the feats of a step (CharacterFeatSpellsValidator), as messages floating above the page
+    (shared/_toast, decision: posed at the top of the step, they pushed its content down); the feats of the levels say
+    theirs in their own block %>
+<% messages = character.errors.where(:feats).reject { |error| error.type == :level_feat }.map(&:full_message).uniq %>
+<% if messages.any? %>
+  <div class="<%= toast_stack_classes %>">
+    <% messages.each do |message| %>
+      <%= render "shared/toast", variant: :error, message: message %>
+    <% end %>
+  </div>
+<% end %>
