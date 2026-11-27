@@ -60,6 +60,11 @@ fr:
               not_found: "aucun joueur n'a ce pseudo"
   activerecord:
     attributes:
+      board_token:
+        character: "Personnage"
+        column: "Colonne"
+        name: "Nom"
+        row: "Ligne"
       map_template:
         columns: "Colonnes"
         layout: "Dessin de la carte"
@@ -138,6 +143,14 @@ fr:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
       models:
+        board_token:
+          attributes:
+            base:
+              cell_blocked: "Un jeton ne peut pas se tenir sur cette case"
+              cell_taken: "Un jeton est déjà sur cette case"
+              outside_grid: "Le jeton doit être sur une case de la carte"
+            character:
+              not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
         friendship:
           attributes:
             addressee:
@@ -868,11 +881,15 @@ fr:
       save: "Enregistrer"
       rename: "Renommer la carte"
     size: "%{columns} × %{rows} cases"
+    token_menu:
+      label: "Jeton"
+      starts_hidden: "Caché aux joueurs au départ"
+      starts_shown: "Montré aux joueurs au départ"
     token_tools:
       bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
       bestiary_title: "Bestiaire"
       empty: "Aucun pour l'instant."
-      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
       no_match: "Aucun personnage ni créature ne correspond à cette recherche."
       search: "Rechercher un personnage ou une créature"
       table_title: "PNJ et ennemis de la table"
@@ -1210,9 +1227,21 @@ fr:
       reach: "Passer au niveau %{level}"
       waiting: "Niveau %{level} en attente des choix du joueur."
     board:
+      clear_tokens: "Retirer tous les jetons"
+      clear_tokens_question: "Retirer tous les jetons de « %{name} » ? Ils ne reviendront pas sur cette carte."
+      hide_token: "Cacher aux joueurs"
+      remove_token: "Retirer du plateau"
+      rename_token: "Renommer"
+      save_token_name: "Enregistrer le nom"
+      show_token: "Montrer aux joueurs"
+      token_menu: "Jeton"
+      token_name: "Nom du jeton"
+      token_name_hint: "Vide : le nom du personnage."
       empty_for_game_master: "Placez une carte sur le plateau depuis le panneau Cartes : toute la table la verra."
       empty_for_players: "Le MJ n'a pas encore posé de carte sur le plateau."
-      hint: "Cliquez sur la carte pour placer « %{name} ». Échap ou clic droit pour arrêter."
+      hand: "Déplacer la carte"
+      hand_tip: "Déplacer la carte (H). Aussi : Espace + glisser, clic de la molette + glisser, deux doigts sur le pavé tactile ou l'écran."
+      hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"

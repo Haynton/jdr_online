@@ -35,20 +35,32 @@ class BoardZoomLiveTest < ApplicationSystemTestCase
     assert_operator board_view_box[2], :<, whole_map[2]
   end
 
-  test "dragging the map moves it, unless a creature is in hand" do
+  test "a left drag only selects; Space, the hand, H or the wheel button move the map" do
     open_room
     click_zoom_button "Zoomer"
     click_zoom_button "Zoomer"
     zoomed_in = board_view_box
 
     drag_board_by(-150)
-    moved = board_view_box
-    assert_operator moved[0], :>, zoomed_in[0]
+    assert_equal zoomed_in, board_view_box
 
-    find("a[aria-label='PNJ et ennemis']").click
-    find("button[aria-label='Placer Gobelin sur la carte']").click
-    drag_board_by(-150)
-    assert_equal moved, board_view_box
+    drag_board_by(-100, holding: :space)
+    after_space = board_view_box
+    assert_operator after_space[0], :>, zoomed_in[0]
+
+    click_zoom_button "Déplacer la carte"
+    assert_selector "[data-board-zoom-target=handButton][aria-pressed=true]"
+    drag_board_by(-100)
+    after_hand = board_view_box
+    assert_operator after_hand[0], :>, after_space[0]
+
+    find("body").send_keys("h")
+    assert_selector "[data-board-zoom-target=handButton][aria-pressed=false]"
+    drag_board_by(-100)
+    assert_equal after_hand, board_view_box
+
+    drag_board_by(100, button: :middle)
+    assert_operator board_view_box[0], :<, after_hand[0]
   end
 
   test "the wheel still zooms in the map editor" do
@@ -95,9 +107,12 @@ class BoardZoomLiveTest < ApplicationSystemTestCase
     JS
   end
 
-  def drag_board_by(horizontal_pixels)
+  def drag_board_by(horizontal_pixels, holding: nil, button: :left)
     board = find("#game-room-board-game-master svg[data-board-zoom-target=map]")
-    page.driver.browser.action.move_to(board.native).click_and_hold
-        .move_by(horizontal_pixels, 0).release.perform
+    action = page.driver.browser.action.move_to(board.native)
+    action = action.key_down(holding) if holding
+    action = action.pointer_down(button).move_by(horizontal_pixels, 0).pointer_up(button)
+    action = action.key_up(holding) if holding
+    action.perform
   end
 end

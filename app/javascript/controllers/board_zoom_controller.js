@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import SquareGrid from "map_editor/square_grid"
 import BoardView from "map_editor/board_view"
 import { isTouchpadSlide, wheelPixels, pinchShape } from "map_editor/gestures"
+import { isTyping } from "map_editor/typing"
 
 const zoomStep = 1.25
 const islandsReach = 88
@@ -9,7 +10,7 @@ const mainButton = 0
 const middleButton = 1
 
 export default class extends Controller {
-  static targets = ["map", "zoomButtons"]
+  static targets = ["map", "zoomButtons", "handButton"]
   static values = { columns: Number, rows: Number }
 
   connect() {
@@ -102,7 +103,47 @@ export default class extends Controller {
   movesTheMap(event) {
     if (event.button === middleButton) return true
 
-    return event.button === mainButton && !this.element.closest("[data-placing]")
+    return event.button === mainButton && this.element.hasAttribute("data-moving-map")
+  }
+
+  enterMap() {
+    this.isPointerOverMap = true
+  }
+
+  leaveMap() {
+    this.isPointerOverMap = false
+  }
+
+  holdSpace(event) {
+    if (!this.isPointerOverMap || isTyping(event)) return
+
+    event.preventDefault()
+    this.isSpaceHeld = true
+    this.showMovingState()
+  }
+
+  releaseSpace(event) {
+    if (!this.isSpaceHeld) return
+
+    event.preventDefault()
+    this.isSpaceHeld = false
+    this.showMovingState()
+  }
+
+  toggleHand() {
+    this.isHandOn = !this.isHandOn
+    this.showMovingState()
+  }
+
+  toggleHandWithKey(event) {
+    if (isTyping(event) || event.ctrlKey || event.metaKey || event.altKey) return
+
+    this.toggleHand()
+  }
+
+  showMovingState() {
+    this.element.toggleAttribute("data-moving-map", Boolean(this.isHandOn || this.isSpaceHeld))
+    this.handButtonTarget.setAttribute("aria-pressed", String(Boolean(this.isHandOn)))
   }
 
   continueMoving(event) {

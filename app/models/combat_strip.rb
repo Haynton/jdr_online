@@ -1,11 +1,12 @@
 # The strip of the fighters of the game room, first version (tried on the local branch style/testing-combat-strip:
 # nothing is saved, nothing is shared yet; the dice of the server, the live updates and the state of the tokens come
-# with the combat branch). The fighters are the characters of the players and the NPCs and enemies placed on
-# the first map of the table that has tokens; their order comes from the last initiative rolled for them in the panel
-# « Dés » (DiceRolls::InitiativeRecorder, read in the feed), else from a d20 drawn the same on each load (seeded by
-# the character) plus their Dexterity modifier. Each fighter has its own place and its own initiative (Anthony's
-# requests: one token each, and one roll each, enemies of the same kind too: « Guerrier gobelin 2 » rolls apart from
-# « Guerrier gobelin »); on the same initiative, the enemies of a kind follow each other
+# with the combat branch). The fighters are the characters of the players and the NPCs and enemies with a token on
+# the map of the board (those hidden from the players only for the game master); their order comes from the last
+# initiative rolled for them in the panel « Dés » (DiceRolls::InitiativeRecorder, read in the feed), else from a d20
+# drawn the same on each load (seeded by the character) plus their Dexterity modifier. Each fighter has its own place
+# and its own initiative (Anthony's requests: one token each, and one roll each, enemies of the same kind too:
+# « Guerrier gobelin 2 » rolls apart from « Guerrier gobelin »); on the same initiative, the enemies of a kind follow
+# each other
 class CombatStrip
   Fighter = Data.define(:character, :side, :gauge, :armor_class, :attacks, :spell_slots)
   Group = Data.define(:key, :name, :side, :fighters, :initiative)
@@ -66,10 +67,12 @@ class CombatStrip
   end
 
   def placed_fighters
-    game_map = @game_table.game_maps.find { |candidate| candidate.layout.to_h["tokens"].present? }
-    return [] unless game_map
+    board_map = @game_table.board_game_map
+    return [] unless board_map
 
-    game_map.placed_tokens.pluck(:character).uniq.map do |character|
+    tokens = board_map.board_tokens.includes(:character)
+    seen_tokens = @game_room.game_master? ? tokens : tokens.reject(&:hidden?)
+    seen_tokens.map(&:character).uniq.map do |character|
       fighter_of(character, character.npc? ? :npc : :enemy)
     end
   end

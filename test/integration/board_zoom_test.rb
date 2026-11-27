@@ -29,7 +29,7 @@ class BoardZoomTest < ActionDispatch::IntegrationTest
       assert_select "[data-controller=board-zoom][data-board-zoom-columns-value='10']" \
                     "[data-board-zoom-rows-value='10']" do
         assert_select "svg[data-board-zoom-target=map][data-action*='wheel->board-zoom#zoomOrMoveWithWheel']"
-        assert_select "[role=group][aria-label='Zoom de la carte'][hidden] button", count: 3
+        assert_select "[role=group][aria-label='Zoom de la carte'][hidden] button", count: 4
       end
     end
   end
