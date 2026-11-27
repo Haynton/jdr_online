@@ -75,6 +75,24 @@ class WizardSpellbookTest < ActionDispatch::IntegrationTest
     assert_not_includes @character.reload.spellbook.pluck("key"), "thunderwave"
   end
 
+  test "a spell copied in the game does not fill the book: the wizard still changes its spells and gains a level" do
+    send_spells_as_saved
+    @character.update_columns(status: "complete", name: "Mirabelle", sheet: @character.sheet.merge("gold" => 60))
+    sign_in @player
+    post game_table_spellbook_copy_path(@game_table), params: { spell_key: "burning-hands" }
+    assert @character.reload.valid?, @character.errors.full_messages.to_sentence
+
+    patch game_table_spell_choice_path(@game_table),
+          params: { character: { spell_keys: %w[light fire-bolt mage-hand burning-hands] + BOOK.first(3) } }
+    assert_includes @character.reload.spells.pluck("key"), "burning-hands"
+
+    @character.update_columns(level_up_to: 2, sheet: @character.sheet.merge("arcana" => true))
+    level_up = LevelUp.new(character: @character.reload, hit_point_choice: "average", expertise_keys: %w[arcana],
+                           spellbook_keys: %w[thunderwave color-spray])
+    assert level_up.save, level_up.errors.full_messages.to_sentence
+    assert_equal 9, @character.reload.spellbook.size
+  end
+
   private
 
   def send_spells_as_saved
