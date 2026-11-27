@@ -1,15 +1,19 @@
 <%# One entry the table customizes: its name, "Changed" or "Added" beside it when the table's version differs from
     its template, a button "Change" that opens its window (the pencil alone on a phone, its word for screen readers),
     what it is (the school of a spell, the damage of a weapon), and its switch "offered", a real check box sized like
-    its track, its state written beside it ("In the game", "Out of the game"), saved as soon as it changes (its own form, submit_on_change_controller.js; without JavaScript, the button
+    its track, its state written beside it ("In the game", "Out of the game"), saved as soon as it changes (its own
+    form, submit_on_change_controller.js; without JavaScript, the button
     beside it saves, hidden by that controller). An item of the starting equipment says whether the starting equipment
     of the table holds it: its switch takes it out or puts it back (decision of 24 November) %>
 <% offered = catalog_entry_offered?(@game_table, entry) %>
 <% box_id = "offered-#{entry.kind}-#{entry.key}" %>
 <% detail = catalog_entry_detail(entry, starting: customizations.starting_keys.include?(entry.key), offered: offered) %>
 <% change = catalog_entry_change(entry, customizations.originals) %>
-<li class="flex min-h-14 items-center justify-between gap-4 border-b border-line py-2.5">
-  <div class="min-w-0">
+<%# The name keeps at least 192 px: in a narrow column, the button and the switch go onto a second line, on the
+    right, instead of squeezing the name down to nothing. On a phone, always that second line, the button on the left
+    and the switch on the right (decision of 27 November: pushed to the right, the button floated in the middle) %>
+<li class="flex min-h-14 flex-wrap items-center gap-x-4 gap-y-2 border-b border-line py-2.5">
+  <div class="min-w-48 flex-1">
     <div class="flex min-w-0 items-center gap-2">
       <span class="truncate text-sm font-semibold text-ink" title="<%= entry.name %>"><%= entry.name %></span>
       <% if change %>
@@ -20,34 +24,36 @@
       <p id="<%= box_id %>-detail" class="truncate text-xs text-muted"><%= detail %></p>
     <% end %>
   </div>
-  <%= link_to edit_game_table_catalog_entry_path(@game_table, entry.key, kind: entry.kind),
-              class: "#{button_classes(:secondary, size: :compact)} ml-auto shrink-0",
-              title: t("game_tables.catalogs.edit.change", name: entry.name), data: catalog_entry_dialog_link_data do %>
-    <%= render "shared/icons/pencil" %>
-    <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
-    <span class="sr-only"><%= entry.name %></span>
-  <% end %>
-  <%= form_with url: game_table_catalog_entry_offer_path(@game_table, entry.key, kind: entry.kind), method: :patch,
-                class: "group flex shrink-0 items-center",
-                data: { controller: "submit-on-change", action: "turbo:morph@document->submit-on-change#hideFallbacks" } do %>
-    <%= hidden_field_tag "offered", "0", id: nil %>
-    <%# Its state in words beside it (decision: the switch alone did not say that it takes the entry out of the whole
-        game): "In the game", or "Out of the game" in red once turned off, changed by CSS as soon as it is clicked %>
-    <%= render "shared/switch_state_label", box_id: box_id, on_text: t("game_tables.catalogs.edit.in_game"),
-                                            off_text: t("game_tables.catalogs.edit.out_of_game"),
-                                            off_classes: "font-semibold text-error-ink" %>
-    <span class="relative inline-flex">
-      <%= check_box_tag "offered", "1", offered, id: box_id, role: "switch",
-                        aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),
-                                describedby: ("#{box_id}-detail" if detail.present?) },
-                        data: { action: "change->submit-on-change#submit" },
-                        class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
-      <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
-      <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
-    </span>
-    <%= button_tag t("game_tables.creation_actions.save"), type: "submit", class: "#{button_classes(:secondary, size: :compact)} ml-2",
-                                                           data: { submit_on_change_target: "fallback" } %>
-    <%= button_tag "", type: "submit", hidden: true, tabindex: -1, aria: { hidden: true },
-                       data: { submit_on_change_target: "submitter" } %>
-  <% end %>
+  <div class="flex w-full items-center justify-between gap-4 sm:ml-auto sm:w-auto sm:shrink-0 sm:justify-start">
+    <%= link_to edit_game_table_catalog_entry_path(@game_table, entry.key, kind: entry.kind),
+                class: "#{button_classes(:secondary, size: :compact)} shrink-0",
+                title: t("game_tables.catalogs.edit.change", name: entry.name), data: catalog_entry_dialog_link_data do %>
+      <%= render "shared/icons/pencil" %>
+      <span class="max-sm:sr-only"><%= t("game_tables.catalogs.edit.change_short") %></span>
+      <span class="sr-only"><%= entry.name %></span>
+    <% end %>
+    <%= form_with url: game_table_catalog_entry_offer_path(@game_table, entry.key, kind: entry.kind), method: :patch,
+                  class: "group flex shrink-0 items-center",
+                  data: { controller: "submit-on-change", action: "turbo:morph@document->submit-on-change#hideFallbacks" } do %>
+      <%= hidden_field_tag "offered", "0", id: nil %>
+      <%# Its state in words beside it (decision: the switch alone did not say that it takes the entry out of the whole
+          game): "In the game", or "Out of the game" in red once turned off, changed by CSS as soon as it is clicked %>
+      <%= render "shared/switch_state_label", box_id: box_id, on_text: t("game_tables.catalogs.edit.in_game"),
+                                              off_text: t("game_tables.catalogs.edit.out_of_game"),
+                                              off_classes: "font-semibold text-error-ink" %>
+      <span class="relative inline-flex">
+        <%= check_box_tag "offered", "1", offered, id: box_id, role: "switch",
+                          aria: { label: t("game_tables.catalogs.edit.offer", name: entry.name),
+                                  describedby: ("#{box_id}-detail" if detail.present?) },
+                          data: { action: "change->submit-on-change#submit" },
+                          class: "peer absolute inset-0 z-10 m-0 size-full cursor-pointer appearance-none opacity-0" %>
+        <span aria-hidden="true" class="<%= switch_track_classes %>"></span>
+        <span aria-hidden="true" class="<%= switch_knob_classes %>"></span>
+      </span>
+      <%= button_tag t("game_tables.creation_actions.save"), type: "submit", class: "#{button_classes(:secondary, size: :compact)} ml-2",
+                                                             data: { submit_on_change_target: "fallback" } %>
+      <%= button_tag "", type: "submit", hidden: true, tabindex: -1, aria: { hidden: true },
+                         data: { submit_on_change_target: "submitter" } %>
+    <% end %>
+  </div>
 </li>
