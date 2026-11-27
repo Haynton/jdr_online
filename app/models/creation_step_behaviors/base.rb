@@ -18,9 +18,9 @@ module CreationStepBehaviors
       raise NotImplementedError
     end
 
-    # Whether its step has something to ask, for the table and the options picked (picked_effects: their effects); a
-    # step whose behaviors have nothing is not shown, as a step only_with_effect
-    def shown?(_game_table, _picked_effects)
+    # Whether its step has something to ask, for the table, the options picked (picked_effects: their effects) and the
+    # values of the sheet (its level); a step whose behaviors have nothing is not shown, as a step only_with_effect
+    def shown?(_game_table, _picked_effects, _sheet = {})
       true
     end
 

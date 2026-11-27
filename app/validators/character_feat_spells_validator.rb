@@ -2,13 +2,15 @@
 # of its background gives (Magic Initiate: a list the feat offers, an ability among its own, as many cantrips and level
 # 1 spells as it gives, none it knows elsewhere, CharacterSheets::FeatSpells), and the feat its species lets pick (the
 # human: one offered, with its skills and spells). On the step that asks them and when the character is done (a draft
-# may wait); a feat taken at a level gained is checked by LevelUp. An error on feats
+# may wait); the feats of the levels it starts above (CharacterLevelFeats); a feat taken at a level gained is checked
+# by LevelUp. An error on feats
 class CharacterFeatSpellsValidator < ActiveModel::Validator
   def validate(character)
     return unless character.pc? && checked?(character)
 
     check_background_feat(character)
     check_species_feat(character)
+    check_level_feats(character)
   end
 
   private
@@ -55,6 +57,16 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     return if count.zero? || (skills.size == count && (skills - character.skill_choices.skill_keys).empty?)
 
     character.errors.add(:feats, :skills, count: count)
+  end
+
+  # The feats of the levels it starts above (CreationFeat: its points shared, its skills and spells picked), while it is
+  # being made: once done, a feat of a level comes from a level gained (LevelUp)
+  def check_level_feats(character)
+    return unless character.draft? || character.status_changed?
+
+    character.level_feat_errors.each do |level, message|
+      character.errors.add(:feats, :level_feat, level: level, detail: message)
+    end
   end
 
   def checked?(character)
