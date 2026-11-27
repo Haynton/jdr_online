@@ -45,6 +45,24 @@ class ClassChoicesRoomTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test "at level 3, the window prepares what each subclass brings, and one sending is enough" do
+    character = @participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Sylas",
+                                                 level_up_to: 3, sheet: { "class" => "Rôdeur", "level" => 2 })
+    sign_in @player
+    get new_game_table_level_up_path(@game_table)
+
+    assert_select "[data-level-up-subclass-target=block][data-subclass=Chasseur][hidden]" do
+      assert_select "legend", text: "Proie du chasseur"
+    end
+
+    post game_table_level_up_path(@game_table), params: { level_up: {
+      subclass: "Chasseur", class_choices: { hunters_prey: ["", "colossus-slayer"], land_type: ["arid"] }
+    } }, as: :turbo_stream
+
+    assert_equal [3, { "hunters_prey" => ["colossus-slayer"] }],
+                 [character.reload.sheet["level"], character.class_choices]
+  end
+
   test "a class without choices has none to change" do
     @participation.create_character!(game_table: @game_table, kind: :pc, status: :complete, name: "Brunhild",
                                      sheet: { "class" => "Guerrier", "level" => 2 })

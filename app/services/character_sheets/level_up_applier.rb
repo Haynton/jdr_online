@@ -28,10 +28,10 @@ module CharacterSheets
 
     def write_choices
       new_sheet = @character.sheet.merge(level_values, subclass_values, improved_scores, expertise_values,
-                                         @level_up.skill_keys.index_with(true))
+                                         @level_up.chosen_skill_keys.index_with(true))
       @character.sheet = ChoiceEffectsApplier.new(fields: @character.sheet_fields, previous_sheet: @character.sheet)
                                              .call(new_sheet)
-      @character.class_choices = @character.class_choices.to_h.merge(@level_up.class_choices)
+      @character.class_choices = @level_up.future_character.class_choices
       @character.spells = @character.spell_choices.keep_offered(@character.spells.to_a)
       @character.level_up_to = nil
     end

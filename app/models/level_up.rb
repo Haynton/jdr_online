@@ -46,6 +46,11 @@ class LevelUp
     @skill_keys = Array(keys).compact_blank.uniq
   end
 
+  # The skills to tick: those of the subclass picked only (another one's, sent without JavaScript, are left out)
+  def chosen_skill_keys
+    skill_count.positive? ? skill_keys : []
+  end
+
   def save
     return false unless valid?
 
