@@ -2,13 +2,12 @@
 # prototype "Création façon jeu"): the band of the hero on top (game_tables/character_steps/_hero), the rail of the
 # steps on the left (_rail), the step in the middle under a centered title (_title), its buttons in a bar at the bottom
 # (_actions). One shape for what is picked, the card (CARD_CLASSES): a border all around, corners of 10 px, no
-# background at rest; picked, a thin border chosen-line, the tonal gold background and a soft glow
+# background at rest; picked, a thin border chosen-line and the tonal gold background, no shadow (decision)
 module CharacterSheets
   module CreationFrameHelper
     CARD_CLASSES = %w[
       rounded-[10px] border border-line transition-colors hover:border-field-line hover:bg-surface
       aria-pressed:border-chosen-line aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink
-      aria-pressed:shadow-[0_6px_16px_-10px_var(--color-brass)]
     ].join(" ").freeze
 
     # A step of the rail: a diamond with rounded corners and its number, the current one larger and filled

@@ -5,6 +5,7 @@ module CharacterSheets
   module PartialsHelper
     # The partial of each layout of a section (sheet_section_layout), in full for the same reason
     SECTION_PARTIALS = {
+      option_cards: "character_sheets/sections/option_cards",
       described_choices: "character_sheets/sections/described_choices",
       abilities: "character_sheets/sections/abilities",
       rows: "character_sheets/sections/rows",

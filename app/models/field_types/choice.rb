@@ -4,10 +4,11 @@ module FieldTypes
   # class picked) and on a level (from_level, read in level_from: the subclass from level 3): it is asked only once
   # it has options to offer, and its value goes when the other list or the level no longer offer it. With labels, a name
   # for each option, the option is a key the rules read (the training an item needs: "simple-weapons") and the page
-  # shows its name ("Armes courantes")
+  # shows its name ("Armes courantes"). With icons, an emblem for each option (OptionIcons): the list is drawn as cards
+  # (the class, character_sheets/sections/_option_cards)
   class Choice < Base
     KEY = "choice".freeze
-    OWN_PARAMETERS = %w[options labels descriptions effects options_from options_by from_level level_from].freeze
+    OWN_PARAMETERS = %w[options labels descriptions effects icons options_from options_by from_level level_from].freeze
     REQUIRED_PARAMETERS = %w[options].freeze
     REFERENCES = { "options_from" => "choice", "level_from" => "number" }.freeze
     # The settings that go together: one without the other does not work
@@ -56,7 +57,7 @@ module FieldTypes
     end
 
     def settings_errors(field, fields)
-      paired_errors(field) + labels_errors(field) + options_by_errors(field, fields)
+      paired_errors(field) + labels_errors(field) + icons_errors(field) + options_by_errors(field, fields)
     end
 
     private
@@ -72,6 +73,19 @@ module FieldTypes
       return [] if field["labels"].to_a.size == field["options"].to_a.size
 
       [[:labels_not_matching_options, { count: field["options"].to_a.size }]]
+    end
+
+    # Each icon is given for an option of the list, and is one of the icons of the app
+    def icons_errors(field)
+      icons = field["icons"]
+      return [] unless icons
+      return [[:unknown_icon, { icon: icons.to_s }]] unless icons.is_a?(Hash)
+
+      unknown_options = (icons.keys - field["options"].to_a).map do |option|
+        [:unknown_option, { setting: "icons", option: option.to_s }]
+      end
+      unknown_icons = (icons.values - OptionIcons.keys).map { |icon| [:unknown_icon, { icon: icon.to_s }] }
+      unknown_options + unknown_icons
     end
 
     # No level typed counts as level 1, as the rules read it (CharacterSheets::SheetReader#typed_level)

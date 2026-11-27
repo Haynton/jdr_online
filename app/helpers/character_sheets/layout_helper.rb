@@ -36,10 +36,12 @@ module CharacterSheets
       fields.group_by { |field| field["section"] }
     end
 
+    # option_cards: a list with icons (the class) drawn as cards, the option picked explained beside them;
     # described_choices: lists whose options have a description (class, species, background), beside a summary of the
     # options picked; abilities: tiles in a grid, with the dice roll; rows: saving throws and skills, their help said
     # once; two_columns: a section with fields in its right column (column: aside, the personality); flow: anything else
     def sheet_section_layout(fields)
+      return :option_cards if fields.first&.dig("icons")
       return :described_choices if fields.any? { |field| field["descriptions"] }
       return :abilities if abilities_section?(fields)
       return :rows if rows_section?(fields)

@@ -33,6 +33,8 @@ module FieldParameters
     "key" => :fixed, "type" => :fixed, "effects" => :fixed, "descriptions" => :fixed,
     # The options of a list for each option of the list it depends on (the subclasses of each class)
     "options_by" => :fixed,
+    # An emblem for each option of a list, among the icons of the app (OptionIcons): the list is drawn as cards
+    "icons" => :fixed,
     # Shown only for some values of a list of the same part: { "field" => "category", "values" => [...] } (the damage
     # of an item for a weapon only, in the window of a catalog entry)
     "shown_with" => :fixed

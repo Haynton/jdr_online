@@ -87,6 +87,16 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
+  test "the heroic fantasy picks its class among cards with an emblem, then its origin, in both languages" do
+    %w[fr en].each do |language|
+      template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{language}.json"))
+      klass = template.dig("character_fields", "fields").find { |field| field["key"] == "class" }
+
+      assert_equal klass["options"].sort, klass["icons"].keys.sort
+      assert_equal %w[identity class origin], template.dig("character_fields", "creation_steps").first(3).pluck("key")
+    end
+  end
+
   # The table of the SRD 5.2.1: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
   # all of one level
   test "the heroic fantasy declares the 15 conditions of the SRD 5.2.1, the same in both languages" do

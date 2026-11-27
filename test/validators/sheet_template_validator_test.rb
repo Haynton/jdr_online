@@ -70,6 +70,14 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     end
   end
 
+  test "a list draws its options as cards with an icon of the app for each of its options" do
+    assert_predicate build_template { |fields| field(fields, "class")["icons"] = { "Guerrier" => "swords" } }, :valid?
+    assert_error build_template { |fields| field(fields, "class")["icons"] = { "Guerrier" => "dragon" } },
+                 :unknown_icon
+    assert_error build_template { |fields| field(fields, "class")["icons"] = { "Mage" => "swords" } },
+                 :unknown_option
+  end
+
   test "each setting holds a value of its kind, of its list, and a minimum under its maximum" do
     template = build_template do |fields|
       field(fields, "level")["max"] = "vingt"
