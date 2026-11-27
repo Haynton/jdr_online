@@ -5,6 +5,7 @@ import { renderBoardTokens } from "map_editor/token_renderer"
 import { passageOf, walkTowards, pathCost, sameCell } from "map_editor/board_moves"
 
 const CELL_SIZE = 24
+const ghostOpacity = 0.4
 const clickMovementTolerance = 5
 const menuGap = 8
 
@@ -192,6 +193,7 @@ export default class extends Controller {
   endTokenDrag() {
     this.tokenDrag = null
     if (this.hasMoveBubbleTarget) this.moveBubbleTarget.hidden = true
+    this.mapTarget.querySelector("[data-drag-ghost]")?.remove()
   }
 
   tokenData(tokenId) {
@@ -233,9 +235,24 @@ export default class extends Controller {
     const tokenGroup = this.mapTarget.querySelector(`[data-board-token-id="${drag.token.id}"]`)
     if (!tokenGroup) return
 
+    this.leaveGhostAtStart(tokenGroup)
     const [column, row] = drag.cell
     tokenGroup.setAttribute("transform", `translate(${(column - drag.token.column) * CELL_SIZE} ${(row - drag.token.row) * CELL_SIZE})`)
     tokenGroup.parentElement.appendChild(tokenGroup)
+  }
+
+  // A faded copy of the token on its starting cell, for the one who drags it only; it takes no pointer and no id, so
+  // nothing picks it. Put back after the tokens are drawn again, taken away with the drag (endTokenDrag)
+  leaveGhostAtStart(tokenGroup) {
+    if (this.mapTarget.querySelector("[data-drag-ghost]")) return
+
+    const ghost = tokenGroup.cloneNode(true)
+    ghost.removeAttribute("data-board-token-id")
+    ghost.removeAttribute("transform")
+    ghost.setAttribute("data-drag-ghost", "")
+    ghost.setAttribute("opacity", ghostOpacity)
+    ghost.setAttribute("pointer-events", "none")
+    tokenGroup.before(ghost)
   }
 
   showDistance(cells, event) {

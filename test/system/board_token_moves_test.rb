@@ -26,9 +26,11 @@ class BoardTokenMovesLiveTest < ApplicationSystemTestCase
 
     press_and_move(from: [1, 1], to: [3, 1])
     assert_selector "[data-room-board-target=moveBubble]", text: "3 m"
+    assert_selector "[data-drag-ghost]:not([transform])", visible: :all, count: 1
     release_pointer
 
     assert_no_selector "[data-room-board-target=moveBubble]"
+    assert_no_selector "[data-drag-ghost]", visible: :all
     wait_for_token_at(3, 1)
     using_session(:game_master) do
       assert_selector "#game-room-board-game-master [data-board-token-id='#{@aria_token.id}']", visible: :all
