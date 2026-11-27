@@ -87,12 +87,14 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     end
   end
 
-  test "the heroic fantasy picks its class among cards with an emblem, then its origin, in both languages" do
+  test "the heroic fantasy picks its class, background and species among cards with an emblem, in both languages" do
     %w[fr en].each do |language|
       template = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{language}.json"))
-      klass = template.dig("character_fields", "fields").find { |field| field["key"] == "class" }
 
-      assert_equal klass["options"].sort, klass["icons"].keys.sort
+      fields = template.dig("character_fields", "fields").index_by { |field| field["key"] }
+      %w[class background species].each do |key|
+        assert_equal fields[key]["options"].sort, fields[key]["icons"].keys.sort, "#{language} #{key}"
+      end
       assert_equal %w[identity class origin], template.dig("character_fields", "creation_steps").first(3).pluck("key")
     end
   end

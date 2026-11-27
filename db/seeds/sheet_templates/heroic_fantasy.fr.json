@@ -188,7 +188,8 @@
           "Chasseur": {"features_by_level":{"3":[{"key":"hunter-lore","name":"Savoir du chasseur"},{"key":"hunter-prey","name":"Proie du chasseur"}],"7":[{"key":"hunter-defensive-tactics","name":"Tactiques défensives"}],"11":[{"key":"hunter-superior-prey","name":"Proie du chasseur supérieure"}],"15":[{"key":"hunter-superior-defense","name":"Défense du chasseur supérieure"}]},"class_choices":{"hunters_prey":[0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"defensive_tactics":[0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1]}},
           "Voleur": {"features_by_level":{"3":[{"key":"thief-fast-hands","name":"Mains rapides"},{"key":"thief-second-story-work","name":"Monte-en-l'air"}],"9":[{"key":"thief-supreme-sneak","name":"Furtivité suprême"}],"13":[{"key":"thief-use-magic-device","name":"Utilisation d'objets magiques"}],"17":[{"key":"thief-reflexes","name":"Réflexes de voleur"}]}}
         } },
-      { "key": "background", "label": "Historique", "type": "choice", "section": "Origine", "required": true, "visible_to_others": true,
+      { "key": "background", "label": "Historique", "type": "choice", "section": "Origine", "icons": {"Acolyte": "church", "Criminel": "venetian_mask", "Sage": "book_open", "Soldat": "shield"},
+        "required": true, "visible_to_others": true,
         "options": ["Acolyte", "Criminel", "Sage", "Soldat"],
         "descriptions": {
           "Acolyte": "Une jeunesse au service d'un temple : les rites, les prières et les dieux n'ont pas de secret.",
@@ -202,7 +203,8 @@
           "Sage": {"ability_bonus_choices":["constitution","intelligence","wisdom"],"proficient":["arcana","history"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Initié à la magie","spell_list":"Magicien"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"quarterstaff"},{"key":"calligraphers-supplies"},{"key":"book","note":"d'histoire"},{"key":"parchment","count":8},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
           "Soldat": {"ability_bonus_choices":["strength","dexterity","constitution"],"proficient":["athletics","intimidation"],"origin_feat":{"key":"savage-attacker","name":"Attaquant sauvage"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"spear"},{"key":"shortbow"},{"key":"arrows","count":20},{"choose":["gaming_set"]},{"key":"healers-kit"},{"key":"quiver"},{"key":"clothes-travelers"}],"gold":14},{"key":"b","gold":50}]}}
         } },
-      { "key": "species", "label": "Espèce", "type": "choice", "section": "Origine", "required": true, "visible_to_others": true,
+      { "key": "species", "label": "Espèce", "type": "choice", "section": "Origine", "icons": {"Drakéide": "wind", "Elfe": "leaf", "Gnome": "cog", "Goliath": "mountain", "Halfelin": "footprints", "Humain": "user_round", "Nain": "pickaxe", "Orc": "axe", "Tieffelin": "flame"},
+        "required": true, "visible_to_others": true,
         "options": ["Drakéide", "Elfe", "Gnome", "Goliath", "Halfelin", "Humain", "Nain", "Orc", "Tieffelin"],
         "descriptions": {
           "Drakéide": "Descendants des dragons, les drakéides ont un souffle élémentaire et une peau écailleuse.",

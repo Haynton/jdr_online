@@ -1,0 +1,76 @@
+<%# One list with icons of a section drawn as cards (character_sheets/sections/_option_cards): its cards, each with its
+    emblem and its name; under them, the option picked explained, plain text on the page (no card around it,
+    decision): its name (its emblem is on its card, decision), its description, then what it brings as a sheet (its
+    facts, read in its effects, and its features), all on the left edge of the sheet (decision). The cards stay in place when the explanation changes length
+    (decision). side_by_side: beside another list, the list shows its title (its label) and a narrower sheet.
+    following_fields: the fields that depend on this list (the lineage of the species), under its explanation %>
+<% error = sheet_field_error(character, field) %>
+<% sheet_row_classes = option_card_sheet_row_classes(side_by_side) %>
+<div class="flex w-full min-w-0 flex-col items-center gap-8 [@media(max-height:820px)]:gap-5">
+  <fieldset class="w-full max-w-4xl min-w-0">
+    <legend class="<%= side_by_side ? "mb-3 w-full text-center text-xs font-bold tracking-widest text-brass uppercase [@media(max-height:820px)]:mb-2" : "sr-only" %>"><%= field["label"] %></legend>
+    <%= option_cards_mirror(character, field) %>
+    <div class="grid grid-cols-3 gap-2 <%= option_card_columns_classes(field, side_by_side) %>">
+      <% FieldTypes.of(field).sheet_list_choices(field, character.sheet).each do |label, option| %>
+        <label class="<%= CharacterSheets::OptionCardsHelper::OPTION_CARD_CLASSES %>">
+          <%= radio_button_tag sheet_field_name(field), option, character.sheet[field["key"]] == option,
+                               id: nil, class: "sr-only",
+                               data: { action: "option-cards#pick", field_key: field["key"] } %>
+          <%= option_card_icon(field, option) %>
+          <span class="text-xs font-semibold text-ink"><%= label %></span>
+        </label>
+      <% end %>
+    </div>
+    <% if error %>
+      <p class="mt-2 text-center text-sm text-error-ink" role="alert"><%= error %></p>
+    <% end %>
+  </fieldset>
+
+  <section class="flex w-full max-w-4xl min-w-0 flex-col gap-6 text-left [@media(max-height:820px)]:gap-3" aria-live="polite"
+           aria-label="<%= t("game_tables.choice_summaries.label") %>">
+    <p class="text-muted" data-described-choices-target="empty" data-field="<%= field["key"] %>"
+       <%= "hidden" if choice_picked?(character, field) %>><%= t("game_tables.choice_summaries.nothing_picked") %></p>
+    <% field["options"].each do |option| %>
+      <%= tag.div class: "w-full", hidden: choice_option_hidden?(character, field, option),
+                  data: { described_choices_target: "option", field: field["key"], option: option } do %>
+        <h2 class="text-2xl font-extrabold [@media(max-height:820px)]:text-xl"><%= FieldTypes.of(field).summary_text(option, field) %></h2>
+        <p class="mt-2 text-base text-ink [@media(max-height:820px)]:text-sm"><%= field.dig("descriptions", option) %></p>
+        <%# What it brings as a sheet: one line each, the label always in the same column on the left, the value on the
+            right, a thin line between them; title, sentence and sheet on one left edge (decision: blocks of every length side
+            by side, or two columns of pairs, scattered the eye) %>
+        <dl class="mt-5 w-full text-sm [@media(max-height:820px)]:mt-3">
+          <% choice_option_facts(field, option, all_fields).each do |fact_label, text, from_level| %>
+            <%= tag.div class: sheet_row_classes, hidden: choice_fact_hidden?(character, field, from_level),
+                        data: choice_fact_data(character, field, from_level) do %>
+              <dt class="text-muted"><%= fact_label %></dt>
+              <dd class="font-semibold text-ink"><%= text %></dd>
+            <% end %>
+          <% end %>
+          <%# Its features, one more line of the sheet, each opening its summary %>
+          <% features = choice_option_features(character, field, option) %>
+          <% if features.any? %>
+            <div class="<%= sheet_row_classes %>">
+              <dt class="text-muted"><%= t("game_tables.choice_summaries.features") %></dt>
+              <dd>
+                <ul class="flex flex-wrap gap-x-4 gap-y-0.5">
+                  <% features.each do |feature| %>
+                    <%= tag.li hidden: feature_hidden?(character, field, feature),
+                               data: feature_line_data(character, field, feature) do %>
+                      <%= render "character_sheets/features/line", feature: feature %>
+                    <% end %>
+                  <% end %>
+                </ul>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+    <% end %>
+    <% if following_fields.any? %>
+      <div class="w-full">
+        <%= render "character_sheets/sections/flow", character: character, fields: following_fields,
+                                                     all_fields: all_fields, computed: computed %>
+      </div>
+    <% end %>
+  </section>
+</div>

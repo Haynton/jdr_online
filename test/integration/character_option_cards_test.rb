@@ -34,6 +34,26 @@ class CharacterOptionCardsTest < ActionDispatch::IntegrationTest
     assert_select "[data-described-choices-target=option][data-option=Guerrier][hidden]"
   end
 
+  test "two lists with icons stand side by side, each with its title, its hidden field, and what depends on it" do
+    snapshot = @game_table.template_snapshot.deep_dup
+    fields = snapshot["character_fields"]["fields"]
+    fields.insert(1, { "key" => "people", "label" => "Peuple", "type" => "choice", "section" => "Classe",
+                       "options" => %w[Elfe Nain], "icons" => { "Elfe" => "leaf", "Nain" => "pickaxe" } },
+                  { "key" => "clan", "label" => "Clan", "type" => "choice", "section" => "Classe",
+                    "options" => %w[Montagne Colline], "options_from" => "people",
+                    "options_by" => { "Nain" => %w[Montagne Colline] } })
+    @game_table.update!(template_snapshot: snapshot)
+    @character.update!(sheet: { "class" => "Mage", "people" => "Nain" })
+
+    get game_table_character_step_path(@game_table, "class")
+
+    assert_select "legend", text: "Classe"
+    assert_select "legend", text: "Peuple"
+    assert_select "input[type=hidden]#character_sheet_people[data-field-key=people]:not([name])"
+    assert_select "input[type=radio][name='character[sheet][people]'][data-field-key=people]", count: 2
+    assert_select "fieldset:has(legend:contains('Peuple')) + section select#character_sheet_clan"
+  end
+
   test "the card picked is the class saved" do
     patch game_table_character_step_path(@game_table, "class"), params: { character: { sheet: { class: "Guerrier" } } }
 

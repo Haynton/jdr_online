@@ -188,7 +188,8 @@
           "Fiend Patron": {"always_prepared_spells":{"3":["burning-hands","command","scorching-ray","suggestion"],"5":["fireball","stinking-cloud"],"7":["fire-shield","wall-of-fire"],"9":["geas","insect-plague"]},"features_by_level":{"3":[{"key":"fiend-dark-ones-blessing","name":"Dark One's Blessing"},{"key":"fiend-spells","name":"Fiend Spells"}],"6":[{"key":"fiend-dark-ones-own-luck","name":"Dark One's Own Luck"}],"10":[{"key":"fiend-fiendish-resilience","name":"Fiendish Resilience"}],"14":[{"key":"fiend-hurl-through-hell","name":"Hurl Through Hell"}]},"resources":[{"key":"dark_ones_own_luck","label":"Dark One's Own Luck","uses_from":"charisma","from_level":6,"recovery":"long_rest"}]},
           "Evoker": {"features_by_level":{"3":[{"key":"evoker-evocation-savant","name":"Evocation Savant"},{"key":"evoker-potent-cantrip","name":"Potent Cantrip"}],"6":[{"key":"evoker-sculpt-spells","name":"Sculpt Spells"}],"10":[{"key":"evoker-empowered-evocation","name":"Empowered Evocation"}],"14":[{"key":"evoker-overchannel","name":"Overchannel"}]}}
         } },
-      { "key": "background", "label": "Background", "type": "choice", "section": "Origin", "required": true, "visible_to_others": true,
+      { "key": "background", "label": "Background", "type": "choice", "section": "Origin", "icons": {"Acolyte": "church", "Criminal": "venetian_mask", "Sage": "book_open", "Soldier": "shield"},
+        "required": true, "visible_to_others": true,
         "options": ["Acolyte", "Criminal", "Sage", "Soldier"],
         "descriptions": {
           "Acolyte": "A youth in the service of a temple: rites, prayers and gods hold no secrets.",
@@ -202,7 +203,8 @@
           "Sage": {"ability_bonus_choices":["constitution","intelligence","wisdom"],"proficient":["arcana","history"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Magic Initiate","spell_list":"Wizard"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"quarterstaff"},{"key":"calligraphers-supplies"},{"key":"book","note":"(history)"},{"key":"parchment","count":8},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
           "Soldier": {"ability_bonus_choices":["strength","dexterity","constitution"],"proficient":["athletics","intimidation"],"origin_feat":{"key":"savage-attacker","name":"Savage Attacker"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"spear"},{"key":"shortbow"},{"key":"arrows","count":20},{"choose":["gaming_set"]},{"key":"healers-kit"},{"key":"quiver"},{"key":"clothes-travelers"}],"gold":14},{"key":"b","gold":50}]}}
         } },
-      { "key": "species", "label": "Species", "type": "choice", "section": "Origin", "required": true, "visible_to_others": true,
+      { "key": "species", "label": "Species", "type": "choice", "section": "Origin", "icons": {"Dragonborn": "wind", "Elf": "leaf", "Gnome": "cog", "Goliath": "mountain", "Halfling": "footprints", "Human": "user_round", "Dwarf": "pickaxe", "Orc": "axe", "Tiefling": "flame"},
+        "required": true, "visible_to_others": true,
         "options": ["Dragonborn", "Dwarf", "Elf", "Gnome", "Goliath", "Halfling", "Human", "Orc", "Tiefling"],
         "descriptions": {
           "Dragonborn": "Descended from dragons, dragonborn have an elemental breath and scaly skin.",
