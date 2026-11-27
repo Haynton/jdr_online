@@ -313,6 +313,21 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_predicate build_template, :valid?
   end
 
+  test "the price lists have a unique key, a label and lines with a label, a price and a short note" do
+    inn = { "key" => "inn", "label" => "Auberge", "lines" => [{ "label" => "Modeste", "price" => "5 pa" }] }
+    assert_predicate with_price_lists([inn]), :valid?
+
+    template = with_price_lists([inn, inn.merge("label" => "Auberge bis"),
+                                 { "key" => "Repas", "label" => "Repas", "lines" => [], "color" => "green" },
+                                 { "key" => "meals", "label" => "Repas", "lines" => [{ "label" => "Riche" }] }])
+    assert_error template, :duplicate_price_list
+    assert_error template, :invalid_price_list_key
+    assert_error template, :unknown_price_list_parameter
+    assert_error template, :invalid_price_lines, "La liste de prix « Repas » : il faut des lignes, chacune avec un " \
+                                                 "libellé, un prix et, au besoin, une note courte"
+    assert_error with_price_lists({ "inn" => "5 pa" }), :invalid_price_lists
+  end
+
   test "the dice declare their modes, the die they apply to and their initiative" do
     assert_predicate with_dice_rolls(DICE_ROLLS), :valid?
     assert_predicate with_dice_rolls({ "initiative" => { "label" => "Initiative", "sides" => 20 } }), :valid?
@@ -432,6 +447,10 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   # The template given to the block (its character fields) can be changed before it is built
   def with_ability_methods(methods)
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
+  def with_price_lists(lists)
+    build_template.tap { |template| template.character_fields["price_lists"] = lists }
   end
 
   def with_conditions(conditions)

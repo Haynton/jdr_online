@@ -48,6 +48,13 @@
       { "key": "stunned", "label": "Étourdi", "description": "Vous êtes neutralisé et ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Les jets d'attaque contre vous ont l'avantage." },
       { "key": "unconscious", "label": "Inconscient", "description": "Vous êtes neutralisé et à terre, et vous lâchez ce que vous tenez. Votre vitesse est de 0, vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité, les jets d'attaque contre vous ont l'avantage et un coup porté à 1,50 mètre ou moins est un coup critique. Vous ne savez rien de ce qui vous entoure." }
     ],
+    "price_lists": [
+      {"key": "inn", "label": "Auberge (une nuit)", "lines": [{"label": "Misérable", "price": "7 pc"}, {"label": "Pauvre", "price": "1 pa"}, {"label": "Modeste", "price": "5 pa"}, {"label": "Aisée", "price": "8 pa"}, {"label": "Riche", "price": "2 po"}, {"label": "Aristocratique", "price": "4 po"}]},
+      {"key": "meals", "label": "Repas", "lines": [{"label": "Misérable", "price": "1 pc"}, {"label": "Pauvre", "price": "2 pc"}, {"label": "Modeste", "price": "1 pa"}, {"label": "Aisé", "price": "2 pa"}, {"label": "Riche", "price": "3 pa"}, {"label": "Aristocratique", "price": "6 pa"}]},
+      {"key": "lifestyle", "label": "Train de vie (par jour)", "lines": [{"label": "Indigent", "price": "gratuit", "note": "Dormir dehors, vivre de la charité"}, {"label": "Misérable", "price": "1 pa"}, {"label": "Pauvre", "price": "2 pa"}, {"label": "Modeste", "price": "1 po"}, {"label": "Aisé", "price": "2 po"}, {"label": "Riche", "price": "4 po", "note": "Avec des domestiques"}, {"label": "Aristocratique", "price": "10 po", "note": "Votre fortune se remarque"}]},
+      {"key": "services", "label": "Mercenaires et services", "lines": [{"label": "Mercenaire qualifié", "price": "2 po par jour", "note": "Un soldat, un artisan, un scribe"}, {"label": "Mercenaire non qualifié", "price": "2 pa par jour", "note": "Un porteur, un manœuvre"}, {"label": "Messager", "price": "2 pc par 1,5 km"}, {"label": "Écurie", "price": "5 pa par jour"}, {"label": "Passage en bateau, hamac", "price": "5 pa par jour"}, {"label": "Passage en bateau, cabine", "price": "2 po par jour"}, {"label": "Réparer un navire", "price": "20 po par PV", "note": "Un jour par PV ; moitié moins dans un chantier naval"}, {"label": "Barde pour une monture", "price": "4 × l'armure", "note": "Son poids doublé"}]},
+      {"key": "spellcasting", "label": "Sorts lancés contre paiement", "lines": [{"label": "Sort mineur", "price": "30 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 1", "price": "50 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 2", "price": "200 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 3", "price": "300 po", "note": "Bourg ou cité"}, {"label": "Niveaux 4 et 5", "price": "2 000 po", "note": "Bourg ou cité"}, {"label": "Niveaux 6 à 8", "price": "20 000 po", "note": "Cité seulement"}, {"label": "Niveau 9", "price": "100 000 po", "note": "Cité seulement, plus les composantes coûteuses"}]}
+    ],
     "dice_rolls": {
       "modes": [
         { "key": "advantage", "label": "Avantage", "help": "Lancez deux dés et gardez le meilleur.", "dice": 2, "keep": "highest" },
@@ -331,7 +338,7 @@
   },
   "item_fields": {
     "fields": [
-      {"key": "category", "filter": true, "label": "Catégorie", "section": "Général", "listed": true, "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Potion", "Trésor", "Objet merveilleux", "Anneau", "Baguette", "Bâton", "Sceptre", "Parchemin"]},
+      {"key": "category", "filter": true, "label": "Catégorie", "section": "Général", "listed": true, "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Monture", "Harnachement", "Véhicule", "Nourriture et boisson", "Potion", "Trésor", "Objet merveilleux", "Anneau", "Baguette", "Bâton", "Sceptre", "Parchemin"]},
       {"key": "damage", "label": "Dégâts", "section": "Arme", "shown_with": {"field": "category", "values": ["Arme"]}, "type": "text"},
       {"key": "weapon_properties", "label": "Propriétés", "section": "Arme", "shown_with": {"field": "category", "values": ["Arme"]}, "type": "text"},
       {"key": "armor_class", "label": "Classe d'armure", "section": "Protection", "shown_with": {"field": "category", "values": ["Armure", "Bouclier"]}, "type": "text"},
