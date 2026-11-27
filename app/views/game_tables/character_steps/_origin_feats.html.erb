@@ -1,28 +1,45 @@
-<%# The origin feats of the creation (decision of 27 November), at the step of the skills: the spells the origin feat
-    of the background gives (Magic Initiate of the acolyte and the sage), in the list the background fixes, sent as
-    character[feat_spells]; then the origin feat the species lets pick (the human), sent as character[species_feat]
-    (game_tables/character_steps/_species_feat). Kept by CreationStepBehaviors::ChoosesOriginFeats, checked by
-    CharacterFeatSpellsValidator (its errors above the choices) %>
+<%# The step « Dons » (decision of 27 November, its own step after the skills): the origin feat the background gives,
+    shown even with nothing to pick (Alert for the criminal), with the spells of Magic Initiate in the list it fixes
+    (sent as character[feat_spells]); then the origin feat the species lets pick (the human, sent as
+    character[species_feat], game_tables/character_steps/_species_feat). Kept by CreationStepBehaviors::ChoosesOriginFeats,
+    checked by CharacterFeatSpellsValidator, its errors at the top of the page %>
+<% feat = character.background_feat %>
 <% given = character.origin_feat_spells %>
-<% if given %>
-  <section class="<%= local_assigns[:after_sections] ? "mt-10" : "mt-2" %> min-w-0">
-    <h2 class="text-lg leading-7 font-bold text-ink"><%= given[:feat].name %></h2>
-    <p class="pt-1 text-sm text-brass">
-      <%= t("game_tables.character_steps.feat_spells.given_by_background", option: character.feat_origin("source" => CharacterFeats::BACKGROUND_SOURCE)) %>
-    </p>
-    <p class="pt-1 text-sm text-muted">
-      <%= t("game_tables.character_steps.feat_spells.background_hint", list: given[:settings]["lists"].first,
-                                                                        count: given[:settings]["cantrips"].to_i + given[:settings]["level_one"].to_i) %>
-    </p>
-    <% character.errors.full_messages_for(:feats).each do |message| %>
-      <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
-    <% end %>
-    <div class="mt-4">
-      <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: given[:settings]["lists"].first,
-                                                                 settings: given[:settings], field_name: "character[feat_spells]",
-                                                                 picks: character.origin_feat_picks,
-                                                                 known: character.feat_spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE) %>
+<div class="flex min-w-0 flex-col gap-12">
+  <% if character.errors[:feats].any? %>
+    <div>
+      <% character.errors.full_messages_for(:feats).uniq.each do |message| %>
+        <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
+      <% end %>
     </div>
-  </section>
-<% end %>
-<%= render "game_tables/character_steps/species_feat", character: character if character.feat_choice_settings %>
+  <% end %>
+  <% if feat %>
+    <section class="flex min-w-0 flex-col gap-4">
+      <div>
+        <h2 class="text-lg leading-7 font-bold text-ink"><%= t("game_tables.character_steps.origin_feats.background_title") %></h2>
+        <p class="pt-1 text-sm text-brass">
+          <%= t("game_tables.character_steps.feat_spells.given_by_background", option: character.feat_origin("source" => CharacterFeats::BACKGROUND_SOURCE)) %>
+        </p>
+      </div>
+      <div class="max-w-2xl rounded-lg border border-line bg-surface px-3 py-2.5">
+        <p class="text-sm font-semibold text-ink">
+          <%= given ? t("game_tables.character_steps.feat_cards.with_list", feat: feat.name, list: given[:settings]["lists"].first) : feat.name %>
+        </p>
+        <p class="mt-0.5 text-xs text-muted"><%= feat.description %></p>
+      </div>
+      <% if given %>
+        <p class="text-sm text-muted">
+          <%= t("game_tables.character_steps.feat_spells.background_hint", list: given[:settings]["lists"].first,
+                                                                            count: given[:settings]["cantrips"].to_i + given[:settings]["level_one"].to_i) %>
+        </p>
+        <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: given[:settings]["lists"].first,
+                                                                   settings: given[:settings], field_name: "character[feat_spells]",
+                                                                   picks: character.origin_feat_picks,
+                                                                   known: character.feat_spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE) %>
+      <% else %>
+        <p class="text-sm text-muted"><%= t("game_tables.character_steps.origin_feats.nothing_to_pick") %></p>
+      <% end %>
+    </section>
+  <% end %>
+  <%= render "game_tables/character_steps/species_feat", character: character if character.feat_choice_settings %>
+</div>

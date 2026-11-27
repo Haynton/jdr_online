@@ -19,6 +19,23 @@ module CharacterFeatOrigins
     I18n.t("game_tables.character_steps.feat_spells.known.level", level: entry["level"])
   end
 
+  # The origin feat its background gives (Alert for the criminal), nil when the table plays no origin feats
+  def background_feat
+    return unless game_table.origin_feats
+
+    key_path = [ChoiceEffects::OriginFeat::KEY, "key"]
+    key = sheet_fields.filter_map { |field| field.dig("effects", sheet[field["key"]].to_s, *key_path) }.first
+    key && feat_list.find(key)
+  end
+
+  # The origin feats of its creation, to show them: [feat, entry (what was picked for it), its source]
+  def origin_feats_taken
+    background = background_feat && [background_feat, origin_feat_picks, CharacterFeats::BACKGROUND_SOURCE]
+    species = species_feat_entry.presence
+    species &&= [feat_list.find(species["key"]), species, CharacterFeats::SPECIES_SOURCE]
+    [background, species].compact.select(&:first)
+  end
+
   # Which feat gives each skill its feats give ({ "arcana" => "Doué (Humain)" })
   def feat_skill_sources
     feat_list.taken_entries.each_with_object({}) do |entry, sources|

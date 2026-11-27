@@ -23,7 +23,8 @@
     "creation_steps": [
       { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },
-      { "key": "skills", "label": "Skills", "sections": ["Saving throws", "Skills"], "chooses_weapon_masteries": true, "chooses_class_choices": true, "chooses_origin_feats": true },
+      { "key": "skills", "label": "Skills", "sections": ["Saving throws", "Skills"], "chooses_weapon_masteries": true, "chooses_class_choices": true },
+      { "key": "feats", "label": "Feats", "sections": [], "chooses_origin_feats": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "equipment", "label": "Equipment", "sections": ["Equipment"], "chooses_equipment": true },
       { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },

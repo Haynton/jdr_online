@@ -1,7 +1,8 @@
 module CreationStepBehaviors
-  # The step asks the origin feats of the creation (decision of 27 November, at the step of the skills): the spells the
-  # origin feat of the background gives (Magic Initiate of the acolyte and the sage), and the origin feat the species
-  # lets pick (the human) with what it asks
+  # The step asks the origin feats of the creation (decision of 27 November, a step « Dons » of its own): the origin
+  # feat of the background (Magic Initiate of the acolyte and the sage, with its spells), and the origin feat the
+  # species lets pick (the human) with what it asks. Shown only when the table plays the origin feats and an option
+  # picked gives one
   class ChoosesOriginFeats < Base
     KEY = "chooses_origin_feats".freeze
 
@@ -9,8 +10,15 @@ module CreationStepBehaviors
       "game_tables/character_steps/origin_feats"
     end
 
-    # The spells show in the block of the spells of the summary
-    def summary_partial; end
+    def summary_partial
+      "character_sheets/summary/origin_feats"
+    end
+
+    def shown?(game_table, picked_effects)
+      game_table.origin_feats && picked_effects.any? do |effects|
+        effects.key?(ChoiceEffects::OriginFeat::KEY) || effects.key?(ChoiceEffects::FeatChoice::KEY)
+      end
+    end
 
     def fill(character, feat_spells: nil, species_feat: nil, **)
       character.checks_feat_spells = true

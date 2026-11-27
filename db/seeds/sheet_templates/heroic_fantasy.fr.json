@@ -23,7 +23,8 @@
     "creation_steps": [
       { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },
-      { "key": "skills", "label": "Compétences", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_weapon_masteries": true, "chooses_class_choices": true, "chooses_origin_feats": true },
+      { "key": "skills", "label": "Compétences", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_weapon_masteries": true, "chooses_class_choices": true },
+      { "key": "feats", "label": "Dons", "sections": [], "chooses_origin_feats": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "equipment", "label": "Équipement", "sections": ["Équipement"], "chooses_equipment": true },
       { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },

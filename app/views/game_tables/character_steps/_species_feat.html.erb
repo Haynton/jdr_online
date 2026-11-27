@@ -8,18 +8,13 @@
 <% skill_fields = character.sheet_fields.select do |field|
      character.skill_choices.skill_keys.include?(field["key"]) && known_skills.exclude?(field["key"])
    end %>
-<section class="mt-10 flex min-w-0 flex-col gap-6" data-controller="choice-blocks">
+<section class="flex min-w-0 flex-col gap-6" data-controller="choice-blocks">
   <div>
     <h2 class="text-lg leading-7 font-bold text-ink"><%= t("game_tables.character_steps.species_feat.title") %></h2>
     <p class="pt-1 text-sm text-brass">
       <%= t("game_tables.character_steps.feat_spells.chosen_through_species", option: character.feat_origin("source" => CharacterFeats::SPECIES_SOURCE)) %>
     </p>
     <p class="pt-1 text-sm text-muted"><%= t("game_tables.character_steps.species_feat.hint") %></p>
-    <% unless character.origin_feat_spells %>
-      <% character.errors.full_messages_for(:feats).each do |message| %>
-        <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
-      <% end %>
-    <% end %>
   </div>
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
     <% cards.each do |card| %>

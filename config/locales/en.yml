@@ -1655,10 +1655,13 @@ en:
         requires: "Requires %{option}"
       species_feat:
         hint: "Your species lets you pick an origin feat, and what it asks."
-        title: "Origin feat"
+        title: "Feat from your species"
       feat_cards:
         taken: "Already taken: %{source}"
         with_list: "%{feat}: %{list}"
+      origin_feats:
+        background_title: "Feat from your background"
+        nothing_to_pick: "Nothing to pick: this feat is already yours."
       feat_spells:
         ability: "Ability to cast them"
         background_hint:

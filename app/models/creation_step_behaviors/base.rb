@@ -18,6 +18,12 @@ module CreationStepBehaviors
       raise NotImplementedError
     end
 
+    # Whether its step has something to ask, for the table and the options picked (picked_effects: their effects); a
+    # step whose behaviors have nothing is not shown, as a step only_with_effect
+    def shown?(_game_table, _picked_effects)
+      true
+    end
+
     # On its own step: what it keeps of what was sent (spell_keys: the spells ticked)
     def fill(_character, **); end
 

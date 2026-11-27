@@ -1626,10 +1626,13 @@ fr:
         requires: "Demande %{option}"
       species_feat:
         hint: "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande."
-        title: "Don d'origine"
+        title: "Don de votre espèce"
       feat_cards:
         taken: "Déjà pris : %{source}"
         with_list: "%{feat} : %{list}"
+      origin_feats:
+        background_title: "Don de votre historique"
+        nothing_to_pick: "Rien à choisir : ce don est déjà à vous."
       feat_spells:
         ability: "Caractéristique pour les lancer"
         background_hint:
