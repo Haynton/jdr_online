@@ -7,6 +7,7 @@ import { enemyToken, npcToken, playerToken, ink, tokenLetters, allowedMark } fro
 
 const tokenRadius = cellSize * 0.4
 const hiddenTokenOpacity = 0.5
+let picturesDrawn = 0
 
 // characters: { id: { name, kind } }, from the page
 export function renderTokens(group, tokens, characters) {
@@ -35,7 +36,8 @@ export function renderBoardTokens(layer, tokens) {
   layer.replaceChildren()
   tokens.forEach((token) => {
     const tokenGroup = createSvgElement("g", { "data-board-token-id": token.id, "data-hidden": token.hidden,
-                                               "data-name": token.name, "data-custom-name": token.custom_name ?? "",
+                                               "data-name": token.name, "data-kind": token.kind,
+                                               "data-custom-name": token.custom_name ?? "",
                                                "data-character-name": token.character_name ?? "" }, layer)
     const centerX = (token.column + 0.5) * cellSize
     const centerY = (token.row + 0.5) * cellSize
@@ -64,11 +66,12 @@ export function drawHiddenMark(group, centerX, centerY) {
                              stroke: tokenLetters, "stroke-width": 0.8, "stroke-linecap": "round" }, group)
 }
 
-export function drawToken(group, centerX, centerY, { id, name, kind, picture }, number = null) {
+export function drawToken(group, centerX, centerY, { name, kind, picture }, number = null) {
   createSvgElement("circle", { cx: centerX, cy: centerY + 1, r: tokenRadius, fill: ink, opacity: 0.25 }, group)
   createSvgElement("circle", { cx: centerX, cy: centerY, r: tokenRadius, fill: tokenColorOf(kind) }, group)
   if (picture) {
-    drawPicture(group, centerX, centerY, picture, `board-token-picture-${id}`)
+    picturesDrawn += 1
+    drawPicture(group, centerX, centerY, picture, `token-picture-${picturesDrawn}`)
   } else {
     const letters = createSvgElement("text", { x: centerX, y: centerY, "text-anchor": "middle",
                                                "dominant-baseline": "central", fill: tokenLetters, "font-size": 8,

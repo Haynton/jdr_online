@@ -69,18 +69,18 @@ module BoardHelper
       "aria-pressed:border-brass aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink"
   end
 
+  def board_token_picture(character)
+    rails_blob_path(character.avatar, only_path: true) if character.pc? && character.avatar.attached?
+  end
+
   private
 
   def board_token_data(token, game_master:)
     character = token.character
     { id: token.id, name: token.displayed_name, kind: character.kind, column: token.column, row: token.row,
       number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
-      picture: board_token_picture(character), custom_name: (token.name if game_master),
-      character_name: (character.name if game_master) }
-  end
-
-  def board_token_picture(character)
-    rails_blob_path(character.avatar, only_path: true) if character.pc? && character.avatar.attached?
+      picture: board_token_picture(character), character_id: (character.id if game_master),
+      custom_name: (token.name if game_master), character_name: (character.name if game_master) }
   end
 
   def game_master_board_data(board_map)

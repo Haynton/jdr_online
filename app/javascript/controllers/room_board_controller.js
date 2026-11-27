@@ -10,7 +10,7 @@ const menuGap = 8
 export default class extends Controller {
   static targets = ["map", "tokens", "creaturePlacer", "hint", "hintName", "tokenMenu", "tokenMenuTitle",
                     "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput"]
-  static values = { hint: String, tokensUrl: String, showLabel: String, hideLabel: String }
+  static values = { hint: String, playerHint: String, tokensUrl: String, showLabel: String, hideLabel: String }
 
   mapTargetConnected() {
     this.drawTokens()
@@ -26,6 +26,7 @@ export default class extends Controller {
   tokensTargetConnected() {
     this.closeTokenMenu()
     this.drawTokens()
+    this.creaturePlacerTargets.forEach((button) => this.showCreaturePlacer(button))
   }
 
   creaturePlacerTargetConnected(button) {
@@ -54,18 +55,33 @@ export default class extends Controller {
   }
 
   showCreaturePlacer(button) {
-    button.setAttribute("aria-disabled", String(!this.hasMapTarget))
-    button.title = this.hasMapTarget ? button.dataset.placeLabel : button.dataset.needsMapLabel
+    button.title = this.placerTitle(button)
+    button.setAttribute("aria-disabled", String(button.title !== button.dataset.placeLabel))
+  }
+
+  placerTitle(button) {
+    if (!this.hasMapTarget) return button.dataset.needsMapLabel
+    if (this.playerAlreadyPlaced(button)) return button.dataset.alreadyPlacedLabel
+
+    return button.dataset.placeLabel
+  }
+
+  playerAlreadyPlaced(button) {
+    if (button.dataset.roomBoardKindParam !== "pc" || !this.hasTokensTarget) return false
+
+    const characterId = Number(button.dataset.roomBoardIdParam)
+    return this.tokensOfTheMap().some((token) => token.character_id === characterId)
   }
 
   takeCreature(event) {
-    if (!this.hasMapTarget) return
+    if (event.currentTarget.getAttribute("aria-disabled") === "true") return
     if (this.creature?.id === event.params.id) return this.dropCreature()
 
     this.closeTokenMenu()
-    this.creature = { id: event.params.id, name: event.params.name }
+    this.creature = { id: event.params.id, name: event.params.name, kind: event.params.kind }
     this.pressCreaturePlacer(event.currentTarget)
-    this.hintNameTarget.textContent = this.hintValue.replace("__NAME__", this.creature.name)
+    const hint = this.creature.kind === "pc" ? this.playerHintValue : this.hintValue
+    this.hintNameTarget.textContent = hint.replace("__NAME__", this.creature.name)
     this.hintTarget.hidden = false
     this.element.setAttribute("data-placing", "")
   }
@@ -119,7 +135,7 @@ export default class extends Controller {
     if (column < 0 || row < 0 || this.cellTaken(column, row) || this.cellBlocked(column, row)) return
 
     this.sendTokenRequest(this.tokensUrlValue, "POST", { character_id: this.creature.id, column, row })
-    if (!event.shiftKey) this.dropCreature()
+    if (!event.shiftKey || this.creature.kind === "pc") this.dropCreature()
   }
 
   cellBlocked(column, row) {
@@ -141,6 +157,7 @@ export default class extends Controller {
                        customName: token.dataset.customName, characterName: token.dataset.characterName }
     this.tokenMenuTitleTarget.textContent = token.dataset.name
     this.tokenRenameFormTarget.hidden = true
+    this.tokenRenameButtonTarget.hidden = token.dataset.kind === "pc"
     this.tokenVisibilityButtonTarget.textContent = this.menuToken.hidden ? this.showLabelValue : this.hideLabelValue
     this.placeTokenMenuBeside(token)
     this.tokenMenuTarget.hidden = false

@@ -16,6 +16,7 @@
     <div class="group/room relative h-full" data-controller="game-room-panels room-board<%= " details-dialog" unless @game_room.game_master? %>"
          data-game-room-panels-settings-open-value="<%= game_room_settings_open?(@game_room) %>"
          data-room-board-hint-value="<%= t("game_rooms.board.hint", name: "__NAME__") %>"
+         data-room-board-player-hint-value="<%= t("game_rooms.board.player_hint", name: "__NAME__") %>"
          data-room-board-tokens-url-value="<%= game_table_board_tokens_path(@game_room.game_table) %>"
          data-room-board-show-label-value="<%= t("game_rooms.board.show_token") %>"
          data-room-board-hide-label-value="<%= t("game_rooms.board.hide_token") %>"

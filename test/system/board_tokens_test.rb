@@ -82,6 +82,26 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     using_session(:player) { assert_selector "[data-board-token-id][data-name='Chef gobelin']", visible: :all }
   end
 
+  test "the game master puts a player character from its quick sheet, once; its menu has no rename" do
+    aria = @game_table.characters.find_by(name: "Aria")
+    using_session(:player) { open_room_as("joueur") }
+    open_room_as("maitre")
+
+    find("button[data-combat-strip-target=portrait][aria-label^=Aria]").click
+    within("#combat-sheet-character-#{aria.id}") { click_on "Placer sur la carte" }
+    click_board_at_cell(5, 5)
+
+    assert_selector game_master_token("[data-name=Aria][data-hidden=false]"), visible: :all
+    using_session(:player) { assert_selector "[data-board-token-id][data-name=Aria]", visible: :all }
+    assert_selector "#combat-sheet-character-#{aria.id} button[aria-disabled=true][data-room-board-kind-param=pc]",
+                    visible: :all
+    find(game_master_token("[data-name=Aria]"), visible: :all).click
+    within("[data-room-board-target=tokenMenu]") do
+      assert_button "Cacher aux joueurs"
+      assert_no_button "Renommer"
+    end
+  end
+
   test "hidden by the game master, the token of a player character stays, faded, for its own player, live" do
     aria = @game_table.characters.find_by(name: "Aria")
     @game_table.board_game_map.board_tokens.create!(character: aria, column: 2, row: 2, hidden: false)

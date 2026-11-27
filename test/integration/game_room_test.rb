@@ -332,7 +332,9 @@ class GameRoomTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
 
     assert_select "[data-action='combat-strip#askInitiative']", count: 0
-    assert_select "[data-room-board-target=creaturePlacer]", count: 1
+    assert_select "[data-room-board-target=creaturePlacer]:not([data-room-board-kind-param=pc])", count: 1
+    assert_select "section#combat-sheet-character-#{@character.id} [data-room-board-target=creaturePlacer]" \
+                  "[data-room-board-kind-param=pc][data-room-board-id-param='#{@character.id}']", count: 1
     assert_select "[data-action='fighter-card#changeHitPoints'], [data-action='fighter-card#openConditions']", count: 0
     assert_select "section[data-combat-strip-target=sheet]", count: 2
     assert_select "section#combat-sheet-character-#{@character.id} a[href=?][data-turbo-frame=character_sheet_dialog]",

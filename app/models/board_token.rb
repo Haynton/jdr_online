@@ -8,6 +8,7 @@ class BoardToken < ApplicationRecord
 
   validates :name, length: { maximum: NAME_MAX_LENGTH }
   validates :hidden, inclusion: { in: [true, false] }
+  validates :name, absence: true, if: -> { character&.pc? }
   validates :column, :row, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :cell_inside_the_grid
   validate :cell_free

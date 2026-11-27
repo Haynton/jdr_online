@@ -1,4 +1,5 @@
-<%# The tab Jetons of a map of a table: first its non-player characters and enemies (step « PNJ et ennemis »), then the
+<%# The tab Jetons of a map of a table: first the complete characters of its players (one token each: put elsewhere,
+    it moves), then its non-player characters and enemies (step « PNJ et ennemis »), then the
     whole bestiary the table offers (Anthony's decision: any creature, copied into the table when its first token is
     put), both searched by name without accents (catalog_search_controller.js; rendered hidden, shown by it: without
     JavaScript every line stays). A line: its token drawn by the editor, its name, its role or its facts. Chosen, a
@@ -8,6 +9,7 @@
 <% scope = "map_templates.token_tools" %>
 <% game_table = map_template.game_table %>
 <% characters = game_table.npcs %>
+<% player_characters = game_table.characters.pc.complete.includes(participation: :user).order(:name) %>
 <% creatures = Catalogs::TableCatalog.new(game_table).entries("monster").to_a %>
 <div data-controller="catalog-search">
   <p class="mb-3 text-xs leading-normal text-muted"><%= t("#{scope}.intro") %></p>
@@ -17,6 +19,19 @@
            class="<%= SimpleFormFieldClasses::INPUT %>"
            data-catalog-search-target="search" data-action="input->catalog-search#filter">
   </div>
+
+  <% if player_characters.any? %>
+    <section data-catalog-search-target="group" aria-labelledby="<%= prefix %>-player-tokens-title">
+      <h3 id="<%= prefix %>-player-tokens-title" class="mb-1 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t("#{scope}.players_title") %></h3>
+      <p class="mb-2 text-xs text-muted"><%= t("#{scope}.players_hint") %></p>
+      <ul class="mb-4 flex flex-col gap-1.5">
+        <% player_characters.each do |character| %>
+          <%= render "map_templates/token_tool", kind: "token", key: character.id, name: character.name,
+                                                  detail: t("#{scope}.player_detail", username: character.participation.user.username) %>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 
   <section data-catalog-search-target="group" aria-labelledby="<%= prefix %>-table-tokens-title">
     <h3 id="<%= prefix %>-table-tokens-title" class="mb-2 text-[11px] font-bold tracking-widest text-brass uppercase"><%= t("#{scope}.table_title") %></h3>

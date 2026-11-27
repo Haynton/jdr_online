@@ -121,6 +121,7 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert second.errors.of_kind?(:character, :already_on_the_map)
     assert_equal [false], @tavern.board_tokens.reload.map(&:hidden)
     assert BoardToken.hidden_at_first?(@goblin)
+    assert_not @tavern.board_tokens.first.update(name: "Aria la brave")
   end
 
   test "the tokens go with their map and with their character" do
