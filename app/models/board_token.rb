@@ -48,6 +48,23 @@ class BoardToken < ApplicationRecord
     name || character.name
   end
 
+  # The game master moves any token; a player the token of their own character, and those of its companions
+  def movable_by?(participation)
+    return true if participation.game_master?
+
+    own_character = participation.character
+    return false unless own_character&.complete?
+
+    character_id == own_character.id || (character.companion? && character.owner_character_id == own_character.id)
+  end
+
+  # A player's token goes only where a way leads, step by step, without crossing a wall nor a blocked cell
+  # (MapPassage#path_cost); the game master's go anywhere
+  def reachable_by_a_player?(column, row)
+    passage = game_map.passage
+    passage.nil? || !passage.path_cost([self.column, self.row], [column, row]).nil?
+  end
+
   private
 
   def take_placement
