@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_235000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,14 +48,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_230000) do
     t.integer "column", null: false
     t.integer "row", null: false
     t.boolean "hidden", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "placement", default: 0, null: false
     t.integer "number"
     t.string "name", limit: 60
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["character_id"], name: "index_board_tokens_on_character_id"
     t.index ["game_map_id", "column", "row"], name: "index_board_tokens_on_cell", unique: true
-    t.index ["game_map_id"], name: "index_board_tokens_on_game_map_id"
     t.check_constraint "\"column\" >= 0 AND \"row\" >= 0", name: "board_tokens_cell_check"
   end
 
@@ -226,7 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_230000) do
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying::text, 'player'::character varying::text])", name: "participations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
     t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 
