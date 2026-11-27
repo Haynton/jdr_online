@@ -4,43 +4,23 @@
 # improvement, the grappler, the epic boons: ability_increase), skills (skilled: skill_picks). Part of LevelUp
 module LevelUpFeat
   extend ActiveSupport::Concern
+  include LevelUpFeatSpells
 
   DEFAULT_FEAT = "ability-score-improvement".freeze
 
   included do
+    # The card picked: the key of the feat, and its list after a ~ for a feat that gives spells
+    # (CharacterSheets::FeatCards)
     attr_accessor :feat_key
-    attr_reader :ability_increases, :feat_skill_keys, :feat_spell_picks
+    attr_reader :ability_increases, :feat_skill_keys
 
     validate :feat_offered, if: :feat_level?
     validate :ability_increases_allowed, if: -> { feat_level? && increase_settings }
     validate :feat_skills_picked, if: -> { feat_level? && feat_skill_count.positive? }
-    validate :feat_spells_picked, if: -> { feat_level? && spell_settings }
   end
 
   def ability_increases=(increases)
     @ability_increases = increases.to_h.transform_values(&:to_i).select { |_key, points| points.positive? }
-  end
-
-  # The spells picked for a feat that gives some (Magic Initiate): its list, and what was picked in that list only
-  # (the blocks of the other lists, sent without JavaScript, are left out)
-  def feat_spells=(picks)
-    @feat_spell_picks = CharacterSheets::FeatSpells.picks_from(picks)
-  end
-
-  # What a feat gives to pick in spells ({ "lists", "cantrips", "level_one", "abilities" }), only the lists no feat it
-  # took has, nil for none
-  def spell_settings(for_feat = feat)
-    settings = for_feat&.effects&.dig("spell_picks")
-    settings && character.feat_spells.open_settings(settings, source: feat_source)
-  end
-
-  # The spells it knows already, never picked again for the feat ({ key => where it comes from })
-  def known_spells
-    @known_spells ||= character.feat_spells.known_elsewhere(except: feat_source)
-  end
-
-  def feat_source
-    CharacterSheets::FeatSpells.source_of("level" => level)
   end
 
   def feat_skill_keys=(keys)
@@ -61,7 +41,8 @@ module LevelUpFeat
   end
 
   def feat(key = feat_key)
-    offered_feats.find { |candidate| candidate.key == key }
+    base_key = CharacterSheets::FeatCards.split(key).first
+    offered_feats.find { |candidate| candidate.key == base_key }
   end
 
   # What a feat lets share on the abilities ({ "points" => 2, "max_per_ability" => 2, "maximum" => 20 }), nil for none
@@ -132,11 +113,6 @@ module LevelUpFeat
 
   def raised_score(field)
     score_of(field).to_i + ability_increases[field["key"]].to_i
-  end
-
-  def feat_spells_picked
-    errors_found = character.feat_spells.errors_for(feat_spell_picks.to_h, spell_settings, known: known_spells)
-    errors_found.each { |error| errors.add(:feat_spells, error) }
   end
 
   def feat_skills_picked

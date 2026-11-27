@@ -1627,6 +1627,9 @@ fr:
       species_feat:
         hint: "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande."
         title: "Don d'origine"
+      feat_cards:
+        taken: "Déjà pris : %{source}"
+        with_list: "%{feat} : %{list}"
       feat_spells:
         ability: "Caractéristique pour les lancer"
         background_hint:
@@ -1646,8 +1649,6 @@ fr:
         list_hint:
           one: "Votre sort vient d'une liste, fixée pour toujours : vous pourrez le changer à chaque niveau gagné."
           other: "Vos %{count} sorts viennent d'une même liste, fixée pour toujours : vous pourrez en changer un à chaque niveau gagné."
-        list_question: "De quelle classe viennent ces sorts ?"
-        lists_taken: "Vous avez déjà ce don avec la liste %{lists} : celui-ci en prend une autre."
         spell:
           one: "Sort de niveau 1 (1)"
           other: "Sorts de niveau 1 (%{count})"

@@ -1,7 +1,9 @@
-<%# The origin feat the species lets pick (decision of 27 November: the human), each a card with its summary, then what
-    the one picked asks, prepared for each and shown as soon as it is picked (choice_blocks_controller.js): the skills
-    of Skilled, the spell list and the spells of Magic Initiate %>
+<%# The origin feat the species lets pick (decision of 27 November: the human), each a card with its summary, a feat that
+    gives spells one card per list (CharacterSheets::FeatCards), then what the one picked asks, prepared for each and
+    shown as soon as it is picked (choice_blocks_controller.js): the skills of Skilled, the spells of Magic Initiate %>
 <% entry = character.species_feat_entry %>
+<% cards = CharacterSheets::FeatCards.new(character, source: CharacterFeats::SPECIES_SOURCE).cards(character.species_feat_offers) %>
+<% picked_value = CharacterSheets::FeatCards.value_of(entry["key"], entry["spell_list"]) %>
 <% known_skills = character.skill_choices.granted_keys - Array(entry["skills"]) %>
 <% skill_fields = character.sheet_fields.select do |field|
      character.skill_choices.skill_keys.include?(field["key"]) && known_skills.exclude?(field["key"])
@@ -20,24 +22,17 @@
     <% end %>
   </div>
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-    <% character.species_feat_offers.each do |feat| %>
-      <label class="<%= weapon_mastery_card_classes %>">
-        <%= radio_button_tag "character[species_feat][key]", feat.key, entry["key"] == feat.key, id: "species-feat-#{feat.key}",
-                             class: "mt-1 shrink-0 accent-current", data: { choice_blocks_target: "choice", action: "choice-blocks#show" } %>
-        <span class="min-w-0">
-          <span class="block text-sm font-semibold text-ink"><%= feat.name %></span>
-          <span class="mt-0.5 block text-xs text-muted"><%= feat.description %></span>
-        </span>
-      </label>
+    <% cards.each do |card| %>
+      <%= render "game_tables/character_steps/feat_card", card: card, field_name: "character[species_feat][key]",
+                                                          checked: picked_value == card.value, id_prefix: "species-feat" %>
     <% end %>
   </div>
-  <% character.species_feat_offers.each do |feat| %>
-    <% skills = feat.effects.dig("skill_picks", "count").to_i %>
-    <% raw_spells = feat.effects["spell_picks"] %>
-    <% spells = raw_spells && character.feat_spells.open_settings(raw_spells, source: CharacterFeats::SPECIES_SOURCE) %>
-    <% next unless skills.positive? || spells %>
-    <% picked = entry["key"] == feat.key ? entry : {} %>
-    <%= tag.div class: "flex flex-col gap-6", hidden: entry["key"] != feat.key, data: { choice_blocks_target: "block", choice_value: feat.key } do %>
+  <% cards.reject(&:taken?).each do |card| %>
+    <% skills = card.feat.effects.dig("skill_picks", "count").to_i %>
+    <% spells = card.feat.effects["spell_picks"] %>
+    <% next unless skills.positive? || card.list %>
+    <% picked = picked_value == card.value ? entry : {} %>
+    <%= tag.div class: "flex flex-col gap-6", hidden: picked_value != card.value, data: { choice_blocks_target: "block", choice_value: card.value } do %>
       <% if skills.positive? %>
         <fieldset class="min-w-0">
           <legend class="text-sm font-semibold text-ink"><%= t("game_tables.level_ups.feat.skills", count: skills) %></legend>
@@ -55,20 +50,14 @@
           </ul>
         </fieldset>
       <% end %>
-      <% if spells %>
-        <div class="flex flex-col gap-6" data-controller="choice-blocks">
-          <%= render "game_tables/character_steps/feat_spell_list_choice", settings: spells, all_lists: raw_spells["lists"],
-                                                                           field_name: "character[species_feat][feat_spells][spell_list]",
-                                                                           picked: picked["spell_list"] %>
-          <% Array(spells["lists"]).each do |list| %>
-            <%= tag.div hidden: picked["spell_list"] != list, data: { choice_blocks_target: "block", choice_value: list } do %>
-              <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: list, settings: spells,
-                                                                         field_name: "character[species_feat][feat_spells][by_list][#{list}]",
-                                                                         picks: picked["spell_list"] == list ? picked : {},
-                                                                         known: character.feat_spells.known_elsewhere(except: CharacterFeats::SPECIES_SOURCE) %>
-            <% end %>
-          <% end %>
-        </div>
+      <% if card.list %>
+        <p class="text-sm text-muted">
+          <%= t("game_tables.character_steps.feat_spells.list_hint", count: spells["cantrips"].to_i + spells["level_one"].to_i) %>
+        </p>
+        <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: card.list, settings: spells,
+                                                                   field_name: "character[species_feat][feat_spells][by_list][#{card.list}]",
+                                                                   picks: picked,
+                                                                   known: character.feat_spells.known_elsewhere(except: CharacterFeats::SPECIES_SOURCE) %>
       <% end %>
     <% end %>
   <% end %>

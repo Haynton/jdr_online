@@ -122,13 +122,17 @@ module CharacterFeats
 
   private
 
+  # The card picked names the feat and its list (CharacterSheets::FeatCards: « magic-initiate~Druide »)
   def species_entry(params)
-    feat = feat_choice_settings && feat_list.find(params["key"].presence)
+    key, list = CharacterSheets::FeatCards.split(params["key"])
+    feat = feat_choice_settings && feat_list.find(key)
     return unless feat
 
     entry = { "key" => feat.key, "source" => SPECIES_SOURCE }
     entry["skills"] = Array(params["skills"]).compact_blank.uniq if feat.effects["skill_picks"]
-    feat.effects["spell_picks"] ? entry.merge(CharacterSheets::FeatSpells.picks_from(params["feat_spells"])) : entry
+    return entry unless feat.effects["spell_picks"]
+
+    entry.merge(CharacterSheets::FeatSpells.picks_from(params["feat_spells"], list: list))
   end
 
   def tick_skills(keys)

@@ -1656,6 +1656,9 @@ en:
       species_feat:
         hint: "Your species lets you pick an origin feat, and what it asks."
         title: "Origin feat"
+      feat_cards:
+        taken: "Already taken: %{source}"
+        with_list: "%{feat}: %{list}"
       feat_spells:
         ability: "Ability to cast them"
         background_hint:
@@ -1675,8 +1678,6 @@ en:
         list_hint:
           one: "Your spell comes from one list, set for good: you may change it at each level gained."
           other: "Your %{count} spells come from one list, set for good: you may change one at each level gained."
-        list_question: "Which class do these spells come from?"
-        lists_taken: "You already have this feat with the %{lists} list: this one takes another."
         spell:
           one: "Level 1 spell (1)"
           other: "Level 1 spells (%{count})"

@@ -17,11 +17,12 @@ module CharacterSheets
       entry["source"] || "level-#{entry['level']}"
     end
 
-    # What a form sent for a feat that gives spells: its list, and what was picked in that list only (the blocks of the
-    # other lists, sent without JavaScript, are left out)
-    def self.picks_from(params)
+    # What a form sent for a feat that gives spells: its list (the one of the card picked, CharacterSheets::FeatCards,
+    # or sent apart), and what was picked in that list only (the blocks of the other lists, sent without JavaScript,
+    # are left out)
+    def self.picks_from(params, list: nil)
       params = params.to_h.stringify_keys
-      list = params["spell_list"]
+      list ||= params["spell_list"]
       chosen = params.dig("by_list", list).to_h.stringify_keys.slice("spell_ability", "cantrips", "spell")
       chosen.merge("spell_list" => list).compact_blank
     end
@@ -46,6 +47,17 @@ module CharacterSheets
       lists = other_entries(except).filter_map { |entry| entry["spell_list"] }
       background = except == CharacterFeats::BACKGROUND_SOURCE ? nil : @character.origin_feat_spells
       (lists + Array(background&.dig(:settings, "lists"))).uniq
+    end
+
+    # What took that list already, but the feat of that source (« Initié à la magie (Acolyte) »), nil when free
+    def list_taken_by(list, except: nil)
+      entry = other_entries(except).find { |taken| taken["spell_list"] == list }
+      return @character.feat_entry_label(entry) if entry
+
+      background = except == CharacterFeats::BACKGROUND_SOURCE ? nil : @character.origin_feat_spells
+      return unless background && Array(background[:settings]["lists"]).include?(list)
+
+      @character.feat_entry_label("key" => background[:feat].key, "source" => CharacterFeats::BACKGROUND_SOURCE)
     end
 
     # The spells it knows besides those of that source, with where they come from ({ "guidance" => "Initié à la

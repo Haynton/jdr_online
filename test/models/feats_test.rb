@@ -166,6 +166,21 @@ class FeatsTest < ActiveSupport::TestCase
     assert_not character.given_locked?("intimidation")
   end
 
+  test "Magic Initiate is one card per list, the list taken greyed, and the card picked gives its list" do
+    acolyte = build_character("class" => "Guerrier", "background" => "Acolyte", "species" => "Humain",
+                              "feats" => [{ "key" => "magic-initiate", "source" => "background", "spell_list" => "Clerc" }])
+    cards = CharacterSheets::FeatCards.new(acolyte, source: "species").cards([acolyte.feat_list.find("magic-initiate")])
+    names = I18n.with_locale(:fr) { cards.map(&:name) }
+    assert_equal ["Initié à la magie : Clerc", "Initié à la magie : Druide", "Initié à la magie : Magicien"], names
+    assert_equal [true, false, false], cards.map(&:taken?)
+    assert_equal "Nature, soins, bêtes et éléments.", cards.second.list_description
+
+    acolyte.choose_species_feat({ "key" => "magic-initiate~Druide", "feat_spells" => {
+      "by_list" => { "Druide" => { "spell_ability" => "wisdom", "cantrips" => %w[druidcraft produce-flame], "spell" => "cure-wounds" } }
+    } })
+    assert_equal "Druide", acolyte.species_feat_entry["spell_list"]
+  end
+
   private
 
   def build_character(values)
