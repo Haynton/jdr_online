@@ -31,6 +31,8 @@ class MagicItemsTest < ActiveSupport::TestCase
     sword = InventoryItem.from_entry(catalog.find_by!(key: "longsword"), quantity: 1,
                                      enchantment: catalog.find_by!(key: "weapon-plus-1"))
     assert_equal ["Épée longue +1", 1], [sword.name, sword.properties["magic_bonus"]]
+    # The weight of the longsword, its 15 GP plus the 400 GP of an uncommon magic item (SRD 5.2.1)
+    assert_equal [1.5, 415], sword.properties.values_at("weight", "value")
     tongue = InventoryItem.from_entry(catalog.find_by!(key: "longsword"), quantity: 1,
                                       enchantment: catalog.find_by!(key: "flame-tongue"))
     assert_equal ["Épée longue, Langue de feu", true], [tongue.name, tongue.requires_attunement?]
