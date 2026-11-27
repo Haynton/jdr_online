@@ -96,6 +96,7 @@ fr:
         name: "Nom du personnage"
         owner_character: "Personnage"
         spells: "Sorts"
+        starting_magic_items: "Objets magiques de départ"
       game_table:
         board_game_map: "Carte du plateau"
         cover_image: "Couverture"
@@ -105,6 +106,7 @@ fr:
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
         starting_equipment_method_choice: "Équipement de départ"
+        higher_level_equipment_method_choice: "Équipement aux niveaux supérieurs"
         ability_rerolls: "Relancer les dés des caractéristiques"
         ability_scores_typed: "Scores des caractéristiques tapés à la main"
         level_feats: "Dons aux niveaux supérieurs"
@@ -209,11 +211,14 @@ fr:
               too_many:
                 one: "« %{group} » : %{count} au plus"
                 other: "« %{group} » : %{count} au plus"
+            starting_magic_items:
+              not_picked: "demandent l'objet de rareté « %{rarity} »"
             feats:
               cantrips: "comptent des sorts mineurs à revoir : choisissez-en autant que le don en donne, dans sa liste"
               skills:
                 one: "demandent 1 compétence du don"
                 other: "demandent %{count} compétences du don"
+              level_feat: "du niveau %{level} : %{detail}"
               species_feat: "demandent un don d'origine de la liste"
               spell: "demandent un sort de niveau 1 de la liste du don"
               spell_ability: "demandent la caractéristique pour lancer les sorts du don"
@@ -271,6 +276,7 @@ fr:
           invalid_ability_method_dice: "La méthode « %{method} » : les dés (dice, sides, keep_highest) doivent être des nombres entiers positifs, sans garder plus de dés que lancés"
           invalid_rule_method_label: "La méthode « %{method} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_point_buy: "La méthode « %{method} » : les points doivent être un nombre entier positif, et chaque score un coût entier"
+          invalid_equipment_tiers: "La façon « %{method} » : il faut des paliers, chacun à partir d'un niveau plus haut que le précédent, avec de l'or, un lancer (dés, faces, multiplicateur) et des objets magiques par rareté en nombres entiers positifs"
           invalid_standard_array: "La méthode « %{method} » : il faut une valeur par caractéristique (%{count} en tout), des nombres entiers positifs"
           missing_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est obligatoire"
           unknown_rule_method: "La méthode « %{type} » (%{rule}) est inconnue"
@@ -1201,6 +1207,7 @@ fr:
         ability_methods: "des caractéristiques"
         hit_point_methods: "des points de vie"
         starting_equipment_methods: "de l'équipement de départ"
+        higher_level_equipment_methods: "de l'équipement aux niveaux supérieurs"
       field_types:
         ability: "caractéristique"
         ability_bonuses: "bonus de caractéristiques"
@@ -1714,6 +1721,8 @@ fr:
         with_list: "%{feat} : %{list}"
       origin_feats:
         background_title: "Don de votre historique"
+        level_hint: "Votre personnage commence au niveau %{level} : il prend les dons des niveaux que sa classe améliore, comme s'il les avait gagnés."
+        level_title: "Don du niveau %{level}"
         nothing_to_pick: "Rien à choisir : ce don est déjà à vous."
       feat_spells:
         ability: "Caractéristique pour les lancer"
@@ -1745,6 +1754,15 @@ fr:
         style: "Style de combat"
         style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
+      magic_item_choices:
+        enchantment_hint: "Une arme ou une armure magique se pose sur un objet de votre équipement de départ : changez d'équipement plus haut, puis enregistrez, pour en voir d'autres."
+        gold: "+ %{amount} pièces d'or et %{roll}, lancées quand vous terminez votre personnage."
+        gold_fixed: "+ %{amount} pièces d'or."
+        gold_roll: "%{dice}d%{sides} × %{multiplier} pièces d'or"
+        gold_rolled_only: "+ %{roll}, lancées quand vous terminez votre personnage."
+        hint: "Votre personnage commence au niveau %{level} : il reçoit en plus de l'or et des objets magiques."
+        numbered_place: "%{rarity} %{number}"
+        title: "Objets magiques de départ"
       equipment_choices:
         armor_class: "CA %{value}"
         choose_prompt: "Choisir…"
@@ -2050,6 +2068,7 @@ fr:
         game: "Partie"
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
+        higher_level_equipment_method_choice_hint: "Ce qu'un personnage créé au-dessus du niveau 1 reçoit en plus : de l'or (une part lancée à la fin de la création) et des objets magiques à choisir, selon son niveau."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
         ability_rerolls_hint: "Avec le lancer de dés, le joueur peut relancer autant qu'il veut. Éteint : un seul lancer, gardé."
         ability_scores_typed_hint: "Avec le lancer de dés, le joueur peut taper ses scores (de vrais dés à la table). Éteint : seulement les résultats lancés ici."

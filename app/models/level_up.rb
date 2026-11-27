@@ -34,6 +34,15 @@ class LevelUp
     self.feat_key ||= default_feat_key if feat_level?
   end
 
+  # The names of its fields in the window, and the start of their ids (CreationFeat has its own, on the step « Dons »)
+  def form_name
+    "level_up"
+  end
+
+  def dom_prefix
+    "level_up"
+  end
+
   def expertise_keys=(keys)
     @expertise_keys = Array(keys).compact_blank.uniq
   end

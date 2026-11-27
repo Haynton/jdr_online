@@ -1,6 +1,7 @@
 <%# The starting equipment on the summary sheet: the items of the options chosen, how many, then the gold
     (CharacterSheets::StartingEquipment). Once complete, what the character carries instead: its inventory. Then the
-    attacks of its weapons (summary/_weapon_attacks) %>
+    attacks of its weapons (summary/_weapon_attacks). Above level 1, the magic items picked and the gold more
+    (CharacterHigherLevelEquipment) %>
 <% if character.complete? %>
   <%= render "character_sheets/summary/inventory", character: character, step: step %>
 <% else %>
@@ -13,6 +14,18 @@
       <li><%= equipment_item_text(item) %></li>
     <% end %>
     <li class="font-medium text-brass"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold", count: starting_equipment.gold) %></li>
+  </ul>
+<% end %>
+<% tier = character.higher_level_equipment_tier %>
+<% if tier %>
+  <h3 class="mt-5 text-sm font-semibold text-ink"><%= t("#{CharacterSheets::MagicItemChoicesHelper::SCOPE}.title") %></h3>
+  <ul class="mt-2 grid gap-x-6 gap-y-1 text-sm text-ink sm:grid-cols-2">
+    <% starting_magic_item_names(character).each do |name| %>
+      <li><%= name %></li>
+    <% end %>
+    <% if (gold_text = higher_level_gold_text(tier)) %>
+      <li class="font-medium text-brass sm:col-span-2"><%= gold_text %></li>
+    <% end %>
   </ul>
 <% end %>
 <% end %>
