@@ -17,12 +17,14 @@ module CharacterSheets
     # A value still to roll: a "?" in a dashed diamond, not a button
     WAITING_TOKEN_CLASSES = "pointer-events-none text-muted before:border-dashed".freeze
 
-    # The score in a round astride the foot of its card: placed (read only), or typed (point buy, a roll the table
-    # lets the player type): then a "−" and a "+" beside it (number_stepper_controller.js). "?" while empty
+    # The score in a round astride the foot of its card: placed or set by + and − (read only), or typed (a roll the
+    # table lets the player type). "?" while empty. Read only, it lets a click through to its card (the card receives
+    # the token), and shows its outline to the keyboard only
     SCORE_ROUND_CLASSES = %w[
       size-10 rounded-full border border-line bg-surface p-0 text-center text-base font-extrabold text-ink
       tabular-nums placeholder:font-medium placeholder:text-muted placeholder-shown:border-dashed
-      placeholder-shown:border-field-line read-only:cursor-default focus:outline-2 focus:outline-focus-ring
+      placeholder-shown:border-field-line read-only:pointer-events-none focus-visible:outline-2
+      focus-visible:outline-focus-ring
       group-data-ready/card:border-brass group-data-ready/card:ring-4 group-data-ready/card:ring-brass/20
       [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none
       [&::-webkit-outer-spin-button]:appearance-none

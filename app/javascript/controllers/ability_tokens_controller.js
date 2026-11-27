@@ -47,9 +47,9 @@ export default class extends Controller {
     this.refresh()
   }
 
-  // The card touched receives the token held
-  place({ currentTarget: button }) {
-    const card = button.closest("[data-ability-tokens-target='card']")
+  // The card touched (its button, or its round) receives the token held
+  place({ currentTarget: touched }) {
+    const card = touched.closest("[data-ability-tokens-target='card']")
     if (!this.held || !this.mayReceive(card)) return
 
     // A "+" or a "−" stays in hand: the player touches every card to change

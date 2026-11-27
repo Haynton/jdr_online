@@ -24,7 +24,8 @@
       <output data-character-sheet-target="modifier" data-ability="<%= field["key"] %>"><%= format_bonus(modifier) || "—" %></output>
     </p>
     <%= label_tag sheet_field_id(field), field["label"], class: "text-xs text-muted" %>
-    <div class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2">
+    <%# The round sticks out of the card: a token held is placed from it too %>
+    <div class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2" data-action="click->ability-tokens#place">
       <%= ability_card_score_input(character, field) %>
     </div>
   </div>
