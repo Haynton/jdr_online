@@ -34,6 +34,11 @@ fr:
               not_picked:
                 one: "Choisissez 1 compétence."
                 other: "Choisissez %{count} compétences."
+            feat_spells:
+              cantrips: "Choisissez les sorts mineurs du don, dans sa liste."
+              spell: "Choisissez le sort de niveau 1 du don, dans sa liste."
+              spell_ability: "Choisissez la caractéristique pour lancer ces sorts."
+              spell_list: "Choisissez une liste de sorts."
             expertise_keys:
               not_picked:
                 one: "Choisissez 1 compétence."
@@ -73,6 +78,7 @@ fr:
         name: "Nom"
       character:
         class_choices: "Choix de classe"
+        feats: "Don"
         fighting_style: "Style de combat"
         weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
@@ -173,6 +179,15 @@ fr:
               too_many:
                 one: "« %{group} » : %{count} au plus"
                 other: "« %{group} » : %{count} au plus"
+            feats:
+              cantrips: "comptent des sorts mineurs à revoir : choisissez-en autant que le don en donne, dans sa liste"
+              skills:
+                one: "demandent 1 compétence du don"
+                other: "demandent %{count} compétences du don"
+              species_feat: "demandent un don d'origine de la liste"
+              spell: "demandent un sort de niveau 1 de la liste du don"
+              spell_ability: "demandent la caractéristique pour lancer les sorts du don"
+              spell_list: "demandent une liste de sorts du don"
             fighting_style:
               not_offered: "n'est pas proposé par votre classe à ce niveau"
             weapon_masteries:
@@ -1525,6 +1540,7 @@ fr:
       feat:
         title: "Don"
         rule: "Prenez l'amélioration de caractéristique, ou un autre don dont vous remplissez les conditions."
+        spell_list: "Liste de sorts"
         skills:
           one: "Choisissez 1 compétence que vous ne maîtrisez pas encore."
           other: "Choisissez %{count} compétences que vous ne maîtrisez pas encore."
@@ -1583,6 +1599,18 @@ fr:
           other: "Choisissez-en %{count}."
         min_level: "Niveau %{level}"
         requires: "Demande %{option}"
+      species_feat:
+        hint: "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande."
+        title: "Don d'origine"
+      feat_spells:
+        ability: "Caractéristique pour les lancer"
+        cantrips:
+          one: "Sort mineur (1)"
+          other: "Sorts mineurs (%{count})"
+        hint: "Votre don d'origine vous donne des sorts de la liste « %{list} » : choisissez-les, et la caractéristique pour les lancer."
+        spell:
+          one: "Sort de niveau 1 (1)"
+          other: "Sorts de niveau 1 (%{count})"
       weapon_mastery_choices:
         masteries: "Maîtrises d'armes"
         masteries_hint:

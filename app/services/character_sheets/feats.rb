@@ -26,10 +26,12 @@ module CharacterSheets
     end
 
     # The feats it may take at that level (epic: the epic boons too; categories: only those, an origin feat for the
-    # human): their level reached, their needs met, not taken yet unless they may be taken again
-    def offered(level:, epic: false, categories: nil)
+    # human): their level reached, their needs met, not taken yet unless they may be taken again (ignoring: the feat
+    # taken from that source, which is being picked again)
+    def offered(level:, epic: false, categories: nil, ignoring: nil)
       allowed = categories || (COMMON_CATEGORIES + (epic ? [EPIC_CATEGORY] : []))
-      declared.select { |feat| allowed.include?(feat.category) && available?(feat, level) }
+      taken = origin_feat_keys + taken_entries.reject { |entry| ignoring && entry["source"] == ignoring }.pluck("key")
+      declared.select { |feat| allowed.include?(feat.category) && available?(feat, level, taken) }
     end
 
     # The keys of every feat it has: the origin feat of its background, then those it took
@@ -39,6 +41,11 @@ module CharacterSheets
 
     def taken_entries
       Array(@character.feats)
+    end
+
+    # The skills its feats gave (Skilled): they count in none of the skills to pick of its class
+    def skill_keys
+      taken_entries.flat_map { |entry| Array(entry["skills"]) }.uniq
     end
 
     # The points its feats add to the abilities, by ability (kept apart from the score typed)
@@ -71,9 +78,9 @@ module CharacterSheets
                effects: feat["effects"].to_h)
     end
 
-    def available?(feat, level)
+    def available?(feat, level, taken)
       feat.min_level <= level && ability_minimum_met?(feat.ability_minimum) && need_met?(feat.needs_effect) &&
-        (feat.repeatable || taken_keys.exclude?(feat.key))
+        (feat.repeatable || taken.exclude?(feat.key))
     end
 
     def ability_minimum_met?(minimum)

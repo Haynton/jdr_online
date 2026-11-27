@@ -62,11 +62,11 @@ module CharacterSheets
     # when the class changes (a spell of the class before goes). Those always prepared are copied again, from the
     # options picked now
     def keep_offered(chosen_spells)
-      chosen_spells.reject { |spell| spell["always_prepared"] }
+      chosen_spells.reject { |spell| spell["always_prepared"] || spell[CharacterSheets::FeatSpells::MARK] }
                    .select { |spell| group_of(spell["key"]) }
                    .group_by { |spell| group_of(spell["key"]) }
                    .flat_map { |group, spells_of_group| spells_of_group.first(group.allowed_count) } +
-        always_prepared.copies
+        always_prepared.copies + chosen_spells.select { |spell| spell[CharacterSheets::FeatSpells::MARK] }
     end
 
     # What a character keeps of a spell: a copy, which the catalog changing never changes (decision)

@@ -63,6 +63,11 @@ en:
               not_picked:
                 one: "Choose 1 skill."
                 other: "Choose %{count} skills."
+            feat_spells:
+              cantrips: "Pick the cantrips of the feat, in its list."
+              spell: "Pick the level 1 spell of the feat, in its list."
+              spell_ability: "Pick the ability to cast these spells."
+              spell_list: "Pick a spell list."
             expertise_keys:
               not_picked:
                 one: "Choose 1 skill."
@@ -102,6 +107,7 @@ en:
         name: "Name"
       character:
         class_choices: "Class choices"
+        feats: "Feat"
         fighting_style: "Fighting style"
         weapon_masteries: "Weapon masteries"
         name: "Character name"
@@ -202,6 +208,15 @@ en:
               too_many:
                 one: "“%{group}”: %{count} at most"
                 other: "“%{group}”: %{count} at most"
+            feats:
+              cantrips: "include cantrips to review: pick as many as the feat gives, in its list"
+              skills:
+                one: "ask 1 skill of the feat"
+                other: "ask %{count} skills of the feat"
+              species_feat: "ask an origin feat of the list"
+              spell: "ask a level 1 spell of the list of the feat"
+              spell_ability: "ask the ability to cast the spells of the feat"
+              spell_list: "ask a spell list of the feat"
             fighting_style:
               not_offered: "is not offered by your class at this level"
             weapon_masteries:
@@ -1554,6 +1569,7 @@ en:
       feat:
         title: "Feat"
         rule: "Take the Ability Score Improvement, or another feat you qualify for."
+        spell_list: "Spell list"
         skills:
           one: "Pick 1 skill you are not proficient in yet."
           other: "Pick %{count} skills you are not proficient in yet."
@@ -1612,6 +1628,18 @@ en:
           other: "Pick %{count}."
         min_level: "Level %{level}"
         requires: "Requires %{option}"
+      species_feat:
+        hint: "Your species lets you pick an origin feat, and what it asks."
+        title: "Origin feat"
+      feat_spells:
+        ability: "Ability to cast them"
+        cantrips:
+          one: "Cantrip (1)"
+          other: "Cantrips (%{count})"
+        hint: "Your origin feat gives you spells of the “%{list}” list: pick them, and the ability to cast them."
+        spell:
+          one: "Level 1 spell (1)"
+          other: "Level 1 spells (%{count})"
       weapon_mastery_choices:
         masteries: "Weapon masteries"
         masteries_hint:

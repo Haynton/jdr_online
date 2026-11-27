@@ -66,7 +66,9 @@ module CharacterSheets
     # The feats taken (beside the origin feat of the background, shown with it), by their category (« Don général »)
     def feat_groups
       feats = @character.feat_list
-      taken = feats.taken_entries.filter_map { |entry| feats.find(entry["key"]) }
+      # The spells of the origin feat of the background are kept with it, the feat itself shows with the background
+      entries = feats.taken_entries.reject { |entry| entry["source"] == CharacterFeats::BACKGROUND_SOURCE }
+      taken = entries.filter_map { |entry| feats.find(entry["key"]) }
       taken.group_by { |feat| feats.category_label(feat) }.map do |label, category_feats|
         features = category_feats.map do |feat|
           Feature.new(key: feat.key, level: 1, name: feat.name, description: feat.description, kind: :feat_taken)

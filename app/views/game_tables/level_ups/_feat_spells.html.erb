@@ -1,0 +1,27 @@
+<%# The spells a feat gives at a level gained (Magic Initiate): its list to pick, then the spells of that list,
+    prepared for each list and shown as soon as it is picked (a nested choice_blocks_controller.js); sent as
+    level_up[feat_spells][spell_list] and level_up[feat_spells][by_list][<list>] (LevelUpFeat keeps the list picked) %>
+<% settings = level_up.spell_settings(feat) %>
+<% picks = level_up.feat_key == feat.key ? level_up.feat_spell_picks.to_h : {} %>
+<div class="flex flex-col gap-6" data-controller="choice-blocks">
+  <fieldset class="min-w-0" aria-describedby="level_up_feat_spells_error">
+    <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.feat.spell_list") %></legend>
+    <div class="mt-2 inline-flex flex-wrap gap-1 rounded-lg bg-field p-1">
+      <% Array(settings["lists"]).each do |list| %>
+        <label class="<%= LevelUpsHelper::CHOICE_CLASSES %>">
+          <%= radio_button_tag "level_up[feat_spells][spell_list]", list, picks["spell_list"] == list, id: nil, class: "sr-only",
+                               data: { choice_blocks_target: "choice", action: "choice-blocks#show" } %>
+          <%= list %>
+        </label>
+      <% end %>
+    </div>
+    <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :feat_spells %>
+  </fieldset>
+  <% Array(settings["lists"]).each do |list| %>
+    <%= tag.div hidden: picks["spell_list"] != list, data: { choice_blocks_target: "block", choice_value: list } do %>
+      <%= render "game_tables/character_steps/feat_spell_picks", character: level_up.character, list: list, settings: settings,
+                                                                 field_name: "level_up[feat_spells][by_list][#{list}]",
+                                                                 picks: picks["spell_list"] == list ? picks : {} %>
+    <% end %>
+  <% end %>
+</div>

@@ -132,13 +132,13 @@ class Character < ApplicationRecord
   end
 
   # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options
-  # always prepare. A key not offered stays as a bare key, refused by CharacterSpellsValidator
+  # always prepare and its feats give. A key not offered stays as a bare key, refused by CharacterSpellsValidator
   def choose_spells(spell_keys)
     choices = spell_choices
     chosen_spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
       choices.copy_of(spell_key) || { "key" => spell_key }
     end
-    self.spells = chosen_spells + choices.always_prepared.copies
+    self.spells = chosen_spells + choices.always_prepared.copies + feat_spells.copies
   end
 
   # Only a companion has an owner, and only a player character of its own table

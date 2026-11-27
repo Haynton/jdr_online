@@ -13,6 +13,7 @@ module CharacterSkillChoices
   end
 
   def skill_choices
-    CharacterSheets::SkillChoices.new(fields: sheet_fields, sheet: sheet)
+    CharacterSheets::SkillChoices.new(fields: sheet_fields, sheet: sheet,
+                                      granted: Array(feats).flat_map { |entry| Array(entry["skills"]) })
   end
 end

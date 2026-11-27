@@ -1,7 +1,7 @@
 <%# The feat taken at a level that improves the abilities (LevelUpFeat, decision of 27 November): every feat the
     character may take as a card with its category and its summary (the Ability Score Improvement first ticked), then
     what the one picked asks, prepared for each and shown as soon as it is picked (choice_blocks_controller.js): points
-    to share on the abilities, skills to pick %>
+    to share on the abilities, skills to pick, spells to pick in a list %>
 <div class="flex flex-col gap-8" data-controller="choice-blocks">
   <fieldset class="min-w-0" aria-describedby="level_up_feat_key_error">
     <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.feat.title") %></legend>
@@ -23,11 +23,12 @@
     <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :feat_key %>
   </fieldset>
   <% level_up.offered_feats.each do |feat| %>
-    <% next unless level_up.increase_settings(feat) || level_up.feat_skill_count(feat).positive? %>
+    <% next unless level_up.increase_settings(feat) || level_up.feat_skill_count(feat).positive? || level_up.spell_settings(feat) %>
     <%= tag.div class: "flex flex-col gap-8", hidden: feat.key != level_up.feat_key,
                 data: { choice_blocks_target: "block", choice_value: feat.key } do %>
       <%= render "game_tables/level_ups/improvement", level_up: level_up, feat: feat if level_up.increase_settings(feat) %>
       <%= render "game_tables/level_ups/feat_skills", level_up: level_up, feat: feat if level_up.feat_skill_count(feat).positive? %>
+      <%= render "game_tables/level_ups/feat_spells", level_up: level_up, feat: feat if level_up.spell_settings(feat) %>
     <% end %>
   <% end %>
 </div>

@@ -8,6 +8,7 @@ class FeatsTest < ActiveSupport::TestCase
     template_file = Rails.root.join("db/seeds/sheet_templates/heroic_fantasy.fr.json")
     template = SheetTemplate.find_or_create_by!(JSON.parse(template_file.read(encoding: "UTF-8")))
     Catalogs::Loader.new(Rails.root.join("db/seeds/catalogs/heroic_fantasy_features.fr.json")).call
+    Catalogs::Loader.new(Rails.root.join("db/seeds/catalogs/heroic_fantasy_spells.fr.json")).call
     @game_table = GameTable.new(name: "La Crypte", starting_level: 4)
     @game_table.use_sheet_template(template)
     @game_table.save!
@@ -60,6 +61,36 @@ class FeatsTest < ActiveSupport::TestCase
     level_up.feat_skill_keys = %w[arcana history nature]
     assert level_up.save, level_up.errors.full_messages.to_sentence
     assert_equal [true, true, true], character.reload.sheet.values_at("arcana", "history", "nature")
+  end
+
+  test "the acolyte picks the spells of its origin feat in the cleric list, copied apart from its class spells" do
+    acolyte = build_character("class" => "Guerrier", "background" => "Acolyte")
+    acolyte.checks_feat_spells = true
+    acolyte.choose_origin_feat_spells({ "spell_ability" => "wisdom", "cantrips" => %w[guidance] })
+    assert acolyte.tap(&:validate).errors.of_kind?(:feats, :cantrips)
+
+    acolyte.choose_origin_feat_spells({ "spell_ability" => "wisdom", "cantrips" => %w[guidance sacred-flame],
+                                        "spell" => "bless" })
+    assert acolyte.valid?, acolyte.errors.full_messages.to_sentence
+    assert_equal %w[bless guidance sacred-flame], acolyte.spells.pluck("key").sort
+    assert_equal ["magic-initiate"], acolyte.spells.pluck("feat").uniq
+
+    acolyte.sheet = acolyte.sheet.merge("background" => "Soldat")
+    acolyte.keep_offered_origin_feat_spells
+    assert_empty acolyte.spells
+  end
+
+  test "Magic Initiate taken at a level gained asks a list and its spells, the other lists left out" do
+    character = build_character("class" => "Guerrier", "subclass" => "Champion", "level" => 3)
+    character.update_columns(level_up_to: 4)
+    level_up = LevelUp.new(character: character, feat_key: "magic-initiate", feat_spells: {
+      "spell_list" => "Magicien",
+      "by_list" => { "Magicien" => { "spell_ability" => "intelligence", "cantrips" => %w[light mage-hand], "spell" => "shield" },
+                     "Clerc" => { "cantrips" => %w[guidance] } }
+    })
+    assert level_up.save, level_up.errors.full_messages.to_sentence
+    assert_equal %w[light mage-hand shield], character.reload.spells.pluck("key").sort
+    assert_equal "Magicien", character.feats.last["spell_list"]
   end
 
   private

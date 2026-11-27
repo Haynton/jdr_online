@@ -23,7 +23,7 @@
     "creation_steps": [
       { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },
-      { "key": "skills", "label": "Compétences", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_weapon_masteries": true, "chooses_class_choices": true },
+      { "key": "skills", "label": "Compétences", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_weapon_masteries": true, "chooses_class_choices": true, "chooses_origin_feats": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "equipment", "label": "Équipement", "sections": ["Équipement"], "chooses_equipment": true },
       { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
@@ -176,9 +176,9 @@
           "Soldat": "Une formation militaire : se battre, tenir son rang et impressionner."
         },
         "effects": {
-          "Acolyte": {"ability_bonus_choices":["intelligence","wisdom","charisma"],"proficient":["insight","religion"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Initié à la magie","spell_list":"cleric"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"calligraphers-supplies"},{"key":"book","note":"de prières"},{"choose":["holy_symbol"]},{"key":"parchment","count":10},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
+          "Acolyte": {"ability_bonus_choices":["intelligence","wisdom","charisma"],"proficient":["insight","religion"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Initié à la magie","spell_list":"Clerc"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"calligraphers-supplies"},{"key":"book","note":"de prières"},{"choose":["holy_symbol"]},{"key":"parchment","count":10},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
           "Criminel": {"ability_bonus_choices":["dexterity","constitution","intelligence"],"proficient":["sleight_of_hand","stealth"],"tools":["thieves-tools"],"origin_feat":{"key":"alert","name":"Vigilance"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"dagger","count":2},{"key":"thieves-tools"},{"key":"crowbar"},{"key":"pouch","count":2},{"key":"clothes-travelers"}],"gold":16},{"key":"b","gold":50}]}},
-          "Sage": {"ability_bonus_choices":["constitution","intelligence","wisdom"],"proficient":["arcana","history"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Initié à la magie","spell_list":"wizard"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"quarterstaff"},{"key":"calligraphers-supplies"},{"key":"book","note":"d'histoire"},{"key":"parchment","count":8},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
+          "Sage": {"ability_bonus_choices":["constitution","intelligence","wisdom"],"proficient":["arcana","history"],"tools":["calligraphers-supplies"],"origin_feat":{"key":"magic-initiate","name":"Initié à la magie","spell_list":"Magicien"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"quarterstaff"},{"key":"calligraphers-supplies"},{"key":"book","note":"d'histoire"},{"key":"parchment","count":8},{"key":"robe"}],"gold":8},{"key":"b","gold":50}]}},
           "Soldat": {"ability_bonus_choices":["strength","dexterity","constitution"],"proficient":["athletics","intimidation"],"origin_feat":{"key":"savage-attacker","name":"Attaquant sauvage"},"starting_equipment":{"options":[{"key":"a","items":[{"key":"spear"},{"key":"shortbow"},{"key":"arrows","count":20},{"choose":["gaming_set"]},{"key":"healers-kit"},{"key":"quiver"},{"key":"clothes-travelers"}],"gold":14},{"key":"b","gold":50}]}}
         } },
       { "key": "species", "label": "Espèce", "type": "choice", "section": "Personnage", "required": true, "visible_to_others": true,
@@ -201,7 +201,7 @@
           "Gnome": {"set":{"speed":9,"size":"Petite"},"traits":["darkvision-60","gnomish-cunning","gnomish-lineage"]},
           "Goliath": {"set":{"speed":10.5,"size":"Moyenne"},"traits":["giant-ancestry","large-form","powerful-build"]},
           "Halfelin": {"set":{"speed":9,"size":"Petite"},"traits":["brave","halfling-nimbleness","luck","naturally-stealthy"]},
-          "Humain": {"set":{"speed":9,"size":"Moyenne"},"traits":["resourceful","skillful","versatile"]},
+          "Humain": {"set":{"speed":9,"size":"Moyenne"},"traits":["resourceful","skillful","versatile"],"feat_choice":{"categories":["origin"]}},
           "Orc": {"set":{"speed":9,"size":"Moyenne"},"traits":["adrenaline-rush","darkvision-120","relentless-endurance"]},
           "Tieffelin": {"set":{"speed":9},"traits":["darkvision-60","fiendish-legacy","otherworldly-presence"]}
         } },

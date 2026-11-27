@@ -9,15 +9,27 @@ module LevelUpFeat
 
   included do
     attr_accessor :feat_key
-    attr_reader :ability_increases, :feat_skill_keys
+    attr_reader :ability_increases, :feat_skill_keys, :feat_spell_picks
 
     validate :feat_offered, if: :feat_level?
     validate :ability_increases_allowed, if: -> { feat_level? && increase_settings }
     validate :feat_skills_picked, if: -> { feat_level? && feat_skill_count.positive? }
+    validate :feat_spells_picked, if: -> { feat_level? && spell_settings }
   end
 
   def ability_increases=(increases)
     @ability_increases = increases.to_h.transform_values(&:to_i).select { |_key, points| points.positive? }
+  end
+
+  # The spells picked for a feat that gives some (Magic Initiate): its list, and what was picked in that list only
+  # (the blocks of the other lists, sent without JavaScript, are left out)
+  def feat_spells=(picks)
+    @feat_spell_picks = CharacterSheets::FeatSpells.picks_from(picks)
+  end
+
+  # What a feat gives to pick in spells ({ "lists", "cantrips", "level_one", "abilities" }), nil for none
+  def spell_settings(for_feat = feat)
+    for_feat&.effects&.dig("spell_picks")
   end
 
   def feat_skill_keys=(keys)
@@ -67,7 +79,7 @@ module LevelUpFeat
     entry = { "key" => feat.key, "level" => level }
     entry["abilities"] = ability_increases if increase_settings && ability_increases.any?
     entry["skills"] = feat_skill_keys if feat_skill_count.positive?
-    entry
+    spell_settings ? entry.merge(feat_spell_picks.to_h) : entry
   end
 
   def feat_list
@@ -105,6 +117,11 @@ module LevelUpFeat
 
   def raised_score(field)
     score_of(field).to_i + ability_increases[field["key"]].to_i
+  end
+
+  def feat_spells_picked
+    errors_found = character.feat_spells.errors_for(feat_spell_picks.to_h, spell_settings)
+    errors_found.each { |error| errors.add(:feat_spells, error) }
   end
 
   def feat_skills_picked
