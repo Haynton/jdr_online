@@ -173,6 +173,8 @@
   --color-logo-bg: #1f1b18;
   /* Gold accent of "My tables" (labels, outline of the chosen card): 7.23 on page, 7.67 on surface */
   --color-brass: #6b4d10;
+  /* Border of a card, a spell or a choice picked (aria-pressed, :checked): brass in the light theme */
+  --color-chosen-line: #6b4d10;
   /* Veil behind the text of a table card: a warmer, darker parchment than page, so the card looks less white
      (decision). ink 12.18, brass 5.96 and ink at 75 % 5.99 on it; muted falls to 3.81: not on this veil */
   --color-card-veil: #ebe0cc;
@@ -235,6 +237,8 @@
     --color-logo-bg: #1f1b18;
     /* 10.1 on page, 9.14 on surface, 11.69 on page-deep */
     --color-brass: #e2c07c;
+    /* Duller than brass in the dark theme (decision): bright gold borders stood out too much. 3.39 on page */
+    --color-chosen-line: #806a3e;
     /* page-deep, the background of "My tables" in the dark theme: ink at 75 % 9.28 on it */
     --color-card-veil: #030605;
     --color-danger: #b91c1c;

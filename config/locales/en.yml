@@ -1744,6 +1744,12 @@ en:
         played_by: "Played by %{username}"
         title: "Character sheet"
     character_steps:
+      frame:
+        back: "My tables"
+        next: "Next: %{step}"
+        steps: "Steps of the creation"
+        step_number: "Step %{number}: %{label}"
+        table: "For the table “%{name}”"
       class_choices:
         count:
           one: "Pick 1."

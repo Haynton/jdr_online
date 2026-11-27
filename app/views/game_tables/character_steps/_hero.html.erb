@@ -1,0 +1,26 @@
+<%# The band of the hero, across the top of the creation: "My tables" (the draft is saved when the page is left,
+    autosave_controller.js), the picture or the place it will take, the name and the options picked, then the numbers
+    of the character, which change with the choices (CharacterSheets::CreationFrameHelper#creation_hero_numbers). The
+    numbers give way on a phone %>
+<header class="col-span-full flex min-w-0 items-center gap-3 border-b border-line bg-surface px-4 md:gap-6 md:pr-8">
+  <%= link_to game_tables_path(table: character.game_table.id),
+              class: button_classes(:secondary, size: :compact), aria: { label: t("game_tables.character_steps.frame.back") } do %>
+    <%= render "shared/icons/chevron_left" %>
+    <span class="max-md:hidden"><%= t("game_tables.character_steps.frame.back") %></span>
+  <% end %>
+  <div class="flex min-w-0 flex-1 items-center gap-3">
+    <%= render "characters/avatar", character: character, css_class: "size-10", icon_class: "size-5" %>
+    <div class="min-w-0">
+      <p class="truncate font-bold leading-tight"><%= character_display_name(character) %></p>
+      <p class="truncate text-xs text-muted"><%= creation_hero_line(character) %></p>
+    </div>
+  </div>
+  <dl class="flex gap-6 max-lg:hidden">
+    <% creation_hero_numbers(character, computed).each do |label, value| %>
+      <div class="flex min-w-10 flex-col-reverse items-center">
+        <dt class="text-[10px] font-bold tracking-widest text-muted uppercase"><%= label %></dt>
+        <dd class="text-base font-extrabold tabular-nums"><%= value %></dd>
+      </div>
+    <% end %>
+  </dl>
+</header>

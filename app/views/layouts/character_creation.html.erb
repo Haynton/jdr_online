@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <%= render "layouts/head" %>
+  </head>
+
+  <%# The creation of a character, a game screen on the whole screen (decision, prototype "Création façon jeu"): the
+      navigation of the app gives way to the band of the hero ("My tables" leads back), the rail of the steps on the
+      left, the step in the middle; only the step scrolls, its buttons stay at the bottom (game_tables/character_steps/
+      _actions). On a phone, the rail runs across under the band (CharacterSheets::CreationFrameHelper) %>
+  <body class="h-dvh overflow-hidden bg-page text-ink">
+    <div class="grid h-full grid-cols-[minmax(0,1fr)] grid-rows-[4rem_auto_minmax(0,1fr)] md:grid-cols-[4.5rem_minmax(0,1fr)] md:grid-rows-[4rem_minmax(0,1fr)]">
+      <%= render "game_tables/character_steps/hero", character: @character,
+                                                     computed: @computed_sheet_values || @character.computed_sheet_values %>
+      <%= render "game_tables/character_steps/rail", character: @character, step: @step %>
+      <main class="flex min-h-0 min-w-0 flex-col md:col-start-2 md:row-start-2">
+        <%= render "shared/flashes" %>
+        <%= yield %>
+      </main>
+    </div>
+
+    <%= render "shared/confirm_dialog" %>
+    <%# The forms of a control placed inside another form (shared/_avatar_picker, detached): a form cannot hold one %>
+    <%= yield :detached_forms %>
+  </body>
+</html>

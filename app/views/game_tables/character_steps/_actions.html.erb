@@ -1,29 +1,30 @@
-<%# The buttons at the end of a step, on the right: Back (to the step before, none on the first one), Later (the
-    draft is kept: "My tables" offers to resume it), then the button of the step. Rendered as a layout around that
-    button: render layout: "game_tables/character_steps/actions", locals: { character:, step:, saves: } do ... end.
-    saves: on a step with a form, Back and Later are buttons of the form (go_to): the step is saved before leaving
-    (decision); on the summary, which has nothing to save, they are links.
-    mt-auto: at the bottom of the screen when the step is short (the page and its form are columns that fill it),
-    with at least 40 px above them (pt-10).
+<%# The bar of buttons at the bottom of a step of the creation, always in sight (sticky in the area that scrolls,
+    layouts/character_creation): Back on the left (none on the first step), then the step that comes next and the
+    button of the step on the right. "My tables" in the band of the hero takes the place of Later (decision: the draft
+    is saved when the page is left). Rendered as a layout around that button:
+    render layout: "game_tables/character_steps/actions", locals: { character:, step:, saves: } do ... end.
+    saves: on a step with a form, Back is a button of the form (go_to): the step is saved before leaving (decision); on
+    the summary, which has nothing to save, it is a link.
     The button of the step comes first in the page and shows last (order-last): Enter in a field presses the first
     submit button of the form, which must be Continue, not Back %>
 <% previous_step = character.creation_steps.before(step) %>
-<div class="mt-auto flex flex-wrap justify-end gap-3 pt-10">
+<% next_label = creation_next_step_label(character, step) %>
+<div class="sticky bottom-0 z-10 -mx-4 mt-auto flex items-center gap-3 border-t border-line bg-page px-4 py-4 sm:-mx-8 sm:px-8">
   <div class="order-last"><%= yield %></div>
-  <% if local_assigns[:saves] %>
-    <% if previous_step %>
-      <%= button_tag t("game_tables.character_steps.show.back"), type: :submit, name: "go_to", value: previous_step.key,
-                                                                class: button_classes(:secondary) %>
-    <% end %>
-    <%= button_tag t("game_tables.character_steps.show.later"), type: :submit, name: "go_to",
-                                                               value: GameTables::CharacterStepsController::LATER,
-                                                               class: button_classes(:secondary) %>
-  <% else %>
-    <% if previous_step %>
-      <%= link_to t("game_tables.character_steps.show.back"),
-                  game_table_character_step_path(character.game_table, previous_step.key), class: button_classes(:secondary) %>
-    <% end %>
-    <%= link_to t("game_tables.character_steps.show.later"), game_tables_path(table: character.game_table.id),
-                class: button_classes(:secondary) %>
+  <% if next_label %>
+    <span class="order-2 ml-auto text-xs text-muted max-sm:hidden"><%= next_label %></span>
   <% end %>
+  <% if previous_step %>
+    <% if local_assigns[:saves] %>
+      <%= button_tag type: :submit, name: "go_to", value: previous_step.key, class: "order-1 #{button_classes(:secondary)}" do %>
+        <%= render "shared/icons/chevron_left" %><%= t("game_tables.character_steps.show.back") %>
+      <% end %>
+    <% else %>
+      <%= link_to game_table_character_step_path(character.game_table, previous_step.key),
+                  class: "order-1 #{button_classes(:secondary)}" do %>
+        <%= render "shared/icons/chevron_left" %><%= t("game_tables.character_steps.show.back") %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <span class="order-2 flex-1 <%= 'sm:hidden' if next_label %>" aria-hidden="true"></span>
 </div>

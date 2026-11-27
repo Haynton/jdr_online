@@ -1,16 +1,10 @@
-# The pages of the creation of a character in steps (GameTables::CharacterStepsController): the band of its steps,
-# the buttons, the summary. The page around them and the look of the band: StepsBandHelper
+# The pages of the creation of a character in steps (GameTables::CharacterStepsController): its steps, the buttons,
+# the summary. The frame around them: layouts/character_creation, CharacterSheets::CreationFrameHelper
 module CharacterSheets
   module CreationHelper
-    # A step of the creation: the band of the steps of this character, then the page content (steps_page)
-    def character_creation_page(character:, current_step:, &)
-      band = render("shared/steps_band", steps: character_band_steps(character, current_step),
-                                         label: t("game_tables.character_steps.band_label"))
-      steps_page(band: band, &)
-    end
-
-    # Each step with its number, its state for the step being filled in, and its page once reached. On a step with a
-    # form, following a step of the band saves the form first (saves_form, save_before_leaving_controller.js)
+    # Each step with its number, its state for the step being filled in, and its page once reached (the rail,
+    # game_tables/character_steps/_rail). On a step with a form, following a step saves the form first (saves_form,
+    # save_before_leaving_controller.js)
     def character_band_steps(character, current_step)
       steps = character.creation_steps.all
       current_index = steps.index(current_step)

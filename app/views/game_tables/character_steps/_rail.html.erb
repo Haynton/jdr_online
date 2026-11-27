@@ -1,0 +1,23 @@
+<%# The steps of the creation, a column of diamonds joined by a line on the left (a row under the band on a phone):
+    the current one larger and filled, the ones done in tonal gold. A step reached already is a link; it carries its
+    key (data-save-step-key): save_before_leaving_controller.js sends the form of the step with it first, so moving
+    never loses what was typed. Its name in a tooltip (title) and for screen readers %>
+<% steps = character_band_steps(character, step) %>
+<nav class="relative flex items-center justify-between border-b border-line px-4 py-1 md:col-start-1 md:row-start-2 md:flex-col md:justify-start md:gap-2 md:border-r md:border-b-0 md:px-0 md:py-6"
+     aria-label="<%= t("game_tables.character_steps.frame.steps") %>">
+  <span class="absolute inset-x-6 top-1/2 h-px bg-line md:inset-x-auto md:top-11 md:bottom-11 md:left-1/2 md:h-auto md:w-px" aria-hidden="true"></span>
+  <ol class="contents">
+    <% steps.each do |band_step| %>
+      <%= tag.li class: "relative", aria: step_aria(band_step[:state]) do %>
+        <%= content_tag(band_step[:path] ? :a : :span, href: band_step[:path], title: band_step[:label],
+                        class: "group flex size-10 items-center justify-center",
+                        data: ({ save_step_key: band_step[:key] } if band_step[:saves_form])) do %>
+          <span class="flex rotate-45 items-center justify-center rounded-[5px] border transition-colors group-hover:border-brass <%= rail_diamond_classes(band_step[:state]) %>" aria-hidden="true">
+            <span class="-rotate-45 text-[11px] font-bold"><%= band_step[:number] %></span>
+          </span>
+          <span class="sr-only"><%= t("game_tables.character_steps.frame.step_number", number: band_step[:number], label: band_step[:label]) %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </ol>
+</nav>

@@ -1715,6 +1715,12 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      frame:
+        back: "Mes tables"
+        next: "Ensuite : %{step}"
+        steps: "Étapes de la création"
+        step_number: "Étape %{number} : %{label}"
+        table: "Pour la table « %{name} »"
       class_choices:
         count:
           one: "Choisissez-en 1."

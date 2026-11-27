@@ -4,6 +4,9 @@
 # answered yet get a 404
 module GameTables
   class CharacterStepsController < ApplicationController
+    # A game screen on the whole screen: the band of the hero, the rail of the steps (layouts/character_creation)
+    layout "character_creation"
+
     # The lists of keys a step may send: the spells, the spellbook, the weapon masteries
     STEP_LISTS = [{ spell_keys: [] }, { spellbook_keys: [] }, { weapon_mastery_keys: [] }].freeze
 
