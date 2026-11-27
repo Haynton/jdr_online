@@ -1,0 +1,36 @@
+<%# The picture of a character as a square frame (layout portrait, the step "Your hero" of the creation): square, as it
+    is cut round on the tokens of the game (decision). Without a picture, the whole frame, dashed, is the button that
+    picks one; with one, the picture fills it and a dark band at its foot holds "Change" and "Remove". The file field
+    hides in its label (its focus ring shown on the frame or on the label). "Send" without JavaScript, the status read
+    by screen readers and the error under the frame %>
+<% id = picker[:id] %>
+<% file_field = file_field_tag(picker[:param], id: "#{id}-input", form: "#{id}-form", class: "sr-only",
+                                               accept: HasAvatar::AVATAR_CONTENT_TYPES.join(","),
+                                               data: { avatar_cropper_target: "input", action: "change->avatar-cropper#open" }) %>
+<div class="relative aspect-square w-[clamp(12.5rem,32vh,17.5rem)] overflow-hidden rounded-xl">
+  <% if picker[:attached] %>
+    <%= picker[:preview] %>
+    <div class="absolute inset-x-0 bottom-0 flex h-12 items-center justify-between bg-black/60 px-3 text-sm font-semibold text-[#fbf5e8]">
+      <label class="cursor-pointer rounded-md px-1 hover:underline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus-ring">
+        <%= t("shared.avatar_picker.change_short") %>
+        <%= file_field %>
+      </label>
+      <button type="submit" form="<%= id %>-remove-form" class="rounded-md px-1 hover:underline">
+        <%= t("shared.avatar_picker.remove_short") %>
+      </button>
+    </div>
+  <% else %>
+    <label class="flex size-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-field-line bg-surface px-4 text-center text-muted transition-colors hover:border-brass hover:text-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring">
+      <%= render "shared/icons/image_up", css_class: "size-7" %>
+      <span class="font-semibold text-ink"><%= t("shared.avatar_picker.add") %></span>
+      <span class="text-xs"><%= t("shared.avatar_picker.square_hint", count: HasAvatar::AVATAR_MAX_SIZE / 1.megabyte) %></span>
+      <%= file_field %>
+    </label>
+  <% end %>
+</div>
+<button type="submit" form="<%= id %>-form" class="<%= button_classes(:secondary, size: :compact) %>"
+        data-avatar-cropper-target="fallback"><%= t("shared.avatar_picker.send") %></button>
+<p class="sr-only" role="status" data-avatar-cropper-target="status"></p>
+<% if picker[:error] %>
+  <p class="text-sm text-error-ink" role="alert"><%= picker[:error] %></p>
+<% end %>

@@ -1,0 +1,7 @@
+<%# The step that names the character (identity, the first one): its picture in a square frame on the left (square, as
+    it is cut round on the tokens of the game, decision), the name on the right; one under the other on a phone. The
+    forms of the picture are written outside the form of the step (detached) %>
+<div class="grid flex-1 content-center justify-items-center gap-8 pb-10 md:grid-cols-[auto_minmax(0,25rem)] md:justify-center md:justify-items-start md:items-center md:gap-12">
+  <%= render "shared/avatar_picker", picker: character_avatar_picker(character, layout: :portrait), detached: true %>
+  <div class="w-full"><%= name_input %></div>
+</div>

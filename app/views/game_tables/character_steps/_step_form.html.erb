@@ -8,18 +8,21 @@
                                data: character_sheet_form_data(character, computed, step) do |form| %>
   <%= hidden_field_tag :go_to, "", id: nil, data: { save_before_leaving_target: "destination" } %>
   <%= form_error_notification(form) %>
+  <% sections = sheet_sections(step_page_fields(step)) %>
   <%# Asked by the step that names the character; required to finish, not for the draft %>
   <% if step.asks_name %>
-    <% name_input = capture { form.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" } } %>
+    <% name_input = capture do %>
+      <%= form.input :name, required: true, autofocus: true, input_html: { autocomplete: "off" },
+                            hint: (t("game_tables.character_steps.identity.name_hint") if identity_step?(step, sections)) %>
+    <% end %>
   <% end %>
-  <% sections = sheet_sections(step_page_fields(step)) %>
-  <% if character_avatar_above_fields?(step, sections) %>
+  <%# A step that only names the character (identity): its square picture beside the name %>
+  <% if identity_step?(step, sections) %>
+    <%= render "game_tables/character_steps/identity", character: character, name_input: name_input %>
+  <% elsif character_avatar_above_fields?(step, sections) %>
     <div class="mb-8 w-32 md:w-40">
       <%= render "shared/avatar_picker", picker: character_avatar_picker(character), detached: true %>
     </div>
-  <% end %>
-  <% if sections.empty? && name_input %>
-    <div class="max-w-sm"><%= name_input %></div>
   <% end %>
 
   <% sections.each_with_index do |(section, fields), position| %>

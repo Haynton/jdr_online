@@ -31,7 +31,8 @@
       { "type": "normal_only", "label": "Normal equipment only", "help": "The same starting equipment as at level 1, with no more gold nor magic item." }
     ],
     "creation_steps": [
-      { "key": "character", "label": "Character", "sections": ["Character"], "asks_name": true },
+      { "key": "identity", "label": "Your hero", "intro": "Give them a name and, if you like, a face.", "sections": [], "asks_name": true },
+      { "key": "character", "label": "Character", "sections": ["Character"] },
       { "key": "abilities", "label": "Abilities", "sections": ["Abilities"] },
       { "key": "skills", "label": "Skills", "sections": ["Saving throws", "Skills"], "chooses_weapon_masteries": true, "chooses_class_choices": true },
       { "key": "feats", "label": "Feats", "sections": [], "chooses_origin_feats": true },

@@ -1,0 +1,30 @@
+<%# The preview of an avatar picker beside or above its buttons (layouts row and column, AvatarsHelper): "Choose a
+    picture", "Send" without JavaScript, "Remove", the hint, the status read by screen readers, the error %>
+<% id = picker[:id] %>
+<%= picker[:preview] %>
+<div class="flex min-w-0 flex-col gap-2">
+  <div class="flex flex-wrap gap-2">
+    <label class="<%= avatar_picker_button_classes(picker) %> cursor-pointer has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring"
+           title="<%= avatar_choose_label(picker) %>">
+      <%= render "shared/icons/image_up" %>
+      <span class="<%= avatar_picker_label_classes(picker) %>"><%= avatar_choose_label(picker) %></span>
+      <%= file_field_tag picker[:param], id: "#{id}-input", form: "#{id}-form", class: "sr-only",
+                                         accept: HasAvatar::AVATAR_CONTENT_TYPES.join(","),
+                                         data: { avatar_cropper_target: "input", action: "change->avatar-cropper#open" } %>
+    </label>
+    <button type="submit" form="<%= id %>-form" class="<%= button_classes(:secondary, size: :compact) %>"
+            data-avatar-cropper-target="fallback"><%= t("shared.avatar_picker.send") %></button>
+    <% if picker[:attached] %>
+      <button type="submit" form="<%= id %>-remove-form" class="<%= avatar_picker_button_classes(picker) %>"
+              title="<%= t("shared.avatar_picker.remove") %>">
+        <%= render "shared/icons/trash_2" %>
+        <span class="<%= avatar_picker_label_classes(picker) %>"><%= t("shared.avatar_picker.remove") %></span>
+      </button>
+    <% end %>
+  </div>
+  <p class="text-xs text-muted"><%= t("shared.avatar_picker.hint", count: HasAvatar::AVATAR_MAX_SIZE / 1.megabyte) %></p>
+  <p class="sr-only" role="status" data-avatar-cropper-target="status"></p>
+  <% if picker[:error] %>
+    <p class="text-sm text-error-ink" role="alert"><%= picker[:error] %></p>
+  <% end %>
+</div>

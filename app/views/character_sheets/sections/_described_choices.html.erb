@@ -8,13 +8,16 @@
     yet (the subclass, before level 3) has its summary hidden with it (dependent_choice_controller.js), and the
     features of an option (CharacterSheets::FeaturesHelper) show from their level, each opening its summary in the
     window of the page (shared/_details_dialog) %>
-<div class="clear-left grid gap-x-12 gap-y-8 md:grid-cols-[11rem_minmax(0,1fr)] lg:grid-cols-[12rem_minmax(0,1fr)_minmax(0,1fr)]"
+<div class="clear-left grid gap-x-12 gap-y-8 <%= lead ? "md:grid-cols-[11rem_minmax(0,1fr)] lg:grid-cols-[12rem_minmax(0,1fr)_minmax(0,1fr)]" : "md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" %>"
      data-controller="described-choices details-dialog" data-action="change->described-choices#show input->described-choices#show">
   <%= render "shared/details_dialog" %>
-  <%# 128 px on a phone, where it would push the fields down; its column from 768 px %>
-  <div class="w-32 self-start md:w-full">
-    <%= render "shared/avatar_picker", picker: character_avatar_picker(character), detached: true %>
-  </div>
+  <%# The picture goes with the name (lead): a template whose first step names the character on its own (identity)
+      asks it there. 128 px on a phone, where it would push the fields down; its column from 768 px %>
+  <% if lead %>
+    <div class="w-32 self-start md:w-full">
+      <%= render "shared/avatar_picker", picker: character_avatar_picker(character), detached: true %>
+    </div>
+  <% end %>
   <%# The fields stay narrow (448 px at most, two lists per line from 640 px, decision): their texts are short %>
   <div class="min-w-0 max-w-md">
     <% if lead %>
@@ -23,7 +26,7 @@
     <%= render "character_sheets/sections/flow", character: character, fields: fields,
                                                      all_fields: all_fields, computed: computed, paired: true %>
   </div>
-  <aside class="flex flex-col gap-6 self-start md:col-span-2 lg:sticky lg:top-6 lg:col-span-1"
+  <aside class="flex flex-col gap-6 self-start <%= "md:col-span-2 lg:col-span-1" if lead %> lg:sticky lg:top-6"
          aria-label="<%= t("game_tables.choice_summaries.label") %>" aria-live="polite">
     <% described_choice_fields(fields).each do |field| %>
       <%= tag.section hidden: !sheet_field_asked?(character, field), data: { shown_with: field["key"] } do %>

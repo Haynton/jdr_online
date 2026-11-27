@@ -357,6 +357,7 @@ en:
           invalid_step_key: "The step “%{step}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
           labels_not_matching_options: "%{part} › %{field}: “labels” must give a name to each option (%{count})"
           invalid_step_label: "The step “%{step}”: the label must be filled in, on one line, in %{count} characters at most"
+          invalid_step_intro: "The step “%{step}”: the introduction must be a text on one line, of %{count} characters at most"
           min_above_max: "%{part} › %{field}: the minimum (%{min}) is above the maximum (%{max})"
           missing_hit_die: "%{part} › %{field}: every class must give its hit die (hit_die)"
           missing_parameter: "%{part} › %{field}: the setting “%{parameter}” is required"
@@ -639,16 +640,20 @@ en:
         updated: "Username changed."
   shared:
     avatar_picker:
+      add: "Add a picture"
       cancel: "Cancel"
       change: "Change the picture"
+      change_short: "Change"
       choose: "Choose a picture"
       confirm: "Use this framing"
       crop_hint: "Drag the picture to place the face in the frame, and enlarge it if needed."
       crop_title: "Frame the picture"
       hint: "PNG, JPEG or WebP, %{count} MB at most."
       remove: "Remove the picture"
+      remove_short: "Remove"
       send: "Send"
       sending: "Sending the picture…"
+      square_hint: "Square if possible · PNG, JPEG or WebP, %{count} MB at most."
       stage_label: "Picture to frame: drag it, or move it with the arrow keys"
       zoom: "Enlarge the picture"
     notifications_bell:
@@ -1744,6 +1749,8 @@ en:
         played_by: "Played by %{username}"
         title: "Character sheet"
     character_steps:
+      identity:
+        name_hint: "You can change it later."
       frame:
         back: "My tables"
         next: "Next: %{step}"

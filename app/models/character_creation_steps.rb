@@ -12,7 +12,7 @@ class CharacterCreationSteps
   SUMMARY = "summary".freeze
   SINGLE_STEP = "sheet".freeze
 
-  Step = Data.define(:key, :label, :fields, :asks_name, :summary_only, :behaviors) do
+  Step = Data.define(:key, :label, :intro, :fields, :asks_name, :summary_only, :behaviors) do
     def summary?
       key == SUMMARY
     end
@@ -34,7 +34,8 @@ class CharacterCreationSteps
   # The pages of the creation of this character, in order, the summary last
   def all
     @all ||= shown_steps.reject(&:summary_only) +
-             [Step.new(key: SUMMARY, label: nil, fields: [], asks_name: false, summary_only: false, behaviors: [])]
+             [Step.new(key: SUMMARY, label: nil, intro: nil, fields: [], asks_name: false, summary_only: false,
+                       behaviors: [])]
   end
 
   # The blocks of the summary sheet: every step shown, the ones with nothing to fill in comprised
@@ -79,9 +80,10 @@ class CharacterCreationSteps
     )
   end
 
-  # The level the table lets its players choose goes on the first page (decision), with the fields of that page
+  # The level the table lets its players choose goes on the first page with fields (decision), with the fields of that
+  # page: not on a page that only names the character (identity)
   def with_fields_chosen_by_players(steps)
-    first_page = steps.find { |step| !step.summary_only }
+    first_page = steps.find { |step| !step.summary_only && step.fields.any? }
     return steps if first_page.nil? || fields_chosen_by_players.empty?
 
     steps.map { |step| step == first_page ? step.with(fields: step.fields + moved_to(first_page)) : step }
@@ -107,7 +109,8 @@ class CharacterCreationSteps
   end
 
   def build_step(declared)
-    Step.new(key: declared["key"], label: declared["label"], asks_name: declared["asks_name"] == true,
+    Step.new(key: declared["key"], label: declared["label"], intro: declared["intro"],
+             asks_name: declared["asks_name"] == true,
              summary_only: declared["summary_only"] == true, behaviors: CreationStepBehaviors.of(declared),
              fields: creation_fields.select { |field| declared["sections"].to_a.include?(field["section"]) })
   end

@@ -31,7 +31,8 @@
       { "type": "normal_only", "label": "Équipement normal seulement", "help": "Le même équipement de départ qu'au niveau 1, sans or ni objet magique en plus." }
     ],
     "creation_steps": [
-      { "key": "character", "label": "Personnage", "sections": ["Personnage"], "asks_name": true },
+      { "key": "identity", "label": "Votre héros", "intro": "Donnez-lui un nom et, si vous voulez, un visage.", "sections": [], "asks_name": true },
+      { "key": "character", "label": "Personnage", "sections": ["Personnage"] },
       { "key": "abilities", "label": "Caractéristiques", "sections": ["Caractéristiques"] },
       { "key": "skills", "label": "Compétences", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_weapon_masteries": true, "chooses_class_choices": true },
       { "key": "feats", "label": "Dons", "sections": [], "chooses_origin_feats": true },

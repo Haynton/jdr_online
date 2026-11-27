@@ -74,6 +74,19 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
     assert_equal [3, 4, 1], wizard["spellcasting"].values_at("cantrips", "prepared", "max_spell_level").map(&:first)
   end
 
+  test "the heroic fantasy names its hero on a first step of its own, with its sentence, in both languages" do
+    %w[fr en].each do |language|
+      steps = read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{language}.json")).dig("character_fields",
+                                                                                             "creation_steps")
+
+      assert_equal "identity", steps.first["key"]
+      assert steps.first["asks_name"]
+      assert_empty steps.first["sections"]
+      assert_predicate steps.first["intro"], :present?
+      assert_equal(1, steps.count { |step| step["asks_name"] })
+    end
+  end
+
   # The table of the SRD 5.2.1: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
   # all of one level
   test "the heroic fantasy declares the 15 conditions of the SRD 5.2.1, the same in both languages" do

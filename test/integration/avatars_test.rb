@@ -98,6 +98,47 @@ class AvatarsTest < ActionDispatch::IntegrationTest
     assert_select "body > form#character-avatar-form"
   end
 
+  test "a step that only names the hero shows its square frame, the name and its hint, its sentence under the title" do
+    snapshot = @game_table.template_snapshot.deep_dup
+    steps = snapshot["character_fields"]["creation_steps"]
+    steps.each { |step| step.delete("asks_name") }
+    steps.unshift({ "key" => "identity", "label" => "Votre héros", "intro" => "Donnez-lui un nom.", "sections" => [],
+                    "asks_name" => true })
+    @game_table.update!(template_snapshot: snapshot)
+    @character.update!(status: :draft, creation_step: "identity")
+
+    get game_table_character_step_path(@game_table, "identity")
+
+    assert_select "h1", text: /Votre héros/
+    assert_select "h1 + p", text: "Donnez-lui un nom."
+    assert_select "main form label", text: /#{I18n.t('shared.avatar_picker.add', locale: :fr)}/
+    assert_select "main form input[name='character[name]']"
+    assert_select "main form", text: /#{I18n.t('game_tables.character_steps.identity.name_hint', locale: :fr)}/
+    assert_select "body > form#character-avatar-form[action*='layout=portrait']"
+  end
+
+  test "a picture sent from the square frame of the step Your hero comes back in that frame, the band following" do
+    @character.update!(status: :draft)
+
+    patch game_table_character_avatar_path(@game_table, layout: "portrait"),
+          params: { character: { avatar: picture("map.png") } }, as: :turbo_stream
+
+    assert_response :success
+    assert_select "turbo-stream[action=replace][target=character-avatar-body] template" do
+      assert_select "button[form=character-avatar-remove-form]",
+                    text: I18n.t("shared.avatar_picker.remove_short", locale: :fr)
+    end
+    assert_select "turbo-stream[action=replace][target=creation-hero-avatar]"
+  end
+
+  test "an unknown layout of the picker falls back to the column" do
+    patch character_avatar_path(@character, layout: "carousel"), params: { character: { avatar: picture("map.png") } },
+                                                                 as: :turbo_stream
+
+    assert_select "turbo-stream[target=character-avatar-body] template label[title]",
+                  text: /#{I18n.t('shared.avatar_picker.change', locale: :fr)}/
+  end
+
   test "a picture sent before the first Continue saves the draft with it" do
     @character.destroy!
 

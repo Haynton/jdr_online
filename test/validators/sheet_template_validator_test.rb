@@ -55,6 +55,21 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :invalid_step_label
   end
 
+  test "a step may say what it is for in a sentence of one line, 200 characters at most" do
+    [[nil, true], ["Donnez-lui un nom.", true], ["Une ligne\npuis une autre", false], ["a" * 201, false],
+     ["  ", false]].each do |intro, valid|
+      steps = DEFAULT_STEPS.map(&:dup)
+      steps.first["intro"] = intro unless intro.nil?
+      template = build_template(steps: steps)
+
+      if valid
+        assert_predicate template, :valid?, intro.inspect
+      else
+        assert_error template, :invalid_step_intro
+      end
+    end
+  end
+
   test "each setting holds a value of its kind, of its list, and a minimum under its maximum" do
     template = build_template do |fields|
       field(fields, "level")["max"] = "vingt"
@@ -105,7 +120,8 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
 
   test "a field shown only with some values names a list of the same part, and some of its options" do
     shown_with = { "field" => "class", "values" => ["Guerrier"] }
-    field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité", "shown_with" => shown_with }
+    field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité",
+              "shown_with" => shown_with }
     assert_predicate build_template { |fields| fields << field }, :valid?
 
     [{ "field" => "level", "values" => ["Guerrier"] }, { "field" => "class", "values" => ["Mage"] },

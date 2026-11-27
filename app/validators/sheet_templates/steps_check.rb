@@ -4,8 +4,10 @@ module SheetTemplates
   # one) that asks the name, a known effect for a step that depends on one, only the settings a step knows
   class StepsCheck < Check
     # Its own settings, then the behaviors it may turn on (CreationStepBehaviors)
+    INTRO_MAX_LENGTH = 200
+
     STEP_PARAMETERS = (
-      %w[key label sections asks_name only_with_effect summary_only] + CreationStepBehaviors.keys
+      %w[key label intro sections asks_name only_with_effect summary_only] + CreationStepBehaviors.keys
     ).freeze
 
     def call
@@ -36,7 +38,14 @@ module SheetTemplates
       errors = []
       errors << [:invalid_step_key, { step: name, key: step["key"].to_s }] unless valid_key?(step["key"])
       errors << [:invalid_step_label, { step: name, count: LABEL_MAX_LENGTH }] unless valid_label?(step["label"])
+      errors << [:invalid_step_intro, { step: name, count: INTRO_MAX_LENGTH }] unless valid_intro?(step["intro"])
       errors
+    end
+
+    # The sentence under the title of the step, written by the template in its words: optional, one paragraph
+    def valid_intro?(intro)
+      intro.nil? || (intro.is_a?(String) && intro.strip.present? && intro.length <= INTRO_MAX_LENGTH &&
+        !intro.match?(CONTROL_CHARACTERS))
     end
 
     def effect_errors(step, name)

@@ -25,19 +25,27 @@ module Characters
       @character = params[:character_id] ? current_user.characters.find(params[:character_id]) : saved_draft
     end
 
+    def picker_layout
+      AvatarsHelper::CHARACTER_PICKER_LAYOUTS.find { |layout| layout.to_s == params[:layout] } || :column
+    end
+
     def saved_draft
       participation = current_user.participations.accepted.player.find_by!(game_table_id: params[:game_table_id])
       participation.character_draft.tap { |draft| draft.save!(validate: false) if draft.new_record? }
     end
 
-    # reload: a picture refused is not kept on the character shown
+    # reload: a picture refused is not kept on the character shown. The picker is put back in the layout it was sent
+    # from, and the picture of the band of the creation follows (a page without that band ignores it)
     def respond_with_picker(error:)
-      picker = helpers.character_avatar_picker(@character.reload, error: error)
+      picker = helpers.character_avatar_picker(@character.reload, error: error, layout: picker_layout)
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("character-avatar-body", partial: "shared/avatar_picker_body",
-                                                                             locals: { picker: picker }),
-                 status: error ? :unprocessable_content : :ok
+          render turbo_stream: [
+            turbo_stream.replace("character-avatar-body", partial: "shared/avatar_picker_body",
+                                                          locals: { picker: picker }),
+            turbo_stream.replace("creation-hero-avatar", partial: "game_tables/character_steps/hero_avatar",
+                                                         locals: { character: @character })
+          ], status: error ? :unprocessable_content : :ok
         end
         format.html { redirect_back fallback_location: character_path(@character), alert: error }
       end

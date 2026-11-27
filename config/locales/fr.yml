@@ -328,6 +328,7 @@ fr:
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
           labels_not_matching_options: "%{part} › %{field} : « labels » doit donner un nom à chaque option (%{count})"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_step_intro: "L'étape « %{step} » : la phrase d'introduction doit être un texte sur une ligne, de %{count} caractères au plus"
           min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
           missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
           missing_parameter: "%{part} › %{field} : le réglage « %{parameter} » est obligatoire"
@@ -610,16 +611,20 @@ fr:
         updated: "Pseudo modifié."
   shared:
     avatar_picker:
+      add: "Ajouter une photo"
       cancel: "Annuler"
       change: "Changer l'image"
+      change_short: "Changer"
       choose: "Choisir une image"
       confirm: "Utiliser ce cadrage"
       crop_hint: "Faites glisser l'image pour placer le visage dans le cadre, et agrandissez-la si besoin."
       crop_title: "Cadrer l'image"
       hint: "PNG, JPEG ou WebP, %{count} Mo au plus."
       remove: "Retirer l'image"
+      remove_short: "Retirer"
       send: "Envoyer"
       sending: "Envoi de l'image…"
+      square_hint: "Carrée de préférence · PNG, JPEG ou WebP, %{count} Mo au plus."
       stage_label: "Image à cadrer : faites-la glisser, ou déplacez-la avec les flèches du clavier"
       zoom: "Agrandir l'image"
     notifications_bell:
@@ -1715,6 +1720,8 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      identity:
+        name_hint: "Vous pourrez le changer plus tard."
       frame:
         back: "Mes tables"
         next: "Ensuite : %{step}"

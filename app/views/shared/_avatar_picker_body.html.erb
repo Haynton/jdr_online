@@ -4,65 +4,7 @@
     chosen. The window: the picture behind a frame, the page veiled around it (a black veil and a white ring, over a
     photo of any colour, like the backdrop of the windows), moved by dragging, the arrow keys (Shift: further) or
     enlarged by the slider and the wheel. "Use this framing" sends the square it holds %>
-<% id = picker[:id] %>
-<div id="<%= id %>-body" class="<%= AvatarsHelper::PICKER_LAYOUT_CLASSES.fetch(picker[:layout]) %>">
-  <%= picker[:preview] %>
-  <div class="flex min-w-0 flex-col gap-2">
-    <div class="flex flex-wrap gap-2">
-      <label class="<%= avatar_picker_button_classes(picker) %> cursor-pointer has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus-ring"
-             title="<%= avatar_choose_label(picker) %>">
-        <%= render "shared/icons/image_up" %>
-        <span class="<%= avatar_picker_label_classes(picker) %>"><%= avatar_choose_label(picker) %></span>
-        <%= file_field_tag picker[:param], id: "#{id}-input", form: "#{id}-form", class: "sr-only",
-                                           accept: HasAvatar::AVATAR_CONTENT_TYPES.join(","),
-                                           data: { avatar_cropper_target: "input", action: "change->avatar-cropper#open" } %>
-      </label>
-      <button type="submit" form="<%= id %>-form" class="<%= button_classes(:secondary, size: :compact) %>"
-              data-avatar-cropper-target="fallback"><%= t("shared.avatar_picker.send") %></button>
-      <% if picker[:attached] %>
-        <button type="submit" form="<%= id %>-remove-form" class="<%= avatar_picker_button_classes(picker) %>"
-                title="<%= t("shared.avatar_picker.remove") %>">
-          <%= render "shared/icons/trash_2" %>
-          <span class="<%= avatar_picker_label_classes(picker) %>"><%= t("shared.avatar_picker.remove") %></span>
-        </button>
-      <% end %>
-    </div>
-    <p class="text-xs text-muted"><%= t("shared.avatar_picker.hint", count: HasAvatar::AVATAR_MAX_SIZE / 1.megabyte) %></p>
-    <p class="sr-only" role="status" data-avatar-cropper-target="status"></p>
-    <% if picker[:error] %>
-      <p class="text-sm text-error-ink" role="alert"><%= picker[:error] %></p>
-    <% end %>
-  </div>
-
-  <dialog aria-labelledby="<%= id %>-crop-title" aria-describedby="<%= id %>-crop-hint" tabindex="-1"
-          class="m-auto w-[min(400px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-surface p-0 text-ink shadow-2xl outline-none backdrop:bg-black/50"
-          data-avatar-cropper-target="dialog" data-action="close->avatar-cropper#closed">
-    <div class="border-b border-line px-6 py-4">
-      <p id="<%= id %>-crop-title" class="text-base font-semibold text-ink"><%= t("shared.avatar_picker.crop_title") %></p>
-      <p id="<%= id %>-crop-hint" class="mt-1 text-sm text-muted"><%= t("shared.avatar_picker.crop_hint") %></p>
-    </div>
-    <div class="flex flex-col items-center gap-5 px-6 pt-6">
-      <div class="relative size-72 cursor-grab touch-none overflow-hidden rounded-xl bg-field select-none active:cursor-grabbing"
-           tabindex="0" role="group" aria-label="<%= t("shared.avatar_picker.stage_label") %>"
-           data-avatar-cropper-target="stage"
-           data-action="pointerdown->avatar-cropper#startDragging pointermove->avatar-cropper#drag pointerup->avatar-cropper#stopDragging pointercancel->avatar-cropper#stopDragging keydown->avatar-cropper#moveWithKeys wheel->avatar-cropper#zoomWithWheel:!passive">
-        <img alt="" draggable="false" class="pointer-events-none absolute top-0 left-0 max-w-none" data-avatar-cropper-target="image">
-        <div class="pointer-events-none absolute inset-6 <%= AvatarsHelper::FRAME_SHAPE_CLASSES.fetch(picker[:shape]) %> shadow-[0_0_0_100vmax_rgb(0_0_0/0.55)] ring-2 ring-white/90"
-             data-avatar-cropper-target="frame"></div>
-      </div>
-      <label class="flex w-full items-center gap-3 text-muted">
-        <span class="sr-only"><%= t("shared.avatar_picker.zoom") %></span>
-        <%= render "shared/icons/minus" %>
-        <input type="range" min="1" max="4" step="0.01" value="1" class="min-w-0 flex-1 accent-primary"
-               data-avatar-cropper-target="zoom" data-action="input->avatar-cropper#zoom">
-        <%= render "shared/icons/plus" %>
-      </label>
-    </div>
-    <div class="flex flex-col-reverse gap-3 p-6 sm:flex-row">
-      <button type="button" class="<%= button_classes(:secondary, full_width: true) %>"
-              data-action="avatar-cropper#cancel"><%= t("shared.avatar_picker.cancel") %></button>
-      <button type="button" class="<%= button_classes(:primary, full_width: true) %>"
-              data-action="avatar-cropper#confirm"><%= t("shared.avatar_picker.confirm") %></button>
-    </div>
-  </dialog>
+<div id="<%= picker[:id] %>-body" class="<%= AvatarsHelper::PICKER_LAYOUT_CLASSES.fetch(picker[:layout]) %>">
+  <%= render AvatarsHelper::PICKER_CONTROLS.fetch(picker[:layout]), picker: picker %>
+  <%= render "shared/avatar_picker/crop_dialog", picker: picker %>
 </div>

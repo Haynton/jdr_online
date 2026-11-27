@@ -44,10 +44,15 @@ module CharacterSheets
       step.fields.reject { |field| field["summary_only"] || field["internal"] || field["type"] == "equipment_option" }
     end
 
+    # A step that only names the character (identity, the first one): its picture, square, beside the name
+    def identity_step?(step, sections)
+      step.asks_name && sections.empty?
+    end
+
     # The picture of the character goes with its name, on the step that asks it: in its own column when the first
     # section describes its choices (described_choices), otherwise above the fields (a template with one page)
     def character_avatar_above_fields?(step, sections)
-      step.asks_name && (sections.empty? || sheet_section_layout(sections.first.last) != :described_choices)
+      step.asks_name && sections.any? && sheet_section_layout(sections.first.last) != :described_choices
     end
 
     private
