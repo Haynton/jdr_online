@@ -11,7 +11,7 @@
     <div class="mt-4 grid items-start gap-x-12 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
       <% groups.each do |group| %>
         <div class="min-w-0">
-          <h3 class="text-sm font-semibold text-ink"><%= t("character_sheets.features.group", list: group.label, option: group.option) %></h3>
+          <h3 class="text-sm font-semibold text-ink"><%= feature_group_title(group) %></h3>
           <ul class="mt-2 flex flex-col gap-1">
             <% group.features.each do |feature| %>
               <li><%= render "character_sheets/features/line", feature: feature %></li>

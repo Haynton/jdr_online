@@ -1,6 +1,8 @@
 <%# The level the game master gave a player's character (LevelUp, GameTables::LevelUpsController), in the window of
     the room (the frame of the sheet): the features of that level, then only the choices it asks (hit points, subclass,
-    ability improvement, expertise), each with its error under it; the new spells and weapon masteries afterwards, in
+    ability improvement, skills of the subclass, expertise, options of the groups of choices of the class), each with
+    its error under it. A subclass that brings skills or choices asks them once picked (the window comes back with
+    them); the new spells and weapon masteries afterwards, in
     their own windows. Opened directly or without JavaScript, a page with « Retour à la partie » %>
 <% title = t(".title", level: @level_up.level) %>
 <% subtitle = t(".subtitle", name: @character.name) %>
@@ -24,7 +26,14 @@
         <%= render "game_tables/level_ups/hit_points", level_up: @level_up %>
         <%= render "game_tables/level_ups/subclass", level_up: @level_up if @level_up.subclass_field %>
         <%= render "game_tables/level_ups/improvement", level_up: @level_up if @level_up.improvement %>
+        <%= render "game_tables/level_ups/skills", level_up: @level_up if @level_up.skill_count.positive? %>
         <%= render "game_tables/level_ups/expertise", level_up: @level_up if @level_up.expertise_count.positive? %>
+        <% if @level_up.class_choice_groups_to_pick.any? %>
+          <%= render "game_tables/character_steps/class_choices", character: @character,
+                                                                   groups: @level_up.class_choice_groups_to_pick,
+                                                                   field_name: "level_up[class_choices]",
+                                                                   errors: @level_up.errors[:class_choices] %>
+        <% end %>
         <% if level_up_picks_later?(@character) %>
           <p class="text-sm text-muted"><%= t(".picks_later") %></p>
         <% end %>

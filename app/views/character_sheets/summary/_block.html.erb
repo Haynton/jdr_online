@@ -60,7 +60,7 @@
                                                                   computed: computed, wide: header %>
       <% end %>
     <% end %>
-    <% step.behaviors.each do |behavior| %>
+    <% step.behaviors.select(&:summary_partial).each do |behavior| %>
       <%= render behavior.summary_partial, character: character, step: step %>
     <% end %>
     <%# Under the hit points worked out by their rule: the hit dice of the levels after the first %>

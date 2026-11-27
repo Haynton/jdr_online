@@ -68,6 +68,38 @@ module LevelUpChoices
     character.sheet_fields.select { |field| keys.include?(field["key"]) && proficient_only?(field["key"]) }
   end
 
+  # The groups of choices of the class with options to pick at this level (invocations, metamagic, a land), read on
+  # the character as it will be (its subclass picked in the same window counts)
+  def class_choice_groups_to_pick
+    @class_choice_groups_to_pick ||= future_character.class_choice_groups.groups.select do |group|
+      group.allowed_count > Array(character.class_choices.to_h[group.key]).size
+    end
+  end
+
+  # The skills the subclass picked in this window offers to choose (the College of Lore: 3), 0 otherwise
+  def skill_count
+    return 0 unless subclass_field && subclass.present?
+
+    subclass_field.dig("effects", subclass, "skill_choices", "count").to_i
+  end
+
+  # The skills it may pick: those the subclass offers, not proficient yet
+  def skill_candidates
+    offered = subclass_field.dig("effects", subclass, "skill_choices", "from").to_a
+    character.sheet_fields.select do |field|
+      offered.include?(field["key"]) && !FieldTypes::Bonus.proficient?(character.sheet[field["key"]])
+    end
+  end
+
+  # The character as it will be: the new level, the subclass picked, the choices made in the window
+  def future_character
+    future = character.dup
+    picked_subclass = subclass_field && subclass.present? ? { subclass_field["key"] => subclass } : {}
+    future.sheet = sheet_at_level.merge(picked_subclass)
+    future.class_choices = character.class_choices.to_h.merge(class_choices.to_h)
+    future
+  end
+
   # The class list read by the rule of the hit points (its class_from), nil without that rule
   def hit_point_field
     @hit_point_field ||= character.sheet_fields.find { |field| field["rule"] == ComputedRules::HitPointsByLevel::KEY }

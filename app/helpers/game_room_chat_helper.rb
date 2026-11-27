@@ -21,7 +21,8 @@ module GameRoomChatHelper
     "weapon_masteries_changed" => "game_rooms.chat.events.weapon_masteries_changed",
     "level_granted" => "game_rooms.chat.events.level_granted",
     "level_reached" => "game_rooms.chat.events.level_reached",
-    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled"
+    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled",
+    "class_choices_changed" => "game_rooms.chat.events.class_choices_changed"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own

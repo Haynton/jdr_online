@@ -136,11 +136,19 @@ module CharacterSheets
     end
 
     # [option, value of the effect] for each option picked that has this effect
+    # Also the options picked in the groups of choices of the class (the land of the circle and its spells)
     def picked_options_with(effect_key)
-      @game_table.character_sheet_fields.filter_map do |field|
+      from_lists = @game_table.character_sheet_fields.filter_map do |field|
         option = @character.sheet[field["key"]]
         value = field.dig("effects", option.to_s, effect_key)
         [option, value] if value
+      end
+      from_lists + class_choice_options_with(effect_key)
+    end
+
+    def class_choice_options_with(effect_key)
+      @character.class_choice_groups(level: level).picked_effects.filter_map do |label, effects|
+        [label, effects[effect_key]] if effects[effect_key]
       end
     end
   end

@@ -73,7 +73,7 @@ class Character < ApplicationRecord
   # in a list applies its effects to the other steps too, and a value the others no longer offer goes (the subclass of
   # a class changed: CharacterSheets::ChoiceEffectsApplier), and the starting equipment and the spells its new
   # class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
-  # choices: what the behaviors of the step get (spell_keys, fighting_style, weapon_mastery_keys)
+  # choices: what the behaviors of the step get (spell_keys, fighting_style, weapon_mastery_keys, class_choices)
   def fill_step(step, sheet_values:, name: nil, **choices)
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)

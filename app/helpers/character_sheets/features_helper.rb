@@ -22,6 +22,13 @@ module CharacterSheets
       choice_fact_data(character, feature_level_field(character, field), feature.level)
     end
 
+    # « Classe · Rôdeur », or the name of a group of choices alone (« Invocations occultes »)
+    def feature_group_title(group)
+      return group.label unless group.option
+
+      t("character_sheets.features.group", list: group.label, option: group.option)
+    end
+
     # What a line says beside the name: the origin feat of a background, the level of a feature after the first
     def feature_note(feature)
       return t("game_tables.choice_summaries.facts.origin_feat") if feature.kind == :feat

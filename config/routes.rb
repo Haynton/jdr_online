@@ -75,6 +75,7 @@ Rails.application.routes.draw do
       # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
       resource :spell_choice, only: %i[edit update]
       resource :weapon_mastery_choice, only: %i[edit update]
+      resource :class_choice, only: %i[edit update]
       # The game master gives the next level to a player's character; the player then makes the choices of that level
       resource :level_grant, only: :create
       resource :level_up, only: %i[new create]

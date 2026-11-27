@@ -8,7 +8,8 @@ module CreationStepBehaviors
     end
 
     # What it adds at the end of the form of its step, and to its block of the summary (paths written in full: a search
-    # for a partial finds who draws it). Both get character:, the form after_sections: (sections shown before it)
+    # for a partial finds who draws it; nil for nothing in the block). Both get character:, the form after_sections:
+    # (sections shown before it)
     def form_partial
       raise NotImplementedError
     end

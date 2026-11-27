@@ -6,9 +6,10 @@ class CreationStepBehaviorsTest < ActiveSupport::TestCase
     assert_empty CreationStepBehaviors.of({ "chooses_spells" => false })
   end
 
+  # A behavior may add nothing to the summary (the class choices: with the features of the sheet)
   test "every behavior draws partials that exist" do
     CreationStepBehaviors.all.each do |behavior|
-      [behavior.form_partial, behavior.summary_partial].each do |partial|
+      [behavior.form_partial, behavior.summary_partial].compact.each do |partial|
         directory, name = File.split(partial)
         assert_predicate Rails.root.join("app/views/#{directory}/_#{name}.html.erb"), :exist?, partial
       end

@@ -90,12 +90,13 @@ module GameTables
     # Nothing sent on the summary, whose button only confirms
     def step_params
       params.fetch(:character, {}).permit(:name, :ability_method, :fighting_style, sheet: {}, spell_keys: [],
-                                                                                   weapon_mastery_keys: [])
+                                                                                   weapon_mastery_keys: [],
+                                                                                   class_choices: {})
     end
 
     # What the behaviors of the step get beside the sheet (CreationStepBehaviors: the spells, the style, the masteries)
     def behavior_choices
-      step_params.slice(:spell_keys, :fighting_style, :weapon_mastery_keys).to_h.symbolize_keys
+      step_params.slice(:spell_keys, :fighting_style, :weapon_mastery_keys, :class_choices).to_h.symbolize_keys
     end
   end
 end
