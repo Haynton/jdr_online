@@ -283,6 +283,12 @@ fr:
           unknown_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est inconnu"
           duplicate_spell_group: "Le groupe de sorts « %{group} » est déclaré deux fois"
           duplicate_condition: "L'état « %{key} » est déclaré deux fois"
+          duplicate_price_list: "Deux listes de prix ont la même clé : %{key}"
+          invalid_price_list_key: "La liste de prix « %{key} » : sa clé doit être en minuscules, chiffres et tirets bas, une lettre d'abord"
+          invalid_price_list_label: "La liste de prix « %{key} » : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_price_lines: "La liste de prix « %{list} » : il faut des lignes, chacune avec un libellé, un prix et, au besoin, une note courte"
+          invalid_price_lists: "Les listes de prix : il faut une liste de listes, chacune avec sa clé, son libellé et ses lignes"
+          unknown_price_list_parameter: "La liste de prix « %{list} » : le réglage « %{parameter} » est inconnu"
           invalid_conditions: "Les états : la liste doit être une liste d'états, chacun avec sa clé et son libellé"
           invalid_condition_description: "L'état « %{condition} » : la description doit être un texte de %{count} caractères au plus"
           invalid_condition_key: "L'état « %{key} » : la clé doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -1461,6 +1467,8 @@ fr:
         title: "PNJ et ennemis"
       features:
         title: "Capacités"
+      prices:
+        title: "Prix"
       skills:
         title: "Compétences"
       spells:

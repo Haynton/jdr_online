@@ -312,6 +312,12 @@ en:
           unknown_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is unknown"
           duplicate_spell_group: "The group of spells “%{group}” is declared twice"
           duplicate_condition: "The condition “%{key}” is declared twice"
+          duplicate_price_list: "Two price lists have the same key: %{key}"
+          invalid_price_list_key: "The price list “%{key}”: its key must be lowercase letters, digits and underscores, a letter first"
+          invalid_price_list_label: "The price list “%{key}”: it needs a label of %{count} characters at most, on one line"
+          invalid_price_lines: "The price list “%{list}”: it needs lines, each with a label, a price and, if needed, a short note"
+          invalid_price_lists: "The price lists: they must be a list of lists, each with its key, its label and its lines"
+          unknown_price_list_parameter: "The price list “%{list}”: the setting “%{parameter}” is unknown"
           invalid_conditions: "The conditions: they must be a list of conditions, each with its key and its label"
           invalid_condition_description: "The condition “%{condition}”: the description must be a text of %{count} characters at most"
           invalid_condition_key: "The condition “%{key}”: the key must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -1490,6 +1496,8 @@ en:
         title: "NPCs and enemies"
       features:
         title: "Features"
+      prices:
+        title: "Prices"
       skills:
         title: "Skills"
       spells:
