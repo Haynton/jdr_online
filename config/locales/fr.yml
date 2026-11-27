@@ -1266,6 +1266,10 @@ fr:
       hand: "Déplacer la carte"
       hand_tip: "Déplacer la carte (H). Aussi : Espace + glisser, clic de la molette + glisser, deux doigts sur le pavé tactile ou l'écran."
       hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
+      move_cells:
+        one: "%{count} case"
+        other: "%{count} cases"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"

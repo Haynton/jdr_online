@@ -49,7 +49,8 @@ module BoardHelper
     character = participation.character
     tokens = board_map && character ? board_map.board_tokens.where(character:, hidden: true) : BoardToken.none
     { room_board_target: "tokens", game_map_id: board_map&.id,
-      tokens: tokens.map { |token| board_token_data(token, game_master: false) }.to_json }
+      tokens: tokens.map { |token| board_token_data(token, game_master: false) }.to_json,
+      movable_character_ids: board_movable_character_ids(character).to_json }
   end
 
   def board_blocked_cells_json(game_map)
@@ -79,22 +80,26 @@ module BoardHelper
     character = token.character
     { id: token.id, name: token.displayed_name, kind: character.kind, column: token.column, row: token.row,
       number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
-      picture: board_token_picture(character), character_id: (character.id if game_master),
+      picture: board_token_picture(character), character_id: character.id,
       custom_name: (token.name if game_master), character_name: (character.name if game_master) }
   end
 
   def game_master_board_data(board_map)
-    shared_board_data(board_map, KEPT_FROM_GAME_MASTER).merge(action: "#{ZOOM_ACTIONS} #{GAME_MASTER_ACTIONS}",
+    actions = "#{ZOOM_ACTIONS} #{BoardMovesHelper::MOVE_ACTIONS} #{GAME_MASTER_ACTIONS}"
+    shared_board_data(board_map, KEPT_FROM_GAME_MASTER).merge(action: actions,
                                                               map_preview_show_natural_blocks_value: true)
   end
 
   def player_board_data(board_map)
-    shared_board_data(board_map, KEPT_FROM_PLAYERS).merge(action: ZOOM_ACTIONS)
+    shared_board_data(board_map, KEPT_FROM_PLAYERS).merge(action: "#{ZOOM_ACTIONS} #{BoardMovesHelper::MOVE_ACTIONS}")
   end
 
   def shared_board_data(board_map, kept_keys)
+    passage = board_map.passage
     game_map_preview_data(board_map).merge(room_board_target: "map", board_zoom_target: "map",
                                            game_map_id: board_map.id,
+                                           blocked_cells: passage&.blocked_cells.to_a.to_json,
+                                           blocked_sides: passage&.blocked_sides.to_a.to_json,
                                            map_preview_layout_value: board_map.layout.except(*kept_keys).to_json,
                                            map_preview_token_characters_value: {}.to_json)
   end

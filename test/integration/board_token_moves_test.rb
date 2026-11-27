@@ -77,6 +77,20 @@ class BoardTokenMovesTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
   end
 
+  test "the room of a player knows which tokens it moves, and the walls that stop them, without drawing them" do
+    wolf = @game_table.characters.create!(kind: :companion, name: "Loup", owner_character: @aria)
+    sign_in @player
+
+    get game_table_path(@game_table)
+
+    own_tokens = css_select("#game-room-board-own-tokens").first
+    assert_equal [@aria.id, wolf.id], JSON.parse(own_tokens["data-movable-character-ids"])
+    board = css_select("#game-room-board-player svg[data-room-board-target=map]").first
+    assert_includes JSON.parse(board["data-blocked-sides"]), "4,1|5,1"
+    assert_includes JSON.parse(board["data-blocked-cells"]), [2, 2]
+    assert_not_includes board["data-map-preview-layout-value"], "blocked"
+  end
+
   test "someone not accepted at the table may not move a token" do
     invited = create_user("invite")
     @game_table.participations.create!(user: invited, role: :player, status: :pending)

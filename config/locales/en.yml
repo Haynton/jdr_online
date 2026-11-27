@@ -1295,6 +1295,10 @@ en:
       hand: "Move the map"
       hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
       hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
+      move_cells:
+        one: "%{count} cell"
+        other: "%{count} cells"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"

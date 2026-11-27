@@ -3,7 +3,7 @@
   <div id="<%= BoardMapChanger.board_id(game_master:) %>" class="absolute inset-0"
        <%= tag.attributes(data: board_zoom_data(board_map)) %>>
     <svg viewBox="<%= game_map_view_box(board_map) %>" role="img" aria-label="<%= board_map.name %>"
-         class="absolute inset-0 size-full touch-none in-data-placing:cursor-crosshair in-data-moving-map:cursor-grab in-data-moving-map:active:cursor-grabbing"
+         class="absolute inset-0 size-full touch-none select-none in-data-placing:cursor-crosshair in-data-moving-map:cursor-grab in-data-moving-map:active:cursor-grabbing"
          <%= tag.attributes(data: board_map_data(board_map, game_master:)) %>></svg>
     <%= render "game_rooms/board_tokens", game_map: board_map, game_master: %>
     <div hidden role="group" aria-label="<%= t("game_rooms.board.zoom_label") %>"

@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 import { createSvgElement } from "map_editor/svg"
 import { renderBoardTokens } from "map_editor/token_renderer"
+import { passageOf, wayTowards, sameCell } from "map_editor/board_moves"
 
 const CELL_SIZE = 24
 const clickMovementTolerance = 5
@@ -9,8 +10,9 @@ const menuGap = 8
 
 export default class extends Controller {
   static targets = ["map", "tokens", "creaturePlacer", "hint", "hintName", "tokenMenu", "tokenMenuTitle",
-                    "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput"]
-  static values = { hint: String, playerHint: String, tokensUrl: String, showLabel: String, hideLabel: String }
+                    "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput", "moveBubble"]
+  static values = { hint: String, playerHint: String, tokensUrl: String, showLabel: String, hideLabel: String,
+                    gameMaster: Boolean, cellLength: Number, distanceLabel: String, cellsLabels: Object }
 
   mapTargetConnected() {
     this.drawTokens()
@@ -124,8 +126,126 @@ export default class extends Controller {
     if (this.pointerMovedSinceDown(event) || this.mapTarget.closest("[data-moving-map]")) return
     if (this.creature) return this.placeCreature(event)
 
-    const token = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-board-token-id]")
+    const token = this.tokenUnder(event)
     token ? this.openTokenMenu(token) : this.closeTokenMenu()
+  }
+
+  // With the pointer capture of the board, the events reach the board itself: the token is the one under the pointer
+  tokenUnder(event) {
+    return document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-board-token-id]")
+  }
+
+  pressToken(event) {
+    if (this.tokenDrag) return this.cancelTokenDrag()
+    if (event.button !== 0 || this.creature || this.mapTarget.closest("[data-moving-map]")) return
+
+    const token = this.tokenData(this.tokenUnder(event)?.dataset.boardTokenId)
+    if (!token || !this.mayMove(token)) return
+
+    event.preventDefault()
+    this.tokenDrag = { token, pointerId: event.pointerId, pressedAt: [event.clientX, event.clientY], started: false,
+                       way: [{ cell: [token.column, token.row], cost: 0 }], passage: this.passageForMoves() }
+  }
+
+  dragToken(event) {
+    const drag = this.tokenDrag
+    if (!drag || event.pointerId !== drag.pointerId) return
+    if (!drag.started && !this.movedFrom(drag.pressedAt, event)) return
+
+    if (!drag.started) this.closeTokenMenu()
+    drag.started = true
+    drag.way = wayTowards(drag.way, this.cellInsideTheGrid(event), drag.passage)
+    this.showDraggedToken(drag)
+    this.showDistance(drag.way.at(-1).cost, event)
+  }
+
+  dropToken(event) {
+    const drag = this.tokenDrag
+    if (!drag || event.pointerId !== drag.pointerId) return
+
+    this.endTokenDrag()
+    if (!drag.started) return
+
+    const arrival = drag.way.at(-1).cell
+    const start = drag.way[0].cell
+    if (sameCell(arrival, start) || this.cellHoldsAnotherToken(arrival, drag.token.id)) return this.drawTokens()
+
+    const [column, row] = arrival
+    this.sendTokenRequest(`${this.tokensUrlValue}/${drag.token.id}/move`, "PATCH", { column, row })
+  }
+
+  cancelTokenDrag() {
+    if (!this.tokenDrag) return
+
+    this.endTokenDrag()
+    this.drawTokens()
+  }
+
+  endTokenDrag() {
+    this.tokenDrag = null
+    if (this.hasMoveBubbleTarget) this.moveBubbleTarget.hidden = true
+  }
+
+  tokenData(tokenId) {
+    return tokenId && this.tokensOfTheMap().find((token) => String(token.id) === tokenId)
+  }
+
+  // The game master moves every token; a player the tokens of their character and of its companions
+  mayMove(token) {
+    if (this.gameMasterValue) return true
+
+    const ownTokens = this.tokensTargets.find((element) => element.dataset.movableCharacterIds)
+    return JSON.parse(ownTokens?.dataset.movableCharacterIds ?? "[]").includes(token.character_id)
+  }
+
+  // The game master passes everywhere; a player stops at a wall and before a blocked cell (MapPassage)
+  passageForMoves() {
+    if (this.gameMasterValue) return null
+
+    const { blockedCells, blockedSides } = this.mapTarget.dataset
+    return passageOf(JSON.parse(blockedCells ?? "[]"), JSON.parse(blockedSides ?? "[]"))
+  }
+
+  movedFrom([pressedX, pressedY], event) {
+    return Math.hypot(event.clientX - pressedX, event.clientY - pressedY) > clickMovementTolerance
+  }
+
+  cellInsideTheGrid(event) {
+    const [column, row] = this.cellAt(event)
+    const { mapPreviewColumnsValue: columns, mapPreviewRowsValue: rows } = this.mapTarget.dataset
+    return [Math.min(Math.max(column, 0), Number(columns) - 1), Math.min(Math.max(row, 0), Number(rows) - 1)]
+  }
+
+  showDraggedToken(drag) {
+    const tokenGroup = this.mapTarget.querySelector(`[data-board-token-id="${drag.token.id}"]`)
+    if (!tokenGroup) return
+
+    const [column, row] = drag.way.at(-1).cell
+    tokenGroup.setAttribute("transform", `translate(${(column - drag.token.column) * CELL_SIZE} ${(row - drag.token.row) * CELL_SIZE})`)
+    tokenGroup.parentElement.appendChild(tokenGroup)
+  }
+
+  showDistance(cells, event) {
+    const room = this.element.getBoundingClientRect()
+    this.moveBubbleTarget.textContent = this.distanceText(cells)
+    this.moveBubbleTarget.style.left = `${event.clientX - room.left + 16}px`
+    this.moveBubbleTarget.style.top = `${event.clientY - room.top - 36}px`
+    this.moveBubbleTarget.hidden = false
+  }
+
+  // In the distance of the template (« 7,5 m »); in cells when it gives none
+  distanceText(cells) {
+    const language = document.documentElement.lang || "en"
+    if (this.cellLengthValue > 0) {
+      const distance = new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(cells * this.cellLengthValue)
+      return this.distanceLabelValue.replace("__DISTANCE__", distance)
+    }
+    const form = new Intl.PluralRules(language).select(cells)
+    return (this.cellsLabelsValue[form] ?? this.cellsLabelsValue.other).replace("__COUNT__", cells)
+  }
+
+  cellHoldsAnotherToken([column, row], tokenId) {
+    return this.tokensOfTheMap().some((token) => token.id !== tokenId && token.column === column && token.row === row)
   }
 
   pointerMovedSinceDown(event) {
@@ -220,8 +340,10 @@ export default class extends Controller {
   async sendTokenRequest(url, method, fields = {}) {
     const body = new FormData()
     Object.entries(fields).forEach(([name, value]) => body.append(name, value))
-    const response = await fetch(url, { method, body, headers: turboStreamHeaders() })
-    if (response.ok) Turbo.renderStreamMessage(await response.text())
+    const response = await fetch(url, { method, body, headers: turboStreamHeaders() }).catch(() => null)
+    if (!response?.ok) return this.drawTokens()
+
+    Turbo.renderStreamMessage(await response.text())
   }
 }
 
