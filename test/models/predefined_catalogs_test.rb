@@ -119,6 +119,16 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
+  test "every feat the template declares has its name and summary in the catalog of features" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "feature" }.each do |catalog_file|
+      feature_keys = read_json(catalog_file)["entries"].pluck("key")
+      feat_keys = create_template_of(catalog_file).character_fields["feats"].to_a.pluck("key")
+
+      assert_operator feat_keys.size, :>=, 17, catalog_file.basename
+      assert_empty feat_keys - feature_keys, catalog_file.basename
+    end
+  end
+
   test "every item of a starting equipment is in the catalog, and every group of your choice has items" do
     CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }.each do |catalog_file|
       items = read_json(catalog_file)["entries"]

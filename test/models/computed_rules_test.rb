@@ -4,7 +4,7 @@ class ComputedRulesTest < ActiveSupport::TestCase
   JAVASCRIPT_DIRECTORY = Rails.root.join("app/javascript")
 
   test "the registry lists every computing rule, once, in this order" do
-    assert_equal %w[proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
+    assert_equal %w[proficiency_by_level ability_modifier initiative_bonus hit_dice_by_class spell_save_dc spell_attack_bonus
                     hit_points_by_level unarmored_armor_class worn_armor_class starting_gold], ComputedRules.keys
   end
 

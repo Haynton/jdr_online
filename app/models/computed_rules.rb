@@ -5,7 +5,7 @@
 # ALL, and its JavaScript module when it is shown while the player types
 module ComputedRules
   ALL = [
-    ComputedRules::ProficiencyByLevel, ComputedRules::AbilityModifier, ComputedRules::HitDiceByClass,
+    ComputedRules::ProficiencyByLevel, ComputedRules::AbilityModifier, ComputedRules::InitiativeBonus, ComputedRules::HitDiceByClass,
     ComputedRules::SpellSaveDc, ComputedRules::SpellAttackBonus, ComputedRules::HitPointsByLevel,
     ComputedRules::UnarmoredArmorClass, ComputedRules::WornArmorClass, ComputedRules::StartingGold
   ].freeze
