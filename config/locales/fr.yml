@@ -289,6 +289,19 @@ fr:
           invalid_price_lines: "La liste de prix « %{list} » : il faut des lignes, chacune avec un libellé, un prix et, au besoin, une note courte"
           invalid_price_lists: "Les listes de prix : il faut une liste de listes, chacune avec sa clé, son libellé et ses lignes"
           unknown_price_list_parameter: "La liste de prix « %{list} » : le réglage « %{parameter} » est inconnu"
+          invalid_encounters: "Le budget des rencontres : il faut ses réglages, son libellé, ses difficultés et ses tables"
+          invalid_encounters_budget: "Le budget des rencontres : il faut 20 lignes, une par niveau, de %{count} nombres entiers positifs chacune"
+          invalid_encounters_difficulties: "Le budget des rencontres : il faut de 1 à 5 difficultés, chacune avec sa clé et son libellé"
+          invalid_encounters_label: "Le budget des rencontres : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_encounters_rating: "Le budget des rencontres : « rating_from » doit désigner une liste de la fiche des PNJ"
+          invalid_encounters_xp: "Le budget des rencontres : les points d'expérience doivent être des nombres entiers, pour des options de la liste"
+          unknown_encounters_parameter: "Le budget des rencontres : le réglage « %{parameter} » est inconnu"
+          duplicate_rule_sheet: "Deux fiches de règles ont la même clé : %{key}"
+          invalid_rule_sheet_entries: "La fiche de règles « %{sheet} » : il faut des entrées, chacune avec un titre et un texte de %{count} caractères au plus"
+          invalid_rule_sheet_key: "La fiche de règles « %{key} » : sa clé doit être en minuscules, chiffres et tirets bas, une lettre d'abord"
+          invalid_rule_sheet_label: "La fiche de règles « %{key} » : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_rule_sheets: "Les fiches de règles : il faut une liste de fiches, chacune avec sa clé, son libellé et ses entrées"
+          unknown_rule_sheet_parameter: "La fiche de règles « %{sheet} » : le réglage « %{parameter} » est inconnu"
           invalid_conditions: "Les états : la liste doit être une liste d'états, chacun avec sa clé et son libellé"
           invalid_condition_description: "L'état « %{condition} » : la description doit être un texte de %{count} caractères au plus"
           invalid_condition_key: "L'état « %{key} » : la clé doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -1402,6 +1415,22 @@ fr:
         fight: "Combat"
         score: "Score"
         title: "Ma fiche"
+      encounter:
+        above: "Au-delà de « %{difficulty} »"
+        add: "Ajouter %{name} à la rencontre"
+        chosen: "Votre rencontre"
+        creature_detail: "FP %{rating} · %{xp}"
+        creatures: "Créatures"
+        difficulty: "Difficulté :"
+        empty: "Ajoutez des créatures ci-dessous : leurs XP s'additionnent et la difficulté s'affiche."
+        no_match: "Aucune créature ne correspond à cette recherche."
+        no_party: "Aucun personnage terminé : le budget attend les personnages des joueurs."
+        party:
+          one: "1 personnage · niveau %{levels}"
+          other: "%{count} personnages · niveaux %{levels}"
+        search: "Rechercher une créature"
+        title: "Rencontre"
+        xp: "%{count} XP"
       details:
         title: "Détails"
       dice:
@@ -1469,6 +1498,10 @@ fr:
         title: "Capacités"
       prices:
         title: "Prix"
+      rules:
+        no_match: "Aucune règle ne correspond à cette recherche."
+        search: "Rechercher une règle"
+        title: "Règles"
       skills:
         title: "Compétences"
       spells:
