@@ -141,6 +141,16 @@ export default class MapLayout {
     return true
   }
 
+  // A player character has one token: put elsewhere, it moves there, keeping whether it starts hidden (shown at first)
+  placePlayerToken(characterId, column, row) {
+    if (!this.mayHoldToken(column, row)) return false
+
+    const placed = this.tokens.find((token) => token.character_id === characterId)
+    this.tokens = this.tokens.filter((token) => token !== placed)
+    this.tokens.push({ character_id: characterId, column, row, hidden: placed?.hidden ?? false })
+    return true
+  }
+
   tokenStartsHidden(column, row) {
     return this.tokenAt(column, row)?.hidden !== false
   }

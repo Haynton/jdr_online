@@ -23,6 +23,7 @@ export const refusedMark = "#b91c1c"
 // white over them
 export const enemyToken = "#9d2b22"
 export const npcToken = "#2f6152"
+export const playerToken = "#6b4d10"
 export const tokenLetters = "#ffffff"
 // The colors of the objects, from the prototype: wood, stone, iron, gold, the fabrics, the flames
 export const wood = "#ecdcc2"

@@ -118,7 +118,8 @@ fr:
               cell_taken: "Un jeton est déjà sur cette case"
               outside_grid: "Le jeton doit être sur une case de la carte"
             character:
-              not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
+              not_a_character_of_the_table: "doit être un PNJ, un ennemi ou un personnage terminé de cette table"
+              already_on_the_map: "a déjà son jeton sur cette carte"
         friendship:
           attributes:
             addressee:
@@ -149,9 +150,10 @@ fr:
               invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
               tokens_without_table: "contient des jetons, alors qu'elle n'appartient à aucune table"
               invalid_token: "contient un jeton qui n'a pas la forme attendue"
-              unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
+              unknown_token_character: "contient le jeton d'un personnage qui n'est ni un PNJ, ni un ennemi, ni un personnage terminé de la table"
               token_outside_grid: "contient un jeton hors de la grille"
               tokens_overlap: "contient deux jetons sur la même case"
+              player_character_twice: "contient deux jetons du même personnage de joueur"
               token_on_blocked_cell: "contient un jeton sur une zone bloquante"
         game_map:
           attributes:
@@ -828,7 +830,10 @@ fr:
       bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
       bestiary_title: "Bestiaire"
       empty: "Aucun pour l'instant."
-      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton de créature est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
+      player_detail: "Joué par %{username}"
+      players_hint: "Un seul jeton par personnage : le poser ailleurs le déplace. Montré aux joueurs au départ."
+      players_title: "Personnages des joueurs"
       no_match: "Aucun personnage ni créature ne correspond à cette recherche."
       search: "Rechercher un personnage ou une créature"
       table_title: "PNJ et ennemis de la table"
@@ -1182,6 +1187,9 @@ fr:
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"
+      place_player: "Placer sur la carte"
+      player_already_placed: "%{name} est déjà sur la carte."
+      player_hint: "Cliquez sur une case pour placer « %{name} ». Échap pour arrêter."
       place_map: "Placer %{name} sur le plateau"
       remove: "Retirer"
       remove_map: "Retirer %{name} du plateau"

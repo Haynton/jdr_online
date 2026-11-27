@@ -9,11 +9,13 @@ module Characters
 
     def update
       changed = @character.change_avatar(params.dig(:character, :avatar))
+      @character.send_new_look_to_players if changed
       respond_with_picker(error: (@character.errors.messages_for(:avatar).first unless changed))
     end
 
     def destroy
       @character.remove_avatar
+      @character.send_new_look_to_players
       respond_with_picker(error: nil)
     end
 

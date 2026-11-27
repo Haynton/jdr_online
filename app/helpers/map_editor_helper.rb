@@ -75,7 +75,10 @@ module MapEditorHelper
   def map_token_characters(map)
     return {} unless map_editor_blocking?(map)
 
-    map.game_table.npcs.to_h { |character| [character.id, { name: character.name, kind: character.kind }] }
+    characters = map.game_table.characters.placeable_on_the_board.includes(avatar_attachment: :blob)
+    characters.to_h do |character|
+      [character.id, { name: character.name, kind: character.kind, picture: board_token_picture(character) }.compact]
+    end
   end
 
   # A preview on its card of « Mes cartes »: something drawn, or its picture; a map still empty keeps its icon

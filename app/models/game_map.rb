@@ -62,12 +62,12 @@ class GameMap < ApplicationRecord
   # map (« Gobelin 2 »), in the order they were put; hidden from the players unless the game master shows it
   def placed_tokens
     tokens = layout.to_h.fetch("tokens", [])
-    characters = game_table.npcs.where(id: tokens.pluck("character_id")).index_by(&:id)
+    characters = game_table.characters.placeable_on_the_board.where(id: tokens.pluck("character_id")).index_by(&:id)
     numbers = Hash.new(0)
     tokens.map do |token|
       character = characters.fetch(token["character_id"])
       { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1,
-        hidden: token.fetch("hidden", true) }
+        hidden: token.fetch("hidden") { BoardToken.hidden_at_first?(character) } }
     end
   end
 
@@ -109,13 +109,15 @@ class GameMap < ApplicationRecord
     game_table.reload
     BoardMapChanger.send_board(game_table)
     BoardMapChanger.send_board(game_table, game_master: true)
+    BoardTokensSender.new(game_table).send_own_tokens_to_every_player
   end
 
   def drop_board_tokens_outside_the_grid
     outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))
+    characters = outside.includes(:character).map(&:character).uniq
     return if outside.delete_all.zero?
 
-    BoardTokensSender.new(game_table).call if game_table.board_game_map_id == id
+    BoardTokensSender.new(game_table).call(characters) if game_table.board_game_map_id == id
   end
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet
