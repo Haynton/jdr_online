@@ -51,10 +51,10 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
     numbers = %w[challenge armor_class hp speed strength]
 
-    assert_equal [309, 309], bestiaries.map(&:size)
+    assert_equal [329, 329], bestiaries.map(&:size)
     assert_equal({ "0" => 28, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 42, "3" => 25, "4" => 16, "5" => 25, "6" => 11,
                    "7" => 6, "8" => 10, "9" => 8, "10" => 6, "11" => 7, "12" => 2, "13" => 6, "14" => 3, "15" => 4,
-                   "16" => 5 },
+                   "16" => 5, "17" => 4, "19" => 1, "20" => 3, "21" => 4, "22" => 2, "23" => 3, "24" => 2, "30" => 1 },
                  bestiaries.first.map { |creature| creature.dig("properties", "challenge") }.tally)
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature["properties"].slice(*numbers).except("speed") } })
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
