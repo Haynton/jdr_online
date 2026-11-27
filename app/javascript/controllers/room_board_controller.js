@@ -40,11 +40,16 @@ export default class extends Controller {
     renderBoardTokens(this.tokensLayer(), this.tokensOfTheMap())
   }
 
+  // Between the message to all the players and the one to a player alone, a token may be in both: drawn once, as the
+  // shared tokens say (they come first in the page)
   tokensOfTheMap() {
     const mapId = this.mapTarget.dataset.gameMapId
-    return this.tokensTargets
+    const tokensById = new Map()
+    this.tokensTargets
       .filter((element) => !element.dataset.gameMapId || element.dataset.gameMapId === mapId)
       .flatMap((element) => JSON.parse(element.dataset.tokens))
+      .forEach((token) => { if (!tokensById.has(token.id)) tokensById.set(token.id, token) })
+    return [...tokensById.values()]
   }
 
   tokensLayer() {

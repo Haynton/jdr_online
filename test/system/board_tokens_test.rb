@@ -115,6 +115,24 @@ class BoardTokensLiveTest < ApplicationSystemTestCase
     using_session(:player) { assert_selector "[data-board-token-id][data-name=Aria][data-hidden=true]", visible: :all }
   end
 
+  test "a token both in the shared tokens and in the player's own, between two messages, is drawn once, as shared" do
+    aria = @game_table.characters.find_by(name: "Aria")
+    token = @game_table.board_game_map.board_tokens.create!(character: aria, column: 2, row: 2, hidden: false)
+    open_room_as("joueur")
+    assert_selector "[data-board-token-id='#{token.id}']", visible: :all
+
+    page.execute_script(<<~JS, token.id)
+      const own = document.getElementById("game-room-board-own-tokens")
+      const hidden = { id: arguments[0], name: "Aria", kind: "pc", column: 2, row: 2, hidden: true }
+      const copy = own.cloneNode()
+      copy.dataset.tokens = JSON.stringify([hidden])
+      own.replaceWith(copy)
+    JS
+
+    assert_selector "[data-board-token-id='#{token.id}'][data-hidden=false]", visible: :all, count: 1
+    assert_no_selector "[data-board-token-id='#{token.id}'][data-hidden=true]", visible: :all
+  end
+
   private
 
   def create_user(username)
