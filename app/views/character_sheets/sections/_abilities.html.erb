@@ -1,81 +1,53 @@
-<%# The abilities step, as a guide in two moves (decision): on the left, in the order the player acts, "1 Your scores"
-    (the way picked by the table, or by the player when the table leaves it to them: its help, then its guide, a partial
-    said by its class in AbilityMethods: the dice to roll, the values of the array, the points to spend) then "2 Background bonus" (what it raises, the rule, one line
-    per ability raised with +0 | +1 | +2 and its final score, what is left to place: ability_bonus_controller.js); on
-    the right, the six tiles (three per line, 192 px at most, two on a phone). Under 1024 px, the guide comes
-    first, the tiles under it. A tile only shows a placed bonus as a round astride its corner %>
+<%# The abilities step as a game screen (decision, prototype "Création façon jeu"), on one centered column: the way to get
+    the scores (picked by the player when the table leaves it to them) and its help, then a tray of tokens: the values
+    to place (the standard array, or "Roll the dice" and its results), the bonus of the background (+2 and +1, or +1 on
+    three, as its rule allows) and "Start again"; a line that says what to do; then the six cards
+    (character_sheets/fields/_ability_card). The player touches a token, then the card where it goes
+    (ability_tokens_controller.js). A point buy has no values to place: its scores are typed in the cards, the points
+    spent in the tray. The tokens fill the fields the step always sent: the server checks them as before %>
 <% game_table = character.game_table %>
 <% ability_fields = fields.select { |field| field["type"] == "ability" } %>
 <% bonus_field = ability_bonus_field(fields) %>
 <% raised_keys = raised_ability_keys(character, bonus_field) %>
-<%= tag.div class: "clear-left grid gap-y-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-x-24",
-            data: abilities_section_data(character, bonus_field) do %>
-  <div class="flex flex-col gap-10">
-    <section aria-labelledby="ability_scores_title">
-      <%= render "character_sheets/sections/guide_heading", number: 1, id: "ability_scores_title",
-                                                         title: t("game_tables.characters.new.scores_title") %>
-      <% ability_method = character.ability_method_in_use %>
-      <% if game_table.players_choose_ability_method? %>
-        <%= render "character_sheets/ability_methods/picker", character: character %>
-      <% end %>
-      <% if ability_method %>
-        <%# Its help, in the words of the game, then what the way needs: the dice, the values, the points %>
-        <p class="mt-3 text-sm text-muted"><%= ability_method["help"] %></p>
-        <%= render AbilityMethods.find(ability_method["type"]).guide_partial, character: character, ability_method: ability_method %>
-      <% else %>
-        <p class="mt-3 text-sm text-muted"><%= t("game_tables.characters.new.type_scores") %></p>
-      <% end %>
-    </section>
+<% ability_method = character.ability_method_in_use %>
+<%= tag.div class: "clear-left flex flex-col items-center", data: ability_cards_section_data(character, bonus_field) do %>
+  <% if game_table.players_choose_ability_method? %>
+    <div class="mb-4 w-full max-w-md"><%= render "character_sheets/ability_methods/picker", character: character %></div>
+  <% end %>
+  <% if ability_method %>
+    <p class="mb-4 max-w-2xl text-center text-sm text-muted"><%= ability_method["help"] %></p>
+  <% else %>
+    <p class="mb-4 max-w-2xl text-center text-sm text-muted"><%= t("game_tables.characters.new.type_scores") %></p>
+  <% end %>
 
-    <% if bonus_field %>
-      <section aria-labelledby="ability_bonus_title">
-        <%= render "character_sheets/sections/guide_heading", number: 2, id: "ability_bonus_title",
-                                                           title: bonus_field["label"] %>
-        <% if raised_keys.any? %>
-          <p class="mt-3 text-sm text-muted">
-            <%= t("game_tables.characters.new.bonus_raises_html",
-                  option: tag.span(bonus_source_option(character, bonus_field), class: "font-semibold text-ink"),
-                  abilities: raised_ability_labels(character, bonus_field)) %>
-            <%# The rule, in the words of the game: the help of the field %>
-            <%= bonus_field["help"] %>
-          </p>
-          <%# Headings over the columns of the lines, for the eye only: each line already names its choices and its score %>
-          <div class="mt-5 <%= CharacterSheets::AbilityBonusesHelper::BONUS_COLUMNS %> text-[11px] font-semibold tracking-wider text-muted uppercase" aria-hidden="true">
-            <span></span>
-            <span class="text-center"><%= t("game_tables.characters.new.bonus_column") %></span>
-            <span class="text-center"><%= t("game_tables.characters.new.score_column") %></span>
-          </div>
-          <ul class="mt-2 flex flex-col gap-2">
-            <% ability_fields.select { |field| raised_keys.include?(field["key"]) }.each do |field| %>
-              <%= render "character_sheets/sections/ability_bonus_choice", character: character, field: field,
-                                                                        bonus_field: bonus_field,
-                                                                        final_score: computed[:scores]&.dig(field["key"]) %>
-            <% end %>
-          </ul>
-          <%# In red while the spread is wrong (data-invalid, set here and by ability_bonus_controller.js) %>
-          <%= tag.p ability_bonus_status(character, bonus_field), role: "status",
-                    class: "mt-4 text-sm font-medium text-ink data-invalid:text-error-ink",
-                    data: { ability_bonus_target: "status", invalid: ("" if ability_bonus_too_many?(character, bonus_field)) } %>
-          <% if (error = sheet_field_error(character, bonus_field)) %>
-            <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
-          <% end %>
-        <% else %>
-          <p class="mt-3 text-sm text-muted"><%= t("game_tables.characters.new.bonus_pick_background") %></p>
-        <% end %>
-      </section>
+  <%# The tray: what the way needs (its partial, said by its class in AbilityMethods), the bonus, then its button (Start
+      again, or Roll the dice) %>
+  <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-3">
+    <% if ability_method %>
+      <%= render AbilityMethods.find(ability_method["type"]).guide_partial, character: character, ability_method: ability_method %>
     <% end %>
+    <% if bonus_field && raised_keys.any? %>
+      <span class="mx-2 h-8 w-px bg-line max-sm:hidden" aria-hidden="true"></span>
+      <%= render "character_sheets/sections/ability_bonus_tokens", character: character, bonus_field: bonus_field %>
+    <% end %>
+    <%# On a phone, the button goes to its own line: a little more room above it %>
+    <div class="ml-2 max-sm:mt-3">
+      <%= render(ability_method ? AbilityMethods.find(ability_method["type"]).tray_action_partial : "character_sheets/ability_methods/start_again") %>
+    </div>
   </div>
+  <p class="mt-4 min-h-5 text-center text-sm text-muted" aria-live="polite" data-ability-tokens-target="hint"></p>
+  <% if bonus_field && raised_keys.none? %>
+    <p class="mt-1 text-center text-sm text-muted"><%= t("game_tables.characters.new.bonus_pick_background") %></p>
+  <% end %>
+  <% if bonus_field && (bonus_error = sheet_field_error(character, bonus_field)) %>
+    <p class="<%= SimpleFormFieldClasses::ERROR %> text-center"><%= bonus_error %></p>
+  <% end %>
 
-  <%# 12 px between the tiles on a phone, 16 px above: two tiles and a wider gap ran 5 px past the content.
-      From 640 px, 192 px each, side by side and wrapping (decisions: stretched across the column, they were mostly
-      empty space; in a grid of three narrower columns, they ran over their gaps), as many per line as the width holds.
-      Against the right edge beside the guide (from 1024 px), like the buttons at the bottom %>
-  <div class="grid grid-cols-2 content-start gap-3 sm:flex sm:flex-wrap sm:gap-4 lg:justify-end">
+  <div class="mt-10 grid w-full max-w-5xl grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 @4xl:grid-cols-6 [@media(max-height:820px)]:mt-8">
     <% ability_fields.each do |field| %>
-      <%= render "character_sheets/fields/ability", character: character, field: field,
-                                                        modifier: computed[:modifiers][field["key"]],
-                                                        bonus_field: (bonus_field if raised_keys.include?(field["key"])),
-                                                        rollable: ability_results_placed?(character) %>
+      <%= render "character_sheets/fields/ability_card", character: character, field: field,
+                                                             modifier: computed[:modifiers][field["key"]],
+                                                             bonus_field: (bonus_field if raised_keys.include?(field["key"])) %>
     <% end %>
   </div>
 <% end %>

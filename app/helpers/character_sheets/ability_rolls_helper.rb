@@ -56,12 +56,13 @@ module CharacterSheets
     # background in it. autocomplete off: a browser that restored the score shown (bonus included) on coming back to
     # the page would get the bonus added twice. With a point buy, the score typed stays within its costs (8 to 15): its
     # bounds, the highest kept apart for the bonus shown in it (typed_max)
-    def sheet_ability_input(character, field)
+    def sheet_ability_input(character, field, **options)
       bounds = ability_score_bounds(character)
       data = { character_sheet_target: "score", ability: field["key"], modifier_rule: field["modifier"],
                typed_max: bounds&.last }
+      readonly = options.key?(:readonly) ? options.delete(:readonly) : placed_only?(character)
       sheet_stepper_input(character, field, autocomplete: "off", data: data.compact, bounds: bounds,
-                                            readonly: placed_only?(character))
+                                            readonly: readonly, **options)
     end
 
     # The table turns the scores typed by hand off with a roll: a score is only placed from the results
@@ -79,14 +80,15 @@ module CharacterSheets
 
     private
 
-    # The roll kept shows again (ability_rolls), and « Relancer » goes once rolled when the table turns rolls again off
+    # The roll kept shows again (ability_rolls), and « Relancer » goes once there is no roll left (one roll again, when
+    # the table allows it)
     def ability_roll_data(character)
       game_table = character.game_table
       { controller: "ability-roll", ability_roll_url_value: game_table_ability_roll_path(game_table),
         ability_roll_reroll_label_value: t("game_tables.characters.new.reroll"),
         ability_roll_placeholder_value: t("game_tables.characters.new.place_result"),
         ability_roll_rolled_value: Array(character.ability_rolls).to_json,
-        ability_roll_rerolls_value: game_table.ability_rerolls }
+        ability_roll_rerolls_value: character.may_roll_abilities? }
     end
 
     def standard_array_data(method)

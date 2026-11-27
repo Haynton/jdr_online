@@ -75,7 +75,11 @@ class AbilityMethodsIntegrationTest < ActionDispatch::IntegrationTest
     sign_in @player
     get game_table_character_step_path(@game_table, "sheet")
     assert_select "p[data-point-buy-target=status]", text: "0 points dépensés sur 10"
-    assert_select "input#character_sheet_strength[min='8'][max='15'][data-typed-max='15']"
+    assert_select "input#character_sheet_strength[min='8'][max='15'][data-typed-max='15'][readonly]"
+    assert_select "button[data-kind=step][data-step='1'][aria-label=?]", "Monter un score"
+    assert_select "button[data-kind=step][data-step='-1'][aria-label=?]", "Baisser un score"
+    assert_select "[data-ability-tokens-points-value='10']"
+    assert_select "button[aria-label=?]", "Diminuer Strength", count: 0
 
     send_scores({ strength: 15, dexterity: 12 })
     assert_response :unprocessable_content
@@ -118,6 +122,7 @@ class AbilityMethodsIntegrationTest < ActionDispatch::IntegrationTest
 
     get game_table_character_step_path(@game_table, "sheet")
     assert_select "input#character_sheet_strength[readonly]"
+    assert_select "[data-ability-roll-rerolls-value=false]"
     totals = first_roll.pluck("total")
     send_scores({ strength: totals.max + 1 })
     assert_response :unprocessable_content
@@ -125,14 +130,38 @@ class AbilityMethodsIntegrationTest < ActionDispatch::IntegrationTest
     assert_equal totals.first(3), character.ability_scores.values_at("strength", "dexterity", "constitution")
   end
 
-  test "by default, as the rules: one roll kept, any score typed (real dice); the table may allow rolling again" do
+  test "by default, as the rules: one roll kept, the scores taken from it; the table may allow one roll again" do
     pick("roll")
     sign_in @player
     post game_table_ability_roll_path(@game_table)
+    first_roll = response.parsed_body["results"]
     assert response.parsed_body["final"]
+    post game_table_ability_roll_path(@game_table)
+    assert_equal first_roll, response.parsed_body["results"]
+
     @game_table.update!(ability_rerolls: true)
+    character.update_columns(ability_rerolled: false)
+    post game_table_ability_roll_path(@game_table)
+    second_roll = response.parsed_body["results"]
+    assert response.parsed_body["final"], "one roll again only"
+    post game_table_ability_roll_path(@game_table)
+    assert_equal second_roll, response.parsed_body["results"]
+  end
+
+  test "a first roll leaves the roll again the table allows" do
+    pick("roll")
+    @game_table.update!(ability_rerolls: true)
+    sign_in @player
     post game_table_ability_roll_path(@game_table)
     assert_not response.parsed_body["final"]
+  end
+
+  test "the table may let the scores of real dice be typed: any score, and a line says how" do
+    pick("roll")
+    @game_table.update!(ability_scores_typed: true)
+    sign_in @player
+    get game_table_character_step_path(@game_table, "sheet")
+    assert_select "p", text: /Touchez le rond d'une caractéristique et tapez votre score/
     send_scores({ strength: 3, dexterity: 18 })
     assert_equal({ "strength" => 3, "dexterity" => 18 }, character.ability_scores)
   end

@@ -1,7 +1,8 @@
-<%# A result to place, as a chip: its total, and its dice when it was rolled (ability_roll_controller.js fills it) %>
+<%# A value to place, as a token of the tray (ability_roll_controller.js fills it: its total, its dice as a tooltip when
+    it was rolled; ability_tokens_controller.js holds and places it) %>
 <template data-ability-roll-target="chipTemplate">
-  <span class="inline-flex items-baseline gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
-    <span class="text-sm font-bold text-ink tabular-nums" data-total></span>
-    <span class="text-xs text-muted tabular-nums empty:hidden" data-dice></span>
-  </span>
+  <button type="button" class="<%= CharacterSheets::AbilityCardsHelper::TOKEN_CLASSES %>" aria-pressed="false"
+          data-ability-tokens-target="valueToken" data-kind="value" data-action="ability-tokens#hold">
+    <span class="relative" data-total></span>
+  </button>
 </template>

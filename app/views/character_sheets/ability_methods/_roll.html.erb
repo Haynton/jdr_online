@@ -1,16 +1,18 @@
-<%# The dice roll: "Roll the dice", the server rolls (ability_roll_controller.js, AbilityRollsController), the results
-    as chips, placed from the list of each tile. The player may roll again or type their own scores, unless the table
-    turns it off (GameTable#ability_rerolls, #ability_scores_typed): then the guide says so %>
+<%# The dice roll, in the tray: a "?" per ability until the dice are rolled ("Roll the dice", at the right of the tray,
+    _roll_button), then the results as tokens, placed on the cards like the standard array (ability_roll_controller.js,
+    AbilityRollsController). The player may roll again or type their own scores, unless the table turns it off
+    (GameTable#ability_rerolls, #ability_scores_typed, both off by default): a line under the tray says what the table
+    allows: how to type the scores of real dice, and how many rolls there are (one, or one roll again) %>
 <% game_table = character.game_table %>
-<% limits = [(:no_typing unless game_table.ability_scores_typed), (:no_rerolls unless game_table.ability_rerolls)].compact %>
-<% limits.each do |limit| %>
-  <p class="mt-2 text-sm text-muted"><%= t("character_sheets.ability_methods.roll.#{limit}") %></p>
-<% end %>
-<div hidden class="mt-4" data-ability-roll-target="controls">
-  <button type="button" class="<%= button_classes(:secondary) %>" data-ability-roll-target="button" data-action="ability-roll#roll">
-    <%= render "shared/icons/dices" %>
-    <span data-ability-roll-target="buttonLabel"><%= t("game_tables.characters.new.roll") %></span>
-  </button>
+<% limits = [(:typing if game_table.ability_scores_typed), (game_table.ability_rerolls ? :one_reroll : :no_rerolls)].compact %>
+<div hidden class="flex flex-wrap items-center justify-center gap-1" role="status" data-ability-roll-target="results">
+  <% game_table.ability_fields.size.times do %>
+    <span class="<%= CharacterSheets::AbilityCardsHelper::TOKEN_CLASSES %> <%= CharacterSheets::AbilityCardsHelper::WAITING_TOKEN_CLASSES %>" aria-hidden="true">
+      <span class="relative">?</span>
+    </span>
+  <% end %>
 </div>
-<div hidden class="mt-4 flex flex-wrap gap-2" role="status" data-ability-roll-target="results"></div>
 <%= render "character_sheets/ability_methods/result_chip_template" %>
+<% if limits.any? %>
+  <p class="order-last w-full text-center text-xs text-muted"><%= limits.map { |limit| t("character_sheets.ability_methods.roll.#{limit}") }.join(" ") %></p>
+<% end %>

@@ -1,0 +1,16 @@
+<%# The bonus of the background in the tray of the abilities step: its name in small capitals, then one "+1" token in
+    gold per point of its rule; two on the same ability make +2, up to the most its rule allows
+    (ability_tokens_controller.js). Hidden without JavaScript: the cards then show their +0 | +1 | +2 %>
+<div hidden class="flex items-center gap-2" data-ability-tokens-target="bonusTray">
+  <span class="text-xs font-bold tracking-widest text-muted uppercase"><%= bonus_source_option(character, bonus_field) %></span>
+  <span class="flex items-center gap-1">
+    <% ability_bonus_token_count(bonus_field).times do |token_index| %>
+      <button type="button" class="<%= CharacterSheets::AbilityCardsHelper::TOKEN_CLASSES %> <%= CharacterSheets::AbilityCardsHelper::BONUS_TOKEN_CLASSES %>"
+              aria-pressed="false" aria-label="<%= t("character_sheets.ability_cards.bonus_token") %>"
+              data-ability-tokens-target="bonusToken" data-kind="bonus" data-index="<%= token_index %>"
+              data-action="ability-tokens#hold">
+        <span class="relative">+1</span>
+      </button>
+    <% end %>
+  </span>
+</div>

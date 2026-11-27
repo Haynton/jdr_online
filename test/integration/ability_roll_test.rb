@@ -30,7 +30,7 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
     results.each { |result| assert_equal result["kept"].sum, result["total"] }
   end
 
-  test "the sheet offers the roll, its method, and a list to place a result on each ability" do
+  test "the sheet offers the roll, its method, and its results to place on each ability as tokens" do
     sign_in @player
     get game_table_character_step_path(@game_table, "sheet")
 
@@ -38,8 +38,11 @@ class AbilityRollTest < ActionDispatch::IntegrationTest
                   game_table_ability_roll_path(@game_table)
     assert_select "button[data-action='ability-roll#roll']", text: /Lancer les dés/
     assert_select "p", text: /4d6 par caractéristique, en gardant les 3 meilleurs/
-    assert_select "select[aria-label=?][data-score-input=character_sheet_strength]:not([name])",
-                  "Attribuer un résultat à Strength"
+    assert_select "template[data-ability-roll-target=chipTemplate] button[data-kind=value]"
+    assert_select "[data-ability-roll-target=results] span[aria-hidden=true]", count: 3, text: "?"
+    assert_select "[data-ability-roll-target=afterRoll][hidden] button[data-action='ability-tokens#startAgain']"
+    assert_select "[data-ability-tokens-target=card][data-score-input=character_sheet_strength] " \
+                  "button[data-action~='ability-tokens#place'][aria-label=?][disabled]", "Poser sur Strength"
   end
 
   test "a table made before the ways keeps its dice roll" do

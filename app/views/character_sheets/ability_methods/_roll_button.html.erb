@@ -1,0 +1,15 @@
+<%# "Roll the dice", at the right of the tray of the abilities step, where "Start again" is with the other ways: the
+    server rolls (ability_roll_controller.js). Once rolled, it says "Roll the dice again", or goes when no roll is left;
+    "Start again" comes beside it with the results (decision: a token placed cannot be taken again, a mistake needs it).
+    Hidden without JavaScript: the scores are then typed %>
+<div class="flex flex-wrap items-center justify-center gap-2">
+  <div hidden data-ability-roll-target="controls">
+    <button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-ability-roll-target="button" data-action="ability-roll#roll">
+      <%= render "shared/icons/dices" %>
+      <span data-ability-roll-target="buttonLabel"><%= t("game_tables.characters.new.roll") %></span>
+    </button>
+  </div>
+  <div hidden data-ability-roll-target="afterRoll">
+    <%= render "character_sheets/ability_methods/start_again" %>
+  </div>
+</div>

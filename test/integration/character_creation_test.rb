@@ -147,10 +147,8 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_select "label[for=character_sheet_strength]", text: "Force"
     assert_select "input[name=?][data-character-sheet-target=score][value='14']", "character[sheet][strength]"
     assert_select "output[data-character-sheet-target=modifier][data-ability=strength]", text: "+2"
-    assert_select "[data-controller=number-stepper]" do
-      assert_select "button[hidden][aria-label=?][data-action='number-stepper#decrease']", "Diminuer Force"
-      assert_select "button[hidden][aria-label=?][data-action='number-stepper#increase']", "Augmenter Force"
-    end
+    assert_select "input#character_sheet_strength:not([readonly])"
+    assert_select "button[aria-label=?]", "Diminuer Force", count: 0
     assert_select "output[data-character-sheet-target=computed][data-key=proficiency_bonus]", text: "+2"
     assert_select "input[type=checkbox][name=?][checked]", "character[sheet][athletics]"
     assert_select "label[for=character_sheet_athletics] span", text: "FOR"
@@ -287,13 +285,14 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_equal({ "intelligence" => 2, "wisdom" => 1 }, @participation.reload.character.sheet["ability_bonuses"])
 
     get sheet_step_path
-    assert_select "span#bonus_intelligence_label", text: "Intelligence"
-    assert_select "[role=radiogroup][aria-labelledby=bonus_intelligence_label] input[type=radio][value='2'][checked]"
+    assert_select "[role=radiogroup][aria-label=?] input[type=radio][value='2'][checked]",
+                  "Bonus de l'historique sur Intelligence"
     assert_select "[data-character-sheet-target=bonusNote][data-ability=intelligence][data-template=?]",
                   "dont +#{CharacterSheets::AbilityBonusesHelper::BONUS_PLACEHOLDER} Sage"
-    assert_select "output[data-character-sheet-target=finalScore][data-ability=intelligence]", text: "17"
     assert_select "output[data-character-sheet-target=modifier][data-ability=intelligence]", text: "+3"
-    assert_select "p", text: /Répartissez \+2 et \+1\./
+    # The rule +2 and +1, or +1 on three, as tokens and the switch between the two spreads
+    assert_select "button[data-kind=bonus]", count: 3, text: "+1"
+    assert_select "[data-ability-tokens-max-per-ability-value='2']"
   end
 
   test "the bonus of a background follows the rule of its template, not the one of the heroic fantasy" do
@@ -321,9 +320,11 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     assert_equal({ "strength" => 1, "agility" => 1 }, @participation.reload.character.sheet["ability_bonuses"])
 
     get sheet_step_path
-    assert_select "[role=radiogroup][aria-labelledby=bonus_strength_label] input[type=radio]", count: 2
+    assert_select "[role=radiogroup][aria-label=?] input[type=radio]", "Bonus de l'historique sur Force", count: 2
     assert_select "[data-ability-bonus-total-value='2'][data-ability-bonus-max-per-ability-value='1']"
-    assert_select "p", text: /\+1 à deux caractéristiques\./
+    # The rule of this template: +1 on two abilities, two tokens of +1 and no other spread to switch to
+    assert_select "button[data-kind=bonus]", count: 2
+    assert_select "[data-ability-tokens-max-per-ability-value='1']"
   end
 
   test "a required list keeps its step until it is picked" do

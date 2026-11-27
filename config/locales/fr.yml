@@ -397,10 +397,24 @@ fr:
   magic_items:
     attunement: "lien"
   character_sheets:
+    ability_cards:
+      bonus_on: "Bonus de l'historique sur %{label}"
+      bonus_token: "Bonus +1"
+      hold_bonus: "Où poser ce +1 ? Il va sur %{abilities}, jusqu'à +%{most} sur une même caractéristique."
+      hold_value: "Où poser le %{value} ?"
+      idle: "Touchez une valeur, puis la caractéristique où la poser."
+      idle_typed: "Touchez + ou −, puis les caractéristiques à monter ou baisser. Posez ensuite vos +1."
+      hold_raise: "Touchez les caractéristiques à monter d'un point. Touchez de nouveau + pour finir."
+      hold_lower: "Touchez les caractéristiques à baisser d'un point. Touchez de nouveau − pour finir."
+      raise: "Monter un score"
+      lower: "Baisser un score"
+      place_on: "Poser sur %{label}"
+      start_again: "Recommencer"
     ability_methods:
       roll:
         no_rerolls: "Un seul lancer : votre MJ ne permet pas de relancer."
-        no_typing: "Vos scores se choisissent parmi les résultats : votre MJ ne permet pas de les taper à la main."
+        one_reroll: "Vous pouvez relancer une fois : le second lancer est gardé."
+        typing: "Vous lancez de vrais dés ? Touchez le rond d'une caractéristique et tapez votre score."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -2092,8 +2106,8 @@ fr:
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
         higher_level_equipment_method_choice_hint: "Ce qu'un personnage créé au-dessus du niveau 1 reçoit en plus : de l'or (une part lancée à la fin de la création) et des objets magiques à choisir, selon son niveau."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
-        ability_rerolls_hint: "Avec le lancer de dés, le joueur peut relancer autant qu'il veut. Éteint : un seul lancer, gardé."
-        ability_scores_typed_hint: "Avec le lancer de dés, le joueur peut taper ses scores (de vrais dés à la table). Éteint : seulement les résultats lancés ici."
+        ability_rerolls_hint: "Avec le lancer de dés, le joueur peut relancer une fois : le second lancer est gardé. Éteint : un seul lancer."
+        ability_scores_typed_hint: "Avec le lancer de dés, le joueur peut aussi taper ses scores (de vrais dés à la table). Éteint : seulement les résultats lancés ici."
         method_summary: " : %{summary}."
         level_feats_hint: "Aux niveaux 4, 8, 12… un joueur peut prendre un don au lieu de l'amélioration de caractéristique, et une faveur épique au niveau 19. Éteint : l'amélioration seulement."
         origin_feats_hint: "L'historique donne son don (Initié à la magie pour l'Acolyte…), l'Humain en choisit un. Les personnages déjà créés gardent les leurs."

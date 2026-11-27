@@ -1,0 +1,59 @@
+<%# An ability as a card of the abilities step (decision, prototype "Création façon jeu"): its abbreviation, its modifier
+    large (worked out on the final score, kept up to date by character_sheet_controller.js), its name, and its score in a
+    round astride the foot of the card ("?" while empty). Under it, the bonus of the background it holds ("incl. +2
+    Acolyte", written by character_sheet_controller.js) and what the ability is for (the help of the field, in the words
+    of the game). Picked (a score in it), the tonal gold of a card picked.
+    The whole card is a button while a token is held (ability_tokens_controller.js): it receives the token. A card the
+    bonus held cannot go on (not raised by the background) is faded. The round is the field the step sends: read only
+    when the score is only placed from the tokens, or set by the "+" and "−" of a point buy (decision: no "−" and "+" on
+    the cards, they weighed them down); typed in the round for a roll the table lets the player type.
+    raised: the background may raise it, its +0 | +1 | +2 sent by the form (the tokens tick them; shown without
+    JavaScript, hidden by the controller) %>
+<% error = sheet_field_error(character, field) %>
+<% bonus_field = local_assigns[:bonus_field] %>
+<%= tag.div class: "group/card relative flex min-w-0 flex-col items-center",
+            data: { ability_tokens_target: "card", ability: field["key"], score_input: sheet_field_id(field),
+                    raised: ("" if bonus_field) } do %>
+  <div class="relative flex h-[clamp(7.5rem,17vh,9.5rem)] w-full flex-col items-center justify-center rounded-[10px] border border-line pb-3 transition-colors group-data-locked/card:opacity-35 has-[input:not(:placeholder-shown)]:border-chosen-line has-[input:not(:placeholder-shown)]:bg-primary-soft">
+    <button type="button" disabled class="absolute inset-0 rounded-[10px] enabled:cursor-pointer enabled:hover:border enabled:hover:border-brass"
+            data-action="ability-tokens#place"
+            aria-label="<%= t("character_sheets.ability_cards.place_on", label: field["label"]) %>"></button>
+    <span class="text-xs font-bold tracking-widest text-muted uppercase group-has-[input:not(:placeholder-shown)]/card:text-primary-soft-ink"><%= field["abbreviation"] || field["label"] %></span>
+    <p class="text-[clamp(1.75rem,4.4vh,2.5rem)] leading-tight font-extrabold text-ink tabular-nums">
+      <span class="sr-only"><%= t("game_tables.characters.new.modifier") %></span>
+      <output data-character-sheet-target="modifier" data-ability="<%= field["key"] %>"><%= format_bonus(modifier) || "—" %></output>
+    </p>
+    <%= label_tag sheet_field_id(field), field["label"], class: "text-xs text-muted" %>
+    <div class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2">
+      <%= ability_card_score_input(character, field) %>
+    </div>
+  </div>
+  <div class="mt-7 flex flex-col items-center text-center text-xs leading-snug">
+    <% if bonus_field %>
+      <p id="<%= sheet_field_id(field) %>_bonus" class="h-4 font-semibold text-brass tabular-nums"
+         data-character-sheet-target="bonusNote" data-ability="<%= field["key"] %>"
+         data-template="<%= ability_bonus_note_template(character, bonus_field) %>"></p>
+      <%# The bonus sent for this ability: ticked by the tokens; the choice itself without JavaScript %>
+      <div class="mt-1 flex gap-1" role="radiogroup" data-ability-tokens-target="fallback"
+           aria-label="<%= t("character_sheets.ability_cards.bonus_on", label: field["label"]) %>">
+        <% ability_bonus_choices(bonus_field).each do |bonus| %>
+          <label class="flex h-7 w-9 cursor-pointer items-center justify-center rounded-md bg-field text-xs text-ink has-checked:bg-surface has-checked:font-semibold">
+            <%= radio_button_tag ability_bonus_input_name(bonus_field, field["key"]), bonus,
+                                 placed_ability_bonus(character, bonus_field, field["key"]) == bonus,
+                                 id: nil, class: "sr-only",
+                                 data: { ability_bonus_target: "choice", character_sheet_target: "abilityBonus",
+                                         ability: field["key"], bonus: bonus,
+                                         action: "ability-bonus#update" } %>
+            +<%= bonus %>
+          </label>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="h-4" aria-hidden="true"></p>
+    <% end %>
+    <p class="text-muted"><%= field["help"] %></p>
+    <% if error %>
+      <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+    <% end %>
+  </div>
+<% end %>

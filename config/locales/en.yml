@@ -426,10 +426,24 @@ en:
   magic_items:
     attunement: "attunement"
   character_sheets:
+    ability_cards:
+      bonus_on: "Background bonus on %{label}"
+      bonus_token: "Bonus +1"
+      hold_bonus: "Where does this +1 go? It goes on %{abilities}, up to +%{most} on the same ability."
+      hold_value: "Where does the %{value} go?"
+      idle: "Touch a value, then the ability where it goes."
+      idle_typed: "Touch + or −, then the abilities to raise or lower. Then place your +1."
+      hold_raise: "Touch the abilities to raise by one point. Touch + again to finish."
+      hold_lower: "Touch the abilities to lower by one point. Touch − again to finish."
+      raise: "Raise a score"
+      lower: "Lower a score"
+      place_on: "Place on %{label}"
+      start_again: "Start again"
     ability_methods:
       roll:
         no_rerolls: "One roll only: your game master does not allow rolling again."
-        no_typing: "Your scores are picked among the results: your game master does not allow typing them."
+        one_reroll: "You may roll again once: the second roll is kept."
+        typing: "Rolling real dice? Touch the round of an ability and type your score."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -2121,8 +2135,8 @@ en:
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
         higher_level_equipment_method_choice_hint: "What a character created above level 1 gets more: gold (part of it rolled at the end of the creation) and magic items to pick, by its level."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
-        ability_rerolls_hint: "With the dice roll, the player may roll again as often as they like. Off: one roll only, kept."
-        ability_scores_typed_hint: "With the dice roll, the player may type their scores (real dice at the table). Off: only the results rolled here."
+        ability_rerolls_hint: "With the dice roll, the player may roll again once: the second roll is kept. Off: one roll only."
+        ability_scores_typed_hint: "With the dice roll, the player may also type their scores (real dice at the table). Off: only the results rolled here."
         method_summary: ": %{summary}."
         level_feats_hint: "At levels 4, 8, 12… a player may take a feat instead of the ability score improvement, and an epic boon at level 19. Off: the improvement only."
         origin_feats_hint: "The background gives its feat (Magic Initiate for the Acolyte…), the Human picks one. Characters already made keep theirs."

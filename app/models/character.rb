@@ -6,6 +6,7 @@
 # player sheet for a pc, the NPC sheet otherwise): CharacterSheetValidator checks them, since the database cannot
 class Character < ApplicationRecord
   include CharacterAbilityMethod
+  include CharacterAbilityRolls
   include CharacterSkillChoices
   include CharacterDraftSaving
   include CharacterSpellbook

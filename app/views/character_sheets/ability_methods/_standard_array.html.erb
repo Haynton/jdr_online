@@ -1,5 +1,5 @@
-<%# The standard array: its values as chips from the start, placed from the list of each tile, each one once
-    (ability_roll_controller.js, given the values instead of rolling them). The server refuses a score that is not one
+<%# The standard array: its values as tokens from the start, placed on the cards, each one once (ability_roll_controller.js,
+    given the values instead of rolling them; ability_tokens_controller.js). The server refuses a score that is not one
     of them, or a value placed twice (AbilityMethods::StandardArray). Without JavaScript, the values to type, in the help %>
-<div hidden class="mt-4 flex flex-wrap gap-2" data-ability-roll-target="results"></div>
+<div hidden class="flex flex-wrap items-center justify-center gap-1" data-ability-roll-target="results"></div>
 <%= render "character_sheets/ability_methods/result_chip_template" %>

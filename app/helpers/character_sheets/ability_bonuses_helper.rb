@@ -85,11 +85,13 @@ module CharacterSheets
 
     # The controllers of the abilities section: the way to get the scores (a roll, an array, a point buy), and the bonus
     # when the template has one
+    # Without the empty ones, but keeping false (no rolls again): compact_blank would take it away
     def abilities_section_data(character, bonus_field)
       method_data = ability_method_data(character)
       bonus_data = bonus_field ? ability_bonus_data(bonus_field) : {}
       method_data.merge(bonus_data, controller: joined_data(method_data, bonus_data, :controller),
-                                    action: joined_data(method_data, bonus_data, :action)).compact_blank
+                                    action: joined_data(method_data, bonus_data, :action))
+                 .reject { |_key, value| value.nil? || value == "" }
     end
 
     private

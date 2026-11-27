@@ -9,6 +9,11 @@ module AbilityMethods
     OWN_PARAMETERS = %w[dice sides keep_highest].freeze
     REQUIRED_PARAMETERS = %w[dice sides].freeze
 
+    # "Roll the dice" instead of "Start again", then "Roll again" when the table allows it
+    def tray_action_partial
+      "character_sheets/ability_methods/roll_button"
+    end
+
     def places_results?
       true
     end

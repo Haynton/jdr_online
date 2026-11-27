@@ -1,0 +1,5 @@
+<%# "Start again", at the right of the tray of the abilities step: the scores emptied, the bonus taken back %>
+<button type="button" class="<%= button_classes(:secondary, size: :compact) %>" data-action="ability-tokens#startAgain">
+  <%= render "shared/icons/rotate_cw", css_class: "size-4 -scale-x-100" %>
+  <%= t("character_sheets.ability_cards.start_again") %>
+</button>

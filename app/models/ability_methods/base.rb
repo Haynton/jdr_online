@@ -25,6 +25,11 @@ module AbilityMethods
       self.class::GUIDE_PARTIAL
     end
 
+    # The button at the right of the tray of the abilities step: "Start again" (the placements taken back) by default
+    def tray_action_partial
+      "character_sheets/ability_methods/start_again"
+    end
+
     # Its results are placed on the abilities from a list in each tile (ability_roll_controller.js)
     def places_results?
       false
