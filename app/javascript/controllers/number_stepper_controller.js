@@ -1,12 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 // A number field between a "−" and a "+" button, which take it down or up by its step (one by default, 0.5 for half
-// metres), within its min and max.
+// metres), within its min and max; or by the increment given (one for the weight of an item, whose step to the gram is
+// only there for typing), the result rounded so that no float artefact shows (1.1 + 1 gives 2.1).
 // Nothing typed yet: "+" and "−" start from the min. After each step the field sends an input event, like typing,
 // so that what follows it (the live calculation of a character sheet) updates. The buttons are rendered hidden
 // and shown here: without JavaScript, the value is typed. A field read only (a score placed from a roll) keeps them hidden
 export default class extends Controller {
   static targets = ["input", "button"]
+  static values = { increment: Number }
 
   connect() {
     if (this.inputTarget.readOnly) return
@@ -26,8 +28,9 @@ export default class extends Controller {
     const minimum = this.bound("min") ?? -Infinity
     const maximum = this.bound("max") ?? Infinity
     const current = Number.parseFloat(this.inputTarget.value.replace(",", "."))
-    const next = Number.isNaN(current) ? Math.max(minimum, 0) : current + direction * (this.bound("step") ?? 1)
-    this.inputTarget.value = Math.min(maximum, Math.max(minimum, next))
+    const increment = this.hasIncrementValue ? this.incrementValue : (this.bound("step") ?? 1)
+    const next = Number.isNaN(current) ? Math.max(minimum, 0) : current + direction * increment
+    this.inputTarget.value = Number(Math.min(maximum, Math.max(minimum, next)).toFixed(6))
     this.inputTarget.dispatchEvent(new Event("input", { bubbles: true }))
   }
 

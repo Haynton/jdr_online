@@ -103,6 +103,17 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  :labels_not_matching_options
   end
 
+  test "a field shown only with some values names a list of the same part, and some of its options" do
+    shown_with = { "field" => "class", "values" => ["Guerrier"] }
+    field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité", "shown_with" => shown_with }
+    assert_predicate build_template { |fields| fields << field }, :valid?
+
+    [{ "field" => "level", "values" => ["Guerrier"] }, { "field" => "class", "values" => ["Mage"] },
+     { "field" => "class", "values" => [] }, { "field" => "class" }, "class"].each do |wrong|
+      assert_error build_template { |fields| fields << field.merge("shown_with" => wrong) }, :invalid_shown_with
+    end
+  end
+
   test "a list that depends on another names its options, for options of that list" do
     template = build_template { |fields| fields << subclass_field }
     assert_predicate template, :valid?

@@ -6,7 +6,7 @@
 # vie : ..."), in the language of the page
 class SheetTemplateValidator < ActiveModel::Validator
   CHECKS = [
-    SheetTemplates::FieldsCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
+    SheetTemplates::FieldsCheck, SheetTemplates::ShownWithCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
     SheetTemplates::SpellGroupsCheck, SheetTemplates::SpellSlotsCheck, SheetTemplates::RuleMethodsCheck,
     SheetTemplates::ConditionsCheck, SheetTemplates::DiceRollsCheck, SheetTemplates::WeaponAttacksCheck,
     SheetTemplates::DeathSavesCheck, SheetTemplates::FightingStylesCheck, SheetTemplates::ClassChoicesCheck,

@@ -366,6 +366,7 @@ fr:
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
           wrong_effect_target: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit viser des champs « %{expected} » (%{target})"
           wrong_reference: "%{part} › %{field} : « %{parameter} » doit désigner un champ « %{expected} » (%{target})"
+          invalid_shown_with: "%{part} › %{field} : « shown_with » doit désigner une liste de la même partie et certaines de ses options"
         user:
           attributes:
             avatar: *avatar_errors
@@ -1094,8 +1095,8 @@ fr:
         hint: "Le champ qui donne le niveau du personnage."
         label: "Champ du niveau"
       listed:
-        hint: "La valeur s'affiche à côté du nom, dans la liste des PNJ et ennemis d'une table (FP, CA, PV)."
-        label: "Montré dans la liste des PNJ"
+        hint: "La valeur s'affiche à côté du nom, dans la liste des PNJ et ennemis d'une table (FP, CA, PV), ou sous le nom d'un objet, dans sa fenêtre (Anneau · Rare · Demande un lien)."
+        label: "Montré à côté du nom"
       max:
         hint: "La plus grande valeur permise. Facultatif."
         label: "Maximum"
@@ -1149,6 +1150,12 @@ fr:
       section:
         hint: "Le groupe de la fiche où le champ s'affiche."
         label: "Section"
+      shown_with:
+        hint: "Le champ n'apparaît que pour certaines valeurs d'une liste (les dégâts d'un objet, seulement pour une arme)."
+        label: "Montré selon une liste"
+      unit:
+        hint: "Ce que compte le nombre, écrit dans son champ (kg, po)."
+        label: "Unité"
       short:
         hint: "Une seule ligne au lieu d'une zone de texte."
         label: "Texte court"

@@ -4,12 +4,11 @@
 <% error = sheet_field_error(character, field) %>
 <% hint = sheet_field_hint(field) %>
 <%= tag.div class: "#{SimpleFormFieldClasses::FIELD_BLOCK} #{sheet_field_width_classes(field)}",
-            hidden: !sheet_field_asked?(character, field), data: sheet_dependent_choice_data(character, field) do %>
-  <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::LABEL %>
+            hidden: !sheet_field_asked?(character, field),
+            data: sheet_dependent_choice_data(character, field).merge(sheet_help_bubble_block_data(hint)) do %>
+  <%= render "character_sheets/fields/label", field: field, hint: hint %>
   <%= sheet_field_control(character, field) %>
-  <% if hint %>
-    <p class="<%= SimpleFormFieldClasses::HINT %>"><%= hint %></p>
-  <% end %>
+  <%= render "character_sheets/fields/hint", field: field, hint: hint %>
   <% if error %>
     <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
   <% end %>

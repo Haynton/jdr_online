@@ -4,42 +4,64 @@
     (character_sheets/sections/_flow, under the scope catalog_entry[properties]: the same look as on a sheet, each value
     checked the same way; the level of a spell a list of names, "Cantrip", "Level 1"). In the window, the values scroll and the
     buttons stay at its foot: "Cancel" closes it; for the table's copy of an entry, "Restore the original"; for an entry
-    it added, "Delete". A new entry: an empty window (decision). Full keys: the partial is rendered from two templates %>
+    it added, "Delete". A new entry: an empty window (decision). Only the fields of its category show
+    (GameTables::CatalogEntryShownHelper, shown_with_controller.js while the category changes). Full keys: the partial
+    is rendered from two templates %>
 <% creating = entry.key.blank? %>
 <% url = creating ? game_table_catalog_entries_path(@game_table, kind: entry.kind) : game_table_catalog_entry_path(@game_table, entry.key, kind: entry.kind) %>
 <% fields = catalog_entry_shown_fields(@game_table, entry.kind) %>
 <% origin = catalog_entry_origin(@game_table, entry) %>
+<% values = entry.properties.to_h %>
+<%# The first value of the template beside the name (decision of 27 November: the category of an item, the level of a
+    spell), the others in their sections, in the order of the template (its section first) %>
+<% lead_field = fields.first %>
+<% sections = catalog_entry_sections(fields).map { |section, section_fields| [section, section_fields - [lead_field]] } %>
 <%= simple_form_for entry, as: :catalog_entry, url: url, method: (creating ? :post : :patch),
-                           html: { id: "catalog-entry-form", class: "flex min-h-0 flex-1 flex-col" } do |form| %>
+                           html: { id: "catalog-entry-form", class: "flex min-h-0 flex-1 flex-col",
+                                   data: { controller: "shown-with", action: "change->shown-with#refresh" } } do |form| %>
   <div class="<%= in_dialog ? "@container min-h-0 flex-1 overflow-y-auto px-6 py-6" : "" %>">
     <%= form_error_notification(form) %>
-    <div class="max-w-md">
+    <div class="grid grid-cols-1 gap-x-6 @xl:grid-cols-2">
       <%= form.input :name, required: true, input_html: { maxlength: CatalogEntry::NAME_MAX_LENGTH, autofocus: creating } %>
+      <% if lead_field %>
+        <div class="min-w-0">
+          <% with_sheet_field_scope("catalog_entry[properties]") do %><% with_help_bubbles do %>
+            <%= render catalog_field_partial(lead_field), character: CatalogEntrySheet.new(entry), field: lead_field,
+                                                          computed: { modifiers: {}, values: {} }, all_fields: fields,
+                                                          modifier: nil, value: nil %>
+          <% end %><% end %>
+        </div>
+      <% end %>
     </div>
     <div class="mt-4">
       <%= form.input :description, as: :text, required: false, input_html: { class: "min-h-32", rows: 5 } %>
     </div>
-    <% catalog_entry_sections(fields).each do |section, section_fields| %>
-      <section class="mt-6 border-t border-line pt-5">
+    <% sections.reject { |_section, section_fields| section_fields.empty? }.each do |section, section_fields| %>
+      <section class="mt-6 border-t border-line pt-5" data-shown-with-target="section"
+               <%= "hidden" unless catalog_fields_shown?(section_fields, values) %>>
         <% if section %>
           <h3 class="mb-3 text-xs font-semibold tracking-wider text-brass uppercase"><%= section %></h3>
         <% end %>
-        <%# Each value in its cell of the grid (catalog_entry_cell_classes), drawn by the partial of its type; the helps of
-            the boxed values in notes right under their cell, opened by their button (i), as on a sheet %>
+        <%# Each value in its cell of the grid (catalog_entry_cell_classes), drawn by the partial of its type; the help of
+            a field in a bubble opened by its button (i) (with_help_bubbles), those of the boxed values in notes right
+            under their cell %>
         <div class="@container" data-controller="info-notes">
           <div class="grid grid-cols-1 items-start gap-x-6 gap-y-4 @xl:grid-cols-6 @xl:[&_fieldset>div]:grid-cols-[repeat(4,max-content)]">
-            <% with_sheet_field_scope("catalog_entry[properties]") do %>
+            <% with_sheet_field_scope("catalog_entry[properties]") do %><% with_help_bubbles do %>
               <% catalog_entry_cells(section_fields).each do |cell_classes, cell_fields| %>
-                <div class="min-w-0 <%= cell_classes %>">
+                <div class="min-w-0 <%= cell_classes %>" data-shown-with-target="cell"
+                     <%= "hidden" unless catalog_fields_shown?(cell_fields, values) %>>
                   <% cell_fields.each do |field| %>
-                    <%= render sheet_field_partial(field), character: CatalogEntrySheet.new(entry), field: field,
-                                                           computed: { modifiers: {}, values: {} }, all_fields: fields,
-                                                           modifier: nil, value: nil %>
+                    <%= catalog_shown_with_wrapper(field, values) do %>
+                      <%= render catalog_field_partial(field), character: CatalogEntrySheet.new(entry), field: field,
+                                                             computed: { modifiers: {}, values: {} }, all_fields: fields,
+                                                             modifier: nil, value: nil %>
+                    <% end %>
                   <% end %>
                 </div>
-                <%= render "game_tables/field_notes", fields: cell_fields %>
+                <%= render "game_tables/field_notes", fields: cell_fields.select { |field| boxed_cell?(field) } %>
               <% end %>
-            <% end %>
+            <% end %><% end %>
           </div>
         </div>
       </section>
