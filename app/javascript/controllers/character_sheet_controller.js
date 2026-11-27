@@ -76,7 +76,9 @@ export default class extends Controller {
       .replace("%{option}", offers.map(({ option }) => option).join(", "))
       .replaceAll("%{count}", allowedCount)
       .replace("%{chosen}", tickedCount)
-    const isPastLimit = tickedCount > allowedCount || this.notOfferedTicked(offeredKeys)
+    const chosenKeys = [...offeredKeys].filter((fieldKey) => this.isTicked(fieldKey))
+    const isPastLimit = tickedCount > allowedCount || this.notOfferedTicked(offeredKeys) ||
+      !skillsFitOffers(chosenKeys, offers)
     paragraph.toggleAttribute("data-invalid", paragraph.hasAttribute("data-limited") && isPastLimit)
   }
 
@@ -249,4 +251,22 @@ function formatBonus(value) {
 // Same as format_computed_value: a text as it is (hit dice: 3d8), a number as a bonus
 function formatComputed(value) {
   return typeof value === "string" ? value : formatBonus(value)
+}
+
+// Whether the skills chosen share out between the options picked, each taking its own in its list: the twin of
+// CharacterSheets::SkillChoices#fit_offers? (a skill moves to another slot of its list to make room)
+const skillsFitOffers = (chosenKeys, offers) => {
+  const slots = offers.flatMap(({ effects }) => Array(effects.skill_choices.count).fill(effects.skill_choices.from))
+  const holders = new Map()
+  const place = (fieldKey, visited) => slots.some((list, index) => {
+    if (visited.has(index) || !list.includes(fieldKey)) return false
+
+    visited.add(index)
+    const holder = holders.get(index)
+    if (holder !== undefined && !place(holder, visited)) return false
+
+    holders.set(index, fieldKey)
+    return true
+  })
+  return chosenKeys.every((fieldKey) => place(fieldKey, new Set()))
 }

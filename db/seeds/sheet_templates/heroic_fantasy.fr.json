@@ -201,7 +201,7 @@
           "Gnome": {"set":{"speed":9,"size":"Petite"},"traits":["darkvision-60","gnomish-cunning","gnomish-lineage"]},
           "Goliath": {"set":{"speed":10.5,"size":"Moyenne"},"traits":["giant-ancestry","large-form","powerful-build"]},
           "Halfelin": {"set":{"speed":9,"size":"Petite"},"traits":["brave","halfling-nimbleness","luck","naturally-stealthy"]},
-          "Humain": {"set":{"speed":9,"size":"Moyenne"},"traits":["resourceful","skillful","versatile"],"feat_choice":{"categories":["origin"]}},
+          "Humain": {"set":{"speed":9,"size":"Moyenne"},"traits":["resourceful","skillful","versatile"],"feat_choice":{"categories":["origin"]},"skill_choices":{"count":1,"from":["animal_handling","athletics","intimidation","nature","perception","survival","acrobatics","arcana","deception","history","insight","investigation","medicine","performance","persuasion","religion","sleight_of_hand","stealth"]}},
           "Orc": {"set":{"speed":9,"size":"Moyenne"},"traits":["adrenaline-rush","darkvision-120","relentless-endurance"]},
           "Tieffelin": {"set":{"speed":9},"traits":["darkvision-60","fiendish-legacy","otherworldly-presence"]}
         } },

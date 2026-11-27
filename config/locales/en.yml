@@ -152,6 +152,7 @@ en:
         too_many_expertise:
           one: "too much expertise: %{count} at most"
           other: "too much expertise: %{count} at most"
+        skills_not_fitting: "these skills do not fit the lists of your choices (%{offers}): each offers its own"
         too_many_skills:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"

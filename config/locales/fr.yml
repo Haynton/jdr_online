@@ -123,6 +123,7 @@ fr:
         too_many_expertise:
           one: "trop d'expertises : %{count} au plus"
           other: "trop d'expertises : %{count} au plus"
+        skills_not_fitting: "ces compétences ne tiennent pas dans les listes de vos choix (%{offers}) : chacun propose les siennes"
         too_many_skills:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"

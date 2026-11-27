@@ -201,7 +201,7 @@
           "Gnome": {"set":{"speed":30,"size":"Small"},"traits":["darkvision-60","gnomish-cunning","gnomish-lineage"]},
           "Goliath": {"set":{"speed":35,"size":"Medium"},"traits":["giant-ancestry","large-form","powerful-build"]},
           "Halfling": {"set":{"speed":30,"size":"Small"},"traits":["brave","halfling-nimbleness","luck","naturally-stealthy"]},
-          "Human": {"set":{"speed":30,"size":"Medium"},"traits":["resourceful","skillful","versatile"],"feat_choice":{"categories":["origin"]}},
+          "Human": {"set":{"speed":30,"size":"Medium"},"traits":["resourceful","skillful","versatile"],"feat_choice":{"categories":["origin"]},"skill_choices":{"count":1,"from":["animal_handling","athletics","intimidation","nature","perception","survival","acrobatics","arcana","deception","history","insight","investigation","medicine","performance","persuasion","religion","sleight_of_hand","stealth"]}},
           "Orc": {"set":{"speed":30,"size":"Medium"},"traits":["adrenaline-rush","darkvision-120","relentless-endurance"]},
           "Tiefling": {"set":{"speed":30},"traits":["darkvision-60","fiendish-legacy","otherworldly-presence"]}
         } },

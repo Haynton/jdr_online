@@ -60,4 +60,19 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
                                  species_feat: { key: "skilled", skills: %w[arcana] } } }
     assert_response :unprocessable_content
   end
+
+  test "the trait of the human adds one skill of any list, but only one outside the list of its class" do
+    @character.update!(sheet: @character.sheet.merge("species" => "Humain"))
+    sign_in @player
+    spells = { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" }
+    patch game_table_character_step_path(@game_table, "skills"),
+          params: { character: { sheet: { athletics: "1", nature: "1", arcana: "1" },
+                                 feat_spells: spells, species_feat: { key: "alert" } } }
+    assert_response :unprocessable_content
+
+    patch game_table_character_step_path(@game_table, "skills"),
+          params: { character: { sheet: { athletics: "1", intimidation: "1", nature: "1" },
+                                 feat_spells: spells, species_feat: { key: "alert" } } }
+    assert @character.reload.sheet["nature"]
+  end
 end
