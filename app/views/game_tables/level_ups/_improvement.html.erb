@@ -1,0 +1,24 @@
+<%# The ability improvement of the class at this level: points to share, at most so many on one ability, each line
+    an ability, its score now (the bonus of the background in it) and +0 | +1 | +2 on real radio buttons %>
+<fieldset aria-describedby="level_up_ability_increases_error">
+  <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.improvement.title") %></legend>
+  <p class="mt-2 text-sm text-muted"><%= t("game_tables.level_ups.improvement.rule", points: level_up.improvement["points"]) %></p>
+  <ul class="mt-3 flex flex-col gap-2">
+    <% level_up.ability_fields.each do |field| %>
+      <% placed = level_up.ability_increases[field["key"]].to_i %>
+      <li class="grid grid-cols-[minmax(0,1fr)_auto_3rem] items-center gap-3">
+        <span id="level_up_<%= field["key"] %>_label" class="truncate text-sm text-ink"><%= field["label"] %></span>
+        <div class="inline-flex gap-1 rounded-lg bg-field p-1" role="radiogroup" aria-labelledby="level_up_<%= field["key"] %>_label">
+          <% level_up_increase_choices(level_up).each do |points| %>
+            <label class="<%= LevelUpsHelper::CHOICE_CLASSES %>">
+              <%= radio_button_tag "level_up[ability_increases][#{field["key"]}]", points, placed == points, id: nil, class: "sr-only" %>
+              +<%= points %>
+            </label>
+          <% end %>
+        </div>
+        <span class="text-right text-sm text-muted tabular-nums"><%= level_up.score_of(field) || "—" %></span>
+      </li>
+    <% end %>
+  </ul>
+  <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :ability_increases %>
+</fieldset>

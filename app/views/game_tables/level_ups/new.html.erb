@@ -1,0 +1,64 @@
+<%# The level the game master gave a player's character (LevelUp, GameTables::LevelUpsController), in the window of
+    the room (the frame of the sheet): the features of that level, then only the choices it asks (hit points, subclass,
+    ability improvement, expertise), each with its error under it; the new spells and weapon masteries afterwards, in
+    their own windows. Opened directly or without JavaScript, a page with « Retour à la partie » %>
+<% title = t(".title", level: @level_up.level) %>
+<% subtitle = t(".subtitle", name: @character.name) %>
+<% form = capture do %>
+  <%= form_with url: game_table_level_up_path(@game_table), scope: :level_up,
+                class: character_sheet_in_dialog? ? "flex min-h-0 flex-1 flex-col" : "flex flex-1 flex-col" do %>
+    <div class="<%= character_sheet_in_dialog? ? "min-h-0 flex-1 overflow-y-auto px-6 pt-6 pb-8" : "contents" %>">
+      <div class="flex flex-col gap-8" data-controller="details-dialog">
+        <%= render "shared/details_dialog", id: "level-up-details" %>
+        <% features = level_up_features(@level_up) %>
+        <% if features.any? %>
+          <section>
+            <h3 class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t(".features") %></h3>
+            <ul class="mt-2 flex flex-col gap-1">
+              <% features.each do |feature| %>
+                <li><%= render "character_sheets/features/line", feature: feature %></li>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+        <%= render "game_tables/level_ups/hit_points", level_up: @level_up %>
+        <%= render "game_tables/level_ups/subclass", level_up: @level_up if @level_up.subclass_field %>
+        <%= render "game_tables/level_ups/improvement", level_up: @level_up if @level_up.improvement %>
+        <%= render "game_tables/level_ups/expertise", level_up: @level_up if @level_up.expertise_count.positive? %>
+        <% if level_up_picks_later?(@character) %>
+          <p class="text-sm text-muted"><%= t(".picks_later") %></p>
+        <% end %>
+      </div>
+    </div>
+    <div class="<%= character_sheet_in_dialog? ? "flex shrink-0 flex-wrap justify-end gap-3 border-t border-line px-6 py-4" : "mt-auto flex flex-wrap justify-end gap-3 pt-10" %>">
+      <%= submit_tag t(".submit", level: @level_up.level), class: "#{button_classes(:primary)} order-last" %>
+      <% if character_sheet_in_dialog? %>
+        <button type="button" class="<%= button_classes(:secondary) %>" data-action="frame-dialog#close"><%= t(".later") %></button>
+      <% else %>
+        <%= link_to t(".back"), game_table_path(@game_table), class: button_classes(:secondary) %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+<% if character_sheet_in_dialog? %>
+  <%= turbo_frame_tag GameRoomHelper::SHEET_FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
+    <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">
+      <div class="min-w-0">
+        <h2 id="character-sheet-dialog-title" class="truncate text-lg font-semibold text-ink"><%= title %></h2>
+        <p class="text-sm text-muted"><%= subtitle %></p>
+      </div>
+      <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %>" aria-label="<%= t(".close") %>"
+              title="<%= t(".close") %>" data-action="frame-dialog#close">
+        <%= render "shared/icons/x", css_class: "size-5" %>
+      </button>
+    </header>
+    <%= form %>
+  <% end %>
+<% else %>
+  <% content_for :full_width_page do %>
+    <main class="flex min-h-[calc(100dvh-5rem)] flex-col px-4 pt-8 pb-12 sm:px-8 md:min-h-dvh">
+      <%= page_header(title: title, subtitle: subtitle) %>
+      <%= form %>
+    </main>
+  <% end %>
+<% end %>

@@ -99,7 +99,8 @@ module CombatStripHelper
 
   def combat_attack_text(attack)
     to_hit = attack["to_hit"].to_i
-    ["#{attack['name']} #{to_hit.negative? ? to_hit : "+#{to_hit}"}", attack["damage"], attack["range"]].compact_blank
+    ["#{attack['name']} #{to_hit.negative? ? to_hit : "+#{to_hit}"}", attack["damage"], attack["range"],
+     attack["mastery"]].compact_blank
   end
 
   def combat_full_sheet_link(game_room, fighter)

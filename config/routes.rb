@@ -68,19 +68,32 @@ Rails.application.routes.draw do
       resources :character_sheets, only: :show
       # The game master gives an item of the catalog of the table to a player, from the game room
       resource :item_gift, only: :create
+      resource :money_gift, only: :create
       # A player takes one of an item out of their inventory, from the game room (the last one removes its line)
-      resources :inventory_items, only: :destroy
+      resources :inventory_items, only: %i[update destroy]
       # A player takes an amount out of a value kept with their inventory (gold pieces spent), from the game room
       resources :inventory_values, only: :update, param: :key
+      resource :purse, only: :update
       # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
       resource :spell_choice, only: %i[edit update]
+      resource :weapon_mastery_choice, only: %i[edit update]
+      # The game master gives the next level to a player's character; the player then makes the choices of that level
+      resource :level_grant, only: :create
+      resource :level_up, only: %i[new create]
       # What changes on a player's character during the game, saved: hit points, temporary hit points, inspiration
       # (the game master for any player, a player for their own), and a long rest (the game master)
       resources :character_vitals, only: :update do
         post :long_rest, on: :member
+        post :short_rest, on: :member
+        post :death_save, on: :member
+        post :hit_die, on: :member
+        resources :resources, only: :update, param: :key, controller: "character_resources"
+        resources :spell_slots, only: :update, param: :level, controller: "character_spell_slots"
       end
       # The feed of the game room: a message typed at the table (GameRoom, ChatMessage)
       resources :chat_messages, only: :create
+      # A roll of dice from the panel « Dés », rolled by the server and written in the feed (DiceRollRecorder)
+      resource :dice_roll, only: :create
     end
   end
   # The invitation link given to the players: the page shows the table, join makes the user a player

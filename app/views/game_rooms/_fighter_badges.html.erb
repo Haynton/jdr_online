@@ -8,7 +8,11 @@
   <% if fighter.armor_class %>
     <div class="flex min-w-14 flex-col items-center justify-center rounded-lg border border-brass/60 bg-primary-soft px-2.5 py-1">
       <dt class="text-[10px] font-semibold tracking-wider text-primary-soft-ink uppercase"><%= t("game_rooms.combat_strip.armor_class_label") %></dt>
-      <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= fighter.armor_class %></dd>
+      <% if fighter.side == :player %>
+        <%= render "game_rooms/vitals/armor_class", character: fighter.character %>
+      <% else %>
+        <dd class="text-xl leading-tight font-bold text-ink tabular-nums"><%= fighter.armor_class %></dd>
+      <% end %>
     </div>
   <% end %>
   <% if GameRoom.preview_features? && local_assigns.fetch(:initiative_roll, true) %>

@@ -19,7 +19,7 @@ class BoardMapLiveTest < ApplicationSystemTestCase
       open_room_as("joueur", streams: 1)
       assert_text "Le MJ n'a pas encore posé de carte sur le plateau."
     end
-    open_room_as("maitre", streams: 1)
+    open_room_as("maitre", streams: 2) # the stream of the table, and the one of the game master (hidden rolls)
 
     find("a[aria-label=Cartes]").click
     find("button[aria-label='Placer Taverne sur le plateau']").click

@@ -6,10 +6,11 @@
 # character_sheet_controller.js works them out the same way while the player types: changing one means changing both
 module CharacterSheets
   class Calculator
-    # hit_point_rolls: the hit dice rolled for the levels after the first, nil for their average
-    def initialize(fields:, sheet:, level_thresholds:, hit_point_rolls: nil)
+    # play_state: what the rules read beside the sheet (the hit dice rolled, what the character wears, the effects of
+    # its fighting style: CharacterSheets::PlayState)
+    def initialize(fields:, sheet:, level_thresholds:, play_state: PlayState.new)
       @fields = fields
-      @hit_point_rolls = hit_point_rolls
+      @play_state = play_state
       @sheet = sheet.to_h
       @level_thresholds = level_thresholds.to_a.sort_by { |threshold| threshold["level"] }
     end
@@ -51,7 +52,7 @@ module CharacterSheets
     # Each computed field by its rule (ComputedRules), which reads the sheet through a SheetReader
     def computed_field_values(modifiers)
       reader = SheetReader.new(fields: @fields, sheet: @sheet, level_thresholds: @level_thresholds,
-                               modifiers: modifiers, hit_point_rolls: @hit_point_rolls)
+                               modifiers: modifiers, play_state: @play_state)
       @fields.select { |field| field["type"] == "computed" }
              .to_h { |field| [field["key"], ComputedRules.of(field).value(field, reader)] }
     end
@@ -60,7 +61,8 @@ module CharacterSheets
     def bonus_values(modifiers, computed_values)
       @fields.select { |field| field["type"] == "bonus" }.to_h do |field|
         modifier = modifiers[field["based_on"]]
-        proficiency = @sheet[field["key"]] == true ? computed_values[field["proficiency"]].to_i : 0
+        factor = FieldTypes::Bonus.proficiency_factor(@sheet[field["key"]])
+        proficiency = factor * computed_values[field["proficiency"]].to_i
         [field["key"], modifier && (modifier + proficiency)]
       end
     end

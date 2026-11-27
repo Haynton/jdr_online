@@ -39,12 +39,37 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "spell_slots")
   end
 
+  # The death saving throws of a player's character (character_fields.death_saves, CharacterDeathSaves), nil for a
+  # template without: in its copy, like the fields of the sheet they fill
+  def death_saves
+    template_snapshot.to_h.dig("character_fields", "death_saves")
+  end
+
+  # The fighting styles a class may offer (character_fields.fighting_styles, CharacterSheets::WeaponMasteries), [] for
+  # a template without: in its copy, like the class that offers them
+  def fighting_styles
+    template_snapshot.to_h.dig("character_fields", "fighting_styles") || []
+  end
+
+  # How the weapons of a character attack (character_fields.weapon_attacks, CharacterSheets::WeaponAttacks), nil for a
+  # template without: in its copy, like the fields of the sheet they read
+  def weapon_attacks
+    template_snapshot.to_h.dig("character_fields", "weapon_attacks")
+  end
+
   # The conditions of the game (character_fields.conditions: key, label, description, levels), for the characters of
   # the players and the NPCs alike. Read in the template as it is now, like the NPC sheet (decision: a table already
   # made gets them at once), in the copy once the template is deleted; none for a template that has no conditions
   def conditions
     declared = sheet_template&.character_fields.to_h["conditions"]
     declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
+  end
+
+  # The dice of the game room (character_fields.dice_rolls: its modes, the die they apply to, its initiative), read in
+  # the template as it is now like the conditions; none for a template that does not declare them
+  def dice_rolls
+    declared = sheet_template&.character_fields.to_h["dice_rolls"]
+    declared || template_snapshot.to_h.dig("character_fields", "dice_rolls") || {}
   end
 
   # The levels of the template copied into the table, with the experience and the proficiency bonus of each

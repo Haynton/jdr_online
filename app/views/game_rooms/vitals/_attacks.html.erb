@@ -1,0 +1,9 @@
+<%# The attacks of the weapons a player's character holds (CharacterSheets::WeaponAttacks), replaced at once for the
+    whole table when its equipment changes (GameTables::InventoryItemsController). Always there, empty or not, so that
+    the stream finds it %>
+<% attacks = local_assigns.fetch(:attacks) { CharacterSheets::WeaponAttacks.new(character).call } %>
+<div id="character-<%= character.id %>-attacks">
+  <% if attacks.any? %>
+    <%= render "game_rooms/attack_list", attacks: attacks %>
+  <% end %>
+</div>

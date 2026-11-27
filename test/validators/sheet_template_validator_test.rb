@@ -6,6 +6,12 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     { "key" => "identity", "label" => "Personnage", "sections" => ["Identité"], "asks_name" => true },
     { "key" => "abilities", "label" => "Caractéristiques", "sections" => %w[Caractéristiques Combat] }
   ].freeze
+  DICE_ROLLS = {
+    "modes" => [{ "key" => "advantage", "label" => "Avantage", "help" => "Deux d20, le meilleur.", "dice" => 2,
+                  "keep" => "highest" }],
+    "initiative" => { "label" => "Initiative", "sides" => 20, "modifier_from" => "proficiency_bonus",
+                      "npc_modifier_from" => "dexterity" }
+  }.freeze
 
   test "a template that follows the rules is valid" do
     assert_predicate build_template, :valid?
@@ -75,6 +81,26 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     template = build_template { |fields| field(fields, "level")["maxx"] = 20 }
 
     assert_error template, :unknown_parameter
+  end
+
+  test "the weapon attacks name an ability, the proficiency bonus and the list of the class of the character sheet" do
+    attacks = { "melee_ability" => "strength", "ranged_ability" => "strength", "proficiency" => "proficiency_bonus",
+                "training_from" => "class", "two_handed_label" => "à deux mains" }
+    assert_predicate template_with_weapon_attacks(attacks), :valid?
+
+    assert_error template_with_weapon_attacks(attacks.merge("ranged_ability" => "class")), :invalid_weapon_attacks_field
+    assert_error template_with_weapon_attacks(attacks.merge("reach" => 2)), :unknown_weapon_attacks_parameter
+    assert_error template_with_weapon_attacks(attacks.except("melee_ability")), :missing_weapon_attacks_parameter
+    assert_error template_with_weapon_attacks(attacks.merge("two_handed_label" => "")), :invalid_weapon_attacks_label
+  end
+
+  test "a list with labels gives a name to each of its options" do
+    named_list = { "key" => "rank", "label" => "Rang", "type" => "choice", "options" => %w[low high],
+                   "labels" => %w[Bas Haut], "section" => "Identité" }
+    assert_predicate build_template { |fields| fields << named_list }, :valid?
+
+    assert_error build_template { |fields| fields << named_list.merge("labels" => ["Bas"]) },
+                 :labels_not_matching_options
   end
 
   test "a list that depends on another names its options, for options of that list" do
@@ -276,6 +302,52 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_predicate build_template, :valid?
   end
 
+  test "the dice declare their modes, the die they apply to and their initiative" do
+    assert_predicate with_dice_rolls(DICE_ROLLS), :valid?
+    assert_predicate with_dice_rolls({ "initiative" => { "label" => "Initiative", "sides" => 20 } }), :valid?
+  end
+
+  test "a dice mode has a key, a label, a short help, 2 to 5 dice and keeps the highest or the lowest" do
+    modes = [
+      { "key" => "advantage", "label" => "Avantage", "dice" => 2, "keep" => "highest" },
+      { "key" => "advantage", "label" => "Encore", "dice" => 2, "keep" => "highest" },
+      { "key" => "Lucky", "label" => "", "help" => "x" * 201, "dice" => 1, "keep" => "best", "bonus" => 1 }
+    ]
+    template = with_dice_rolls(DICE_ROLLS.merge("modes" => modes))
+
+    assert_error template, :duplicate_dice_roll_mode, "Le mode de dés « advantage » est déclaré deux fois"
+    assert_error template, :invalid_dice_roll_mode_key
+    assert_error template, :invalid_dice_roll_mode_label
+    assert_error template, :invalid_dice_roll_mode_help
+    assert_error template, :unknown_dice_roll_mode_parameter
+    assert_error template, :invalid_dice_roll_mode,
+                 "Le mode de dés « Lucky » : il lance de 2 à 5 dés et garde le meilleur (highest) ou le pire (lowest)"
+  end
+
+  test "the initiative rolls a die the roller knows" do
+    template = with_dice_rolls(DICE_ROLLS.merge("initiative" => DICE_ROLLS["initiative"].merge("sides" => "d20")))
+
+    assert_error template, :invalid_initiative_sides
+  end
+
+  test "the initiative adds a field that gives a number, on the sheet and on the sheet of an NPC" do
+    template = with_dice_rolls(DICE_ROLLS.merge("initiative" => DICE_ROLLS["initiative"].merge(
+      "modifier_from" => "hp", "npc_modifier_from" => "speed", "dice" => 1
+    )))
+
+    assert_error template, :invalid_initiative_field,
+                 "L'initiative : Fiche du personnage n'a pas de champ « hp » qui donne un nombre " \
+                 "(nombre, valeur calculée ou caractéristique)"
+    assert_error template, :unknown_initiative_parameter
+  end
+
+  test "the dice refuse an unknown setting and a value of the wrong shape" do
+    assert_error with_dice_rolls(DICE_ROLLS.merge("critical" => 20)), :unknown_dice_rolls_parameter
+    assert_error with_dice_rolls([]), :invalid_dice_rolls
+    assert_error with_dice_rolls(DICE_ROLLS.merge("modes" => "advantage")), :invalid_dice_roll_modes
+    assert_error with_dice_rolls(DICE_ROLLS.merge("initiative" => "d20")), :invalid_initiative_roll
+  end
+
   test "the starting equipment has one letter per option, each line an item or a known group" do
     template = build_template do |fields|
       class_effects(fields)["starting_equipment"]["options"] = [
@@ -355,6 +427,16 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     build_template.tap { |template| template.character_fields["conditions"] = conditions }
   end
 
+  # The NPCs have a Dexterity, the initiative of their rolls
+  def with_dice_rolls(dice_rolls)
+    build_template.tap do |template|
+      template.character_fields["dice_rolls"] = dice_rolls
+      template.npc_fields = { "fields" => [{ "key" => "dexterity", "label" => "Dextérité", "type" => "ability",
+                                             "modifier" => "half_above_ten" },
+                                           { "key" => "speed", "label" => "Vitesse", "type" => "text" }] }
+    end
+  end
+
   def build_template(steps: DEFAULT_STEPS, spell_groups: EquipmentSpellsTemplateBuilder::SPELL_GROUPS,
                      spell_slots: EquipmentSpellsTemplateBuilder::SPELL_SLOTS)
     fields = character_fields
@@ -367,6 +449,10 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
       item_fields: { "fields" => [{ "key" => "group", "label" => "Groupe", "type" => "choice",
                                     "options" => ["weapon"] }] }
     )
+  end
+
+  def template_with_weapon_attacks(attacks)
+    build_template.tap { |template| template.character_fields["weapon_attacks"] = attacks }
   end
 
   def character_fields

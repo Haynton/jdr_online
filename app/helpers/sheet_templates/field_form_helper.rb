@@ -12,7 +12,7 @@ module SheetTemplates
     ].join(" ").freeze
     # The fields a sentence of calculation may name, by the setting that names them
     CALCULATION_FIELDS = {
-      ability: "based_on", level: "level_from", class: "class_from", proficiency: "proficiency"
+      ability: "based_on", level: "level_from", class: "class_from", proficiency: "proficiency", bonus: "bonus_from"
     }.freeze
     # The options of the input of each kind (a method per kind: one place to change how a kind is asked)
     INPUT_OPTIONS = {

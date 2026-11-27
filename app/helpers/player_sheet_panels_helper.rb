@@ -18,6 +18,9 @@ module PlayerSheetPanelsHelper
     font-semibold text-muted tabular-nums transition-colors hover:border-field-line hover:bg-surface-raised
     hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring
   ].join(" ").freeze
+  # The column of the switches « Équipé » of the inventory, and its heading: wide enough for the heading in either
+  # language (« ÉQUIPÉ », « EQUIPPED »)
+  EQUIP_COLUMN_CLASSES = "w-14 shrink-0".freeze
   # A yes or no granted in play (the inspiration, game_rooms/vitals/_switch): a pill, gold when it is on, like the
   # badge of the game master (ink on primary-soft 12 and more; primary-soft-ink on it 6 and more)
   PLAY_SWITCH_CLASSES = %w[
@@ -58,7 +61,7 @@ module PlayerSheetPanelsHelper
 
   # A bonus field ticked on the sheet: the character is proficient in it
   def own_ticked?(character, field)
-    character.sheet.to_h[field["key"]] == true
+    FieldTypes::Bonus.proficient?(character.sheet.to_h[field["key"]])
   end
 
   # The values of the game kept with the inventory (the gold): those of the step that chooses the equipment, as on

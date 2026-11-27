@@ -1,0 +1,27 @@
+<%# A line of the inventory of a player's character (game_rooms/panels/_inventory): its name on one line, with how
+    many, its damage or armour class under it, its description at hand (summary/_entry_details); then for an armour, a
+    shield or a weapon its switch « Équipé » (game_rooms/panels/_equip_switch, in the column of its heading), and its
+    « −1 » (GameTables::InventoryItemsController) %>
+<li class="flex items-center gap-3">
+  <div class="min-w-0 flex-1">
+    <%= render layout: "character_sheets/summary/entry_details",
+               locals: { title: item.name, subtitle: inventory_item_detail(item), description: item.description } do %>
+      <span class="min-w-0">
+        <span class="block text-ink"><%= inventory_item_text(item) %></span>
+        <% if (detail = inventory_item_detail(item)) %>
+          <span class="block text-xs text-muted"><%= detail %></span>
+        <% end %>
+      </span>
+    <% end %>
+  </div>
+  <% if item.equippable? %>
+    <div class="<%= PlayerSheetPanelsHelper::EQUIP_COLUMN_CLASSES %> flex justify-center">
+      <%= render "game_rooms/panels/equip_switch", game_table: game_table, item: item %>
+    </div>
+  <% end %>
+  <%= button_to t("game_rooms.panels.inventory.take_one_short"), game_table_inventory_item_path(game_table, item), method: :delete,
+                class: PlayerSheetPanelsHelper::TAKE_ONE_BUTTON_CLASSES, form_class: "shrink-0",
+                title: t("game_rooms.panels.inventory.take_one", name: item.name),
+                aria: { label: t("game_rooms.panels.inventory.take_one", name: item.name) },
+                form: { data: own_inventory_removal_form_data(item) } %>
+</li>

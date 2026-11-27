@@ -1,7 +1,9 @@
 <%# A saving throw or a skill: the player only ticks its proficiency. Its bonus, on the right, is the modifier of its
     ability (abbreviation beside the name), plus the proficiency bonus when ticked (CharacterSheets::Calculator,
     and character_sheet_controller.js while the player types). Marked "Proposée" when the option picked in a list
-    offers it (skill_choices: the class of the character), by data-offered, set by the controller %>
+    offers it (skill_choices: the class of the character), by data-offered, set by the controller. A skill the
+    character may give expertise to has a box « Expertise » too (sheet_expertise_check_box): its proficiency counts
+    twice %>
 <div class="group flex items-center gap-3 border-b border-line py-2"
      data-character-sheet-target="bonusRow" data-key="<%= field["key"] %>">
   <%= sheet_check_box(character, field) %>
@@ -13,7 +15,17 @@
     </span>
     <span class="sr-only"><%= t("game_tables.characters.new.proficient") %></span>
   <% end %>
+  <% if (expertise_box = sheet_expertise_check_box(character, field)) %>
+    <%# The expertise of a skill (the rogue, the bard...): its proficiency counts twice %>
+    <%# Shown only once the skill is ticked (or already in expertise), so that the other rows keep their room %>
+    <label class="hidden shrink-0 cursor-pointer items-center gap-1.5 text-xs text-muted group-has-[input[value='1']:checked]:flex group-has-[input[value='2']:checked]:flex"
+           title="<%= t("game_tables.characters.new.expertise_hint") %>">
+      <%= expertise_box %>
+      <span aria-hidden="true"><%= t("game_tables.characters.new.expertise") %></span>
+    </label>
+  <% end %>
   <output class="w-8 shrink-0 text-right text-sm font-semibold text-ink tabular-nums"
           data-character-sheet-target="bonus" data-based-on="<%= field["based_on"] %>"
-          data-proficiency="<%= field["proficiency"] %>" data-proficient-box="<%= sheet_field_id(field) %>"><%= format_bonus(value) %></output>
+          data-proficiency="<%= field["proficiency"] %>" data-proficient-box="<%= sheet_field_id(field) %>"
+          data-expertise-box="<%= sheet_field_id(field) %>-expertise"><%= format_bonus(value) %></output>
 </div>

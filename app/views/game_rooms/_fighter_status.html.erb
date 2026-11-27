@@ -12,7 +12,8 @@
 <div data-controller="fighter-card" data-fighter-card-group-key-value="<%= group_key %>"
      data-fighter-card-name-value="<%= name %>">
   <% if fighter.side == :player %>
-    <%= render "game_rooms/vitals/character_vitals", character: fighter.character %>
+    <%= render "game_rooms/vitals/character_vitals", character: fighter.character,
+                                                    game_master_view: local_assigns.fetch(:game_master_view, false) %>
   <% elsif fighter.gauge %>
     <div class="flex items-center gap-2">
       <span class="flex-1 text-xs font-semibold tracking-wider text-muted uppercase"><%= t("game_rooms.combat_strip.hit_points") %></span>
@@ -54,16 +55,13 @@
 
   <% if fighter.spell_slots && local_assigns.fetch(:spell_slots, true) %>
     <div class="mt-4 border-t border-line pt-4">
-      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots %>
+      <%= render "game_rooms/spell_slots", slots: fighter.spell_slots, character: fighter.character %>
     </div>
   <% end %>
 
-  <% if fighter.attacks.present? %>
-    <ul class="mt-4 flex flex-col gap-1.5 border-t border-line pt-4 text-xs">
-      <% fighter.attacks.each do |attack| %>
-        <% name_and_bonus, *details = combat_attack_text(attack) %>
-        <li class="flex justify-between gap-3"><span class="font-medium text-ink"><%= name_and_bonus %></span><span class="text-right text-muted"><%= details.join(" · ") %></span></li>
-      <% end %>
-    </ul>
+  <% if fighter.side == :player %>
+    <%= render "game_rooms/vitals/attacks", character: fighter.character, attacks: fighter.attacks %>
+  <% elsif fighter.attacks.present? %>
+    <%= render "game_rooms/attack_list", attacks: fighter.attacks %>
   <% end %>
 </div>

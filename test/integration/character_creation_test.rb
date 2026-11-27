@@ -376,7 +376,7 @@ class CharacterCreationTest < ActionDispatch::IntegrationTest
     patch sheet_step_path, params: { character: { name: "Aldric", sheet: { class: "Mage", constitution: "14" } } }
     get sheet_step_path
 
-    assert_select "[data-controller=described-choices] aside" do
+    assert_select "[data-controller~=described-choices] aside" do
       assert_select "[data-option=Mage]:not([hidden])", text: /Un érudit\.\s+Dé de vie\s+d6/
       assert_select "[data-option=Guerrier][hidden]"
     end

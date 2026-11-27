@@ -4,15 +4,15 @@
 # a player never gets what this object keeps for the game master, the panels are not merely hidden
 class GameRoom
   # The bar of the room (maquette C, decision of 26 November): its tools in groups, each group under a short name.
-  # The board, the map tools and the dice (the initiative roll included: its panel, decision) come with their own
-  # branches (« Bientôt » until then)
+  # The map tools come with their own branch (« Bientôt » until then); the initiative roll will join the panel of
+  # the dice (decision)
   GAME_MASTER_TOOL_GROUPS = {
     "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
   }.freeze
   # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
-  # their character in a fight, their skills, their inventory, their spells, the rest of their sheet
-  PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells details], "dice" => %w[dice] }.freeze
-  COMING_SOON_PANELS = %w[map_tools dice].freeze
+  # their character in a fight, their skills, their inventory, their spells, their features, the rest of their sheet
+  PLAYER_TOOL_GROUPS = { "sheet" => %w[character skills inventory spells features details], "dice" => %w[dice] }.freeze
+  COMING_SOON_PANELS = %w[map_tools].freeze
 
   # The parts of the room that are still simulated in the page of the game master (nothing saved, nothing shared: the
   # board and its placing, the turn by turn, the quick sheet that changes hit points and conditions), shown in
@@ -30,13 +30,13 @@ class GameRoom
     @participation = participation
   end
 
-  # The last lines of the feed of the table, the oldest first (the chat)
+  # The last lines of the feed of the table, the oldest first (the chat); the hidden rolls for the game master only
   def chat_feed
-    ChatMessage.feed_of(game_table)
+    ChatMessage.feed_of(game_table, game_master: game_master?)
   end
 
   # A tool with nothing in it is left out: « Sorts » for a character without spells, « Compétences » for a template
-  # without bonus rows
+  # without bonus rows, « Capacités » for options that name no features
   def tool_groups
     return GAME_MASTER_TOOL_GROUPS if game_master?
 
@@ -64,6 +64,15 @@ class GameRoom
     game_table.characters.pc.includes(participation: :user, avatar_attachment: :blob).order(:name)
   end
 
+  # Who may roll initiative from the panel « Dés »: the game master for the NPCs and enemies of the table (decision:
+  # each player rolls their own), a player for their own finished character (DiceRolls::InitiativeRecorder checks
+  # it again)
+  def initiative_characters
+    return game_table.npcs.to_a if game_master?
+
+    [participation.character].compact.reject(&:draft?)
+  end
+
   # The characters the game master may give an item to (the panel « Objets »): the finished characters of the
   # players; none for a player
   def gift_receivers
@@ -82,6 +91,7 @@ class GameRoom
     panels = []
     panels << "spells" if character&.spells.blank?
     panels << "skills" unless character&.sheet_fields.to_a.any? { |field| field["type"] == "bonus" }
+    panels << "features" if character.nil? || CharacterSheets::Features.new(character).call.empty?
     panels
   end
 

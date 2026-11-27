@@ -3,12 +3,18 @@
     gold, their name kept for screen readers only) and a message that follows one of the same author by less than five
     minutes (data-continued: no header again), and writes the time in the time zone of the reader (the server one
     stays without JavaScript). The text keeps its line breaks (whitespace-pre-wrap). An event: a framed line on the
-    whole width, to stand out from the messages %>
+    whole width, to stand out from the messages; a line for the game master only (game_master_only, only ever sent
+    to them: a hidden roll, a spell slot spent) says so with an eye crossed out %>
 <% if line.event? %>
   <li id="<%= dom_id(line) %>" class="<%= GameRoomChatHelper::EVENT_CLASSES %>" data-chat-feed-target="line"
       data-kind="event" data-line-id="<%= line.id %>">
-    <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
-    <span><%= chat_event_text(line) %></span>
+    <% if line.game_master_only? %>
+      <%= render "shared/icons/eye_off", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
+      <span><span class="font-semibold"><%= t("game_rooms.chat.game_master_only") %></span> · <%= chat_event_text(line) %></span>
+    <% else %>
+      <%= render "shared/icons/scroll_text", css_class: "mt-0.5 size-4 shrink-0 text-brass" %>
+      <span><%= chat_event_text(line) %></span>
+    <% end %>
   </li>
 <% else %>
   <li id="<%= dom_id(line) %>" class="group flex flex-col items-start data-continued:-mt-2 data-own:items-end"

@@ -11,6 +11,19 @@ fr:
         username: "Inviter un joueur par son pseudo"
     errors:
       models:
+        level_up:
+          attributes:
+            hit_point_choice:
+              inclusion: "Choisissez comment gagner vos points de vie."
+            subclass:
+              inclusion: "Choisissez une option de la liste."
+            ability_increases:
+              not_shared: "Répartissez exactement %{points} points."
+              above_maximum: "%{ability} dépasserait %{maximum}."
+            expertise_keys:
+              not_picked:
+                one: "Choisissez 1 compétence."
+                other: "Choisissez %{count} compétences."
         friend_request:
           attributes:
             username:
@@ -49,7 +62,10 @@ fr:
         description: "Description"
         name: "Nom"
       character:
+        fighting_style: "Style de combat"
+        weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
+        owner_character: "Personnage"
         spells: "Sorts"
       game_table:
         board_game_map: "Carte du plateau"
@@ -86,6 +102,10 @@ fr:
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
         too_many_picks: "%{count} au plus"
         skill_not_offered: "%{skill} n'est pas proposée par vos choix : décochez-la"
+        expertise_not_offered: "%{skill} ne peut pas recevoir l'expertise : décochez-la"
+        too_many_expertise:
+          one: "trop d'expertises : %{count} au plus"
+          other: "trop d'expertises : %{count} au plus"
         too_many_skills:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
@@ -144,6 +164,13 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            fighting_style:
+              not_offered: "n'est pas proposé par votre classe à ce niveau"
+            weapon_masteries:
+              not_offered: "comptent une arme que votre classe ne propose pas"
+              too_many:
+                one: "%{count} au plus"
+                other: "%{count} au plus"
             avatar: &avatar_errors
               blank: "Choisissez une image."
               content_type: "L'image doit être en PNG, JPEG ou WebP."
@@ -154,6 +181,9 @@ fr:
               too_many_points:
                 one: "Retirez 1 point pour continuer."
                 other: "Retirez %{count} points pour continuer."
+            owner_character:
+              not_a_player_of_the_table: "doit être un personnage d'un joueur de cette table"
+              only_for_companion: "ne se choisit que pour un compagnon"
             participation_id:
               already_has_character: "a déjà un personnage à cette table"
             spells:
@@ -193,6 +223,20 @@ fr:
           invalid_condition_label: "L'état « %{key} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_condition_levels: "L'état « %{condition} » : le nombre de niveaux doit être un nombre entier de %{min} à %{max}"
           unknown_condition_parameter: "L'état « %{condition} » : le réglage « %{parameter} » est inconnu"
+          invalid_dice_rolls: "Les dés : le réglage doit déclarer ses modes et son initiative"
+          unknown_dice_rolls_parameter: "Les dés : le réglage « %{parameter} » est inconnu"
+          invalid_dice_roll_modes: "Les dés : les modes doivent être une liste de modes, chacun avec sa clé et son libellé"
+          invalid_dice_roll_mode: "Le mode de dés « %{mode} » : il lance de %{min} à %{max} dés et garde le meilleur (highest) ou le pire (lowest)"
+          invalid_dice_roll_mode_key: "Le mode de dés « %{key} » : la clé doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
+          invalid_dice_roll_mode_label: "Le mode de dés « %{mode} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_dice_roll_mode_help: "Le mode de dés « %{mode} » : l'aide doit être un texte d'une ligne, de %{count} caractères au plus"
+          unknown_dice_roll_mode_parameter: "Le mode de dés « %{mode} » : le réglage « %{parameter} » est inconnu"
+          duplicate_dice_roll_mode: "Le mode de dés « %{key} » est déclaré deux fois"
+          invalid_initiative_roll: "L'initiative : le réglage doit déclarer son dé et ce qu'il ajoute"
+          unknown_initiative_parameter: "L'initiative : le réglage « %{parameter} » est inconnu"
+          invalid_initiative_label: "L'initiative : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_initiative_sides: "L'initiative : le dé doit être un dé parmi %{sides}"
+          invalid_initiative_field: "L'initiative : %{part} n'a pas de champ « %{key} » qui donne un nombre (nombre, valeur calculée ou caractéristique)"
           duplicate_step: "L'étape « %{step} » est déclarée deux fois"
           field_without_step: "« %{field} » est demandé à la création, mais n'est rangé dans aucune étape"
           invalid_equipment_line: "%{part} › %{field} › %{option} : une ligne de l'option %{letter} doit être un objet ou un choix, pas les deux ni aucun"
@@ -206,7 +250,9 @@ fr:
           invalid_spell_group_label: "Le groupe de sorts « %{group} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_spell_slots_label: "Les emplacements de sorts : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_class_slots_label: "%{part} › %{field} › %{option} : le libellé des emplacements de sorts doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_class_slots_recovery: "%{part} › %{field} › %{option} : les emplacements reviennent d'une de ces façons : %{recoveries}"
           invalid_step_key: "L'étape « %{step} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
+          labels_not_matching_options: "%{part} › %{field} : « labels » doit donner un nom à chaque option (%{count})"
           invalid_step_label: "L'étape « %{step} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           min_above_max: "%{part} › %{field} : le minimum (%{min}) dépasse le maximum (%{max})"
           missing_hit_die: "%{part} › %{field} : chaque classe doit donner son dé de vie (hit_die)"
@@ -232,6 +278,22 @@ fr:
           unknown_spell_group_changes: "Le groupe de sorts « %{group} » : la règle de changement « %{changes} » est inconnue"
           unknown_spell_group_parameter: "Le groupe de sorts « %{group} » : le réglage « %{parameter} » est inconnu"
           unknown_spell_slots_parameter: "Les emplacements de sorts : le réglage « %{parameter} » est inconnu"
+          invalid_weapon_attacks: "Les attaques d'arme : le réglage doit déclarer ses caractéristiques"
+          invalid_weapon_attacks_field: "Les attaques d'arme : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
+          missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
+          unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_fighting_styles: "Les styles de combat : le réglage doit être une liste de styles"
+          invalid_fighting_style: "Le style de combat « %{style} » : une clé, un libellé sur une ligne, et des effets connus"
+          unknown_fighting_style: "%{part} › %{field} › %{option} : le style de combat « %{style} » n'existe pas"
+          unknown_fighting_style_parameter: "Les styles de combat : le réglage « %{parameter} » est inconnu"
+          invalid_death_saves: "Les jets contre la mort : le réglage doit déclarer son dé et ses champs"
+          invalid_death_saves_field: "Les jets contre la mort : « %{parameter} » doit désigner un champ %{type} de la fiche du personnage"
+          invalid_death_saves_label: "Les jets contre la mort : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
+          invalid_death_saves_number: "Les jets contre la mort : « %{parameter} » doit être un nombre entier plus grand que 0"
+          invalid_death_saves_sides: "Les jets contre la mort : le dé doit être un dé parmi %{sides}"
+          missing_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est obligatoire"
+          unknown_death_saves_parameter: "Les jets contre la mort : le réglage « %{parameter} » est inconnu"
           unknown_step_effect: "L'étape « %{step} » dépend d'un effet inconnu : %{effect}"
           unknown_step_parameter: "L'étape « %{step} » : le réglage « %{parameter} » est inconnu"
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
@@ -249,7 +311,11 @@ fr:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
   character_sheets:
+    features:
+      group: "%{list} · %{option}"
     summary:
+      weapon_attacks:
+        title: "Attaques"
       inventory:
         title: "Inventaire"
         empty: "Rien dans l'inventaire."
@@ -791,6 +857,7 @@ fr:
         spell_save_dc: "8, plus le %{proficiency}, plus le modificateur de la caractéristique des sorts de la classe (%{class})."
         starting_gold: "L'or de l'équipement de départ choisi par le joueur."
         unarmored_armor_class: "10 plus le modificateur de %{ability}, plus la défense sans armure de la classe (%{class}) si elle en a une."
+        worn_armor_class: "La classe d'armure de l'armure équipée plus le modificateur de %{ability}, au plus ce que l'armure permet ; sans armure, 10 plus ce modificateur et la défense sans armure de la classe (%{class}). Puis le bonus du bouclier équipé et %{bonus}."
     duplicates:
       copy_name: "%{name} (copie)"
       create:
@@ -897,6 +964,9 @@ fr:
       based_on:
         hint: "La caractéristique dont le modificateur entre dans le calcul."
         label: "Caractéristique"
+      bonus_from:
+        hint: "Le nombre ajouté à la fin du calcul (un bonus donné par le MJ en jeu)."
+        label: "Champ du bonus"
       class_from:
         hint: "La liste dont l'option choisie donne le dé de vie et les sorts."
         label: "Champ de la classe"
@@ -908,9 +978,15 @@ fr:
       count:
         hint: "Combien d'options le joueur peut cocher au plus."
         label: "Nombre de choix"
+      currency:
+        hint: "Une pièce de l'argent du personnage : montrée dans son inventaire, ajoutée ou retirée par son joueur, donnée par le MJ."
+        label: "Pièce de monnaie"
       filter:
         hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
         label: "Filtre de la recherche"
+      game_master_adjusts:
+        hint: "Un nombre que le MJ change en jeu, depuis la fiche rapide du personnage (un bonus de CA)."
+        label: "Ajusté par le MJ"
       from:
         hint: "La liste dont l'option choisie donne ce champ (l'historique, la classe)."
         label: "Liste d'origine"
@@ -994,6 +1070,7 @@ fr:
           spell_save_dc: "DD des sorts"
           starting_gold: "Or de l'équipement de départ"
           unarmored_armor_class: "Classe d'armure sans armure"
+          worn_armor_class: "Classe d'armure de l'équipement"
       section:
         hint: "Le groupe de la fiche où le champ s'affiche."
         label: "Section"
@@ -1079,6 +1156,12 @@ fr:
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
+    level_grant:
+      call: "Le MJ vous donne le niveau %{level}."
+      confirm: "Donner le niveau %{level} à %{name} ? Le joueur fera ensuite les choix de ce niveau."
+      give: "Donner le niveau %{level}"
+      reach: "Passer au niveau %{level}"
+      waiting: "Niveau %{level} en attente des choix du joueur."
     board:
       clear_tokens: "Retirer tous les jetons"
       clear_tokens_question: "Retirer tous les jetons de « %{name} » ? Ils ne reviendront pas sur cette carte."
@@ -1103,14 +1186,34 @@ fr:
       zoom_out: "Dézoomer"
     chat:
       events:
+        level_granted: "Le MJ donne le niveau %{level} à %{character}."
+        level_reached: "%{character} passe au niveau %{level} : +%{hit_points} PV."
+        level_reached_rolled: "%{character} passe au niveau %{level} : dé de vie %{roll}, +%{hit_points} PV."
+        weapon_masteries_changed: "%{character} change ses maîtrises : %{changes}."
+        spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
+        hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
+        resource_used: "%{character} utilise %{resource} : il en reste %{left} sur %{total}."
+        resource_pool_used: "%{character} dépense %{count} de %{resource} : il en reste %{left} sur %{total}."
+        death_save_success: "%{character} · jet contre la mort : %{roll}, une réussite (%{successes} sur %{needed})."
+        death_save_failure: "%{character} · jet contre la mort : %{roll}, un échec (%{failures} sur %{needed})."
+        death_save_critical_failure: "%{character} · jet contre la mort : %{roll}, deux échecs (%{failures} sur %{needed})."
+        death_save_revived: "%{character} · jet contre la mort : %{roll}, reprend conscience avec 1 PV."
+        death_save_stable: "%{character} n'est plus en danger : stable."
+        death_save_dead: "%{character} succombe à ses blessures."
+        death_save_hit: "%{character} subit un coup à 0 PV : un échec (%{failures} sur %{needed})."
         item_given:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
+        money_given: "Le MJ a donné %{count} %{coin} à %{character}."
         spells_changed: "%{character} change ses sorts : %{changes}."
+        dice_rolled: "%{roller} lance %{notation} : %{dice} → %{total}"
+        dice_rolled_by_game_master: "Le MJ lance %{notation} : %{dice} → %{total}"
+        initiative_rolled: "%{character} · %{label} : %{notation} : %{dice} → %{total}"
       empty: "Aucun message pour l'instant. Écrivez à la table : chacun le voit en direct."
       field: "Message à la table"
       fold: "Replier le chat"
       former_player: "Ancien joueur"
+      game_master_only: "Vu par vous seul"
       hint: "Entrée pour envoyer, Maj + Entrée pour aller à la ligne"
       new_messages: "Nouveaux messages"
       placeholder: "Écrire à la table…"
@@ -1125,6 +1228,8 @@ fr:
     combat_strip:
       long_rest: "Repos long"
       long_rest_confirm: "Repos long pour %{name} ? Ses points de vie reviennent au maximum."
+      short_rest: "Repos court"
+      short_rest_confirm: "Repos court pour %{name} ? Ses ressources reviennent comme le modèle le dit."
       passive: "Perception passive"
       passive_short: "Perc. passive"
       add_condition: "Ajouter un état"
@@ -1156,6 +1261,7 @@ fr:
       roll_question_hint: "Avec le jet, l'ordre se range d'après les résultats. Sans, l'ordre reste celui de la barre."
       round: "Tour %{count}"
       slot: "Emplacement %{number} de niveau %{level} utilisé"
+      slots_left: "%{left} sur %{total}"
       spell_level: "Niveau %{level}"
       start_turns: "Lancer le tour par tour"
       with_rolls: "Jet d'initiative"
@@ -1166,10 +1272,19 @@ fr:
       give: "Donner"
       quantity: "Quantité"
       receiver: "À qui ?"
+    money_gift_dialog:
+      amount: "Somme"
+      cancel: "Annuler"
+      close: "Fermer"
+      coin: "Pièce"
+      give: "Donner"
+      receiver: "À qui ?"
+      title: "Donner de l'argent"
     panel:
       close: "Fermer %{name}"
     panels:
       character:
+        change_masteries: "Changer mes maîtrises"
         abilities: "Caractéristiques"
         edit_sheet: "Modifier ma fiche"
         fight: "Combat"
@@ -1178,12 +1293,35 @@ fr:
       details:
         title: "Détails"
       dice:
-        coming_soon:
-          game_master: "Lancez les dés de la partie, en secret ou devant tout le monde, ou faites lancer un joueur, toute la table ou un PNJ. Demandez aussi le jet d'initiative : l'ordre du combat se range tout seul d'après les résultats. Les résultats, tirés par le serveur, iront dans le chat."
-          player: "Lancez vos dés : les résultats, tirés par le serveur, iront dans le chat de la partie."
+        bonus: "Bonus"
+        count: "Nombre de dés"
+        die: "Dé"
+        die_name: "d%{sides}"
+        hidden: "Jet caché"
+        hidden_hint: "Vous seul voyez le résultat, les joueurs n'en savent rien."
+        hidden_result: "Jet caché"
+        initiative_for: "Pour quel PNJ ou ennemi"
+        initiative_hint: "Un d%{sides} plus la valeur de la fiche. Le mode et le jet caché s'appliquent aussi, pas le dé, le nombre ni le bonus choisis plus haut."
+        roll_initiative: "Lancer « %{label} »"
+        mode: "Mode"
+        no_result: "Le résultat s'affiche ici et dans le chat, pour toute la table."
+        normal: "Normal"
+        result: "Résultat"
+        roll: "Lancer"
         title: "Dés"
+      equip_switch:
+        equip: "Équiper « %{name} »"
+        equipped: "Équipé"
+      purse:
+        add: "Ajouter"
+        amount: "Somme"
+        coin: "Pièce"
+        remove: "Retirer"
+        title: "Argent"
       inventory:
         amount: "Somme à retirer de %{label}"
+        bag: "Dans le sac"
+        gear: "Équipement"
         remove: "Retirer"
         remove_confirm: "Retirer « %{name} » de l'inventaire ? C'est le dernier exemplaire."
         take_one: "Retirer 1 %{name}"
@@ -1193,6 +1331,7 @@ fr:
         give: "Donner"
         give_item: "Donner %{item}"
         give_title: "Donner « %{item} »"
+        give_money: "Donner de l'argent"
         no_category: "Autres"
         no_match: "Aucun objet ne correspond à cette recherche."
         search: "Rechercher un objet"
@@ -1210,6 +1349,8 @@ fr:
       npcs:
         empty: "Cette table n'a encore ni PNJ ni ennemi."
         title: "PNJ et ennemis"
+      features:
+        title: "Capacités"
       skills:
         title: "Compétences"
       spells:
@@ -1259,6 +1400,26 @@ fr:
       settings: "Paramètres"
       signed_in_as: "Connecté(e) : %{username}"
     vitals:
+      resources:
+        amount: "Montant de %{resource}"
+        restore: "Rendre une utilisation de %{resource} à %{name}"
+        restore_short: "Rendre"
+        spend: "Utiliser %{resource} de %{name}"
+        spend_short: "Dépenser"
+        title: "Ressources"
+      hit_dice:
+        left: "%{left} sur %{total} · d%{sides}"
+        spend: "Dépenser"
+        spend_for: "Dépenser un dé de vie de %{name}"
+        title: "Dés de vie"
+      death_saves:
+        count: "%{count} sur %{needed}"
+        dead: "Mort"
+        failures: "Échecs"
+        roll: "Lancer le jet"
+        roll_for: "Lancer le jet contre la mort de %{name}"
+        stable: "Stable"
+        successes: "Réussites"
       decrease: "Retirer 1 à %{label} de %{name}"
       increase: "Ajouter 1 à %{label} de %{name}"
     video:
@@ -1276,6 +1437,10 @@ fr:
         given:
           one: "« %{item} » donné à %{character}."
           other: "%{count} × « %{item} » donnés à %{character}."
+    money_gifts:
+      create:
+        given: "%{count} %{coin} donnés à %{character}."
+        too_much: "%{character} ne peut pas avoir plus de %{max} %{coin}."
     map_lists:
       edit:
         back: "Retour"
@@ -1330,6 +1495,36 @@ fr:
         rolled: "Dés de vie lancés : %{results}."
     rules:
       former_roll: "Lancer de dés"
+    level_ups:
+      new:
+        back: "Retour à la partie"
+        close: "Fermer"
+        features: "Nouvelles capacités"
+        later: "Plus tard"
+        picks_later: "Vos nouveaux sorts et maîtrises d'armes se choisissent ensuite, dans « Changer mes sorts » et « Changer mes maîtrises »."
+        submit: "Passer au niveau %{level}"
+        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau, le chat dira le résultat."
+        title: "Niveau %{level}"
+      hit_points:
+        title: "Points de vie"
+        average: "Moyenne : +%{points} PV"
+        roll: "Lancer le d%{sides}"
+      improvement:
+        title: "Amélioration de caractéristique"
+        rule: "Répartissez %{points} points, sans dépasser le maximum d'une caractéristique."
+      expertise:
+        title: "Expertise"
+        rule:
+          one: "Choisissez 1 compétence maîtrisée : son bonus de maîtrise compte double."
+          other: "Choisissez %{count} compétences maîtrisées : leur bonus de maîtrise compte double."
+    weapon_mastery_choices:
+      edit:
+        back: "Retour à la partie"
+        cancel: "Annuler"
+        close: "Fermer"
+        save: "Enregistrer"
+        subtitle: "Le style de combat et les maîtrises d'armes de %{name}, dans ce que donnent sa classe et son niveau. Le changement s'écrit dans le chat."
+        title: "Changer mes maîtrises"
     spell_choices:
       edit:
         back: "Retour à la partie"
@@ -1338,6 +1533,12 @@ fr:
         save: "Enregistrer"
         subtitle: "Les sorts de %{name}, dans les nombres de sa classe et de son niveau. Le changement s'écrit dans le chat."
         title: "Changer mes sorts"
+    purses:
+      update:
+        invalid_amount: "Indiquez une somme d'au moins 1."
+        not_enough: "Il n'y a que %{count} %{coin} dans la bourse."
+        not_saved: "La somme n'a pas pu être enregistrée."
+        too_much: "Au plus %{max} %{coin}."
     inventory_values:
       update:
         invalid_amount: "Indiquez une somme de 1 à %{count}."
@@ -1349,6 +1550,13 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      weapon_mastery_choices:
+        masteries: "Maîtrises d'armes"
+        masteries_hint:
+          one: "Cochez %{count} sorte d'arme : sa propriété de maîtrise s'ajoute à vos attaques avec elle."
+          other: "Cochez %{count} sortes d'armes : leur propriété de maîtrise s'ajoute à vos attaques avec elles."
+        style: "Style de combat"
+        style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
       equipment_choices:
         armor_class: "CA %{value}"
@@ -1437,6 +1645,9 @@ fr:
         place_value: "Placer"
         points_spent: "%{spent} points dépensés sur %{points}"
         proficient: "(maîtrise)"
+        expertise: "Expertise"
+        expertise_for: "Expertise en %{skill}"
+        expertise_hint: "Le bonus de maîtrise compte double."
         reroll: "Relancer les dés"
         resource_hint: "Valeur maximale : le personnage commence au maximum."
         roll: "Lancer les dés"
@@ -1451,13 +1662,22 @@ fr:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        fighting_style: "Style de combat"
+        expertise: "Expertise"
         ability_bonus: "Caractéristiques augmentées"
         hit_die: "Dé de vie"
         hit_points_per_level: "Points de vie"
         origin_feat: "Don d'origine"
         proficient: "Maîtrises"
+        resources: "Ressources"
         skill_choices: "Compétences"
         spellcasting: "Caractéristique des sorts"
+        weapon_mastery: "Maîtrises d'armes"
+      weapon_mastery_value:
+        one: "%{count} sorte d'arme"
+        other: "%{count} sortes d'armes"
+      expertise_value: "%{count} au niveau %{level}"
+      features: "Capacités"
       features_level: "Niveau %{level}"
       hit_points_per_level_value: "+%{points} par niveau"
       label: "Résumé de vos choix"
@@ -1720,6 +1940,7 @@ fr:
         kind: "Rôle"
         name: "Nom"
       kinds:
+        companion: "Compagnon"
         monster: "Ennemi"
         npc: "PNJ"
       window:

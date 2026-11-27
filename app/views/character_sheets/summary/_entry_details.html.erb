@@ -1,6 +1,7 @@
 <%# A spell or an item on the summary sheet whose details open on demand, in the window of the sheet
     (shared/_details_dialog, decision: as at the Spells step, rather than a fold under the line). Its line is the
-    button, with an info icon; details_dialog_controller.js shows it and copies the details into the window, its name
+    button, with an info icon after it (decision of 26 November: before it, the icon pushed the names of a list out of
+    line with those that have none, and with the heading of the list); details_dialog_controller.js shows it and copies the details into the window, its name
     (title) and its short line (subtitle) in the title bar. Without JavaScript, a native details opens them under the
     line. Rendered as a layout around the line:
     render layout: "character_sheets/summary/entry_details", locals: { title:, subtitle:, description:, details: } do ... end
@@ -11,11 +12,11 @@
 <% if details %>
   <div>
     <button type="button" hidden aria-haspopup="dialog"
-            class="flex cursor-pointer items-baseline gap-2 rounded-sm text-left text-sm [&:hover>span:nth-child(2)]:underline"
+            class="flex cursor-pointer items-baseline gap-2 rounded-sm text-left text-sm [&:hover>span:first-child]:underline"
             data-details-dialog-target="opener" data-action="details-dialog#open"
             data-details-dialog-name-param="<%= title %>" data-details-dialog-summary-param="<%= local_assigns[:subtitle] %>">
-      <span class="self-center text-muted" aria-hidden="true"><%= render "shared/icons/info", css_class: "size-3.5" %></span>
       <%= line %>
+      <span class="shrink-0 self-center text-muted" aria-hidden="true"><%= render "shared/icons/info", css_class: "size-3.5" %></span>
     </button>
     <details class="group text-sm" data-details-dialog-target="fold">
       <summary class="flex cursor-pointer list-none items-baseline gap-2 rounded-sm [&::-webkit-details-marker]:hidden">
@@ -30,5 +31,5 @@
     </details>
   </div>
 <% else %>
-  <p class="flex items-baseline gap-2 pl-5.5 text-sm"><%= line %></p>
+  <p class="flex items-baseline gap-2 text-sm"><%= line %></p>
 <% end %>

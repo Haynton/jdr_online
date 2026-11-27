@@ -7,16 +7,18 @@ import { confirmWithDialog } from "confirm_dialog"
 // brings everyone back without an order. A portrait opens its quick sheet above the strip (one at a time; Escape or a
 // click elsewhere closes it), « Tour suivant » moves the gold ring to the next place and counts the rounds. The hit
 // points of a fighter, changed on its card (fighter_card_controller.js), redraw the ring of its portrait, and a
-// condition is added to a card from the window of the conditions. Nothing is saved, nothing reaches the others: it
+// condition is added to a card from the window of the conditions. The order of initiative comes from the rolls of the
+// panel « Dés »: after each one, the server sends the new ranks to the game master (ranksTargetConnected), which
+// « Prêt » sorts by; an order already begun is never shuffled. The rest is not saved, nothing reaches the others: it
 // all stays in this page
 export default class extends Controller {
   static targets = [
     "portrait", "sheet", "ring", "round", "order", "startButton", "startDialog", "preparationButtons", "fightButtons",
-    "conditionChip", "conditionsDialog", "conditionsTitle"
+    "conditionChip", "conditionsDialog", "conditionsTitle", "ranks"
   ]
   static values = {
     roundText: String, conditionsTitle: String, waitingOne: String, waitingOther: String, rolled: String,
-    preparing: String, reorderQuestion: String, reorderButton: String, reorderable: Boolean
+    preparing: String, reorderQuestion: String, reorderButton: String, reorderable: Boolean, portraitLabel: String
   }
 
   connect() {
@@ -25,6 +27,24 @@ export default class extends Controller {
 
   disconnect() {
     this.stopRolls()
+  }
+
+  // The ranks sent after a roll of initiative (replaced on the stream of the game master): each place takes its new
+  // rank, each portrait the initiative it says to screen readers
+  ranksTargetConnected(template) {
+    const ranks = JSON.parse(template.dataset.ranks)
+    this.portraitTargets.forEach((portrait) => {
+      const rank = ranks[portrait.dataset.groupKey]
+      if (!rank) return
+
+      portrait.closest("li").dataset.initiativeRank = rank.rank
+      if (!portrait.dataset.fighterName) return
+
+      const label = this.portraitLabelValue
+        .replace("__NAME__", portrait.dataset.fighterName).replace("__INITIATIVE__", rank.initiative)
+      portrait.setAttribute("aria-label", label)
+      portrait.title = label
+    })
   }
 
   // « Lancer le tour par tour » first asks whether the whole table rolls its initiative; the window takes the focus

@@ -2,7 +2,26 @@
 module GameRoomChatHelper
   # The text of each event, written once (a key per event, never built from its name)
   CHAT_EVENT_TEXTS = {
-    "item_given" => "game_rooms.chat.events.item_given", "spells_changed" => "game_rooms.chat.events.spells_changed"
+    "item_given" => "game_rooms.chat.events.item_given", "money_given" => "game_rooms.chat.events.money_given",
+    "spells_changed" => "game_rooms.chat.events.spells_changed",
+    "dice_rolled" => "game_rooms.chat.events.dice_rolled",
+    "dice_rolled_by_game_master" => "game_rooms.chat.events.dice_rolled_by_game_master",
+    "initiative_rolled" => "game_rooms.chat.events.initiative_rolled",
+    "death_save_success" => "game_rooms.chat.events.death_save_success",
+    "death_save_failure" => "game_rooms.chat.events.death_save_failure",
+    "death_save_critical_failure" => "game_rooms.chat.events.death_save_critical_failure",
+    "death_save_revived" => "game_rooms.chat.events.death_save_revived",
+    "death_save_stable" => "game_rooms.chat.events.death_save_stable",
+    "death_save_dead" => "game_rooms.chat.events.death_save_dead",
+    "death_save_hit" => "game_rooms.chat.events.death_save_hit",
+    "resource_used" => "game_rooms.chat.events.resource_used",
+    "resource_pool_used" => "game_rooms.chat.events.resource_pool_used",
+    "spell_slot_spent" => "game_rooms.chat.events.spell_slot_spent",
+    "hit_die_spent" => "game_rooms.chat.events.hit_die_spent",
+    "weapon_masteries_changed" => "game_rooms.chat.events.weapon_masteries_changed",
+    "level_granted" => "game_rooms.chat.events.level_granted",
+    "level_reached" => "game_rooms.chat.events.level_reached",
+    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own
@@ -37,8 +56,10 @@ module GameRoomChatHelper
     %w[min-h-10 max-h-32 min-w-0 flex-1 resize-none py-[9px] leading-5]
   ).join(" ").freeze
 
+  # A list among the values (the dice of a roll) reads « 7, 15 »
   def chat_event_text(line)
-    t(CHAT_EVENT_TEXTS.fetch(line.event_key), **line.event_params.symbolize_keys)
+    values = line.event_params.transform_values { |value| value.is_a?(Array) ? value.join(", ") : value }
+    t(CHAT_EVENT_TEXTS.fetch(line.event_key), **values.symbolize_keys)
   end
 
   # The name of the author, kept on the line: the line stays when the account is deleted

@@ -25,9 +25,11 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
+  # Two classes may each have a feature of the same name (Extra Attack, Epic Boon): only their keys differ
   test "keys and names are unique in a file" do
     each_catalog do |catalog_file, catalog|
-      %w[key name].each do |attribute|
+      attributes = catalog["kind"] == "feature" ? %w[key] : %w[key name]
+      attributes.each do |attribute|
         values = catalog["entries"].pluck(attribute)
 
         assert_equal values.uniq, values, "#{catalog_file.basename}: a #{attribute} twice"
@@ -56,6 +58,24 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
   end
 
+  test "the weapons and armor of the heroic fantasy say what the rules read, the same in both languages" do
+    catalogs = %w[en fr].map do |locale|
+      read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_items.#{locale}.json"))["entries"]
+    end
+    rule_values = %w[training armor_base armor_dexterity_cap armor_bonus damage_dice versatile_dice finesse ranged]
+    weapons_and_armor = catalogs.first.select { |item| item.dig("properties", "training") }
+
+    assert_equal(*catalogs.map { |entries| entries.map { |item| item["properties"].slice(*rule_values) } })
+    assert_equal 20, weapons_and_armor.size
+    assert_equal({ "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8" },
+                 catalogs.first.select { |item| item.dig("properties", "versatile_dice") }
+                               .to_h { |item| [item["key"], item.dig("properties", "versatile_dice")] })
+    weapons_and_armor.select { |item| item.dig("properties", "training").end_with?("weapons") }.each do |weapon|
+      assert_match(/\A\d+d\d+\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
+      assert weapon.dig("properties", "damage").start_with?(weapon.dig("properties", "damage_dice")), weapon["key"]
+    end
+  end
+
   test "every class with spells has enough of them to choose from, at levels 1 to 4" do
     each_catalog do |catalog_file, catalog, sheet_template|
       next unless catalog["kind"] == "spell"
@@ -80,6 +100,19 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
       template.character_fields["fields"].each do |field|
         field["effects"].to_h.each do |option, effects|
           missing = effects["always_prepared_spells"].to_h.values.flatten - spell_keys
+          assert_empty missing, "#{catalog_file.basename} #{option}"
+        end
+      end
+    end
+  end
+
+  test "every feature, trait and feat an option names is in the catalog of features of its template" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "feature" }.each do |catalog_file|
+      feature_keys = read_json(catalog_file)["entries"].pluck("key")
+      template = create_template_of(catalog_file)
+      template.character_fields["fields"].each do |field|
+        field["effects"].to_h.each do |option, effects|
+          missing = CharacterSheets::Features.keys_of(effects).map(&:key) - feature_keys
           assert_empty missing, "#{catalog_file.basename} #{option}"
         end
       end

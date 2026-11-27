@@ -1,0 +1,24 @@
+<%# The hit points of the level: the average or a roll of the hit die, both when the table leaves it to the player,
+    the way of the table otherwise (said, sent hidden). The server rolls when the player submits %>
+<% choices = level_up.hit_point_choices %>
+<% if choices.any? %>
+  <fieldset aria-describedby="level_up_hit_point_choice_error">
+    <legend class="<%= LevelUpsHelper::SECTION_TITLE_CLASSES %>"><%= t("game_tables.level_ups.hit_points.title") %></legend>
+    <% texts = { "average" => t("game_tables.level_ups.hit_points.average", points: level_up.average_hit_points),
+                 "roll" => t("game_tables.level_ups.hit_points.roll", sides: level_up.hit_die) } %>
+    <% if choices.size > 1 %>
+      <div class="mt-2 inline-flex flex-wrap gap-1 rounded-lg bg-field p-1">
+        <% choices.each do |choice| %>
+          <label class="<%= LevelUpsHelper::CHOICE_CLASSES %>">
+            <%= radio_button_tag "level_up[hit_point_choice]", choice, level_up.hit_point_choice == choice, id: nil, class: "sr-only" %>
+            <%= texts[choice] %>
+          </label>
+        <% end %>
+      </div>
+    <% else %>
+      <%= hidden_field_tag "level_up[hit_point_choice]", choices.first, id: nil %>
+      <p class="mt-2 text-sm text-ink"><%= texts[choices.first] %></p>
+    <% end %>
+    <%= render "game_tables/level_ups/error", level_up: level_up, attribute: :hit_point_choice %>
+  </fieldset>
+<% end %>

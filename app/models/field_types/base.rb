@@ -6,7 +6,7 @@ module FieldTypes
     # the validator of the template refuses any other (SheetTemplateValidator: a typo like maxx never passes)
     COMMON_PARAMETERS = %w[
       key label type section help required at_creation visible_to_others abbreviation summary_only internal column
-      listed filter
+      listed filter game_master_adjusts currency
     ].freeze
     OWN_PARAMETERS = [].freeze
     # The settings without which the type does not work
@@ -93,6 +93,12 @@ module FieldTypes
     # Its group on the summary sheet (CharacterSheets::SummaryHelper::SUMMARY_GROUPS), nil when it is not shown there
     def summary_group(_field)
       :facts
+    end
+
+    # Its box takes the whole row among the read-only fields of the summary sheet (summary/_facts): a value that may
+    # run long, like several options picked
+    def wide_in_summary?
+      false
     end
 
     # Tells who the character is, without changing what is worked out (a text, a list without effects): the player may

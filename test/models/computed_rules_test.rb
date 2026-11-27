@@ -5,7 +5,7 @@ class ComputedRulesTest < ActiveSupport::TestCase
 
   test "the registry lists every computing rule, once, in this order" do
     assert_equal %w[proficiency_by_level ability_modifier hit_dice_by_class spell_save_dc spell_attack_bonus
-                    hit_points_by_level unarmored_armor_class starting_gold], ComputedRules.keys
+                    hit_points_by_level unarmored_armor_class worn_armor_class starting_gold], ComputedRules.keys
   end
 
   test "an unknown rule works out nothing" do

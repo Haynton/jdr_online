@@ -31,7 +31,7 @@ module CharacterSheets
 
     # Every skill some option of the template may offer, ticked on the sheet
     def ticked_keys
-      skill_keys.select { |key| @sheet[key] == true }
+      skill_keys.select { |key| FieldTypes::Bonus.proficient?(@sheet[key]) }
     end
 
     # The skills the player ticked among those offered

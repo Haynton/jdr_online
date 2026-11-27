@@ -1,27 +1,25 @@
-<%# The spell slots of a caster (CharacterSheets::SpellSlots: their name and help from the template), one line per
-    level of spell, a round per slot, ticked once used (fighter_card_controller.js#toggleSlot: inside an element of
-    that controller). Simulated, nothing saved: the rounds tick only with GameRoom.preview_features?; online, the count
-    alone. In the quick sheet of the game master (game_rooms/_fighter_status) and at the top of the panel « Sorts » %>
-<% live = GameRoom.preview_features? %>
-<section aria-label="<%= slots.label %>">
+<%# The spell slots of a player's character (CharacterSheets::SpellSlots: their name and help from the template), one
+    line per level of spell, a round per slot, filled once spent (decision of 26 November: saved). An empty round spends
+    a slot of its level, a filled one gives one back (GameTables::CharacterSpellSlotsController: its player or the game
+    master; a slot spent is written in the chat of the game master only), sent to the whole table. In the quick sheet
+    of the game master (game_rooms/_fighter_status) and at the top of the panel « Sorts » %>
+<% path = ->(spell_level) { game_table_character_vital_spell_slot_path(character.game_table, character, spell_level) } %>
+<section id="character-<%= character.id %>-spell-slots" aria-label="<%= slots.label %>">
   <h3 class="text-xs font-semibold tracking-wider text-muted uppercase" title="<%= slots.help %>"><%= slots.label %></h3>
   <ul class="mt-2 flex flex-col gap-1.5">
     <% slots.counts.each do |spell_level, count| %>
+      <% used = slots.used_at(spell_level) %>
       <li class="flex items-center gap-3 text-xs">
         <span class="w-14 text-muted"><%= t("game_rooms.combat_strip.spell_level", level: spell_level) %></span>
         <span class="flex gap-1.5">
           <% count.times do |index| %>
-            <% if live %>
-              <button type="button" aria-pressed="false"
-                      aria-label="<%= t("game_rooms.combat_strip.slot", level: spell_level, number: index + 1) %>"
-                      class="size-5 cursor-pointer rounded-full border-2 border-brass transition-colors aria-pressed:bg-brass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
-                      data-action="fighter-card#toggleSlot"></button>
-            <% else %>
-              <span class="size-5 rounded-full border-2 border-brass" aria-hidden="true"></span>
-            <% end %>
+            <% spent = index < used %>
+            <%= button_to "", path.call(spell_level), method: :patch, params: { resource_change: spent ? "restore" : "spend" },
+                          form_class: "inline-flex", aria: { pressed: spent, label: t("game_rooms.combat_strip.slot", level: spell_level, number: index + 1) },
+                          class: "size-5 cursor-pointer rounded-full border-2 border-brass transition-colors aria-pressed:bg-brass focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring" %>
           <% end %>
-          <% unless live %><span class="sr-only"><%= count %></span><% end %>
         </span>
+        <span class="text-muted tabular-nums"><%= t("game_rooms.combat_strip.slots_left", left: count - used, total: count) %></span>
       </li>
     <% end %>
   </ul>

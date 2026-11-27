@@ -5,10 +5,16 @@
     <% proficient = summary_proficient?(character, field) %>
     <li class="flex items-center gap-3 py-1 text-sm">
       <span class="size-2.5 shrink-0 rounded-full <%= proficient ? "bg-ink" : "border border-field-line" %>" aria-hidden="true"></span>
+      <% if summary_expertise?(character, field) %>
+        <%# The expertise: a second dot, gold (its proficiency counts twice) %>
+        <span class="-ml-2 size-2.5 shrink-0 rounded-full bg-brass" aria-hidden="true"></span>
+      <% end %>
       <span class="min-w-0 flex-1 text-ink">
         <%= field["label"] %>
         <span class="text-xs text-muted"><%= sheet_ability_abbreviation(character.sheet_fields, field["based_on"]) %></span>
-        <% if proficient %>
+        <% if summary_expertise?(character, field) %>
+          <span class="sr-only"><%= t("game_tables.characters.new.expertise") %></span>
+        <% elsif proficient %>
           <span class="sr-only"><%= t("game_tables.characters.new.proficient") %></span>
         <% end %>
       </span>

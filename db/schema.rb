@@ -90,10 +90,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.string "ability_method"
     t.string "hit_point_method"
     t.jsonb "hit_point_rolls", default: {}, null: false
+    t.bigint "owner_character_id"
+    t.jsonb "resources_used", default: {}, null: false
+    t.jsonb "spell_slots_used", default: {}, null: false
+    t.integer "hit_dice_used", default: 0, null: false
+    t.string "fighting_style"
+    t.jsonb "weapon_masteries", default: [], null: false
+    t.integer "level_up_to"
     t.index ["game_table_id", "kind"], name: "index_characters_on_game_table_id_and_kind"
     t.index ["game_table_id"], name: "index_characters_on_game_table_id"
+    t.index ["owner_character_id"], name: "index_characters_on_owner_character_id"
     t.index ["participation_id"], name: "index_characters_one_pc_per_participation", unique: true, where: "((kind)::text = 'pc'::text)"
-    t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "kind::text = ANY (ARRAY['pc'::character varying, 'npc'::character varying, 'monster'::character varying, 'companion'::character varying]::text[])", name: "characters_kind_check"
+    t.check_constraint "level_up_to >= 2 AND level_up_to <= 20", name: "characters_level_up_to_check"
+    t.check_constraint "owner_character_id IS NULL OR kind::text = 'companion'::text", name: "characters_owner_only_for_companion_check"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'complete'::character varying]::text[])", name: "characters_status_check"
   end
 
@@ -107,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.jsonb "event_params", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "game_master_only", default: false, null: false
     t.index ["game_table_id", "created_at"], name: "index_chat_messages_on_game_table_id_and_created_at"
     t.index ["user_id"], name: "index_chat_messages_on_user_id"
     t.check_constraint "kind::text <> 'event'::text OR event_key IS NOT NULL", name: "chat_messages_event_key_check"
@@ -181,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.integer "quantity", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "equipped", default: false, null: false
     t.index ["character_id"], name: "index_inventory_items_on_character_id"
     t.check_constraint "quantity > 0", name: "inventory_items_quantity_positive"
   end
@@ -209,7 +221,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying::text, 'player'::character varying::text])", name: "participations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
     t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 
@@ -425,6 +437,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
   add_foreign_key "board_tokens", "game_maps", on_delete: :cascade
   add_foreign_key "catalog_entries", "game_tables"
   add_foreign_key "catalog_entries", "sheet_templates"
+  add_foreign_key "characters", "characters", column: "owner_character_id", on_delete: :nullify
   add_foreign_key "characters", "game_tables"
   add_foreign_key "characters", "participations"
   add_foreign_key "chat_messages", "game_tables", on_delete: :cascade

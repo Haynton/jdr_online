@@ -1,0 +1,43 @@
+<%# The money of a player's character (decision of 26 November), at the top of its inventory: its coins in small boxes
+    (CharacterMoney#currency_fields: the five of the SRD, from copper to platinum), always shown, 0 included; then one
+    form (decision: five lines each with its buttons did not fit the panel): the coin, the amount between − and + (the
+    stepper of the sheet), « Ajouter » and « Retirer » (GameTables::PursesController, never below 0). Refused, the
+    error under the form and the coin kept %>
+<% fields = character.currency_fields %>
+<% coin = local_assigns[:coin] || fields.find { |field| character.coins_of(field).positive? }&.dig("key") || fields.first["key"] %>
+<section class="mb-5 border-b border-line pb-5" aria-labelledby="game-room-purse-title">
+  <h3 id="game-room-purse-title" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= t(".title") %></h3>
+  <dl class="mt-2 grid grid-cols-5 gap-1.5 text-center">
+    <% fields.each do |field| %>
+      <div class="rounded-lg bg-field px-1 py-1.5" title="<%= field["label"] %>">
+        <dt class="text-[10px] font-semibold tracking-wider text-muted uppercase">
+          <span aria-hidden="true"><%= field["abbreviation"] || field["label"] %></span>
+          <span class="sr-only"><%= field["label"] %></span>
+        </dt>
+        <dd class="truncate text-base leading-tight font-bold text-ink tabular-nums"><%= number_with_delimiter(character.coins_of(field)) %></dd>
+      </div>
+    <% end %>
+  </dl>
+  <%= form_with url: game_table_purse_path(game_table), method: :patch, class: "mt-3 flex flex-wrap items-center gap-2" do %>
+    <div class="relative min-w-0 flex-1 basis-40">
+      <%= select_tag :coin, options_for_select(fields.map { |field| [field["label"], field["key"]] }, coin),
+                     id: "game-room-purse-coin", class: CharacterSheets::FieldsHelper::SELECT_CLASSES,
+                     aria: { label: t(".coin") } %>
+      <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+    </div>
+    <% amount_field = { "label" => t(".amount") } %>
+    <% input = number_field_tag(:amount, 1, id: "game-room-purse-amount", min: 1, step: 1, required: true,
+                                            class: CharacterSheets::FieldsHelper::STEPPER_INPUT_CLASSES,
+                                            data: { number_stepper_target: "input" },
+                                            aria: { label: t(".amount"), invalid: error.present?,
+                                                    describedby: ("game-room-purse-error" if error) }) %>
+    <%= render "character_sheets/fields/stepper", field: amount_field, input: input %>
+    <div class="flex w-full gap-2">
+      <%= button_tag t(".add"), type: "submit", name: "direction", value: "add", class: button_classes(:secondary, size: :compact, full_width: true) %>
+      <%= button_tag t(".remove"), type: "submit", name: "direction", value: "remove", class: button_classes(:secondary, size: :compact, full_width: true) %>
+    </div>
+  <% end %>
+  <% if error %>
+    <p id="game-room-purse-error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+</section>

@@ -25,20 +25,30 @@
   </header>
 
   <div class="mt-4">
-    <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key %>
+    <%= render "game_rooms/fighter_status", fighter: fighter, group_key: group.key, game_master_view: true %>
   </div>
+  <% if player %>
+    <%= render "game_rooms/level_grant", character: fighter.character, game_table: game_room.game_table %>
+  <% end %>
   <% if player %>
     <%= render "game_rooms/save_row", character: fighter.character, computed: computed %>
   <% end %>
   <div class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-xs">
     <%= combat_full_sheet_link(game_room, fighter) %>
     <% if player %>
-      <%# What a rest does to each field, as the template declares it (on_rest): saved, for the whole table %>
+      <%# What a rest does to each field and resource, as the template declares it: saved, for the whole table %>
+      <div class="flex shrink-0 gap-2">
+      <%= button_to t("game_rooms.combat_strip.short_rest"),
+                    short_rest_game_table_character_vital_path(game_room.game_table, fighter.character),
+                    class: button_classes(:secondary, size: :compact), form_class: "shrink-0",
+                    form: { data: { turbo_confirm: t("game_rooms.combat_strip.short_rest_confirm", name: name),
+                                    confirm_button: t("game_rooms.combat_strip.short_rest") } } %>
       <%= button_to t("game_rooms.combat_strip.long_rest"),
                     long_rest_game_table_character_vital_path(game_room.game_table, fighter.character),
                     class: button_classes(:secondary, size: :compact), form_class: "shrink-0",
                     form: { data: { turbo_confirm: t("game_rooms.combat_strip.long_rest_confirm", name: name),
                                     confirm_button: t("game_rooms.combat_strip.long_rest") } } %>
+      </div>
     <% end %>
   </div>
 </section>
