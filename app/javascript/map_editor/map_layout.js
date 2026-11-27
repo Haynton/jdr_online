@@ -141,6 +141,18 @@ export default class MapLayout {
     return true
   }
 
+  tokenStartsHidden(column, row) {
+    return this.tokenAt(column, row)?.hidden !== false
+  }
+
+  startTokenHidden(column, row, hidden) {
+    const token = this.tokenAt(column, row)
+    if (!token || this.tokenStartsHidden(column, row) === hidden) return false
+
+    token.hidden = hidden
+    return true
+  }
+
   removeTokenAt(column, row) {
     const token = this.tokenAt(column, row)
     if (!token) return false

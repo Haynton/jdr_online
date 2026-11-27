@@ -1,0 +1,2 @@
+<%= turbo_stream.replace BoardTokensSender::GAME_MASTER_TOKENS_ID,
+                         partial: "game_rooms/board_tokens", locals: { game_map: @board_map, game_master: true } %>

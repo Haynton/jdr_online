@@ -90,6 +90,7 @@
         <g data-map-editor-target="drawing"></g>
         <g pointer-events="none" data-map-editor-target="pointerMarks"></g>
       </svg>
+      <%= render "map_templates/token_menu" if map_editor_blocking?(map_template) %>
       <%= render "map_templates/grid_size", map_template: map_template %>
       <%# Floating at the bottom left of the board, across from the zoom (the bar had no room left for it once the way
           of making the map joined it): when the drawing was saved (a failed save in red, said to screen readers),

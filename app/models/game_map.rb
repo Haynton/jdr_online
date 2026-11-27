@@ -16,6 +16,7 @@ class GameMap < ApplicationRecord
 
   belongs_to :game_table
   belongs_to :map_template, optional: true
+  has_many :board_tokens, -> { order(:id) }, dependent: :delete_all, inverse_of: :game_map
   has_one_attached :image
 
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }
@@ -26,6 +27,10 @@ class GameMap < ApplicationRecord
                                              maximum: MapTemplate::GRID_SIZES.max }, if: :drawn?
   validates_with MapLayoutValidator, if: :drawn?
   validate :image_is_a_picture
+
+  after_update_commit :drop_board_tokens_outside_the_grid, if: -> { saved_change_to_columns? || saved_change_to_rows? }
+  before_destroy :note_whether_on_the_board
+  after_destroy_commit :send_empty_board, if: :was_on_the_board, unless: :destroyed_by_association
 
   # A copy of a map of « Mes cartes », drawn in the editor (or played on its picture), rather than an image alone
   def drawn?
@@ -53,15 +58,35 @@ class GameMap < ApplicationRecord
   end
 
   # For the board: the tokens put in the editor, where the game begins (Anthony's decision: the board starts from
-  # them). [{ character:, column:, row:, number: }], number counting the tokens of the same character on this map
-  # (« Gobelin 2 »), in the order they were put
+  # them). [{ character:, column:, row:, number:, hidden: }], number counting the tokens of the same character on this
+  # map (« Gobelin 2 »), in the order they were put; hidden from the players unless the game master shows it
   def placed_tokens
     tokens = layout.to_h.fetch("tokens", [])
     characters = game_table.npcs.where(id: tokens.pluck("character_id")).index_by(&:id)
     numbers = Hash.new(0)
     tokens.map do |token|
       character = characters.fetch(token["character_id"])
-      { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1 }
+      { character:, column: token["column"], row: token["row"], number: numbers[character.id] += 1,
+        hidden: token.fetch("hidden", true) }
+    end
+  end
+
+  def tokens_copied?
+    tokens_copied_at.present?
+  end
+
+  def take_token_placement
+    with_lock do
+      increment!(:tokens_placed)
+      tokens_placed
+    end
+  end
+
+  def take_token_number(character_id)
+    with_lock do
+      next_number = token_counters.dig(character_id.to_s, "revealed").to_i + 1
+      update_columns(token_counters: token_counters.merge(character_id.to_s => { "revealed" => next_number }))
+      next_number
     end
   end
 
@@ -73,6 +98,25 @@ class GameMap < ApplicationRecord
   end
 
   private
+
+  attr_reader :was_on_the_board
+
+  def note_whether_on_the_board
+    @was_on_the_board = game_table.board_game_map_id == id
+  end
+
+  def send_empty_board
+    game_table.reload
+    BoardMapChanger.send_board(game_table)
+    BoardMapChanger.send_board(game_table, game_master: true)
+  end
+
+  def drop_board_tokens_outside_the_grid
+    outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))
+    return if outside.delete_all.zero?
+
+    BoardTokensSender.new(game_table).call if game_table.board_game_map_id == id
+  end
 
   # Required for an image alone. A copy needs none: a map of « Mes cartes » may be played on a picture not sent yet
   def image_is_a_picture

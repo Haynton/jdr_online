@@ -34,6 +34,21 @@ class MapTokensTest < ActiveSupport::TestCase
     end
   end
 
+  test "a token says whether it starts hidden from the players, hidden when it says nothing" do
+    shown = token(@goblin, 1, 1).merge("hidden" => false)
+    game_map = map_with(tokens: [shown, token(@innkeeper, 2, 1).merge("hidden" => true), token(@goblin, 3, 1)])
+
+    assert game_map.valid?, game_map.errors.full_messages.to_sentence
+    assert_equal [false, true, true], game_map.placed_tokens.pluck(:hidden)
+  end
+
+  test "a token hidden by something else than true or false, or with an unknown key, is refused" do
+    [token(@goblin, 1, 1).merge("hidden" => "oui"), token(@goblin, 1, 1).merge("hidden" => nil),
+     token(@goblin, 1, 1).merge("conditions" => [])].each do |refused_token|
+      assert map_with(tokens: [refused_token]).tap(&:validate).errors.of_kind?(:layout, :invalid_token), refused_token
+    end
+  end
+
   test "a token never stands on a blocked zone painted by the game master" do
     game_map = map_with(tokens: [token(@goblin, 1, 1)])
     game_map.layout["blocked"] = ["1,1"]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_235000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "board_tokens", force: :cascade do |t|
+    t.bigint "game_map_id", null: false
+    t.bigint "character_id", null: false
+    t.integer "column", null: false
+    t.integer "row", null: false
+    t.boolean "hidden", default: true, null: false
+    t.integer "placement", default: 0, null: false
+    t.integer "number"
+    t.string "name", limit: 60
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_board_tokens_on_character_id"
+    t.index ["game_map_id", "column", "row"], name: "index_board_tokens_on_cell", unique: true
+    t.check_constraint "\"column\" >= 0 AND \"row\" >= 0", name: "board_tokens_cell_check"
   end
 
   create_table "catalog_entries", force: :cascade do |t|
@@ -139,6 +155,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.integer "columns"
     t.integer "rows"
     t.jsonb "layout"
+    t.datetime "tokens_copied_at"
+    t.jsonb "token_counters", default: {}, null: false
+    t.integer "tokens_placed", default: 0, null: false
     t.index ["game_table_id"], name: "index_game_maps_on_game_table_id"
     t.index ["map_template_id"], name: "index_game_maps_on_map_template_id"
     t.check_constraint "columns IS NULL OR columns >= 10 AND columns <= 60", name: "game_maps_columns_check"
@@ -427,6 +446,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "board_tokens", "characters", on_delete: :cascade
+  add_foreign_key "board_tokens", "game_maps", on_delete: :cascade
   add_foreign_key "catalog_entries", "game_tables"
   add_foreign_key "catalog_entries", "sheet_templates"
   add_foreign_key "characters", "characters", column: "owner_character_id", on_delete: :nullify

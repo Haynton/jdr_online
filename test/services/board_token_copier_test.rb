@@ -1,0 +1,68 @@
+require "test_helper"
+
+class BoardTokenCopierTest < ActiveSupport::TestCase
+  setup do
+    owner = User.create!(email: "copier@example.com", username: "copier", password: TEST_PASSWORD)
+    sheet_template = SheetTemplate.create!(name: "Fantasy", locale: "fr")
+    @game_table = GameTableCreator.new(user: owner, attributes: { name: "La Crypte" }, sheet_template:).call
+    @goblin = @game_table.characters.create!(kind: :monster, name: "Gobelin")
+    @innkeeper = @game_table.characters.create!(kind: :npc, name: "Aubergiste")
+    editor_tokens = [{ "character_id" => @goblin.id, "column" => 1, "row" => 1 },
+                     { "character_id" => @innkeeper.id, "column" => 2, "row" => 1, "hidden" => false }]
+    floors = (0..9).to_a.product((0..9).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }
+    @tavern = @game_table.game_maps.create!(name: "Taverne", columns: 10, rows: 10,
+                                            layout: MapTemplate::BLANK_LAYOUT.merge("floors" => floors,
+                                                                                    "tokens" => editor_tokens))
+  end
+
+  test "the tokens of the editor go on the board with their starting state" do
+    BoardTokenCopier.new(@tavern).call
+
+    copied = @tavern.board_tokens.map { |token| [token.character.name, token.column, token.row, token.hidden] }
+    assert_equal [["Gobelin", 1, 1, true], ["Aubergiste", 2, 1, false]], copied
+    assert_predicate @tavern.reload, :tokens_copied?
+  end
+
+  test "they are copied once: tokens taken off the board never come back" do
+    BoardTokenCopier.new(@tavern).call
+    @tavern.board_tokens.delete_all
+
+    BoardTokenCopier.new(@tavern.reload).call
+
+    assert_empty @tavern.board_tokens
+  end
+
+  test "two placings of the map at once copy the tokens once" do
+    late_placing = GameMap.find(@tavern.id)
+    BoardTokenCopier.new(@tavern).call
+
+    BoardTokenCopier.new(late_placing).call
+
+    assert_equal 2, @tavern.board_tokens.count
+  end
+
+  test "a map saved before a newer rule of the drawing still gets its tokens copied" do
+    @tavern.update_columns(layout: @tavern.layout.merge("floors" => @tavern.layout["floors"].merge("9,9" => "lava")))
+    assert_not @tavern.reload.valid?
+
+    BoardTokenCopier.new(@tavern).call
+
+    assert_equal 2, @tavern.board_tokens.count
+    assert_predicate @tavern.reload, :tokens_copied?
+  end
+
+  test "a token of the editor left on the empty ground is not copied, and the others are" do
+    @tavern.layout["floors"].delete("1,1")
+    @tavern.save!
+
+    BoardTokenCopier.new(@tavern).call
+
+    assert_equal [@innkeeper], @tavern.board_tokens.map(&:character)
+  end
+
+  test "putting a map on the board for the first time copies its tokens" do
+    BoardMapChanger.new(@game_table, @tavern).call
+
+    assert_equal 2, @tavern.board_tokens.count
+  end
+end
