@@ -14,22 +14,34 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
                                             layout: MapTemplate::BLANK_LAYOUT.merge("floors" => floors))
   end
 
-  test "the numbers follow the order in which the tokens are shown, the hidden ones after them" do
-    first, second, third = [1, 2, 3].map { |column| @tavern.board_tokens.create!(character: @goblin, column:, row: 1) }
+  test "a token gets its number the first time it is shown, in that order; the first one shows none" do
+    first, second, third = place_goblins(3)
     third.update!(hidden: false)
     first.update!(hidden: false)
 
-    numbers = @tavern.numbered_board_tokens.to_h { |token, number| [token, number] }
-    assert_equal({ third => 1, first => 2, second => 3 }, numbers)
+    assert_equal [2, nil, 1], [first, second, third].map { |token| token.reload.number }
+    assert_equal [2, nil, nil], [first, second, third].map(&:shown_number)
   end
 
-  test "a number never changes once the token has been shown" do
-    first, second = [1, 2].map { |column| @tavern.board_tokens.create!(character: @goblin, column:, row: 1) }
-    second.update!(hidden: false)
-    first.update!(hidden: false)
-    second.update!(hidden: true)
+  test "removing a token never renumbers the others, and a number is never given again" do
+    first, second, third = place_goblins(3)
+    [first, second, third].each { |token| token.update!(hidden: false) }
 
-    assert_equal 1, @tavern.numbered_board_tokens.to_h.fetch(second)
+    second.destroy!
+    fourth = place_goblins(1, from_column: 5).first
+    fourth.update!(hidden: false)
+
+    assert_equal [1, 3, 4], [first, third, fourth].map { |token| token.reload.number }
+  end
+
+  test "a letter is given once when the token is put, and never moves" do
+    first, second, third = place_goblins(3)
+    first.destroy!
+    third.update!(hidden: false)
+    third.update!(hidden: true)
+
+    assert_equal %w[B C], [second, third].map { |token| token.reload.letter }
+    assert_equal "D", place_goblins(1, from_column: 5).first.letter
   end
 
   test "a smaller grid takes away the tokens outside it and tells the players" do
@@ -54,5 +66,12 @@ class GameMapBoardTokensTest < ActiveSupport::TestCase
       @goblin.destroy!
     end
     assert_empty @tavern.board_tokens.reload
+  end
+
+  private
+
+  def place_goblins(count, from_column: 1)
+    columns = from_column...(from_column + count)
+    columns.map { |column| @tavern.board_tokens.create!(character: @goblin, column:, row: 1) }
   end
 end

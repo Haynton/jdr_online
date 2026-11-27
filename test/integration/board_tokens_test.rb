@@ -136,8 +136,14 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
 
     second.update!(hidden: false)
     get game_table_path(@game_table)
-    assert_equal [1, 2], player_token_numbers
+    assert_equal [nil, 2], player_token_numbers
     assert_not_includes player_tokens.pluck("id"), hidden.id
+    assert_equal [nil, nil], player_tokens.pluck("letter")
+
+    sign_in @game_master
+    get game_table_path(@game_table)
+    game_master_tokens = JSON.parse(css_select("#game-room-board-tokens-game-master").first["data-tokens"])
+    assert_equal %w[A B C], game_master_tokens.pluck("letter")
   end
 
   private

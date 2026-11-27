@@ -39,19 +39,6 @@ class BoardTokenTest < ActiveSupport::TestCase
     assert token.update(hidden: false)
   end
 
-  test "a token notes when it is shown for the first time, and keeps it when hidden again" do
-    token = @tavern.board_tokens.create!(character: @goblin, column: 1, row: 1)
-    assert_nil token.revealed_at
-
-    token.update!(hidden: false)
-    first_revelation = token.revealed_at
-    assert first_revelation
-
-    token.update!(hidden: true)
-    token.update!(hidden: false)
-    assert_equal first_revelation, token.reload.revealed_at
-  end
-
   test "a cell outside the grid is refused" do
     [[10, 0], [0, 10], [-1, 0]].each do |column, row|
       token = @tavern.board_tokens.build(character: @goblin, column:, row:)

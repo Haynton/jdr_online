@@ -3,7 +3,7 @@
 // name, and its number when the same character has several tokens on the map (a band: « Gobelin 2 »)
 import { cellSize } from "map_editor/square_grid"
 import { createSvgElement } from "map_editor/svg"
-import { enemyToken, npcToken, ink, tokenLetters } from "map_editor/palette"
+import { enemyToken, npcToken, ink, tokenLetters, allowedMark } from "map_editor/palette"
 
 const tokenRadius = cellSize * 0.4
 const hiddenTokenOpacity = 0.5
@@ -41,7 +41,17 @@ export function renderBoardTokens(layer, tokens) {
     const drawing = createSvgElement("g", { opacity: token.hidden ? hiddenTokenOpacity : 1 }, tokenGroup)
     drawToken(drawing, centerX, centerY, token, token.number)
     if (token.hidden) drawHiddenMark(tokenGroup, centerX - tokenRadius * 0.75, centerY + tokenRadius * 0.75)
+    if (token.letter) drawLetter(tokenGroup, centerX - tokenRadius * 0.75, centerY - tokenRadius * 0.75, token.letter)
   })
+}
+
+function drawLetter(group, centerX, centerY, letter) {
+  createSvgElement("circle", { cx: centerX, cy: centerY, r: 4.2, fill: allowedMark, stroke: tokenLetters,
+                               "stroke-width": 0.8 }, group)
+  const label = createSvgElement("text", { x: centerX, y: centerY, "text-anchor": "middle", "dominant-baseline": "central",
+                                           fill: tokenLetters, "font-size": letter.length > 1 ? 4 : 5.5,
+                                           "font-weight": 700, "font-family": "Inter, sans-serif" }, group)
+  label.textContent = letter
 }
 
 export function drawHiddenMark(group, centerX, centerY) {

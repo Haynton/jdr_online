@@ -8,12 +8,33 @@ class BoardToken < ApplicationRecord
   validate :cell_not_blocked, on: :create
   validate :creature_of_the_table
 
-  before_save :note_first_revelation
+  before_create :take_placement
+  before_save :take_number_when_first_shown
+
+  def letter
+    remaining = placement
+    letters = +""
+    while remaining.positive?
+      remaining, remainder = (remaining - 1).divmod(26)
+      letters.prepend(("A".ord + remainder).chr)
+    end
+    letters
+  end
+
+  def shown_number
+    number unless number.nil? || number == 1
+  end
 
   private
 
-  def note_first_revelation
-    self.revealed_at ||= Time.current unless hidden?
+  def take_placement
+    self.placement = game_map.count_token(character_id, "placed")
+  end
+
+  def take_number_when_first_shown
+    return if hidden? || number
+
+    self.number = game_map.count_token(character_id, "revealed")
   end
 
   def cell_not_blocked

@@ -73,10 +73,13 @@ class GameMap < ApplicationRecord
     tokens_copied_at.present?
   end
 
-  def numbered_board_tokens
-    tokens = board_tokens.includes(:character).to_a
-    numbers = tokens.group_by(&:character_id).values.flat_map { |band| numbers_by_revelation(band) }.to_h
-    tokens.map { |token| [token, numbers.fetch(token.id)] }
+  def count_token(character_id, kind)
+    with_lock do
+      counts = token_counters.fetch(character_id.to_s, {})
+      next_count = counts.fetch(kind, 0) + 1
+      update_columns(token_counters: token_counters.merge(character_id.to_s => counts.merge(kind => next_count)))
+      next_count
+    end
   end
 
   # A character of the table deleted: its tokens leave the maps (unchecked: only a list is shortened)
@@ -87,12 +90,6 @@ class GameMap < ApplicationRecord
   end
 
   private
-
-  def numbers_by_revelation(band)
-    revealed, never_shown = band.partition(&:revealed_at)
-    ordered = revealed.sort_by { |token| [token.revealed_at, token.id] } + never_shown.sort_by(&:id)
-    ordered.each_with_index.map { |token, index| [token.id, index + 1] }
-  end
 
   def drop_board_tokens_outside_the_grid
     outside = board_tokens.where(column: columns..).or(board_tokens.where(row: rows..))

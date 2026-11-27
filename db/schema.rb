@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,7 +50,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.boolean "hidden", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "revealed_at"
+    t.integer "placement", default: 0, null: false
+    t.integer "number"
     t.index ["character_id"], name: "index_board_tokens_on_character_id"
     t.index ["game_map_id"], name: "index_board_tokens_on_game_map_id"
     t.check_constraint "\"column\" >= 0 AND \"row\" >= 0", name: "board_tokens_cell_check"
@@ -150,6 +151,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.integer "rows"
     t.jsonb "layout"
     t.datetime "tokens_copied_at"
+    t.jsonb "token_counters", default: {}, null: false
     t.index ["game_table_id"], name: "index_game_maps_on_game_table_id"
     t.index ["map_template_id"], name: "index_game_maps_on_map_template_id"
     t.check_constraint "columns IS NULL OR columns >= 10 AND columns <= 60", name: "game_maps_columns_check"
@@ -221,7 +223,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
     t.index ["game_table_id"], name: "index_participations_one_game_master_per_table", unique: true, where: "((role)::text = 'game_master'::text)"
     t.index ["user_id", "game_table_id"], name: "index_participations_on_user_and_game_table", unique: true
     t.index ["user_id"], name: "index_participations_on_user_id"
-    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying, 'player'::character varying]::text[])", name: "participations_role_check"
+    t.check_constraint "role::text = ANY (ARRAY['game_master'::character varying::text, 'player'::character varying::text])", name: "participations_role_check"
     t.check_constraint "status::text = ANY (ARRAY['accepted'::character varying, 'pending'::character varying]::text[])", name: "participations_status_check"
   end
 

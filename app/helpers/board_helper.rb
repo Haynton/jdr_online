@@ -38,13 +38,9 @@ module BoardHelper
   end
 
   def board_tokens_json(game_map, game_master:)
-    numbered_tokens = game_map.numbered_board_tokens
-    band_sizes = board_band_sizes(numbered_tokens.map(&:first), game_master:)
-    numbered_tokens.filter_map do |token, number|
-      next if token.hidden? && !game_master
-
-      board_token_data(token, (number if band_sizes[token.character_id] > 1))
-    end.to_json
+    tokens = game_map.board_tokens.includes(:character)
+    seen_tokens = game_master ? tokens : tokens.reject(&:hidden?)
+    seen_tokens.map { |token| board_token_data(token, game_master:) }.to_json
   end
 
   def board_blocked_cells_json(game_map)
@@ -66,14 +62,9 @@ module BoardHelper
 
   private
 
-  def board_band_sizes(tokens, game_master:)
-    counted_tokens = game_master ? tokens : tokens.select(&:revealed_at)
-    counted_tokens.map(&:character_id).tally.tap { |sizes| sizes.default = 0 }
-  end
-
-  def board_token_data(token, number)
+  def board_token_data(token, game_master:)
     { id: token.id, name: token.character.name, kind: token.character.kind, column: token.column, row: token.row,
-      number:, hidden: token.hidden? }
+      number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden? }
   end
 
   def game_master_board_data(board_map)
