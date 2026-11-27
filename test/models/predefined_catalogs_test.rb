@@ -25,9 +25,11 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
+  # Two classes may each have a feature of the same name (Extra Attack, Epic Boon): only their keys differ
   test "keys and names are unique in a file" do
     each_catalog do |catalog_file, catalog|
-      %w[key name].each do |attribute|
+      attributes = catalog["kind"] == "feature" ? %w[key] : %w[key name]
+      attributes.each do |attribute|
         values = catalog["entries"].pluck(attribute)
 
         assert_equal values.uniq, values, "#{catalog_file.basename}: a #{attribute} twice"
@@ -98,6 +100,19 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
       template.character_fields["fields"].each do |field|
         field["effects"].to_h.each do |option, effects|
           missing = effects["always_prepared_spells"].to_h.values.flatten - spell_keys
+          assert_empty missing, "#{catalog_file.basename} #{option}"
+        end
+      end
+    end
+  end
+
+  test "every feature, trait and feat an option names is in the catalog of features of its template" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "feature" }.each do |catalog_file|
+      feature_keys = read_json(catalog_file)["entries"].pluck("key")
+      template = create_template_of(catalog_file)
+      template.character_fields["fields"].each do |field|
+        field["effects"].to_h.each do |option, effects|
+          missing = CharacterSheets::Features.keys_of(effects).map(&:key) - feature_keys
           assert_empty missing, "#{catalog_file.basename} #{option}"
         end
       end

@@ -6,9 +6,10 @@ module CharacterDraftSaving
   # Saved in the background while the player fills a step (decision: nothing typed is lost, even when the tab closes):
   # what is valid is kept, a refused value keeps the one saved before (its error shows on Continue), and a required
   # field may stay empty in a draft. The step reached does not move
-  def save_draft_step(step, sheet_values:, name: nil, spell_keys: nil)
-    saved_values = { sheet: sheet.deep_dup, name: self.name, spells: spells.deep_dup }
-    fill_step(step, sheet_values: sheet_values, name: name, spell_keys: spell_keys)
+  def save_draft_step(step, sheet_values:, name: nil, **choices)
+    saved_values = { sheet: sheet.deep_dup, name: self.name, spells: spells.deep_dup,
+                     fighting_style: fighting_style, weapon_masteries: weapon_masteries.deep_dup }
+    fill_step(step, sheet_values: sheet_values, name: name, **choices)
     self.required_sheet_fields = nil
     restore_refused_values(saved_values) if invalid?
     save

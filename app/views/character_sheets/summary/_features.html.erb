@@ -1,0 +1,24 @@
+<%# The features, traits and feats the character has, under the other blocks of the summary sheet (decision of
+    26 November): one column per option that gives some (« Classe · Rôdeur », « Espèce · Elfe »), up to its level,
+    each line opening its short summary in the window of the sheet (character_sheets/features/_line).
+    Nothing for a template whose options name no features %>
+<% groups = character_feature_groups(character) %>
+<% if groups.any? %>
+  <section class="mt-10 min-w-0" aria-labelledby="summary_features">
+    <h2 id="summary_features" class="text-xs font-semibold tracking-wider text-brass uppercase">
+      <%= t("game_tables.choice_summaries.features") %>
+    </h2>
+    <div class="mt-4 grid items-start gap-x-12 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
+      <% groups.each do |group| %>
+        <div class="min-w-0">
+          <h3 class="text-sm font-semibold text-ink"><%= t("character_sheets.features.group", list: group.label, option: group.option) %></h3>
+          <ul class="mt-2 flex flex-col gap-1">
+            <% group.features.each do |feature| %>
+              <li><%= render "character_sheets/features/line", feature: feature %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>

@@ -1,8 +1,8 @@
 module ChoiceEffects
-  # The features an option gives at each level, by key of the future catalog (catalog_entries of kind feature): the
-  # features of a class, kept for the next steps of the creation (they do nothing yet). A feature may carry its name
-  # too ({ "key" => "frenzy", "name" => "Frénésie" }: the subclasses): the summary of the choices then lists them, one
-  # line per level, the level with them, so that the page shows those reached by the character
+  # The features an option gives at each level, by key of the catalog of features (catalog_entries of kind feature,
+  # their name and short summary: CharacterSheets::Features). A feature may carry its name too ({ "key" => "frenzy",
+  # "name" => "Frénésie" }: the subclasses), shown when the catalog lacks it. The summary of the choices lists them,
+  # each from its level, and the sheet those the character has
   class FeaturesByLevel < Base
     include Levels
 
@@ -12,18 +12,6 @@ module ChoiceEffects
       return [] if by_level?(value) && value.values.flatten.all? { |feature| feature?(feature) }
 
       [[:invalid_level_entries, { effect: KEY }]]
-    end
-
-    # [label, names, level] for each level with named features
-    def facts(value, _fields_by_key)
-      return [] unless value.is_a?(Hash)
-
-      value.sort_by { |level, _features| level.to_i }.filter_map do |level, features|
-        names = features.to_a.filter_map { |feature| feature["name"] if feature.is_a?(Hash) }
-        next if names.empty?
-
-        [I18n.t("game_tables.choice_summaries.features_level", level: level), names.to_sentence, level.to_i]
-      end
     end
 
     private

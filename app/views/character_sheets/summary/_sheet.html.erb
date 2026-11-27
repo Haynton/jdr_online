@@ -42,6 +42,7 @@
     </div>
   <% end %>
 </div>
+<%= render "character_sheets/summary/features", character: character %>
 
 <% unless read_only %>
 <%= form_with url: game_table_character_step_path(character.game_table, CharacterCreationSteps::SUMMARY),

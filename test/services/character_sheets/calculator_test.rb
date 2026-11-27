@@ -89,7 +89,8 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
                          "class_from" => "class", "level_from" => "level", "based_on" => "strength" }]
     sheet = { "class" => "Magicien", "strength" => 6, "level" => 3 }
     hit_points = lambda do |rolls|
-      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], hit_point_rolls: rolls)
+      play_state = CharacterSheets::PlayState.new(hit_point_rolls: rolls)
+      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], play_state: play_state)
                                  .call[:values]["max_hp"]
     end
 
@@ -124,8 +125,9 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     chain_shirt = { "armor_base" => 13, "armor_dexterity_cap" => 2 }
     chain_mail = { "armor_base" => 16, "armor_dexterity_cap" => 0 }
     shield = { "armor_bonus" => 2 }
-    armor_class = lambda do |sheet, equipped_items|
-      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], equipped_items: equipped_items)
+    armor_class = lambda do |sheet, equipped_items, style_effects = {}|
+      play_state = CharacterSheets::PlayState.new(equipped_items: equipped_items, fighting_style_effects: style_effects)
+      CharacterSheets::Calculator.new(fields: fields, sheet: sheet, level_thresholds: [], play_state: play_state)
                                  .call[:values]["armor_class"]
     end
 
@@ -134,6 +136,10 @@ class CharacterSheetCalculatorTest < ActiveSupport::TestCase
     assert_equal "15", armor_class.call(fighter, [chain_shirt])
     assert_equal "18", armor_class.call(fighter, [chain_mail, shield])
     assert_equal "19", armor_class.call(fighter.merge("armor_class_bonus" => 1), [chain_mail, shield])
+    # Defense: +1 while armoured, nothing without armour
+    defense = { "armored_armor_class_bonus" => 1 }
+    assert_equal "17", armor_class.call(fighter, [chain_mail], defense)
+    assert_equal "13", armor_class.call(fighter, [], defense)
     # Dexterity +3 and Strength +4: the monk loses its unarmored defense with a shield, the barbarian keeps it
     strong = fighter.merge("strength" => 18)
     assert_equal "17", armor_class.call(strong.merge("class" => "Moine"), [])

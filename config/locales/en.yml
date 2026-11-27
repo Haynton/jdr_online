@@ -40,6 +40,19 @@ en:
         username: "Invite a player by their username"
     errors:
       models:
+        level_up:
+          attributes:
+            hit_point_choice:
+              inclusion: "Choose how to gain your hit points."
+            subclass:
+              inclusion: "Choose an option of the list."
+            ability_increases:
+              not_shared: "Share exactly %{points} points."
+              above_maximum: "%{ability} would go above %{maximum}."
+            expertise_keys:
+              not_picked:
+                one: "Choose 1 skill."
+                other: "Choose %{count} skills."
         friend_request:
           attributes:
             username:
@@ -74,6 +87,8 @@ en:
         description: "Description"
         name: "Name"
       character:
+        fighting_style: "Fighting style"
+        weapon_masteries: "Weapon masteries"
         name: "Character name"
         owner_character: "Character"
         spells: "Spells"
@@ -166,6 +181,13 @@ en:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            fighting_style:
+              not_offered: "is not offered by your class at this level"
+            weapon_masteries:
+              not_offered: "include a weapon your class does not offer"
+              too_many:
+                one: "%{count} at most"
+                other: "%{count} at most"
             avatar: &avatar_errors
               blank: "Choose a picture."
               content_type: "The picture must be a PNG, JPEG or WebP."
@@ -278,6 +300,10 @@ en:
           invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
           missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
           unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
+          invalid_fighting_styles: "The fighting styles: the setting must be a list of styles"
+          invalid_fighting_style: "The fighting style “%{style}”: a key, a label on one line, and known effects"
+          unknown_fighting_style: "%{part} › %{field} › %{option}: the fighting style “%{style}” does not exist"
+          unknown_fighting_style_parameter: "The fighting styles: the setting “%{parameter}” is unknown"
           invalid_death_saves: "The death saving throws: the setting must declare its die and its fields"
           invalid_death_saves_field: "The death saving throws: “%{parameter}” must name a field %{type} of the character sheet"
           invalid_death_saves_label: "The death saving throws: the label must be filled in, on one line, in %{count} characters at most"
@@ -302,6 +328,8 @@ en:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
   character_sheets:
+    features:
+      group: "%{list} · %{option}"
     summary:
       weapon_attacks:
         title: "Attacks"
@@ -1141,6 +1169,12 @@ en:
       html: '<span class="text-muted" aria-hidden="true">*</span>'
   # The game room of a table (layouts/game_room, GameRoom): its bar, its panels, the place of the chat
   game_rooms:
+    level_grant:
+      call: "The GM gives you level %{level}."
+      confirm: "Give level %{level} to %{name}? The player will then make the choices of that level."
+      give: "Give level %{level}"
+      reach: "Reach level %{level}"
+      waiting: "Level %{level} waiting for the player's choices."
     board:
       empty_for_game_master: "Place a map on the board from the panel Maps: the whole table will see it."
       empty_for_players: "The game master has not put a map on the board yet."
@@ -1157,6 +1191,10 @@ en:
       zoom_out: "Zoom out"
     chat:
       events:
+        level_granted: "The GM gives level %{level} to %{character}."
+        level_reached: "%{character} reaches level %{level}: +%{hit_points} HP."
+        level_reached_rolled: "%{character} reaches level %{level}: hit die %{roll}, +%{hit_points} HP."
+        weapon_masteries_changed: "%{character} changes their masteries: %{changes}."
         spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
         hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
         resource_used: "%{character} uses %{resource}: %{left} of %{total} left."
@@ -1251,6 +1289,7 @@ en:
       close: "Close %{name}"
     panels:
       character:
+        change_masteries: "Change my masteries"
         abilities: "Abilities"
         edit_sheet: "Edit my sheet"
         fight: "Fight"
@@ -1315,6 +1354,8 @@ en:
       npcs:
         empty: "This table has no NPC or enemy yet."
         title: "NPCs and enemies"
+      features:
+        title: "Features"
       skills:
         title: "Skills"
       spells:
@@ -1459,6 +1500,36 @@ en:
         rolled: "Hit dice rolled: %{results}."
     rules:
       former_roll: "Dice roll"
+    level_ups:
+      new:
+        back: "Back to the game"
+        close: "Close"
+        features: "New features"
+        later: "Later"
+        picks_later: "Your new spells and weapon masteries are picked afterwards, in “Change my spells” and “Change my masteries”."
+        submit: "Reach level %{level}"
+        subtitle: "The GM gives a level to %{name}. Make the choices of that level; the chat will say the result."
+        title: "Level %{level}"
+      hit_points:
+        title: "Hit points"
+        average: "Average: +%{points} HP"
+        roll: "Roll the d%{sides}"
+      improvement:
+        title: "Ability Score Improvement"
+        rule: "Share %{points} points, never above the maximum of an ability."
+      expertise:
+        title: "Expertise"
+        rule:
+          one: "Choose 1 proficient skill: its proficiency bonus counts twice."
+          other: "Choose %{count} proficient skills: their proficiency bonus counts twice."
+    weapon_mastery_choices:
+      edit:
+        back: "Back to the game"
+        cancel: "Cancel"
+        close: "Close"
+        save: "Save"
+        subtitle: "The fighting style and weapon masteries of %{name}, within what their class and level give. The change is written in the chat."
+        title: "Change my masteries"
     spell_choices:
       edit:
         back: "Back to the game"
@@ -1484,6 +1555,13 @@ en:
         played_by: "Played by %{username}"
         title: "Character sheet"
     character_steps:
+      weapon_mastery_choices:
+        masteries: "Weapon masteries"
+        masteries_hint:
+          one: "Tick %{count} kind of weapon: its mastery property adds to your attacks with it."
+          other: "Tick %{count} kinds of weapons: their mastery property adds to your attacks with them."
+        style: "Fighting style"
+        style_hint: "Pick a style: it applies to all your attacks or to your defense."
       band_label: "Steps of your character"
       equipment_choices:
         armor_class: "AC %{value}"
@@ -1589,6 +1667,7 @@ en:
     choice_summaries:
       ability_bonus_value: "%{abilities} (%{rule})"
       facts:
+        fighting_style: "Fighting style"
         expertise: "Expertise"
         ability_bonus: "Abilities raised"
         hit_die: "Hit die"
@@ -1598,7 +1677,12 @@ en:
         resources: "Resources"
         skill_choices: "Skills"
         spellcasting: "Spellcasting ability"
+        weapon_mastery: "Weapon masteries"
+      weapon_mastery_value:
+        one: "%{count} kind of weapon"
+        other: "%{count} kinds of weapons"
       expertise_value: "%{count} at level %{level}"
+      features: "Features"
       features_level: "Level %{level}"
       hit_points_per_level_value: "+%{points} per level"
       label: "Summary of your choices"

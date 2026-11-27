@@ -6,11 +6,11 @@
 # character_sheet_controller.js works them out the same way while the player types: changing one means changing both
 module CharacterSheets
   class Calculator
-    # hit_point_rolls: the hit dice rolled for the levels after the first, nil for their average; equipped_items: the
-    # values of what the character wears and holds (Character#equipped_item_properties)
-    def initialize(fields:, sheet:, level_thresholds:, hit_point_rolls: nil, equipped_items: [])
+    # play_state: what the rules read beside the sheet (the hit dice rolled, what the character wears, the effects of
+    # its fighting style: CharacterSheets::PlayState)
+    def initialize(fields:, sheet:, level_thresholds:, play_state: PlayState.new)
       @fields = fields
-      @play_state = PlayState.new(hit_point_rolls: hit_point_rolls, equipped_items: equipped_items)
+      @play_state = play_state
       @sheet = sheet.to_h
       @level_thresholds = level_thresholds.to_a.sort_by { |threshold| threshold["level"] }
     end

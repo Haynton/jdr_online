@@ -4,7 +4,10 @@
 # block of the summary, and what it does when a step is saved: on its own step it keeps what was picked, on the other
 # steps it drops what the class picked there no longer offers. A new behavior: its class, its line in ALL
 module CreationStepBehaviors
-  ALL = [CreationStepBehaviors::ChoosesEquipment, CreationStepBehaviors::ChoosesSpells].freeze
+  ALL = [
+    CreationStepBehaviors::ChoosesEquipment, CreationStepBehaviors::ChoosesSpells,
+    CreationStepBehaviors::ChoosesWeaponMasteries
+  ].freeze
 
   def self.all
     @all ||= ALL.map(&:new)
