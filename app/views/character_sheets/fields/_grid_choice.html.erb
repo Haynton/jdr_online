@@ -1,0 +1,43 @@
+<%# A list whose options are the cells of a table of two axes (grid of FieldTypes::Choice: the alignment, its order and
+    its morals): one choice on each axis, at the look of the theme selector, then the meaning of the option picked.
+    The meanings share one cell of a grid, the others invisible: the tallest keeps its place, and nothing under it
+    moves when the choice changes (decision). grid_choice_controller.js writes the option in the real list, sent with
+    the form. The axes or the list are chosen by CSS from the first paint (scripted: JavaScript runs), never swapped
+    after it (the page flashed the list on load); without JavaScript, the list is shown and the axes stay hidden %>
+<% grid = field["grid"] %>
+<% error = sheet_field_error(character, field) %>
+<% row_index, column_index = grid_choice_position(grid, character.sheet[field["key"]]) %>
+<%= tag.div class: "#{SimpleFormFieldClasses::FIELD_BLOCK} min-w-0",
+            data: { controller: "grid-choice", grid_choice_options_value: grid["options"].to_json } do %>
+  <div data-grid-choice-target="fallback" class="max-w-xs scripted:hidden">
+    <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::LABEL %>
+    <%= sheet_field_control(character, field) %>
+  </div>
+  <%= tag.fieldset class: "hidden min-w-0 scripted:block" do %>
+    <legend class="<%= SimpleFormFieldClasses::LABEL %>"><%= field["label"] %></legend>
+    <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2">
+      <% [["columns", column_index], ["rows", row_index]].each do |axis, chosen_index| %>
+        <span id="<%= grid_axis_id(field, axis) %>" class="text-xs font-medium text-muted"><%= grid.dig(axis, "label") %></span>
+        <div role="radiogroup" aria-labelledby="<%= grid_axis_id(field, axis) %>" class="flex min-w-0 gap-1 rounded-lg bg-field p-1">
+          <% grid.dig(axis, "values").each_with_index do |value, index| %>
+            <label class="<%= CharacterSheets::DetailsHelper::GRID_OPTION_CLASSES %>">
+              <%= grid_axis_radio(field, axis, index, chosen_index) %>
+              <%= value %>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="mt-2.5 grid text-[13px] leading-5 text-muted" aria-live="polite">
+      <% grid["meanings"].to_h.each do |option, meaning| %>
+        <%= tag.p class: "col-start-1 row-start-1 invisible data-shown:visible",
+                 data: { grid_choice_target: "meaning", option: option, shown: ("" if option == character.sheet[field["key"]]) } do %>
+          <strong class="font-semibold text-ink"><%= option %>.</strong> <%= meaning %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+  <% if error %>
+    <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+  <% end %>
+<% end %>

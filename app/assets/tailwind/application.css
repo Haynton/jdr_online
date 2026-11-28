@@ -18,6 +18,9 @@
 /* nav-expanded: the side navigation shows its labels. Follows a .nav-expanded class on <html>,
    set before the page is painted (side_nav_preload.js) and toggled by side_nav_controller.js */
 @custom-variant nav-expanded (&:where(.nav-expanded, .nav-expanded *));
+/* Only when the browser runs JavaScript, from the first paint: a control drawn by a Stimulus controller replaces its
+   fallback without the fallback flashing first (the alignment, character_sheets/fields/_grid_choice) */
+@custom-variant scripted (@media (scripting: enabled));
 
 /* Keyboard focus of every element, in the theme gold instead of the browser blue: links, logo, buttons...
    Same outline as our buttons and fields (2 px, 2 px away). focus-ring is darker in the light theme and

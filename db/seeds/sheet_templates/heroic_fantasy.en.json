@@ -235,7 +235,12 @@
       { "key": "size", "label": "Size", "type": "choice", "section": "Species",
         "options": ["Small", "Medium"] },
       { "key": "alignment", "label": "Alignment", "type": "choice", "section": "Details",
-        "options": ["Lawful good", "Neutral good", "Chaotic good", "Lawful neutral", "Neutral", "Chaotic neutral", "Lawful evil", "Neutral evil", "Chaotic evil"] },
+        "options": ["Lawful good", "Neutral good", "Chaotic good", "Lawful neutral", "Neutral", "Chaotic neutral", "Lawful evil", "Neutral evil", "Chaotic evil"],
+        "grid": { "columns": { "label": "Order", "values": ["Lawful", "Neutral", "Chaotic"] }, "rows": { "label": "Morals", "values": ["Good", "Neutral", "Evil"] },
+          "options": [["Lawful good", "Neutral good", "Chaotic good"], ["Lawful neutral", "Neutral", "Chaotic neutral"], ["Lawful evil", "Neutral evil", "Chaotic evil"]],
+          "meanings": { "Lawful good": "Does good while keeping to the rules and to their word.", "Neutral good": "Does good, without caring much for rules.", "Chaotic good": "Follows their conscience, free of any law.",
+            "Lawful neutral": "Follows the law, a tradition or a code above all.", "Neutral": "Avoids taking sides, seeks balance.", "Chaotic neutral": "Follows their whims and holds to their freedom.",
+            "Lawful evil": "Takes what they want, but within the rules.", "Neutral evil": "Does whatever suits them, without scruples.", "Chaotic evil": "Driven by anger and cruelty." } } },
       { "key": "languages", "label": "Languages", "type": "picks", "section": "Details", "count": 2, "granted": ["Common"],
         "options": ["Common Sign Language", "Draconic", "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc"],
         "help": "You speak Common, and two languages of your choice." },
@@ -246,9 +251,9 @@
       { "key": "eyes", "label": "Eyes", "type": "text", "short": true, "section": "Details" },
       { "key": "hair", "label": "Hair", "type": "text", "short": true, "section": "Details" },
       { "key": "skin", "label": "Skin", "type": "text", "short": true, "section": "Details" },
-      { "key": "appearance", "label": "Appearance", "type": "text", "section": "Details" },
-      { "key": "personality_traits", "label": "Personality traits", "type": "text", "section": "Details" },
-      { "key": "backstory", "label": "Backstory", "type": "text", "section": "Details" },
+      { "key": "appearance", "label": "Appearance", "type": "text", "section": "Details", "help": "What people notice first: a scar, a piece of clothing, a way of moving." },
+      { "key": "personality_traits", "label": "Personality traits", "type": "text", "section": "Details", "help": "How they face danger, what makes them laugh, what makes them angry." },
+      { "key": "backstory", "label": "Backstory", "type": "text", "section": "Details", "help": "Where they come from, what they left behind, and why they set out on adventure." },
 
       { "key": "strength", "label": "Strength", "abbreviation": "STR", "type": "ability", "help": "Melee, carrying, climbing", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
       { "key": "dexterity", "label": "Dexterity", "abbreviation": "DEX", "type": "ability", "help": "Initiative, light armor, bows", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Abilities", "visible_to_others": true },
@@ -314,7 +319,7 @@
       { "key": "stealth", "label": "Stealth", "type": "bonus", "based_on": "dexterity", "proficiency": "proficiency_bonus", "section": "Skills" },
       { "key": "survival", "label": "Survival", "type": "bonus", "based_on": "wisdom", "proficiency": "proficiency_bonus", "section": "Skills" },
 
-      { "key": "features", "label": "Features", "type": "text", "section": "Details",
+      { "key": "features", "label": "Features", "type": "text", "section": "Details", "at_creation": false,
         "help": "Class and species features, feats: write them down freely." }
     ]
   },

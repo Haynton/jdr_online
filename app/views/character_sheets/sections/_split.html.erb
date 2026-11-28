@@ -1,25 +1,45 @@
-<%# A section of short choices and long texts (the Details step), across the width in two columns from 1024 px
-    (decision): on the left the short choices one under the other (alignment, then the languages), on the right the
-    long texts one under the other (appearance, personality, backstory, features). Each field keeps the look of its
-    type (sheet_field_partial). One column on a phone, the choices first %>
-<% texts, choices = fields.partition { |field| sheet_flow_group(field) == :texts } %>
-<%# The choices at the width of their content (448 px), the texts in the rest: two halves left a wide empty space
-    beside the choices %>
-<div class="clear-left grid gap-x-16 gap-y-2 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
-  <div class="flex min-w-0 flex-col">
-    <% if lead %>
-      <div class="max-w-sm"><%= lead %></div>
-    <% end %>
-    <% choices.each do |field| %>
-      <div class="<%= "max-w-xs" if sheet_flow_group(field) == :lists %>">
-        <%= render sheet_field_partial(field),
-                   character: character, field: field, computed: computed, all_fields: all_fields %>
-      </div>
-    <% end %>
-  </div>
-  <div class="flex min-w-0 flex-col">
-    <% texts.each do |field| %>
-      <%= render "character_sheets/fields/input", character: character, field: field, computed: computed %>
-    <% end %>
-  </div>
+<%# A section of short choices and texts (the Details step, decision of 28 November after the prototype « Détails »), in
+    three bands across the width: the lists and the picks side by side (the alignment, the languages), the short texts
+    on one line (age, height...: six from 1024 px), then the long texts in three columns, each under its label and its
+    questions (its help), kept low so that the page holds in the screen, the whole centered in 1152 px. Each list and pick keeps the look of its type
+    (sheet_field_partial), the picks drawn as pills. One column on a phone %>
+<% bands = details_bands(fields) %>
+<div class="clear-left mx-auto flex w-full max-w-6xl flex-col gap-6">
+  <% if lead %>
+    <div class="max-w-sm"><%= lead %></div>
+  <% end %>
+  <% if bands[:choices].any? %>
+    <div class="grid gap-x-16 gap-y-2 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+      <% bands[:choices].each do |field| %>
+        <div class="min-w-0 <%= "max-w-xs" if sheet_flow_group(field) == :lists && !field["grid"] %>">
+          <%= render sheet_field_partial(field),
+                     character: character, field: field, computed: computed, all_fields: all_fields, pills: true %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if bands[:shorts].any? %>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 lg:grid-cols-6 [&_.group]:mb-0">
+      <% bands[:shorts].each do |field| %>
+        <%= render "character_sheets/fields/input", character: character, field: field, computed: computed %>
+      <% end %>
+    </div>
+  <% end %>
+  <% if bands[:texts].any? %>
+    <div class="grid gap-x-6 gap-y-5 lg:grid-cols-3">
+      <% bands[:texts].each do |field| %>
+        <div class="flex min-w-0 flex-col">
+          <%= label_tag sheet_field_id(field), field["label"], class: SimpleFormFieldClasses::LABEL %>
+          <% if field["help"] %>
+            <%# Two lines kept from 1024 px: the three text areas start at the same height %>
+            <p id="<%= sheet_field_id(field) %>_hint" class="-mt-0.5 mb-2 text-xs leading-4 text-muted lg:min-h-8"><%= field["help"] %></p>
+          <% end %>
+          <%= sheet_guided_text_area(character, field) %>
+          <% if (error = sheet_field_error(character, field)) %>
+            <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>

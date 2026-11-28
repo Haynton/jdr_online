@@ -5,15 +5,25 @@ module FieldTypes
   # it has options to offer, and its value goes when the other list or the level no longer offer it. With labels, a name
   # for each option, the option is a key the rules read (the training an item needs: "simple-weapons") and the page
   # shows its name ("Armes courantes"). With icons, an emblem for each option (OptionIcons): the list is drawn as cards
-  # (the class, character_sheets/sections/_option_cards)
+  # (the class, character_sheets/sections/_option_cards). With a grid, the options are the cells of a table of two
+  # axes, picked by one choice on each axis (the alignment: its order, then its morals), each with its meaning
+  # (character_sheets/fields/_grid_choice)
   class Choice < Base
     KEY = "choice".freeze
-    OWN_PARAMETERS = %w[options labels descriptions effects icons options_from options_by from_level level_from].freeze
+    OWN_PARAMETERS = %w[
+      options labels descriptions effects icons grid options_from options_by from_level level_from
+    ].freeze
     REQUIRED_PARAMETERS = %w[options].freeze
     REFERENCES = { "options_from" => "choice", "level_from" => "number" }.freeze
     # The settings that go together: one without the other does not work
     PAIRED_PARAMETERS = { "options_by" => "options_from", "options_from" => "options_by",
                           "from_level" => "level_from" }.freeze
+
+    GRID_PARTIAL = "character_sheets/fields/grid_choice".freeze
+
+    def partial_for(field)
+      field["grid"] ? GRID_PARTIAL : partial
+    end
 
     def flow_group(_field)
       :lists
@@ -57,7 +67,8 @@ module FieldTypes
     end
 
     def settings_errors(field, fields)
-      paired_errors(field) + labels_errors(field) + icons_errors(field) + options_by_errors(field, fields)
+      paired_errors(field) + labels_errors(field) + icons_errors(field) + ChoiceGrid.errors(field) +
+        options_by_errors(field, fields)
     end
 
     private

@@ -235,7 +235,12 @@
       { "key": "size", "label": "Taille", "type": "choice", "section": "Espèce",
         "options": ["Petite", "Moyenne"] },
       { "key": "alignment", "label": "Alignement", "type": "choice", "section": "Détails",
-        "options": ["Loyal bon", "Neutre bon", "Chaotique bon", "Loyal neutre", "Neutre", "Chaotique neutre", "Loyal mauvais", "Neutre mauvais", "Chaotique mauvais"] },
+        "options": ["Loyal bon", "Neutre bon", "Chaotique bon", "Loyal neutre", "Neutre", "Chaotique neutre", "Loyal mauvais", "Neutre mauvais", "Chaotique mauvais"],
+        "grid": { "columns": { "label": "Ordre", "values": ["Loyal", "Neutre", "Chaotique"] }, "rows": { "label": "Morale", "values": ["Bon", "Neutre", "Mauvais"] },
+          "options": [["Loyal bon", "Neutre bon", "Chaotique bon"], ["Loyal neutre", "Neutre", "Chaotique neutre"], ["Loyal mauvais", "Neutre mauvais", "Chaotique mauvais"]],
+          "meanings": { "Loyal bon": "Fait le bien en respectant les règles et ses promesses.", "Neutre bon": "Fait le bien, sans s'attacher aux règles.", "Chaotique bon": "Suit sa conscience, libre de toute loi.",
+            "Loyal neutre": "Suit la loi, une tradition ou un code avant tout.", "Neutre": "Évite de prendre parti, cherche l'équilibre.", "Chaotique neutre": "Suit ses envies et tient à sa liberté.",
+            "Loyal mauvais": "Prend ce qu'il veut, mais dans les règles.", "Neutre mauvais": "Fait ce qui l'arrange, sans scrupule.", "Chaotique mauvais": "Guidé par sa colère et sa cruauté." } } },
       { "key": "languages", "label": "Langues", "type": "picks", "section": "Détails", "count": 2, "granted": ["Commun"],
         "options": ["Draconique", "Elfique", "Géant", "Gnome", "Gobelin", "Halfelin", "Langue des signes commune", "Nain", "Orc"],
         "help": "Vous parlez le commun, et deux langues de votre choix." },
@@ -246,9 +251,9 @@
       { "key": "eyes", "label": "Yeux", "type": "text", "short": true, "section": "Détails" },
       { "key": "hair", "label": "Cheveux", "type": "text", "short": true, "section": "Détails" },
       { "key": "skin", "label": "Peau", "type": "text", "short": true, "section": "Détails" },
-      { "key": "appearance", "label": "Apparence", "type": "text", "section": "Détails" },
-      { "key": "personality_traits", "label": "Traits de personnalité", "type": "text", "section": "Détails" },
-      { "key": "backstory", "label": "Histoire", "type": "text", "section": "Détails" },
+      { "key": "appearance", "label": "Apparence", "type": "text", "section": "Détails", "help": "Ce qu'on remarque en premier : une cicatrice, un vêtement, une façon de bouger." },
+      { "key": "personality_traits", "label": "Traits de personnalité", "type": "text", "section": "Détails", "help": "Comment il réagit face au danger, ce qui le fait rire, ce qui le met en colère." },
+      { "key": "backstory", "label": "Histoire", "type": "text", "section": "Détails", "help": "D'où il vient, ce qu'il a laissé derrière lui, et pourquoi il part à l'aventure." },
 
       { "key": "strength", "label": "Force", "abbreviation": "FOR", "type": "ability", "help": "Corps à corps, porter, grimper", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Caractéristiques", "visible_to_others": true },
       { "key": "dexterity", "label": "Dextérité", "abbreviation": "DEX", "type": "ability", "help": "Initiative, armure légère, arcs", "min": 1, "max": 20, "modifier": "half_above_ten", "section": "Caractéristiques", "visible_to_others": true },
@@ -314,7 +319,7 @@
       { "key": "survival", "label": "Survie", "type": "bonus", "based_on": "wisdom", "proficiency": "proficiency_bonus", "section": "Compétences" },
       { "key": "deception", "label": "Tromperie", "type": "bonus", "based_on": "charisma", "proficiency": "proficiency_bonus", "section": "Compétences" },
 
-      { "key": "features", "label": "Capacités", "type": "text", "section": "Détails",
+      { "key": "features", "label": "Capacités", "type": "text", "section": "Détails", "at_creation": false,
         "help": "Capacités de classe et d'espèce, dons : à noter librement." }
     ]
   },

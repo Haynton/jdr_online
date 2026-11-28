@@ -345,6 +345,7 @@ fr:
           unknown_item_property: "Objet prêt à l'emploi « %{item} » : la propriété « %{property} » n'existe pas dans la fiche d'objet"
           unknown_modifier: "%{part} › %{field} : la règle de modificateur « %{modifier} » est inconnue"
           unknown_option: "%{part} › %{field} : « %{setting} » décrit une option qui n'existe pas (%{option})"
+          invalid_grid: "%{part} › %{field} : « grid » doit nommer ses deux axes (au moins deux valeurs chacun) et ranger chaque option une fois, une ligne par valeur de « rows », une case par valeur de « columns »"
           unknown_icon: "%{part} › %{field} : l'icône « %{icon} » n'existe pas dans l'application"
           unknown_parameter: "%{part} › %{field} : le réglage « %{parameter} » est inconnu pour ce type de champ"
           unknown_parameter_value: "%{part} › %{field} : la valeur « %{value} » du réglage « %{parameter} » est inconnue"

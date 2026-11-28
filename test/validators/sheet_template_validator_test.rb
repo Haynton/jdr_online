@@ -126,6 +126,23 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  :labels_not_matching_options
   end
 
+  test "a list on a grid holds each of its options once, a row per value of its rows, a cell per column" do
+    grid = { "columns" => { "label" => "Ordre", "values" => %w[Loyal Chaotique] },
+             "rows" => { "label" => "Morale", "values" => %w[Bon Mauvais] },
+             "options" => [["Loyal bon", "Chaotique bon"], ["Loyal mauvais", "Chaotique mauvais"]],
+             "meanings" => { "Loyal bon" => "Fait le bien." } }
+    grid_list = { "key" => "alignment", "label" => "Alignement", "type" => "choice", "section" => "Identité",
+                  "options" => grid["options"].flatten, "grid" => grid }
+    with_list = ->(list) { build_template { |fields| fields << list } }
+
+    assert_predicate with_list.call(grid_list), :valid?
+    assert_error with_list.call(grid_list.merge("grid" => grid.merge("options" => [grid["options"].first]))),
+                 :invalid_grid
+    assert_error with_list.call(grid_list.merge("options" => grid_list["options"] + ["Neutre"])), :invalid_grid
+    assert_error with_list.call(grid_list.merge("grid" => grid.merge("meanings" => { "Neutre" => "?" }))),
+                 :unknown_option
+  end
+
   test "a field shown only with some values names a list of the same part, and some of its options" do
     shown_with = { "field" => "class", "values" => ["Guerrier"] }
     field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité",

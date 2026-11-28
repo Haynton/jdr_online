@@ -36,6 +36,8 @@ module FieldParameters
     "options_by" => :fixed,
     # An emblem for each option of a list, among the icons of the app (OptionIcons): the list is drawn as cards
     "icons" => :fixed,
+    # The options of a list drawn as a table of two axes (the alignment), with their meanings (FieldTypes::Choice)
+    "grid" => :fixed,
     # Shown only for some values of a list of the same part: { "field" => "category", "values" => [...] } (the damage
     # of an item for a weapon only, in the window of a catalog entry)
     "shown_with" => :fixed

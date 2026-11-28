@@ -1,7 +1,8 @@
 <%# Several options of a list (type picks: the languages), wherever it is on the sheet: a group of check boxes named by
     its label (fieldset and legend). The options always known (granted: the Common tongue) come first, ticked and
     disabled, never sent; then the options to pick, count at most (said in the help, checked by the server).
-    The hidden field before them sends "" so that unticking every box empties the field %>
+    The hidden field before them sends "" so that unticking every box empties the field. pills: the options drawn as
+    pills, side by side (the Details step), each a real box under its label %>
 <% error = sheet_field_error(character, field) %>
 <% hint = sheet_field_hint(field) %>
 <% picked = Array(character.sheet[field["key"]]) %>
@@ -14,25 +15,41 @@
     <p id="<%= sheet_field_id(field) %>_hint" class="-mt-0.5 mb-2.5 text-xs text-muted"><%= hint %></p>
   <% end %>
   <%= hidden_field_tag "#{sheet_field_name(field)}[]", "", id: nil %>
-  <%# Two columns as wide as their longest option (max-content, decision): « Langue des signes commune » never goes
-      onto two lines, and the options never spread across the screen. One column on a phone, where two would not fit %>
-  <div class="grid w-fit grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-[repeat(2,max-content)]">
-    <% field["granted"].to_a.each do |option| %>
-      <label class="flex items-start gap-2 text-sm text-muted">
-        <%= check_box_tag nil, option, true, disabled: true, id: nil, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
-        <%= option %>
-      </label>
-    <% end %>
-    <% field["options"].each_with_index do |option, index| %>
-      <% box_id = "#{sheet_field_id(field)}_#{index}" %>
-      <%# The box on the first line of its label, which may take two (« Langue des signes commune ») %>
-      <div class="flex items-start gap-2">
-        <%= check_box_tag "#{sheet_field_name(field)}[]", option, picked.include?(option),
-                          id: box_id, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
-        <%= label_tag box_id, option, class: SimpleFormFieldClasses::CHECKBOX_LABEL %>
-      </div>
-    <% end %>
-  </div>
+  <% if local_assigns[:pills] %>
+    <div class="flex flex-wrap gap-2">
+      <% field["granted"].to_a.each do |option| %>
+        <span class="<%= CharacterSheets::DetailsHelper::GRANTED_PILL_CLASSES %>">
+          <%= render "shared/icons/check", css_class: "size-3.5 text-muted" %><%= option %>
+        </span>
+      <% end %>
+      <% field["options"].each do |option| %>
+        <label class="<%= CharacterSheets::DetailsHelper::PICK_PILL_CLASSES %>">
+          <%= check_box_tag "#{sheet_field_name(field)}[]", option, picked.include?(option), id: nil, class: "sr-only" %>
+          <%= option %>
+        </label>
+      <% end %>
+    </div>
+  <% else %>
+    <%# Two columns as wide as their longest option (max-content, decision): « Langue des signes commune » never goes
+        onto two lines, and the options never spread across the screen. One column on a phone, where two would not fit %>
+    <div class="grid w-fit grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-[repeat(2,max-content)]">
+      <% field["granted"].to_a.each do |option| %>
+        <label class="flex items-start gap-2 text-sm text-muted">
+          <%= check_box_tag nil, option, true, disabled: true, id: nil, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
+          <%= option %>
+        </label>
+      <% end %>
+      <% field["options"].each_with_index do |option, index| %>
+        <% box_id = "#{sheet_field_id(field)}_#{index}" %>
+        <%# The box on the first line of its label, which may take two (« Langue des signes commune ») %>
+        <div class="flex items-start gap-2">
+          <%= check_box_tag "#{sheet_field_name(field)}[]", option, picked.include?(option),
+                            id: box_id, class: "#{SimpleFormFieldClasses::CHECKBOX} mt-px" %>
+          <%= label_tag box_id, option, class: SimpleFormFieldClasses::CHECKBOX_LABEL %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
   <% if error %>
     <p id="<%= sheet_field_id(field) %>_error" class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
   <% end %>

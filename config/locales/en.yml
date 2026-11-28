@@ -374,6 +374,7 @@ en:
           unknown_item_property: "Ready-made item “%{item}”: the property “%{property}” does not exist on the item sheet"
           unknown_modifier: "%{part} › %{field}: the modifier rule “%{modifier}” is unknown"
           unknown_option: "%{part} › %{field}: “%{setting}” describes an option that does not exist (%{option})"
+          invalid_grid: "%{part} › %{field}: “grid” must name its two axes (two values each at least) and hold each option once, a row per value of “rows”, a cell per value of “columns”"
           unknown_icon: "%{part} › %{field}: the icon “%{icon}” does not exist in the app"
           unknown_parameter: "%{part} › %{field}: the setting “%{parameter}” is unknown for this type of field"
           unknown_parameter_value: "%{part} › %{field}: the value “%{value}” of the setting “%{parameter}” is unknown"
