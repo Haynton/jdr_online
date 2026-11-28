@@ -14,13 +14,11 @@ const PACKET_CARD_SCALE = 0.55
 // twice is refused). A wizard writes cards in his spellbook (book) and prepares those written (prepared). The tabs show
 // one part at a time (select), its pills bring its row to a level (jump). Every card picked goes in the hand at the foot
 // (_spell_hand_cards), one packet per part under the row, unfolded with a click; a click on a card puts it back. The search and the intents filter the cards. An aid:
-// the server checks the spells chosen. The tools and the hand are rendered hidden and shown here
+// the server checks the spells chosen. The tools and the hand are shown by CSS when JavaScript runs (scripted:)
 export default class extends Controller {
   static targets = ["status", "bookStatus", "card", "tools", "search", "intent", "empty", "mark", "partButton", "partCards", "hand"]
 
   connect() {
-    if (this.hasToolsTarget) this.toolsTarget.hidden = false
-    if (this.hasHandTarget) this.handTarget.hidden = false
     this.refresh()
     if (this.hasPartButtonTarget) this.showPart(this.partButtonTargets[0].dataset.row)
   }
@@ -177,6 +175,10 @@ export default class extends Controller {
     face.querySelectorAll("input").forEach((input) => {
       input.removeAttribute("name")
       input.removeAttribute("id")
+      // A copy is no box of a card: the counts and fadeTakenElsewhere read only the real ones (a copy, out of any
+      // row, stopped the refresh, and a card put back stayed in its packet)
+      delete input.dataset.cardBox
+      delete input.dataset.countFor
       input.checked = true
       input.tabIndex = -1
     })
@@ -193,7 +195,10 @@ export default class extends Controller {
 
   showPart(row) {
     this.partButtonTargets.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.row === row)))
-    this.partCardsTargets.forEach((cards) => { cards.hidden = cards.dataset.row !== row })
+    this.partCardsTargets.forEach((cards) => {
+      cards.hidden = cards.dataset.row !== row
+      cards.classList.remove("scripted:hidden")
+    })
     this.partCardsTargets.find((cards) => !cards.hidden)?.querySelector("ul[data-card-row-target=row]")?.dispatchEvent(new Event("scroll"))
   }
 

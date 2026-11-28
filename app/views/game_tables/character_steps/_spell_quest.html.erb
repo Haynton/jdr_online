@@ -18,9 +18,11 @@
     <% end %>
   </div>
 
-  <% rows.each do |row| %>
+  <% rows.each_with_index do |row, position| %>
     <% levels = spell_row_levels(row) %>
-    <%= tag.section class: "flex min-w-0 flex-col gap-2", aria: { label: row.title },
+    <%# The parts after the first hidden from the first paint when JavaScript runs (scripted:): without it, every
+        part showed for a moment on load, two rows of large cards (spell_hand_controller.js#showPart takes over) %>
+    <%= tag.section class: "flex min-w-0 flex-col gap-2 #{'scripted:hidden' unless position.zero?}", aria: { label: row.title },
                     data: { controller: "card-row", spell_hand_target: "partCards", row: row.key } do %>
       <%# Its room kept whatever the length of the sentence (changing tabs does not move what is under it): two lines from
           1024 px, one from 1280 px, where every sentence holds on the whole width %>

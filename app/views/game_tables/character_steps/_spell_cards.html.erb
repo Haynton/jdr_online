@@ -37,7 +37,7 @@
   <% else %>
     <%# The search by name (Anthony's request), then what the player wants to do (one intent at a time, « Tout »
         first): both together filter the cards. Shown by the controller %>
-    <div hidden class="-mt-2 mb-4 flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:-mt-5"
+    <div class="-mt-2 mb-4 hidden min-w-0 scripted:flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:-mt-5"
          data-spell-hand-target="tools">
       <div class="relative w-full shrink-0 sm:w-56">
         <%= label_tag "spell_search", t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"), class: "sr-only" %>
