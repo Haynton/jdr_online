@@ -1,0 +1,11 @@
+<%# A creature the game master may add to the encounter: its name, its challenge rating and its experience points,
+    the whole line a button (encounter#add) %>
+<li data-catalog-search-target="entry" data-search-name="<%= I18n.transliterate(creature.name).downcase %>">
+  <button type="button" data-action="encounter#add" data-key="<%= creature.key %>" data-name="<%= creature.name %>"
+          data-xp="<%= creature.xp %>" aria-label="<%= t("game_rooms.panels.encounter.add", name: creature.name) %>"
+          class="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-surface-raised">
+    <%= render "shared/icons/plus", css_class: "size-4 shrink-0 text-muted" %>
+    <span class="min-w-0 flex-1 truncate text-ink"><%= creature.name %></span>
+    <span class="shrink-0 text-xs text-muted tabular-nums"><%= encounter_creature_detail(creature) %></span>
+  </button>
+</li>
