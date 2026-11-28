@@ -360,10 +360,45 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :invalid_condition_description
   end
 
+  test "the length of a cell is a positive number with a short unit, nothing else; a template may say none" do
+    assert_predicate with_grid({ "cell_length" => 1.5, "unit" => "m" }), :valid?
+    assert_predicate with_grid(nil), :valid?
+    refused = [{ "cell_length" => 0, "unit" => "m" }, { "cell_length" => "1,5", "unit" => "m" },
+               { "cell_length" => 5, "unit" => "" }, { "cell_length" => 5, "unit" => "f" * 11 },
+               { "cell_length" => 5, "unit" => "ft", "squares" => true }, [1.5, "m"]]
+    refused.each { |grid| assert_error with_grid(grid), :invalid_grid }
+  end
+
   test "the conditions are a list of conditions; a template may have none" do
     assert_error with_conditions({ "poisoned" => "Empoisonné" }), :invalid_conditions
     assert_predicate with_conditions([{ "key" => "exhaustion", "label" => "Épuisement", "levels" => 6 }]), :valid?
     assert_predicate build_template, :valid?
+  end
+
+  test "the encounter budget reads a list of the NPCs, its experience points and a line per level" do
+    encounters = { "label" => "Rencontre", "rating_from" => "challenge", "xp_by_rating" => { "1" => 200 },
+                   "difficulties" => [{ "key" => "low", "label" => "Faible" }], "budget_by_level" => [[50]] * 20 }
+    assert_predicate with_encounters(encounters), :valid?
+
+    assert_error with_encounters(encounters.merge("rating_from" => "size")), :invalid_encounters_rating
+    assert_error with_encounters(encounters.merge("xp_by_rating" => { "99" => 200 })), :invalid_encounters_xp
+    assert_error with_encounters(encounters.merge("budget_by_level" => [[50, 75]] * 20)), :invalid_encounters_budget
+    assert_error with_encounters(encounters.merge("difficulties" => [])), :invalid_encounters_difficulties
+    assert_error with_encounters(encounters.merge("color" => "red")), :unknown_encounters_parameter
+  end
+
+  test "the rule sheets have a unique key, a label and entries with a title and a short text" do
+    travel = { "key" => "travel", "label" => "Voyage", "entries" => [{ "title" => "Rythme", "text" => "Rapide…" }] }
+    assert_predicate with_rule_sheets([travel]), :valid?
+
+    traps = { "key" => "Pièges", "label" => "Pièges", "entries" => [{ "title" => "x" }], "color" => "red" }
+    fear = { "key" => "fear", "label" => "Peur", "entries" => [{ "title" => "Peur", "text" => "x" * 801 }] }
+    template = with_rule_sheets([travel, travel, traps, fear])
+    assert_error template, :duplicate_rule_sheet
+    assert_error template, :invalid_rule_sheet_key
+    assert_error template, :unknown_rule_sheet_parameter
+    assert_error template, :invalid_rule_sheet_entries
+    assert_error with_rule_sheets({ "travel" => "x" }), :invalid_rule_sheets
   end
 
   test "the price lists have a unique key, a label and lines with a label, a price and a short note" do
@@ -500,6 +535,25 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   # The template given to the block (its character fields) can be changed before it is built
   def with_ability_methods(methods)
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
+  # The NPCs have a challenge rating (a list) and a size (a text)
+  def with_encounters(encounters)
+    build_template.tap do |template|
+      template.npc_fields = { "fields" => [
+        { "key" => "challenge", "label" => "FP", "type" => "choice", "options" => %w[0 1 2] },
+        { "key" => "size", "label" => "Taille", "type" => "text" }
+      ] }
+      template.character_fields["encounters"] = encounters
+    end
+  end
+
+  def with_rule_sheets(sheets)
+    build_template.tap { |template| template.character_fields["rule_sheets"] = sheets }
+  end
+
+  def with_grid(grid)
+    build_template.tap { |template| template.character_fields["grid"] = grid }
   end
 
   def with_price_lists(lists)

@@ -1,0 +1,30 @@
+<%# Short rules for the game master (decision of 27 November): each rule sheet the template declares
+    (TemplateCopy#rule_sheets: travel, environment, fear, curses, traps, poisons, creating a background), its entries
+    folded under their title, and a search on the titles and the texts, without accents (catalog_search_controller.js:
+    a sheet left empty is hidden). Without JavaScript, every entry stays and opens %>
+<div class="flex flex-col gap-4" data-controller="catalog-search">
+  <div data-catalog-search-target="tools" hidden>
+    <label for="rules-search" class="sr-only"><%= t("game_rooms.panels.rules.search") %></label>
+    <input type="search" id="rules-search" autocomplete="off" placeholder="<%= t("game_rooms.panels.rules.search") %>"
+           class="<%= SimpleFormFieldClasses::INPUT %>" data-catalog-search-target="search" data-action="input->catalog-search#filter">
+  </div>
+  <% game_room.game_table.rule_sheets.each do |sheet| %>
+    <section aria-labelledby="rule-sheet-<%= sheet["key"] %>" data-catalog-search-target="group">
+      <h3 id="rule-sheet-<%= sheet["key"] %>" class="text-xs font-semibold tracking-wider text-muted uppercase"><%= sheet["label"] %></h3>
+      <ul class="mt-1 flex flex-col divide-y divide-line">
+        <% sheet["entries"].each do |entry| %>
+          <li data-catalog-search-target="entry" data-search-name="<%= rule_entry_search_name(entry) %>">
+            <details class="group py-1.5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md text-sm font-medium text-ink [&::-webkit-details-marker]:hidden">
+                <%= entry["title"] %>
+                <%= render "shared/icons/chevron_down", css_class: "size-4 shrink-0 text-muted transition-transform group-open:rotate-180" %>
+              </summary>
+              <p class="mt-1 text-sm text-muted"><%= entry["text"] %></p>
+            </details>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+  <p class="text-sm text-muted" data-catalog-search-target="noMatch" hidden><%= t("game_rooms.panels.rules.no_match") %></p>
+</div>

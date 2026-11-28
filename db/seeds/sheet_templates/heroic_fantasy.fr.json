@@ -6,6 +6,7 @@
   "description": "Compatible 5e édition · Licence SRD 5.2.1.",
   "character_fields": {
     "attunement": {"limit": 3},
+    "grid": {"cell_length": 1.5, "unit": "m"},
     "ability_methods": [
       { "type": "standard_array", "label": "Tableau standard", "summary": "Valeurs fixes à placer : 15, 14, 13, 12, 10, 8", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },
       { "type": "roll", "label": "Lancer de dés", "summary": "4d6 par caractéristique, les 3 meilleurs dés gardés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés.", "dice": 4, "sides": 6, "keep_highest": 3 },
@@ -64,6 +65,65 @@
       { "key": "stunned", "label": "Étourdi", "description": "Vous êtes neutralisé et ratez automatiquement les jets de sauvegarde de Force et de Dextérité. Les jets d'attaque contre vous ont l'avantage." },
       { "key": "unconscious", "label": "Inconscient", "description": "Vous êtes neutralisé et à terre, et vous lâchez ce que vous tenez. Votre vitesse est de 0, vous ratez automatiquement les jets de sauvegarde de Force et de Dextérité, les jets d'attaque contre vous ont l'avantage et un coup porté à 1,50 mètre ou moins est un coup critique. Vous ne savez rien de ce qui vous entoure." }
     ],
+    "rule_sheets": [
+      {"key": "travel", "label": "Voyage", "entries": [
+        {"title": "Rythme de voyage", "text": "Rapide : 120 m par minute, 6 km par heure, 48 km par jour ; désavantage aux tests de Sagesse (Perception, Survie) et de Dextérité (Discrétion). Normal : 90 m, 4,5 km, 36 km ; désavantage à la Discrétion. Lent : 60 m, 3 km, 27 km ; avantage à la Perception et à la Survie. À cheval, le double pendant 1 heure, puis les montures se reposent."},
+        {"title": "Terrain", "text": "Rythme le plus rapide selon le terrain : rapide en prairie et en arctique (avec des skis) ; normal sur la côte, au désert, en forêt, dans les collines, l'Outreterre et en ville ; lent en montagne et dans les marais. Sur l'eau, le rythme est celui du bateau."},
+        {"title": "Bonnes routes", "text": "Une bonne route augmente le rythme le plus rapide d'un cran (de lent à normal, de normal à rapide)."},
+        {"title": "Voyageurs lents", "text": "Le groupe va au rythme lent si la vitesse d'un de ses membres est réduite de moitié ou plus."},
+        {"title": "Voyage prolongé", "text": "Au-delà de 8 heures de marche, à la fin de chaque heure en plus, jet de sauvegarde de Constitution DD 10 + 1 par heure au-delà de 8, ou 1 niveau d'épuisement."},
+        {"title": "Déplacements spéciaux et véhicules", "text": "En volant, ou sans gêne par le terrain difficile, le groupe va au rythme rapide partout. En bateau, il avance à la vitesse du bateau, sans choisir de rythme ; en charrette ou en carrosse, il choisit son rythme comme à pied. Vitesse en km/h : sa vitesse en mètres ÷ 2."}
+      ]},
+      {"key": "environment", "label": "Environnement", "entries": [
+        {"title": "Eau profonde", "text": "Après chaque heure de nage à plus de 30 mètres de profondeur, sans vitesse de nage : jet de sauvegarde de Constitution DD 10 ou 1 niveau d'épuisement."},
+        {"title": "Froid extrême", "text": "À −18 °C ou moins : à la fin de chaque heure, jet de sauvegarde de Constitution DD 10 ou 1 niveau d'épuisement. Réussi d'office avec une résistance ou une immunité au froid. Un sac de couchage le réussit, une couverture donne l'avantage."},
+        {"title": "Chaleur extrême", "text": "À 38 °C ou plus, sans eau potable : à la fin de chaque heure, jet de sauvegarde de Constitution DD 5 + 1 par heure suivante, ou 1 niveau d'épuisement. Désavantage en armure intermédiaire ou lourde ; réussi d'office avec une résistance ou une immunité au feu."},
+        {"title": "Eau glacée", "text": "Une créature tient un nombre de minutes égal à sa Constitution. Ensuite, chaque minute : jet de sauvegarde de Constitution DD 10 ou 1 niveau d'épuisement (réussi d'office avec une résistance au froid, ou si elle y est habituée)."},
+        {"title": "Fortes précipitations", "text": "Sous une forte pluie ou une forte neige, tout est légèrement masqué et les tests de Sagesse (Perception) ont le désavantage. La forte pluie éteint les flammes nues."},
+        {"title": "Haute altitude", "text": "Au-dessus de 3 000 mètres, chaque heure de voyage compte double pour le voyage prolongé. On s'y habitue en 30 jours, jamais au-dessus de 6 000 mètres sauf si l'on en vient."},
+        {"title": "Glace glissante", "text": "Terrain difficile. Y entrer pour la première fois du tour, ou y commencer son tour : jet de sauvegarde de Dextérité DD 10 ou à terre."},
+        {"title": "Vent fort", "text": "Désavantage aux attaques à distance avec une arme ; éteint les flammes nues et disperse le brouillard. Une créature qui vole doit se poser à la fin de son tour ou tomber. Au désert, une tempête de sable donne le désavantage à la Perception."},
+        {"title": "Glace mince", "text": "Elle supporte 3d10 × 5 kilos par carré de 3 mètres. Au-delà, elle cède et tous ceux qui s'y trouvent tombent dans l'eau glacée."}
+      ]},
+      {"key": "fear", "label": "Peur et stress", "entries": [
+        {"title": "Peur", "text": "Ce qui terrifie par magie rend effrayé, sur un jet de sauvegarde de Sagesse : DD 10 pour une apparition sans danger, 15 pour une illusion de ses pires peurs, 20 pour un portail vers les Abysses. La créature refait le jet à la fin de chacun de ses tours. Parlez-en avec les joueurs avant d'utiliser ces règles."},
+        {"title": "Effets de peur en plus", "text": "Au choix du MJ, tant qu'elle est effrayée : la créature fuit avec l'action Foncer à chaque tour, ou les attaques contre elle ont l'avantage, ou elle ne fait qu'une chose par tour (se déplacer, une action ou une action bonus)."},
+        {"title": "Stress mental", "text": "Un choc pour l'esprit inflige des dégâts psychiques, sur un jet de sauvegarde de Sagesse (parfois d'Intelligence ou de Charisme) : DD 10 et 1d6 pour une drogue hallucinogène, DD 15 et 3d6 pour une idole fiélonne, DD 20 et 9d6 pour un passage dans l'Outre-Royaume. La moitié en cas de réussite, au choix du MJ."},
+        {"title": "Effets prolongés", "text": "Court terme : effrayé, neutralisé ou étourdi pendant 1d10 minutes. Long terme : désavantage à certains tests de caractéristique pendant 1d10 × 10 heures. Indéfini : comme le long terme, jusqu'à Restauration supérieure. Apaisement des émotions les suspend, Restauration partielle met fin aux deux premiers."}
+      ]},
+      {"key": "curses", "label": "Malédictions et contagions", "entries": [
+        {"title": "Malédictions", "text": "La plus simple vient du sort Malédiction, que Délivrance des malédictions lève. Repère : une malédiction d'une minute vaut un sort de niveau 3, une malédiction jusqu'à dissipation un sort de niveau 9. Une créature maudite par nature (loup-garou, momie) n'est délivrée que comme le MJ le décide."},
+        {"title": "Malédictions du récit", "text": "Briser un serment, profaner une tombe, tuer un innocent : la malédiction a les effets que le MJ choisit. La victime doit savoir pourquoi elle est punie, et pouvoir apprendre comment réparer sa faute. Délivrance des malédictions peut seulement la suspendre."},
+        {"title": "Possession démoniaque", "text": "Un lieu profané ou un objet démoniaque : jet de sauvegarde de Charisme DD 15 ou possédé. Sur un 1 au d20, le démon prend le contrôle ; à la fin de chaque tour suivant, jet de Charisme DD 15 pour le reprendre. Après un repos long, le même jet y met fin, comme Dissipation du mal et du bien ou ce qui lève une malédiction."},
+        {"title": "Convalescence", "text": "Trois jours de repos complet, puis jet de sauvegarde de Constitution DD 15 : réussi, avantage aux jets contre la contagion pendant 24 heures."},
+        {"title": "Fièvre gloussante", "text": "Humanoïdes seulement, jamais les gnomes ; 1d4 jours après : 1 niveau d'épuisement. Chaque dégât non psychique : Constitution DD 13 ou 1d10 dégâts psychiques et neutralisé par le fou rire (le jet à chaque fin de tour, fini après 1 minute). Trois réussites après des repos longs (DD 13) la guérissent, immunité 1 an. Contagion à 3 mètres : Constitution DD 10."},
+        {"title": "Peste des égouts", "text": "Une blessure d'un porteur (rat, otyugh) ou de la saleté : Constitution DD 11 ou infecté ; 1d4 jours après, 1 niveau d'épuisement. Tant qu'il est épuisé, les dés de vie ne rendent que la moitié, et le repos long ne rend ni PV ni niveau. Chaque aube, Constitution DD 11 : échec, un niveau de plus ; réussite, un de moins. À 0, guérie."},
+        {"title": "Pourriture oculaire", "text": "Bête ou humanoïde qui boit une eau souillée : Constitution DD 15 ou aveuglé jusqu'à guérison. Soins ou Restauration partielle la guérissent. Un onguent (matériel d'herboriste, 1 heure) la suspend 24 heures ; trois doses en tout la guérissent. Contagion au contact de la peau : Constitution DD 15."}
+      ]},
+      {"key": "traps", "label": "Pièges", "entries": [
+        {"title": "Un piège", "text": "Gravité et niveaux (gênant ou mortel pour des personnages de ces niveaux), déclencheur (plaque de pression, fil, poignée, mauvaise clé) et durée. À utiliser avec parcimonie : un piège impossible à voir et à éviter amuse rarement."},
+        {"title": "Éboulement", "text": "Mortel, niveaux 1 à 4. Un fil tendu fait tomber le plafond : Dextérité DD 13, 2d10 dégâts contondants, la moitié en cas de réussite ; les gravats font un terrain difficile. Repéré : Sagesse (Perception) DD 11. Plus haut : 4d10 DD 15, 10d10 DD 17, 18d10 DD 19."},
+        {"title": "Filet tombant", "text": "Gênant, niveaux 1 à 4. Un fil lâche un filet : Dextérité DD 10 ou entravé (sans effet sur très grand ou plus) ; s'en libérer, Force (Athlétisme) DD 10. Repéré : Perception DD 11. Plus haut : DD 12, 14 puis 16."},
+        {"title": "Statue cracheuse de feu", "text": "Mortel, niveaux 1 à 4, se réarme à chaque tour. Une plaque de pression fait cracher un cône de 4,50 m : Dextérité DD 15, 2d10 dégâts de feu, la moitié en cas de réussite. Un glyphe sur la statue (Perception DD 10, Arcanes DD 15) se gratte pour le désarmer. Plus haut : 4d10, 10d10, 18d10."},
+        {"title": "Fosse cachée", "text": "Gênant, niveaux 1 à 4. Un couvercle bascule : chute de 3 mètres, 1d6 dégâts contondants. Repérée : Intelligence (Investigation) DD 15 ; une pointe en fer bloque le couvercle. Plus haut : 9 m 3d6, 18 m 6d6, 36 m 12d6."},
+        {"title": "Fléchettes empoisonnées", "text": "Mortel, niveaux 1 à 4, trois fois au plus. Une plaque de pression : Dextérité DD 13 ou 1d3 fléchettes, 1d6 dégâts de poison chacune. Repérées : Perception DD 15 ; boucher les trous ou caler la plaque. Plus haut : 2d6, 4d6, 7d6 par fléchette."},
+        {"title": "Aiguille empoisonnée", "text": "Gênant, niveaux 1 à 4. Une serrure ouverte sans sa clé : Constitution DD 11, 1d10 dégâts de poison et empoisonné 1 heure, la moitié des dégâts en cas de réussite. Repérée : Perception DD 15 ; désarmée : Dextérité (Escamotage) DD 15. Plus haut : 2d10 DD 13, 4d10 DD 15, 10d10 DD 17."},
+        {"title": "Rocher roulant", "text": "Mortel aux niveaux 11 à 16. Une sphère de 3 m roule 18 m par tour (initiative +8) : Dextérité DD 15 ou 10d10 dégâts contondants et à terre. CA 17, 100 PV, seuil 10 ; Force (Athlétisme) DD 20 la ralentit de 4,50 m. Repéré : Investigation DD 15."},
+        {"title": "Fosse à pieux", "text": "Mortel, niveaux 1 à 4. Chute de 3 mètres : 1d6 contondants et 2d8 perforants. Repérée : Investigation DD 15. Plus haut : 9 m 3d6 + 3d8, 18 m 6d6 + 8d8, 36 m 12d6 + 13d8."}
+      ]},
+      {"key": "poisons", "label": "Poisons", "entries": [
+        {"title": "Quatre types", "text": "Contact : enduit un objet, agit sur la peau nue. Ingéré : une dose entière avalée (une dose partielle, effet réduit). Inhalé : une poudre ou un gaz dans un cube de 1,50 m, retenir son souffle ne sert à rien. Blessure : sur une arme ou des munitions (action bonus), agit sur des dégâts perforants ou tranchants. Les poisons d'exemple sont au catalogue des objets, catégorie Poison."},
+        {"title": "Se procurer du poison", "text": "Souvent interdit : un marchand louche ou un apothicaire sans scrupules en garde peut-être. Des contacts criminels aident ; sinon, enquêtes et pots-de-vin."},
+        {"title": "Récolter un poison", "text": "Sur une créature venimeuse morte ou neutralisée : 1d6 minutes, puis Intelligence (Nature) DD 20 avec un matériel d'empoisonneur. Réussi, une dose, et rien de plus sur cette créature ; raté de 5 ou plus, on subit son poison."}
+      ]},
+      {"key": "background", "label": "Créer un historique", "entries": [
+        {"title": "1. Caractéristiques", "text": "Trois caractéristiques qui vont à l'historique : Force ou Dextérité pour l'effort physique, Constitution pour l'endurance, Intelligence ou Sagesse pour l'esprit, Charisme pour la scène et le monde."},
+        {"title": "2. Don", "text": "Un don d'origine."},
+        {"title": "3. Compétences", "text": "Deux compétences qui vont à l'historique, sans lien obligé avec les caractéristiques."},
+        {"title": "4. Outil", "text": "Un outil de son métier."},
+        {"title": "5. Équipement", "text": "Un lot d'équipement de 50 po (or restant compris), sans arme de guerre ni armure : la classe les donne."}
+      ]}
+    ],
     "price_lists": [
       {"key": "inn", "label": "Auberge (une nuit)", "lines": [{"label": "Misérable", "price": "7 pc"}, {"label": "Pauvre", "price": "1 pa"}, {"label": "Modeste", "price": "5 pa"}, {"label": "Aisée", "price": "8 pa"}, {"label": "Riche", "price": "2 po"}, {"label": "Aristocratique", "price": "4 po"}]},
       {"key": "meals", "label": "Repas", "lines": [{"label": "Misérable", "price": "1 pc"}, {"label": "Pauvre", "price": "2 pc"}, {"label": "Modeste", "price": "1 pa"}, {"label": "Aisé", "price": "2 pa"}, {"label": "Riche", "price": "3 pa"}, {"label": "Aristocratique", "price": "6 pa"}]},
@@ -71,6 +131,12 @@
       {"key": "services", "label": "Mercenaires et services", "lines": [{"label": "Mercenaire qualifié", "price": "2 po par jour", "note": "Un soldat, un artisan, un scribe"}, {"label": "Mercenaire non qualifié", "price": "2 pa par jour", "note": "Un porteur, un manœuvre"}, {"label": "Messager", "price": "2 pc par 1,5 km"}, {"label": "Écurie", "price": "5 pa par jour"}, {"label": "Passage en bateau, hamac", "price": "5 pa par jour"}, {"label": "Passage en bateau, cabine", "price": "2 po par jour"}, {"label": "Réparer un navire", "price": "20 po par PV", "note": "Un jour par PV ; moitié moins dans un chantier naval"}, {"label": "Barde pour une monture", "price": "4 × l'armure", "note": "Son poids doublé"}]},
       {"key": "spellcasting", "label": "Sorts lancés contre paiement", "lines": [{"label": "Sort mineur", "price": "30 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 1", "price": "50 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 2", "price": "200 po", "note": "Village, bourg ou cité"}, {"label": "Niveau 3", "price": "300 po", "note": "Bourg ou cité"}, {"label": "Niveaux 4 et 5", "price": "2 000 po", "note": "Bourg ou cité"}, {"label": "Niveaux 6 à 8", "price": "20 000 po", "note": "Cité seulement"}, {"label": "Niveau 9", "price": "100 000 po", "note": "Cité seulement, plus les composantes coûteuses"}]}
     ],
+    "encounters": {
+      "label": "Budget de la rencontre", "help": "Les XP de chaque créature viennent de son facteur de puissance. Le budget est la somme, pour chaque personnage, de ce que donne son niveau.", "rating_from": "challenge",
+      "difficulties": [{"key": "low", "label": "Faible", "help": "Un ou deux moments tendus, sans perte ; quelques soins peut-être."}, {"key": "moderate", "label": "Modérée", "help": "Sans soins, elle peut mal tourner : un personnage faible peut tomber."}, {"key": "high", "label": "Élevée", "help": "Peut être mortelle : il faudra de la tactique, et un peu de chance."}],
+      "xp_by_rating": {"0": 10, "1/8": 25, "1/4": 50, "1/2": 100, "1": 200, "2": 450, "3": 700, "4": 1100, "5": 1800, "6": 2300, "7": 2900, "8": 3900, "9": 5000, "10": 5900, "11": 7200, "12": 8400, "13": 10000, "14": 11500, "15": 13000, "16": 15000, "17": 18000, "18": 20000, "19": 22000, "20": 25000, "21": 33000, "22": 41000, "23": 50000, "24": 62000, "25": 75000, "26": 90000, "27": 105000, "28": 120000, "29": 135000, "30": 155000},
+      "budget_by_level": [[50, 75, 100], [100, 150, 200], [150, 225, 400], [250, 375, 500], [500, 750, 1100], [600, 1000, 1400], [750, 1300, 1700], [1000, 1700, 2100], [1300, 2000, 2600], [1600, 2300, 3100], [1900, 2900, 4100], [2200, 3700, 4700], [2600, 4200, 5400], [2900, 4900, 6200], [3300, 5400, 7800], [3800, 6100, 9800], [4500, 7200, 11700], [5000, 8700, 14200], [5500, 10700, 17200], [6400, 13200, 22000]]
+    },
     "dice_rolls": {
       "modes": [
         { "key": "advantage", "label": "Avantage", "help": "Lancez deux dés et gardez le meilleur.", "dice": 2, "keep": "highest" },
@@ -360,7 +426,7 @@
   },
   "item_fields": {
     "fields": [
-      {"key": "category", "filter": true, "label": "Catégorie", "section": "Général", "listed": true, "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Monture", "Harnachement", "Véhicule", "Nourriture et boisson", "Potion", "Trésor", "Objet merveilleux", "Anneau", "Baguette", "Bâton", "Sceptre", "Parchemin"]},
+      {"key": "category", "filter": true, "label": "Catégorie", "section": "Général", "listed": true, "type": "choice", "options": ["Arme", "Armure", "Bouclier", "Munitions", "Outil", "Instrument de musique", "Jeu", "Focaliseur", "Symbole sacré", "Sac d'équipement", "Équipement", "Monture", "Harnachement", "Véhicule", "Nourriture et boisson", "Poison", "Potion", "Trésor", "Objet merveilleux", "Anneau", "Baguette", "Bâton", "Sceptre", "Parchemin"]},
       {"key": "damage", "label": "Dégâts", "section": "Arme", "shown_with": {"field": "category", "values": ["Arme"]}, "type": "text"},
       {"key": "weapon_properties", "label": "Propriétés", "section": "Arme", "shown_with": {"field": "category", "values": ["Arme"]}, "type": "text"},
       {"key": "armor_class", "label": "Classe d'armure", "section": "Protection", "shown_with": {"field": "category", "values": ["Armure", "Bouclier"]}, "type": "text"},

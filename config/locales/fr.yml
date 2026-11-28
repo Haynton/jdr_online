@@ -290,6 +290,19 @@ fr:
           invalid_price_lines: "La liste de prix « %{list} » : il faut des lignes, chacune avec un libellé, un prix et, au besoin, une note courte"
           invalid_price_lists: "Les listes de prix : il faut une liste de listes, chacune avec sa clé, son libellé et ses lignes"
           unknown_price_list_parameter: "La liste de prix « %{list} » : le réglage « %{parameter} » est inconnu"
+          invalid_encounters: "Le budget des rencontres : il faut ses réglages, son libellé, ses difficultés et ses tables"
+          invalid_encounters_budget: "Le budget des rencontres : il faut 20 lignes, une par niveau, de %{count} nombres entiers positifs chacune"
+          invalid_encounters_difficulties: "Le budget des rencontres : il faut de 1 à 5 difficultés, chacune avec sa clé et son libellé"
+          invalid_encounters_label: "Le budget des rencontres : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_encounters_rating: "Le budget des rencontres : « rating_from » doit désigner une liste de la fiche des PNJ"
+          invalid_encounters_xp: "Le budget des rencontres : les points d'expérience doivent être des nombres entiers, pour des options de la liste"
+          unknown_encounters_parameter: "Le budget des rencontres : le réglage « %{parameter} » est inconnu"
+          duplicate_rule_sheet: "Deux fiches de règles ont la même clé : %{key}"
+          invalid_rule_sheet_entries: "La fiche de règles « %{sheet} » : il faut des entrées, chacune avec un titre et un texte de %{count} caractères au plus"
+          invalid_rule_sheet_key: "La fiche de règles « %{key} » : sa clé doit être en minuscules, chiffres et tirets bas, une lettre d'abord"
+          invalid_rule_sheet_label: "La fiche de règles « %{key} » : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_rule_sheets: "Les fiches de règles : il faut une liste de fiches, chacune avec sa clé, son libellé et ses entrées"
+          unknown_rule_sheet_parameter: "La fiche de règles « %{sheet} » : le réglage « %{parameter} » est inconnu"
           invalid_conditions: "Les états : la liste doit être une liste d'états, chacun avec sa clé et son libellé"
           invalid_condition_description: "L'état « %{condition} » : la description doit être un texte de %{count} caractères au plus"
           invalid_condition_key: "L'état « %{key} » : la clé doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -319,6 +332,7 @@ fr:
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
           invalid_spellbook: "%{part} › %{field} › %{option} : le grimoire doit avoir un libellé, un nombre de sorts au départ et par niveau, et le groupe de sorts qui y prépare"
           invalid_attunement: "le nombre d'objets liés à la fois (attunement) doit être un nombre entier d'au moins 1"
+          invalid_grid: "la longueur d'une case (grid) doit être un nombre positif, avec son unité en %{count} caractères au plus"
           invalid_slot_table: "%{part} › %{field} › %{option} : la table « %{table} » des emplacements de sorts doit donner, pour chacun des 20 niveaux, une liste de nombres entiers positifs ou nuls"
           invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -1308,6 +1322,10 @@ fr:
       hand: "Déplacer la carte"
       hand_tip: "Déplacer la carte (H). Aussi : Espace + glisser, clic de la molette + glisser, deux doigts sur le pavé tactile ou l'écran."
       hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
+      move_cells:
+        one: "%{count} case"
+        other: "%{count} cases"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"
@@ -1432,6 +1450,22 @@ fr:
         fight: "Combat"
         score: "Score"
         title: "Ma fiche"
+      encounter:
+        above: "Au-delà de « %{difficulty} »"
+        add: "Ajouter %{name} à la rencontre"
+        chosen: "Votre rencontre"
+        creature_detail: "FP %{rating} · %{xp}"
+        creatures: "Créatures"
+        difficulty: "Difficulté :"
+        empty: "Ajoutez des créatures ci-dessous : leurs XP s'additionnent et la difficulté s'affiche."
+        no_match: "Aucune créature ne correspond à cette recherche."
+        no_party: "Aucun personnage terminé : le budget attend les personnages des joueurs."
+        party:
+          one: "1 personnage · niveau %{levels}"
+          other: "%{count} personnages · niveaux %{levels}"
+        search: "Rechercher une créature"
+        title: "Rencontre"
+        xp: "%{count} XP"
       details:
         title: "Détails"
       dice:
@@ -1499,6 +1533,10 @@ fr:
         title: "Capacités"
       prices:
         title: "Prix"
+      rules:
+        no_match: "Aucune règle ne correspond à cette recherche."
+        search: "Rechercher une règle"
+        title: "Règles"
       skills:
         title: "Compétences"
       spells:

@@ -319,6 +319,19 @@ en:
           invalid_price_lines: "The price list “%{list}”: it needs lines, each with a label, a price and, if needed, a short note"
           invalid_price_lists: "The price lists: they must be a list of lists, each with its key, its label and its lines"
           unknown_price_list_parameter: "The price list “%{list}”: the setting “%{parameter}” is unknown"
+          invalid_encounters: "The encounter budget: it needs its settings, its label, its difficulties and its tables"
+          invalid_encounters_budget: "The encounter budget: it needs 20 lines, one per level, of %{count} positive whole numbers each"
+          invalid_encounters_difficulties: "The encounter budget: it needs 1 to 5 difficulties, each with its key and its label"
+          invalid_encounters_label: "The encounter budget: it needs a label of %{count} characters at most, on one line"
+          invalid_encounters_rating: "The encounter budget: “rating_from” must name a list of the sheet of the NPCs"
+          invalid_encounters_xp: "The encounter budget: the experience points must be whole numbers, for options of the list"
+          unknown_encounters_parameter: "The encounter budget: the setting “%{parameter}” is unknown"
+          duplicate_rule_sheet: "Two rule sheets have the same key: %{key}"
+          invalid_rule_sheet_entries: "The rule sheet “%{sheet}”: it needs entries, each with a title and a text of %{count} characters at most"
+          invalid_rule_sheet_key: "The rule sheet “%{key}”: its key must be lowercase letters, digits and underscores, a letter first"
+          invalid_rule_sheet_label: "The rule sheet “%{key}”: it needs a label of %{count} characters at most, on one line"
+          invalid_rule_sheets: "The rule sheets: they must be a list of sheets, each with its key, its label and its entries"
+          unknown_rule_sheet_parameter: "The rule sheet “%{sheet}”: the setting “%{parameter}” is unknown"
           invalid_conditions: "The conditions: they must be a list of conditions, each with its key and its label"
           invalid_condition_description: "The condition “%{condition}”: the description must be a text of %{count} characters at most"
           invalid_condition_key: "The condition “%{key}”: the key must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -348,6 +361,7 @@ en:
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
           invalid_spellbook: "%{part} › %{field} › %{option}: the spellbook needs a label, a number of spells at start and per level, and the group of spells that prepares from it"
           invalid_attunement: "the number of items attuned at a time (attunement) must be a whole number of at least 1"
+          invalid_grid: "the length of a cell (grid) must be a positive number, with its unit in %{count} characters at most"
           invalid_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” must give, for each of the 20 levels, a list of whole numbers, 0 or more"
           invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -1337,6 +1351,10 @@ en:
       hand: "Move the map"
       hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
       hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
+      move_cells:
+        one: "%{count} cell"
+        other: "%{count} cells"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"
@@ -1461,6 +1479,22 @@ en:
         fight: "Fight"
         score: "Score"
         title: "My sheet"
+      encounter:
+        above: "Beyond “%{difficulty}”"
+        add: "Add %{name} to the encounter"
+        chosen: "Your encounter"
+        creature_detail: "CR %{rating} · %{xp}"
+        creatures: "Creatures"
+        difficulty: "Difficulty:"
+        empty: "Add creatures below: their XP add up and the difficulty shows."
+        no_match: "No creature matches this search."
+        no_party: "No finished character: the budget waits for the players' characters."
+        party:
+          one: "1 character · level %{levels}"
+          other: "%{count} characters · levels %{levels}"
+        search: "Search a creature"
+        title: "Encounter"
+        xp: "%{count} XP"
       details:
         title: "Details"
       dice:
@@ -1528,6 +1562,10 @@ en:
         title: "Features"
       prices:
         title: "Prices"
+      rules:
+        no_match: "No rule matches this search."
+        search: "Search a rule"
+        title: "Rules"
       skills:
         title: "Skills"
       spells:

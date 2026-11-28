@@ -6,6 +6,7 @@
   "description": "5E compatible · SRD 5.2.1 license.",
   "character_fields": {
     "attunement": {"limit": 3},
+    "grid": {"cell_length": 5, "unit": "ft"},
     "ability_methods": [
       { "type": "standard_array", "label": "Standard array", "summary": "Fixed values to place: 15, 14, 13, 12, 10, 8", "help": "Place 15, 14, 13, 12, 10 and 8, one value per ability.", "values": [15, 14, 13, 12, 10, 8] },
       { "type": "roll", "label": "Dice roll", "summary": "4d6 per ability, the 3 highest dice kept", "help": "Roll 4d6 for each ability and keep the 3 highest dice.", "dice": 4, "sides": 6, "keep_highest": 3 },
@@ -64,6 +65,65 @@
       { "key": "stunned", "label": "Stunned", "description": "You have the Incapacitated condition and automatically fail Strength and Dexterity saving throws. Attack rolls against you have Advantage." },
       { "key": "unconscious", "label": "Unconscious", "description": "You have the Incapacitated and Prone conditions, and you drop what you're holding. Your Speed is 0, you automatically fail Strength and Dexterity saving throws, attack rolls against you have Advantage, and any hit from within 5 feet is a Critical Hit. You're unaware of your surroundings." }
     ],
+    "rule_sheets": [
+      {"key": "travel", "label": "Travel", "entries": [
+        {"title": "Travel pace", "text": "Fast: 400 feet a minute, 4 miles an hour, 30 miles a day; Disadvantage on Wisdom (Perception, Survival) and Dexterity (Stealth) checks. Normal: 300 feet, 3 miles, 24 miles; Disadvantage on Stealth. Slow: 200 feet, 2 miles, 18 miles; Advantage on Perception and Survival. Mounted, twice that for 1 hour, then the mounts need a rest."},
+        {"title": "Terrain", "text": "Fastest pace by terrain: Fast on grassland and arctic (with skis); Normal on coast, desert, forest, hills, Underdark and urban; Slow in mountains and swamps. Waterborne, the pace is the vessel's."},
+        {"title": "Good roads", "text": "A good road raises the maximum pace by one step (from Slow to Normal, from Normal to Fast)."},
+        {"title": "Slower travelers", "text": "The group must move at a Slow pace if any member's Speed is reduced to half or less."},
+        {"title": "Extended travel", "text": "Beyond 8 hours of travel, at the end of each extra hour, a Constitution saving throw (DC 10 + 1 per hour past 8) or 1 Exhaustion level."},
+        {"title": "Special movement and vehicles", "text": "Flying, or ignoring Difficult Terrain, the group moves at a Fast pace anywhere. In a ship, it moves at the vessel's speed, choosing no pace; in a wagon or carriage, it chooses a pace as on foot. Miles per hour: Speed ÷ 10."}
+      ]},
+      {"key": "environment", "label": "Environment", "entries": [
+        {"title": "Deep water", "text": "After each hour swimming more than 100 feet deep, without a Swim Speed: DC 10 Constitution saving throw or 1 Exhaustion level."},
+        {"title": "Extreme cold", "text": "At 0 °F or lower: at the end of each hour, DC 10 Constitution saving throw or 1 Exhaustion level. Automatic success with Resistance or Immunity to Cold. A bedroll succeeds it, a blanket gives Advantage."},
+        {"title": "Extreme heat", "text": "At 100 °F or higher, without drinkable water: at the end of each hour, a Constitution saving throw (DC 5, + 1 per further hour) or 1 Exhaustion level. Disadvantage in Medium or Heavy armor; automatic success with Resistance or Immunity to Fire."},
+        {"title": "Frigid water", "text": "A creature lasts minutes equal to its Constitution score. Then, each minute: DC 10 Constitution saving throw or 1 Exhaustion level (automatic success with Resistance to Cold, or if adapted to it)."},
+        {"title": "Heavy precipitation", "text": "In heavy rain or snowfall, everything is Lightly Obscured and Wisdom (Perception) checks have Disadvantage. Heavy rain puts out open flames."},
+        {"title": "High altitude", "text": "Above 10,000 feet, each hour of travel counts as 2 for extended travel. Acclimated in 30 days, never above 20,000 feet unless native."},
+        {"title": "Slippery ice", "text": "Difficult Terrain. Entering it for the first time on a turn, or starting a turn there: DC 10 Dexterity saving throw or Prone."},
+        {"title": "Strong wind", "text": "Disadvantage on ranged weapon attacks; puts out open flames and disperses fog. A flying creature must land at the end of its turn or fall. In a desert, a sandstorm gives Disadvantage on Perception."},
+        {"title": "Thin ice", "text": "It holds 3d10 × 10 pounds per 10-foot square. Beyond that, it breaks and everyone on it falls into frigid water."}
+      ]},
+      {"key": "fear", "label": "Fear and stress", "entries": [
+        {"title": "Fear", "text": "What is supernaturally frightful makes a creature Frightened, on a Wisdom saving throw: DC 10 for a harmless apparition, 15 for an illusion of one's worst fears, 20 for a portal to the Abyss. The creature repeats the save at the end of each of its turns. Discuss these rules with the players before using them."},
+        {"title": "More fear effects", "text": "At the GM's choice, while Frightened: the creature takes the Dash action away from the source each turn, or attacks against it have Advantage, or it does only one thing per turn (move, an action or a Bonus Action)."},
+        {"title": "Mental stress", "text": "A shock to the mind deals Psychic damage, on a Wisdom (sometimes Intelligence or Charisma) saving throw: DC 10 and 1d6 for a hallucinogen, DC 15 and 3d6 for a fiendish idol, DC 20 and 9d6 for a trip to the Far Realm. Half on a success, at the GM's choice."},
+        {"title": "Prolonged effects", "text": "Short term: Frightened, Incapacitated or Stunned for 1d10 minutes. Long term: Disadvantage on some ability checks for 1d10 × 10 hours. Indefinite: like long term, until Greater Restoration. Calm Emotions suppresses them, Lesser Restoration ends the first two."}
+      ]},
+      {"key": "curses", "label": "Curses and contagions", "entries": [
+        {"title": "Curses", "text": "The simplest comes from the Bestow Curse spell, ended by Remove Curse. Benchmark: a 1-minute curse is worth a level 3 spell, one until dispelled a level 9 spell. A creature cursed by nature (werewolf, mummy) is freed only as the GM decides."},
+        {"title": "Narrative curses", "text": "Breaking a vow, defiling a tomb, murdering an innocent: the curse has the effects the GM designs. The victim should know why and be able to learn how to right the wrong. Remove Curse might only suppress it."},
+        {"title": "Demonic possession", "text": "A desecrated place or a demonic object: DC 15 Charisma saving throw or possessed. On a 1 on a d20 Test, the demon takes control; at the end of each later turn, a DC 15 Charisma save to regain it. After a Long Rest, the same save ends it, as does Dispel Evil and Good or magic that removes a curse."},
+        {"title": "Rest and recuperation", "text": "Three days of full rest, then a DC 15 Constitution saving throw: on a success, Advantage on saves against the contagion for 24 hours."},
+        {"title": "Cackle fever", "text": "Humanoids only, never gnomes; 1d4 days later: 1 Exhaustion level. Each non-Psychic damage: DC 13 Constitution or 1d10 Psychic damage and Incapacitated with laughter (save each turn end, over after 1 minute). Three successes after Long Rests (DC 13) cure it, immune for 1 year. Spreads within 10 feet: DC 10 Constitution."},
+        {"title": "Sewer plague", "text": "A wound from a carrier (rat, otyugh) or filth: DC 11 Constitution or infected; 1d4 days later, 1 Exhaustion level. While exhausted, Hit Dice restore only half, and a Long Rest restores neither HP nor a level. Each dawn, DC 11 Constitution: failure, one level more; success, one less. At 0, cured."},
+        {"title": "Sight rot", "text": "A Beast or Humanoid that drinks tainted water: DC 15 Constitution or Blinded until cured. Heal or Lesser Restoration cures it. An ointment (Herbalism Kit, 1 hour) suppresses it for 24 hours; three doses cure it. Spreads by skin contact: DC 15 Constitution."}
+      ]},
+      {"key": "traps", "label": "Traps", "entries": [
+        {"title": "A trap", "text": "Severity and levels (nuisance or deadly for characters of those levels), trigger (pressure plate, trip wire, doorknob, wrong key) and duration. Use them sparingly: an undetectable, inescapable trap is rarely fun."},
+        {"title": "Collapsing roof", "text": "Deadly, levels 1–4. A trip wire drops the ceiling: DC 13 Dexterity, 2d10 Bludgeoning damage, half on a success; the rubble is Difficult Terrain. Spotted: DC 11 Wisdom (Perception). Higher: 4d10 DC 15, 10d10 DC 17, 18d10 DC 19."},
+        {"title": "Falling net", "text": "Nuisance, levels 1–4. A trip wire drops a net: DC 10 Dexterity or Restrained (no effect on Huge or larger); freeing, DC 10 Strength (Athletics). Spotted: DC 11 Perception. Higher: DC 12, 14 then 16."},
+        {"title": "Fire-casting statue", "text": "Deadly, levels 1–4, resets each turn. A pressure plate makes a 15-foot Cone of fire: DC 15 Dexterity, 2d10 Fire damage, half on a success. A glyph on the statue (Perception DC 10, Arcana DC 15) is defaced to disarm it. Higher: 4d10, 10d10, 18d10."},
+        {"title": "Hidden pit", "text": "Nuisance, levels 1–4. A lid swings open: a 10-foot fall, 1d6 Bludgeoning damage. Spotted: DC 15 Intelligence (Investigation); an iron spike wedges the lid. Higher: 30 feet 3d6, 60 feet 6d6, 120 feet 12d6."},
+        {"title": "Poisoned darts", "text": "Deadly, levels 1–4, three times at most. A pressure plate: DC 13 Dexterity or 1d3 darts, 1d6 Poison damage each. Spotted: Perception DC 15; plug the holes or wedge the plate. Higher: 2d6, 4d6, 7d6 per dart."},
+        {"title": "Poisoned needle", "text": "Nuisance, levels 1–4. A lock opened without its key: DC 11 Constitution, 1d10 Poison damage and Poisoned 1 hour, half damage on a success. Spotted: Perception DC 15; disarmed: DC 15 Dexterity (Sleight of Hand). Higher: 2d10 DC 13, 4d10 DC 15, 10d10 DC 17."},
+        {"title": "Rolling stone", "text": "Deadly at levels 11–16. A 10-foot sphere rolls 60 feet a turn (Initiative +8): DC 15 Dexterity or 10d10 Bludgeoning damage and Prone. AC 17, 100 HP, threshold 10; DC 20 Strength (Athletics) slows it by 15 feet. Spotted: Investigation DC 15."},
+        {"title": "Spiked pit", "text": "Deadly, levels 1–4. A 10-foot fall: 1d6 Bludgeoning and 2d8 Piercing. Spotted: Investigation DC 15. Higher: 30 feet 3d6 + 3d8, 60 feet 6d6 + 8d8, 120 feet 12d6 + 13d8."}
+      ]},
+      {"key": "poisons", "label": "Poisons", "entries": [
+        {"title": "Four types", "text": "Contact: smeared on an object, works on bare skin. Ingested: a whole dose swallowed (a partial dose, a reduced effect). Inhaled: a powder or gas in a 5-foot Cube, holding one's breath doesn't help. Injury: on a weapon or ammunition (Bonus Action), works on Piercing or Slashing damage. The sample poisons are in the items catalog, category Poison."},
+        {"title": "Purchasing poison", "text": "Often illegal: an illicit dealer or an unscrupulous apothecary might keep some. Criminal contacts help; otherwise, inquiries and bribes."},
+        {"title": "Harvesting poison", "text": "From a venomous creature, dead or Incapacitated: 1d6 minutes, then DC 20 Intelligence (Nature) with a Poisoner's Kit. Success, one dose, nothing more from that creature; failed by 5 or more, you suffer its poison."}
+      ]},
+      {"key": "background", "label": "Creating a background", "entries": [
+        {"title": "1. Abilities", "text": "Three abilities that suit the background: Strength or Dexterity for physical exertion, Constitution for endurance, Intelligence or Wisdom for the mind, Charisma for performance and social life."},
+        {"title": "2. Feat", "text": "One Origin feat."},
+        {"title": "3. Skills", "text": "Two skills that suit the background, not necessarily tied to its abilities."},
+        {"title": "4. Tool", "text": "One tool of its trade."},
+        {"title": "5. Equipment", "text": "A package worth 50 GP (unspent gold included), without Martial weapons or armor: the class gives them."}
+      ]}
+    ],
     "price_lists": [
       {"key": "inn", "label": "Inn (one night)", "lines": [{"label": "Squalid", "price": "7 CP"}, {"label": "Poor", "price": "1 SP"}, {"label": "Modest", "price": "5 SP"}, {"label": "Comfortable", "price": "8 SP"}, {"label": "Wealthy", "price": "2 GP"}, {"label": "Aristocratic", "price": "4 GP"}]},
       {"key": "meals", "label": "Meals", "lines": [{"label": "Squalid", "price": "1 CP"}, {"label": "Poor", "price": "2 CP"}, {"label": "Modest", "price": "1 SP"}, {"label": "Comfortable", "price": "2 SP"}, {"label": "Wealthy", "price": "3 SP"}, {"label": "Aristocratic", "price": "6 SP"}]},
@@ -71,6 +131,12 @@
       {"key": "services", "label": "Hirelings and services", "lines": [{"label": "Skilled hireling", "price": "2 GP per day", "note": "A mercenary, an artisan, a scribe"}, {"label": "Untrained hireling", "price": "2 SP per day", "note": "A porter, a laborer"}, {"label": "Messenger", "price": "2 CP per mile"}, {"label": "Stabling", "price": "5 SP per day"}, {"label": "Ship passage, hammock", "price": "5 SP per day"}, {"label": "Ship passage, cabin", "price": "2 GP per day"}, {"label": "Ship repair", "price": "20 GP per HP", "note": "One day per HP; half in a shipyard"}, {"label": "Barding for a mount", "price": "4 × the armor", "note": "Twice its weight"}]},
       {"key": "spellcasting", "label": "Spellcasting services", "lines": [{"label": "Cantrip", "price": "30 GP", "note": "Village, town or city"}, {"label": "Level 1", "price": "50 GP", "note": "Village, town or city"}, {"label": "Level 2", "price": "200 GP", "note": "Village, town or city"}, {"label": "Level 3", "price": "300 GP", "note": "Town or city"}, {"label": "Levels 4 and 5", "price": "2,000 GP", "note": "Town or city"}, {"label": "Levels 6 to 8", "price": "20,000 GP", "note": "City only"}, {"label": "Level 9", "price": "100,000 GP", "note": "City only, plus costly components"}]}
     ],
+    "encounters": {
+      "label": "Encounter budget", "help": "Each creature's XP comes from its challenge rating. The budget is the sum, for each character, of what its level gives.", "rating_from": "challenge",
+      "difficulties": [{"key": "low", "label": "Low", "help": "One or two scary moments, no casualties; some healing perhaps."}, {"key": "moderate", "label": "Moderate", "help": "Without healing, it could go badly: a weaker character might fall."}, {"key": "high", "label": "High", "help": "Could be lethal: it takes smart tactics, and a little luck."}],
+      "xp_by_rating": {"0": 10, "1/8": 25, "1/4": 50, "1/2": 100, "1": 200, "2": 450, "3": 700, "4": 1100, "5": 1800, "6": 2300, "7": 2900, "8": 3900, "9": 5000, "10": 5900, "11": 7200, "12": 8400, "13": 10000, "14": 11500, "15": 13000, "16": 15000, "17": 18000, "18": 20000, "19": 22000, "20": 25000, "21": 33000, "22": 41000, "23": 50000, "24": 62000, "25": 75000, "26": 90000, "27": 105000, "28": 120000, "29": 135000, "30": 155000},
+      "budget_by_level": [[50, 75, 100], [100, 150, 200], [150, 225, 400], [250, 375, 500], [500, 750, 1100], [600, 1000, 1400], [750, 1300, 1700], [1000, 1700, 2100], [1300, 2000, 2600], [1600, 2300, 3100], [1900, 2900, 4100], [2200, 3700, 4700], [2600, 4200, 5400], [2900, 4900, 6200], [3300, 5400, 7800], [3800, 6100, 9800], [4500, 7200, 11700], [5000, 8700, 14200], [5500, 10700, 17200], [6400, 13200, 22000]]
+    },
     "dice_rolls": {
       "modes": [
         { "key": "advantage", "label": "Advantage", "help": "Roll two dice and keep the higher.", "dice": 2, "keep": "highest" },
@@ -360,7 +426,7 @@
   },
   "item_fields": {
     "fields": [
-      {"key": "category", "filter": true, "label": "Category", "section": "General", "listed": true, "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Mount", "Tack", "Vehicle", "Food and drink", "Potion", "Treasure", "Wondrous item", "Ring", "Wand", "Staff", "Rod", "Scroll"]},
+      {"key": "category", "filter": true, "label": "Category", "section": "General", "listed": true, "type": "choice", "options": ["Weapon", "Armor", "Shield", "Ammunition", "Tool", "Musical instrument", "Gaming set", "Spellcasting focus", "Holy symbol", "Equipment pack", "Gear", "Mount", "Tack", "Vehicle", "Food and drink", "Poison", "Potion", "Treasure", "Wondrous item", "Ring", "Wand", "Staff", "Rod", "Scroll"]},
       {"key": "damage", "label": "Damage", "section": "Weapon", "shown_with": {"field": "category", "values": ["Weapon"]}, "type": "text"},
       {"key": "weapon_properties", "label": "Properties", "section": "Weapon", "shown_with": {"field": "category", "values": ["Weapon"]}, "type": "text"},
       {"key": "armor_class", "label": "Armor class", "section": "Protection", "shown_with": {"field": "category", "values": ["Armor", "Shield"]}, "type": "text"},
