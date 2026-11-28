@@ -42,7 +42,7 @@
       { "key": "species_feat", "label": "Species feat", "intro": "Your species lets you pick an origin feat, and what it asks.", "sections": [], "chooses_species_feat": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "equipment", "label": "Equipment", "intro": "Your class and your background each give you items, or gold to buy them.", "sections": ["Equipment"], "chooses_equipment": true },
-      { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },
+      { "key": "spells", "label": "Spells", "intro": "Tap a card to take it in hand, open it to read it whole.", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Details", "sections": ["Details"] }
     ],
     "conditions": [
@@ -387,6 +387,7 @@
     "fields": [
       { "key": "level", "filter": true, "label": "Level", "section": "Level and school", "type": "number", "min": 0, "max": 9, "labels": ["Cantrip", "Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9"], "required": true },
       { "key": "school", "filter": true, "label": "School", "section": "Level and school", "type": "choice", "options": ["Abjuration", "Conjuration", "Divination", "Enchantment", "Evocation", "Illusion", "Necromancy", "Transmutation"], "required": true },
+      { "key": "intents", "label": "Intents", "type": "picks", "options": ["Heal", "Attack", "Protect", "Support", "Control", "Explore"], "count": 2, "browse": true, "section": "Level and school", "help": "What the spell lets you do. They sort the spells when making a character." },
       { "key": "casting_time", "label": "Casting time", "section": "Casting", "type": "text", "short": true },
       { "key": "range", "label": "Range", "section": "Casting", "type": "text", "short": true },
       { "key": "components", "label": "Components", "section": "Components", "type": "picks", "options": ["V", "S", "M"] },

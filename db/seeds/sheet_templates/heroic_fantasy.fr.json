@@ -42,7 +42,7 @@
       { "key": "species_feat", "label": "Don de l'espèce", "intro": "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande.", "sections": [], "chooses_species_feat": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
       { "key": "equipment", "label": "Équipement", "intro": "Votre classe et votre historique vous donnent chacun des objets, ou de l'or pour les acheter.", "sections": ["Équipement"], "chooses_equipment": true },
-      { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
+      { "key": "spells", "label": "Sorts", "intro": "Touchez une carte pour la prendre en main, ouvrez-la pour la lire en entier.", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Détails", "sections": ["Détails"] }
     ],
     "conditions": [
@@ -387,6 +387,7 @@
     "fields": [
       { "key": "level", "filter": true, "label": "Niveau", "section": "Niveau et école", "type": "number", "min": 0, "max": 9, "labels": ["Sort mineur", "Niveau 1", "Niveau 2", "Niveau 3", "Niveau 4", "Niveau 5", "Niveau 6", "Niveau 7", "Niveau 8", "Niveau 9"], "required": true },
       { "key": "school", "filter": true, "label": "École", "section": "Niveau et école", "type": "choice", "options": ["Abjuration", "Divination", "Enchantement", "Évocation", "Illusion", "Invocation", "Nécromancie", "Transmutation"], "required": true },
+      { "key": "intents", "label": "Intentions", "type": "picks", "options": ["Soigner", "Attaquer", "Protéger", "Soutenir", "Contrôler", "Explorer"], "count": 2, "browse": true, "section": "Niveau et école", "help": "Ce que le sort permet de faire. Elles rangent les sorts à la création d'un personnage." },
       { "key": "casting_time", "label": "Temps d'incantation", "section": "Lancement", "type": "text", "short": true },
       { "key": "range", "label": "Portée", "section": "Lancement", "type": "text", "short": true },
       { "key": "components", "label": "Composantes", "section": "Composantes", "type": "picks", "options": ["V", "S", "M"] },

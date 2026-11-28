@@ -13,6 +13,7 @@ module FieldParameters
     "listed" => :boolean,
     # A list beside the search of the window of a catalog (the level and the school of a spell, the type of a creature)
     "filter" => :boolean,
+    "browse" => :boolean,
     # A number the game master adjusts in play, from the quick sheet of the character (the bonus to the armour class)
     "game_master_adjusts" => :boolean,
     # A coin of the money of the character (the gold pieces): shown in its inventory, added or taken out by its player,
