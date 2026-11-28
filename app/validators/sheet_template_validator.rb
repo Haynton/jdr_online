@@ -11,7 +11,7 @@ class SheetTemplateValidator < ActiveModel::Validator
     SheetTemplates::ConditionsCheck, SheetTemplates::DiceRollsCheck, SheetTemplates::WeaponAttacksCheck,
     SheetTemplates::DeathSavesCheck, SheetTemplates::FightingStylesCheck, SheetTemplates::ClassChoicesCheck,
     SheetTemplates::FeatsCheck, SheetTemplates::AttunementCheck, SheetTemplates::PriceListsCheck,
-    SheetTemplates::PresetsCheck
+    SheetTemplates::GridCheck, SheetTemplates::PresetsCheck
   ].freeze
 
   def validate(sheet_template)

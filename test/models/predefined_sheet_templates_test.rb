@@ -76,6 +76,16 @@ class PredefinedSheetTemplatesTest < ActiveSupport::TestCase
 
   # The table of the SRD 5.2.1: full casters, half casters (from level 1 in 2024), and the pact slots of the warlock,
   # all of one level
+  test "every template gives the length of a cell of its maps, in metres in French and in feet in English" do
+    grids = { "fr" => { "cell_length" => 1.5, "unit" => "m" }, "en" => { "cell_length" => 5, "unit" => "ft" } }
+    grids.each do |locale, grid|
+      %w[heroic_fantasy cosmic_horror].each do |name|
+        declared = read_template(TEMPLATES_DIRECTORY.join("#{name}.#{locale}.json"))["character_fields"]["grid"]
+        assert_equal grid, declared, "#{name}.#{locale}"
+      end
+    end
+  end
+
   test "the heroic fantasy declares the 15 conditions of the SRD 5.2.1, the same in both languages" do
     conditions = %w[fr en].map do |locale|
       read_template(TEMPLATES_DIRECTORY.join("heroic_fantasy.#{locale}.json"))["character_fields"]["conditions"]

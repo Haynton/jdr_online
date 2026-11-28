@@ -48,7 +48,35 @@ class BoardToken < ApplicationRecord
     name || character.name
   end
 
+  # The game master moves any token; a player the token of their own character, and those of its companions
+  def movable_by?(participation)
+    return true if participation.game_master?
+
+    own_character = participation.character
+    return false unless own_character&.complete?
+
+    character_id == own_character.id || (character.companion? && character.owner_character_id == own_character.id)
+  end
+
+  # Where a player's token arrives: only where a way leads, step by step, without crossing a wall nor a blocked cell
+  # (MapPassage#path); on a cell held by another token (a hidden enemy they cannot see), on the last free cell of that
+  # way instead (decision of 27 November: a refusal would let them probe for hidden creatures). nil when no way leads
+  def arrival_for_a_player(column, row)
+    start = [self.column, self.row]
+    way = way_for_a_player(start, [column, row])
+    return unless way
+
+    taken = game_map.board_tokens.where.not(id:).pluck(:column, :row).to_set
+    way.reverse.find { |cell| cell == start || taken.exclude?(cell) }
+  end
+
   private
+
+  # The cheapest way on a drawn map; straight there on a map without a drawing (nothing stops a token on it)
+  def way_for_a_player(start, arrival)
+    passage = game_map.passage
+    passage ? passage.path(start, arrival) : [start, arrival]
+  end
 
   def take_placement
     self.placement = game_map.take_token_placement

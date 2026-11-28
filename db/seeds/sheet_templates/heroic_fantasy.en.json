@@ -6,6 +6,7 @@
   "description": "5E compatible · SRD 5.2.1 license.",
   "character_fields": {
     "attunement": {"limit": 3},
+    "grid": {"cell_length": 5, "unit": "ft"},
     "ability_methods": [
       { "type": "roll", "label": "Dice roll", "summary": "4d6 per ability, the 3 highest dice kept", "help": "Roll 4d6 for each ability and keep the 3 highest dice. You may also roll real dice and type your scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
       { "type": "standard_array", "label": "Standard array", "summary": "Fixed values to place: 15, 14, 13, 12, 10, 8", "help": "Place 15, 14, 13, 12, 10 and 8, one value per ability.", "values": [15, 14, 13, 12, 10, 8] },

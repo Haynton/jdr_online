@@ -6,6 +6,7 @@
   "description": "Compatible 5e édition · Licence SRD 5.2.1.",
   "character_fields": {
     "attunement": {"limit": 3},
+    "grid": {"cell_length": 1.5, "unit": "m"},
     "ability_methods": [
       { "type": "roll", "label": "Lancer de dés", "summary": "4d6 par caractéristique, les 3 meilleurs dés gardés", "help": "Lancez 4d6 pour chaque caractéristique et gardez les 3 meilleurs dés. Vous pouvez aussi lancer de vrais dés et taper vos scores.", "dice": 4, "sides": 6, "keep_highest": 3 },
       { "type": "standard_array", "label": "Tableau standard", "summary": "Valeurs fixes à placer : 15, 14, 13, 12, 10, 8", "help": "Placez 15, 14, 13, 12, 10 et 8, une valeur par caractéristique.", "values": [15, 14, 13, 12, 10, 8] },

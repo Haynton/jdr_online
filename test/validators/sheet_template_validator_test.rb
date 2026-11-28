@@ -307,6 +307,15 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :invalid_condition_description
   end
 
+  test "the length of a cell is a positive number with a short unit, nothing else; a template may say none" do
+    assert_predicate with_grid({ "cell_length" => 1.5, "unit" => "m" }), :valid?
+    assert_predicate with_grid(nil), :valid?
+    refused = [{ "cell_length" => 0, "unit" => "m" }, { "cell_length" => "1,5", "unit" => "m" },
+               { "cell_length" => 5, "unit" => "" }, { "cell_length" => 5, "unit" => "f" * 11 },
+               { "cell_length" => 5, "unit" => "ft", "squares" => true }, [1.5, "m"]]
+    refused.each { |grid| assert_error with_grid(grid), :invalid_grid }
+  end
+
   test "the conditions are a list of conditions; a template may have none" do
     assert_error with_conditions({ "poisoned" => "Empoisonné" }), :invalid_conditions
     assert_predicate with_conditions([{ "key" => "exhaustion", "label" => "Épuisement", "levels" => 6 }]), :valid?
@@ -447,6 +456,10 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   # The template given to the block (its character fields) can be changed before it is built
   def with_ability_methods(methods)
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
+  def with_grid(grid)
+    build_template.tap { |template| template.character_fields["grid"] = grid }
   end
 
   def with_price_lists(lists)
