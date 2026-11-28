@@ -44,11 +44,11 @@
       </div>
     <% end %>
     <div class="<%= choice_row_arrows_classes(filterable: filters.present?) %>">
-      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :arrow) %>"
               aria-label="<%= t(".previous") %>" data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
         <%= render "shared/icons/chevron_left" %>
       </button>
-      <button type="button" hidden class="<%= button_classes(:secondary, size: :compact_icon) %>"
+      <button type="button" hidden class="<%= button_classes(:secondary, size: :arrow) %>"
               aria-label="<%= t(".next") %>" data-card-row-target="nextButton" data-action="card-row#scrollNext">
         <%= render "shared/icons/chevron_right" %>
       </button>

@@ -18,11 +18,14 @@ module ButtonsHelper
 
   # Every button is 40 px high, whatever its size (decision: two heights side by side looked unfinished).
   # compact: narrower sides only.
-  # compact_icon: a 40 px square for a button that only shows an icon (its name in aria-label)
+  # compact_icon: a 40 px square for a button that only shows an icon (its name in aria-label).
+  # arrow: a 32 px square, the arrows of a row that scrolls sideways (decision of 28 November, Anthony's request: at
+  # 40 px they weighed more than the titles beside them), the one exception to the 40 px
   BUTTON_SIZE_CLASSES = {
     normal: "h-10 px-4 text-sm",
     compact: "h-10 px-3 text-sm",
-    compact_icon: "size-10"
+    compact_icon: "size-10",
+    arrow: "size-8"
   }.freeze
 
   def button_classes(variant, size: :normal, full_width: false)

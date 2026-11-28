@@ -32,6 +32,10 @@ class ButtonsHelperTest < ActionView::TestCase
     assert_empty classes.grep(/\Apx-/)
   end
 
+  test "the arrow size, for the rows that scroll, is a 32 px square" do
+    assert_includes button_classes(:secondary, size: :arrow).split, "size-8"
+  end
+
   test "a button can take the full width of its container" do
     assert_includes button_classes(:primary, full_width: true).split, "w-full"
     assert_not_includes button_classes(:primary).split, "w-full"
