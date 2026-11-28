@@ -51,6 +51,22 @@ module TemplateCopy
     template_snapshot.to_h.dig("character_fields", "fighting_styles") || []
   end
 
+  # The feats of the game (character_fields.feats, CharacterSheets::Feats) and the labels of their categories, in its
+  # copy; [] and {} for a template without
+  def feats
+    template_snapshot.to_h.dig("character_fields", "feats") || []
+  end
+
+  def feat_categories
+    template_snapshot.to_h.dig("character_fields", "feat_categories") || {}
+  end
+
+  # The groups of choices classes give (character_fields.class_choices: invocations, metamagic...,
+  # CharacterSheets::ClassChoices), [] for a template without: in its copy, like the classes that give them
+  def class_choices
+    template_snapshot.to_h.dig("character_fields", "class_choices") || []
+  end
+
   # How the weapons of a character attack (character_fields.weapon_attacks, CharacterSheets::WeaponAttacks), nil for a
   # template without: in its copy, like the fields of the sheet they read
   def weapon_attacks
@@ -63,6 +79,27 @@ module TemplateCopy
   def conditions
     declared = sheet_template&.character_fields.to_h["conditions"]
     declared || template_snapshot.to_h.dig("character_fields", "conditions") || []
+  end
+
+  # What is paid without being carried (character_fields.price_lists: the inn, a lifestyle, a hireling...), shown to the
+  # game master in the game room; read in the template as it is now like the conditions
+  def price_lists
+    declared = sheet_template&.character_fields.to_h["price_lists"]
+    declared || template_snapshot.to_h.dig("character_fields", "price_lists") || []
+  end
+
+  # How many magic items a character may be attuned to at a time (character_fields.attunement: limit, Attunable), read
+  # in the template as it is now like the conditions; nil for no limit
+  def attunement_limit
+    declared = sheet_template&.character_fields.to_h["attunement"]
+    (declared || template_snapshot.to_h.dig("character_fields", "attunement")).to_h["limit"]
+  end
+
+  # The length of a cell of the maps and its unit (character_fields.grid: { "cell_length" => 1.5, "unit" => "m" }),
+  # read in the template as it is now like the conditions; {} when it says nothing
+  def grid
+    declared = sheet_template&.character_fields.to_h["grid"]
+    (declared || template_snapshot.to_h.dig("character_fields", "grid")).to_h
   end
 
   # The dice of the game room (character_fields.dice_rolls: its modes, the die they apply to, its initiative), read in

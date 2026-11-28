@@ -104,10 +104,13 @@ module GameTables
     end
 
     # Each value converted by the type of its field (CharacterSheets::Builder, as on a character sheet), then checked
-    # by CatalogPropertiesValidator. A property not shown in the window (internal: the group of an item) is kept
+    # by CatalogPropertiesValidator. A property not shown in the window (internal: the group of an item) is kept; one
+    # its category hides (shown_with: the damage of a ring) is left out, even an unticked box
     def submitted_properties
       fields = catalog_entry_shown_fields(@game_table, @catalog_kind)
-      shown = CharacterSheets::Builder.new(fields: fields, submitted_values: entry_params[:properties]).call
+      submitted = entry_params[:properties].to_h
+      shown_fields = fields.select { |field| FieldShownWith.shown?(field, submitted) }
+      shown = CharacterSheets::Builder.new(fields: shown_fields, submitted_values: submitted).call
       @entry.properties.to_h.except(*fields.pluck("key")).merge(shown)
     end
 

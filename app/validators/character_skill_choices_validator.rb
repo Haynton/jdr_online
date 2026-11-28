@@ -11,7 +11,7 @@ class CharacterSkillChoicesValidator < ActiveModel::Validator
     return unless choices.offered?
 
     add_not_offered_errors(character, choices)
-    add_too_many_errors(character, choices)
+    add_too_many_errors(character, choices) || add_not_fitting_errors(character, choices)
   end
 
   private
@@ -28,10 +28,19 @@ class CharacterSkillChoicesValidator < ActiveModel::Validator
   end
 
   def add_too_many_errors(character, choices)
-    return unless choices.too_many?
+    return false unless choices.too_many?
 
-    choices.chosen_keys.each do |key|
-      character.errors.add(:"sheet.#{key}", :too_many_skills, count: choices.allowed_count)
-    end
+    add_to_chosen(character, choices, :too_many_skills, count: choices.allowed_count)
+  end
+
+  # As many as allowed, but not in the lists of the options (two skills outside the list of a human ranger)
+  def add_not_fitting_errors(character, choices)
+    return if choices.fit_offers?
+
+    add_to_chosen(character, choices, :skills_not_fitting, offers: choices.offers_text)
+  end
+
+  def add_to_chosen(character, choices, type, **options)
+    choices.chosen_keys.each { |key| character.errors.add(:"sheet.#{key}", type, **options) }
   end
 end

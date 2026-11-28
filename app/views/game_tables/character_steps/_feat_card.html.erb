@@ -1,0 +1,31 @@
+<%# A feat to pick, as a card (CharacterSheets::FeatCards): its name (« Initié à la magie : Druide » for a feat that gives
+    spells from a list), its category when given, the description of its list, its summary. A list another feat took
+    already stays, greyed, its radio disabled, with what took it (decision of 27 November: hidden, the player would
+    wonder where it went). Picking it shows what it asks (choice_blocks_controller.js) %>
+<% category = local_assigns[:category] %>
+<% if card.taken? %>
+  <div class="<%= CharacterSheets::FeatSpellsHelper::KNOWN_CARD_CLASSES %>">
+    <%= radio_button_tag nil, card.value, false, id: nil, disabled: true, aria: { label: card.name },
+                         class: "mt-1 shrink-0 accent-current" %>
+    <span class="min-w-0">
+      <span class="block text-sm font-semibold text-muted"><%= card.name %></span>
+      <span class="mt-0.5 block text-xs text-muted"><%= t("game_tables.character_steps.feat_cards.taken", source: card.taken_by) %></span>
+    </span>
+  </div>
+<% else %>
+  <label class="<%= weapon_mastery_card_classes %>">
+    <%= radio_button_tag field_name, card.value, checked, id: "#{id_prefix}-#{card.value.parameterize}",
+                         class: "mt-1 shrink-0 accent-current",
+                         data: { choice_blocks_target: "choice", action: "choice-blocks#show" } %>
+    <span class="min-w-0">
+      <span class="block text-sm font-semibold text-ink"><%= card.name %></span>
+      <% if category %>
+        <span class="mt-0.5 block text-xs font-medium text-brass"><%= category %></span>
+      <% end %>
+      <% if card.list_description %>
+        <span class="mt-0.5 block text-xs font-medium text-brass"><%= card.list_description %></span>
+      <% end %>
+      <span class="mt-0.5 block text-xs text-muted"><%= card.feat.description %></span>
+    </span>
+  </label>
+<% end %>

@@ -20,6 +20,32 @@ fr:
             ability_increases:
               not_shared: "Répartissez exactement %{points} points."
               above_maximum: "%{ability} dépasserait %{maximum}."
+            class_choices:
+              not_picked:
+                one: "« %{group} » : choisissez-en 1."
+                other: "« %{group} » : choisissez-en %{count}."
+            skill_keys:
+              not_picked:
+                one: "Choisissez 1 compétence de votre sous-classe."
+                other: "Choisissez %{count} compétences de votre sous-classe."
+            feat_key:
+              inclusion: "Choisissez un don de la liste."
+            feat_skill_keys:
+              not_picked:
+                one: "Choisissez 1 compétence."
+                other: "Choisissez %{count} compétences."
+            spellbook_keys:
+              not_picked:
+                one: "Choisissez %{count} sort pour votre %{label}."
+                other: "Choisissez %{count} sorts pour votre %{label}."
+            feat_spell_swaps:
+              not_allowed: "Remplacez un sort du don par un autre du même niveau, de sa liste, que vous ne connaissez pas encore."
+            feat_spells:
+              cantrips: "Choisissez les sorts mineurs du don, dans sa liste."
+              spell: "Choisissez le sort de niveau 1 du don, dans sa liste."
+              spell_ability: "Choisissez la caractéristique pour lancer ces sorts."
+              spell_list: "Choisissez une liste de sorts."
+              spell_known: "Un de ces sorts est déjà connu par ailleurs : choisissez-en un autre."
             expertise_keys:
               not_picked:
                 one: "Choisissez 1 compétence."
@@ -63,11 +89,14 @@ fr:
         description: "Description"
         name: "Nom"
       character:
+        class_choices: "Choix de classe"
+        feats: "Don"
         fighting_style: "Style de combat"
         weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
         owner_character: "Personnage"
         spells: "Sorts"
+        starting_magic_items: "Objets magiques de départ"
       game_table:
         board_game_map: "Carte du plateau"
         cover_image: "Couverture"
@@ -77,7 +106,13 @@ fr:
         ability_method_choice: "Méthode des caractéristiques"
         hit_point_method_choice: "Points de vie aux niveaux suivants"
         starting_equipment_method_choice: "Équipement de départ"
+        higher_level_equipment_method_choice: "Équipement aux niveaux supérieurs"
+        ability_rerolls: "Relancer les dés des caractéristiques"
+        ability_scores_typed: "Scores des caractéristiques tapés à la main"
+        level_feats: "Dons aux niveaux supérieurs"
+        origin_feats: "Dons d'origine"
         limit_skill_choices: "Limiter les compétences au choix de la classe"
+        players_change_given_choices: "Les joueurs peuvent changer ce que donnent leurs choix"
         players_choose_level: "Les joueurs choisissent leur niveau"
         starting_level: "Niveau de départ"
       participation:
@@ -98,6 +133,8 @@ fr:
         attack_without_name: "chaque attaque doit avoir un nom"
         too_many_attacks: "%{count} attaques au plus"
         ability_bonus_too_high: "dépasse %{count} avec le bonus"
+        not_a_rolled_result: "à choisir parmi vos résultats : %{values}"
+        rolled_result_taken: "%{value} est déjà placé sur une autre caractéristique"
         not_in_standard_array: "à choisir parmi %{values}"
         outside_point_buy: "de %{minimum} à %{maximum} en achat de points"
         standard_array_value_taken: "%{value} est déjà placé sur une autre caractéristique"
@@ -107,6 +144,7 @@ fr:
         too_many_expertise:
           one: "trop d'expertises : %{count} au plus"
           other: "trop d'expertises : %{count} au plus"
+        skills_not_fitting: "ces compétences ne tiennent pas dans les listes de vos choix (%{offers}) : chacun propose les siennes"
         too_many_skills:
           one: "trop de compétences cochées : %{count} au plus parmi celles proposées"
           other: "trop de compétences cochées : %{count} au plus parmi celles proposées"
@@ -118,7 +156,8 @@ fr:
               cell_taken: "Un jeton est déjà sur cette case"
               outside_grid: "Le jeton doit être sur une case de la carte"
             character:
-              not_a_creature_of_the_table: "doit être un PNJ ou un ennemi de cette table"
+              not_a_character_of_the_table: "doit être un PNJ, un ennemi ou un personnage terminé de cette table"
+              already_on_the_map: "a déjà son jeton sur cette carte"
         friendship:
           attributes:
             addressee:
@@ -149,9 +188,10 @@ fr:
               invalid_blocked: "contient des zones bloquantes qui n'ont pas la forme attendue"
               tokens_without_table: "contient des jetons, alors qu'elle n'appartient à aucune table"
               invalid_token: "contient un jeton qui n'a pas la forme attendue"
-              unknown_token_character: "contient le jeton d'un personnage qui n'est pas un PNJ ou un ennemi de la table"
+              unknown_token_character: "contient le jeton d'un personnage qui n'est ni un PNJ, ni un ennemi, ni un personnage terminé de la table"
               token_outside_grid: "contient un jeton hors de la grille"
               tokens_overlap: "contient deux jetons sur la même case"
+              player_character_twice: "contient deux jetons du même personnage de joueur"
               token_on_blocked_cell: "contient un jeton sur une zone bloquante"
         game_map:
           attributes:
@@ -165,6 +205,25 @@ fr:
           one_catalog: "Une entrée du catalogue appartient à un modèle ou à une table, pas aux deux."
         character:
           attributes:
+            class_choices:
+              not_offered: "comptent une option que votre classe ne donne pas à ce niveau"
+              repeated: "« %{group} » : une option ne se prend qu'une fois"
+              too_many:
+                one: "« %{group} » : %{count} au plus"
+                other: "« %{group} » : %{count} au plus"
+            starting_magic_items:
+              not_picked: "demandent l'objet de rareté « %{rarity} »"
+            feats:
+              cantrips: "comptent des sorts mineurs à revoir : choisissez-en autant que le don en donne, dans sa liste"
+              skills:
+                one: "demandent 1 compétence du don"
+                other: "demandent %{count} compétences du don"
+              level_feat: "du niveau %{level} : %{detail}"
+              species_feat: "demandent un don d'origine de la liste"
+              spell: "demandent un sort de niveau 1 de la liste du don"
+              spell_ability: "demandent la caractéristique pour lancer les sorts du don"
+              spell_list: "demandent une liste de sorts du don"
+              spell_known: "comptent un sort déjà connu par ailleurs : choisissez-en un autre"
             fighting_style:
               not_offered: "n'est pas proposé par votre classe à ce niveau"
             weapon_masteries:
@@ -179,6 +238,7 @@ fr:
             hit_point_rolls:
               not_rolled: "Lancez vos dés de vie avant de terminer."
             ability_scores:
+              roll_first: "Lancez les dés : vos scores se choisissent parmi les résultats."
               too_many_points:
                 one: "Retirez 1 point pour continuer."
                 other: "Retirez %{count} points pour continuer."
@@ -190,6 +250,10 @@ fr:
             spells:
               spell_not_offered: "Un sort choisi n'est pas proposé à votre classe et à votre niveau."
               too_many_spells: "Trop de sorts choisis dans « %{group} » : %{count} au plus."
+              prepared_outside_spellbook: "Un sort préparé n'est pas dans votre %{label} : cochez-le d'abord dans le %{label}."
+              spellbook_not_offered: "Un sort du grimoire n'est pas proposé à votre classe et à votre niveau."
+              spellbook_too_full: "Trop de sorts dans « %{label} » : %{count} au plus."
+              spell_known_twice: "« %{spell} » est déjà connu par un autre choix : décochez-le ici."
         game_table:
           attributes:
             board_game_map:
@@ -212,12 +276,19 @@ fr:
           invalid_ability_method_dice: "La méthode « %{method} » : les dés (dice, sides, keep_highest) doivent être des nombres entiers positifs, sans garder plus de dés que lancés"
           invalid_rule_method_label: "La méthode « %{method} » : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_point_buy: "La méthode « %{method} » : les points doivent être un nombre entier positif, et chaque score un coût entier"
+          invalid_equipment_tiers: "La façon « %{method} » : il faut des paliers, chacun à partir d'un niveau plus haut que le précédent, avec de l'or, un lancer (dés, faces, multiplicateur) et des objets magiques par rareté en nombres entiers positifs"
           invalid_standard_array: "La méthode « %{method} » : il faut une valeur par caractéristique (%{count} en tout), des nombres entiers positifs"
           missing_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est obligatoire"
           unknown_rule_method: "La méthode « %{type} » (%{rule}) est inconnue"
           unknown_rule_method_parameter: "La méthode « %{method} » : le réglage « %{parameter} » est inconnu"
           duplicate_spell_group: "Le groupe de sorts « %{group} » est déclaré deux fois"
           duplicate_condition: "L'état « %{key} » est déclaré deux fois"
+          duplicate_price_list: "Deux listes de prix ont la même clé : %{key}"
+          invalid_price_list_key: "La liste de prix « %{key} » : sa clé doit être en minuscules, chiffres et tirets bas, une lettre d'abord"
+          invalid_price_list_label: "La liste de prix « %{key} » : il faut un libellé de %{count} caractères au plus, sur une ligne"
+          invalid_price_lines: "La liste de prix « %{list} » : il faut des lignes, chacune avec un libellé, un prix et, au besoin, une note courte"
+          invalid_price_lists: "Les listes de prix : il faut une liste de listes, chacune avec sa clé, son libellé et ses lignes"
+          unknown_price_list_parameter: "La liste de prix « %{list} » : le réglage « %{parameter} » est inconnu"
           invalid_conditions: "Les états : la liste doit être une liste d'états, chacun avec sa clé et son libellé"
           invalid_condition_description: "L'état « %{condition} » : la description doit être un texte de %{count} caractères au plus"
           invalid_condition_key: "L'état « %{key} » : la clé doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -245,6 +316,9 @@ fr:
           invalid_label: "%{part} › %{field} : le libellé doit être rempli, sur une ligne, en %{count} caractères au plus"
           invalid_level_entries: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit donner une liste pour chaque niveau, de 1 à 20"
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
+          invalid_spellbook: "%{part} › %{field} › %{option} : le grimoire doit avoir un libellé, un nombre de sorts au départ et par niveau, et le groupe de sorts qui y prépare"
+          invalid_attunement: "le nombre d'objets liés à la fois (attunement) doit être un nombre entier d'au moins 1"
+          invalid_grid: "la longueur d'une case (grid) doit être un nombre positif, avec son unité en %{count} caractères au plus"
           invalid_slot_table: "%{part} › %{field} › %{option} : la table « %{table} » des emplacements de sorts doit donner, pour chacun des 20 niveaux, une liste de nombres entiers positifs ou nuls"
           invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -284,6 +358,13 @@ fr:
           invalid_weapon_attacks_label: "Les attaques d'arme : le libellé à deux mains doit être rempli, sur une ligne, en %{count} caractères au plus"
           missing_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est obligatoire"
           unknown_weapon_attacks_parameter: "Les attaques d'arme : le réglage « %{parameter} » est inconnu"
+          invalid_class_choices: "Les choix de classe : le réglage doit être une liste de groupes"
+          invalid_class_choice_group: "Le groupe de choix « %{group} » : une clé, un libellé sur une ligne, un moment pour le changer et des options"
+          invalid_class_choice_option: "%{group} › %{option} : une clé, un libellé sur une ligne, un résumé, un niveau de 1 à 20, une option requise du même groupe et des effets connus"
+          unknown_class_choice_group: "%{part} › %{field} › %{option} : le groupe de choix « %{group} » n'existe pas"
+          unknown_class_choice_parameter: "Les choix de classe : le réglage « %{parameter} » est inconnu"
+          invalid_feats: "Les dons : le réglage doit être une liste de dons, avec leurs familles nommées"
+          invalid_feat: "Le don « %{feat} » : une clé, une famille connue, un niveau de 1 à 20, des conditions et des effets connus"
           invalid_fighting_styles: "Les styles de combat : le réglage doit être une liste de styles"
           invalid_fighting_style: "Le style de combat « %{style} » : une clé, un libellé sur une ligne, et des effets connus"
           unknown_fighting_style: "%{part} › %{field} › %{option} : le style de combat « %{style} » n'existe pas"
@@ -300,6 +381,7 @@ fr:
           unknown_type: "%{part} › %{field} : le type « %{type} » est inconnu"
           wrong_effect_target: "%{part} › %{field} › %{option} : l'effet « %{effect} » doit viser des champs « %{expected} » (%{target})"
           wrong_reference: "%{part} › %{field} : « %{parameter} » doit désigner un champ « %{expected} » (%{target})"
+          invalid_shown_with: "%{part} › %{field} : « shown_with » doit désigner une liste de la même partie et certaines de ses options"
         user:
           attributes:
             avatar: *avatar_errors
@@ -311,7 +393,13 @@ fr:
     passwords:
       create:
         email_not_sent: "L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes."
+  magic_items:
+    attunement: "lien"
   character_sheets:
+    ability_methods:
+      roll:
+        no_rerolls: "Un seul lancer : votre MJ ne permet pas de relancer."
+        no_typing: "Vos scores se choisissent parmi les résultats : votre MJ ne permet pas de les taper à la main."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -828,7 +916,10 @@ fr:
       bestiary_hint: "Une créature est copiée dans votre table quand vous posez son premier jeton."
       bestiary_title: "Bestiaire"
       empty: "Aucun pour l'instant."
-      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
+      intro: "Choisissez un personnage ou une créature, puis cliquez sur une case pour poser son jeton : autant de fois que vous voulez, pour une bande. Un clic sur un jeton le retire. Un jeton de créature est caché aux joueurs au départ : lâchez l'outil d'un clic droit, puis cliquez sur le jeton pour le montrer dès le début de la partie."
+      player_detail: "Joué par %{username}"
+      players_hint: "Un seul jeton par personnage : le poser ailleurs le déplace. Montré aux joueurs au départ."
+      players_title: "Personnages des joueurs"
       no_match: "Aucun personnage ni créature ne correspond à cette recherche."
       search: "Rechercher un personnage ou une créature"
       table_title: "PNJ et ennemis de la table"
@@ -851,6 +942,7 @@ fr:
       no_field: "—"
       rules:
         ability_modifier: "Le modificateur de %{ability}."
+        initiative_bonus: "Le modificateur de %{ability}, plus le %{proficiency} quand un don le donne (Vigilance)."
         hit_dice_by_class: "Un dé par niveau (%{level}), dont la taille dépend de la classe choisie (%{class})."
         hit_points_by_level: "Au premier niveau, le plus grand résultat du dé de vie de la classe (%{class}) plus le modificateur de %{ability} ; à chaque niveau suivant (%{level}), la moyenne du dé plus ce modificateur."
         proficiency_by_level: "D'après le niveau (%{level}), selon les paliers du modèle."
@@ -1021,8 +1113,8 @@ fr:
         hint: "Le champ qui donne le niveau du personnage."
         label: "Champ du niveau"
       listed:
-        hint: "La valeur s'affiche à côté du nom, dans la liste des PNJ et ennemis d'une table (FP, CA, PV)."
-        label: "Montré dans la liste des PNJ"
+        hint: "La valeur s'affiche à côté du nom, dans la liste des PNJ et ennemis d'une table (FP, CA, PV), ou sous le nom d'un objet, dans sa fenêtre (Anneau · Rare · Demande un lien)."
+        label: "Montré à côté du nom"
       max:
         hint: "La plus grande valeur permise. Facultatif."
         label: "Maximum"
@@ -1064,6 +1156,7 @@ fr:
         label: "Règle de calcul"
         values:
           ability_modifier: "Modificateur d'une caractéristique"
+          initiative_bonus: "Initiative"
           hit_dice_by_class: "Dés de vie selon la classe"
           hit_points_by_level: "Points de vie selon le niveau"
           proficiency_by_level: "Bonus de maîtrise selon le niveau"
@@ -1075,6 +1168,12 @@ fr:
       section:
         hint: "Le groupe de la fiche où le champ s'affiche."
         label: "Section"
+      shown_with:
+        hint: "Le champ n'apparaît que pour certaines valeurs d'une liste (les dégâts d'un objet, seulement pour une arme)."
+        label: "Montré selon une liste"
+      unit:
+        hint: "Ce que compte le nombre, écrit dans son champ (kg, po)."
+        label: "Unité"
       short:
         hint: "Une seule ligne au lieu d'une zone de texte."
         label: "Texte court"
@@ -1115,6 +1214,7 @@ fr:
         ability_methods: "des caractéristiques"
         hit_point_methods: "des points de vie"
         starting_equipment_methods: "de l'équipement de départ"
+        higher_level_equipment_methods: "de l'équipement aux niveaux supérieurs"
       field_types:
         ability: "caractéristique"
         ability_bonuses: "bonus de caractéristiques"
@@ -1179,9 +1279,16 @@ fr:
       hand: "Déplacer la carte"
       hand_tip: "Déplacer la carte (H). Aussi : Espace + glisser, clic de la molette + glisser, deux doigts sur le pavé tactile ou l'écran."
       hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
+      move_cells:
+        one: "%{count} case"
+        other: "%{count} cases"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"
+      place_player: "Placer sur la carte"
+      player_already_placed: "%{name} est déjà sur la carte."
+      player_hint: "Cliquez sur une case pour placer « %{name} ». Échap pour arrêter."
       place_map: "Placer %{name} sur le plateau"
       remove: "Retirer"
       remove_map: "Retirer %{name} du plateau"
@@ -1194,6 +1301,7 @@ fr:
         level_granted: "Le MJ donne le niveau %{level} à %{character}."
         level_reached: "%{character} passe au niveau %{level} : +%{hit_points} PV."
         level_reached_rolled: "%{character} passe au niveau %{level} : dé de vie %{roll}, +%{hit_points} PV."
+        class_choices_changed: "%{character} change ses choix de classe : %{changes}."
         weapon_masteries_changed: "%{character} change ses maîtrises : %{changes}."
         spell_slot_spent: "%{character} dépense un emplacement de niveau %{level} : il en reste %{left} sur %{total}."
         hit_die_spent: "%{character} dépense un dé de vie (d%{sides}) : %{roll} %{modifier} → %{healed} PV rendus."
@@ -1210,6 +1318,7 @@ fr:
           one: "Le MJ a donné « %{item} » à %{character}."
           other: "Le MJ a donné %{count} × « %{item} » à %{character}."
         money_given: "Le MJ a donné %{count} %{coin} à %{character}."
+        spell_copied: "%{character} copie « %{spell} » dans son grimoire (%{count} %{coin})."
         spells_changed: "%{character} change ses sorts : %{changes}."
         dice_rolled: "%{roller} lance %{notation} : %{dice} → %{total}"
         dice_rolled_by_game_master: "Le MJ lance %{notation} : %{dice} → %{total}"
@@ -1274,6 +1383,8 @@ fr:
     item_gift_dialog:
       cancel: "Annuler"
       close: "Fermer"
+      magic: "Magie"
+      no_magic: "Aucune"
       give: "Donner"
       quantity: "Quantité"
       receiver: "À qui ?"
@@ -1289,6 +1400,7 @@ fr:
       close: "Fermer %{name}"
     panels:
       character:
+        change_class_choices: "Changer mes choix de classe"
         change_masteries: "Changer mes maîtrises"
         abilities: "Caractéristiques"
         edit_sheet: "Modifier ma fiche"
@@ -1314,6 +1426,9 @@ fr:
         result: "Résultat"
         roll: "Lancer"
         title: "Dés"
+      attune_switch:
+        attune: "Lier « %{name} »"
+        attuned: "Lié"
       equip_switch:
         equip: "Équiper « %{name} »"
         equipped: "Équipé"
@@ -1324,6 +1439,7 @@ fr:
         remove: "Retirer"
         title: "Argent"
       inventory:
+        attuned_count: "Objets liés : %{count} sur %{limit}"
         amount: "Somme à retirer de %{label}"
         bag: "Dans le sac"
         gear: "Équipement"
@@ -1356,6 +1472,8 @@ fr:
         title: "PNJ et ennemis"
       features:
         title: "Capacités"
+      prices:
+        title: "Prix"
       skills:
         title: "Compétences"
       spells:
@@ -1508,20 +1626,52 @@ fr:
         later: "Plus tard"
         picks_later: "Vos nouveaux sorts et maîtrises d'armes se choisissent ensuite, dans « Changer mes sorts » et « Changer mes maîtrises »."
         submit: "Passer au niveau %{level}"
-        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau, le chat dira le résultat."
+        subtitle: "Le MJ donne un niveau à %{name}. Faites les choix de ce niveau."
         title: "Niveau %{level}"
       hit_points:
         title: "Points de vie"
         average: "Moyenne : +%{points} PV"
         roll: "Lancer le d%{sides}"
+      skills:
+        title: "Compétences"
+        rule:
+          one: "Votre sous-classe vous fait maîtriser 1 compétence de plus."
+          other: "Votre sous-classe vous fait maîtriser %{count} compétences de plus."
+      feat_spell_swaps:
+        cantrips: "Sorts mineurs"
+        from: "Sort à remplacer"
+        hint: "Facultatif : vous pouvez remplacer un sort de chaque don par un autre du même niveau, dans la même liste."
+        level_one: "Sorts de niveau 1"
+        none: "Aucun, je garde mes sorts"
+        title: "Sorts de vos dons"
+        to: "Par"
+      spellbook:
+        level: "Niveau %{level}"
+        title:
+          one: "Ajouter %{count} sort à votre %{label}"
+          other: "Ajouter %{count} sorts à votre %{label}"
+      feat:
+        title: "Don"
+        rule: "Prenez l'amélioration de caractéristique, ou un autre don dont vous remplissez les conditions."
+        skills:
+          one: "Choisissez 1 compétence que vous ne maîtrisez pas encore."
+          other: "Choisissez %{count} compétences que vous ne maîtrisez pas encore."
       improvement:
-        title: "Amélioration de caractéristique"
-        rule: "Répartissez %{points} points, sans dépasser le maximum d'une caractéristique."
+        title: "Caractéristiques"
+        rule: "Répartissez %{points} points, sans dépasser %{maximum}."
       expertise:
         title: "Expertise"
         rule:
           one: "Choisissez 1 compétence maîtrisée : son bonus de maîtrise compte double."
           other: "Choisissez %{count} compétences maîtrisées : leur bonus de maîtrise compte double."
+    class_choices:
+      edit:
+        back: "Retour à la partie"
+        cancel: "Annuler"
+        close: "Fermer"
+        save: "Enregistrer"
+        subtitle: "Les choix que donne la classe de %{name} (invocations, métamagie...), dans ce que permet son niveau. Le changement s'écrit dans le chat."
+        title: "Changer mes choix de classe"
     weapon_mastery_choices:
       edit:
         back: "Retour à la partie"
@@ -1530,7 +1680,22 @@ fr:
         save: "Enregistrer"
         subtitle: "Le style de combat et les maîtrises d'armes de %{name}, dans ce que donnent sa classe et son niveau. Le changement s'écrit dans le chat."
         title: "Changer mes maîtrises"
+    spellbook_copies:
+      create:
+        not_enough: "Pas assez d'or pour copier ce sort."
+    inventory_items:
+      update:
+        too_many_attuned:
+          one: "Déjà %{count} objet lié : retirez-en un d'abord."
+          other: "Déjà %{count} objets liés : retirez-en un d'abord."
     spell_choices:
+      spellbook_copy:
+        cost: "%{count} %{coin}"
+        hint: "Un sort trouvé dans une aventure (un parchemin…) : son coût est retiré de votre bourse, et la copie s'écrit dans le chat de la table."
+        level: "niveau %{level}"
+        spell: "Sort à copier"
+        submit: "Copier"
+        title: "Copier un sort dans votre %{label}"
       edit:
         back: "Retour à la partie"
         cancel: "Annuler"
@@ -1555,6 +1720,45 @@ fr:
         played_by: "Joué par %{username}"
         title: "Fiche du personnage"
     character_steps:
+      class_choices:
+        count:
+          one: "Choisissez-en 1."
+          other: "Choisissez-en %{count}."
+        min_level: "Niveau %{level}"
+        requires: "Demande %{option}"
+      species_feat:
+        hint: "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande."
+        title: "Don de votre espèce"
+      feat_cards:
+        taken: "Déjà pris : %{source}"
+        with_list: "%{feat} : %{list}"
+      origin_feats:
+        background_title: "Don de votre historique"
+        level_hint: "Votre personnage commence au niveau %{level} : il prend les dons des niveaux que sa classe améliore, comme s'il les avait gagnés."
+        level_title: "Don du niveau %{level}"
+        nothing_to_pick: "Rien à choisir : ce don est déjà à vous."
+      feat_spells:
+        ability: "Caractéristique pour les lancer"
+        background_hint:
+          one: "Votre sort vient de la liste du %{list}, fixée par votre historique : vous pourrez le changer à chaque niveau gagné."
+          other: "Vos %{count} sorts viennent de la liste du %{list}, fixée par votre historique : vous pourrez en changer un à chaque niveau gagné."
+        cantrips:
+          one: "Sort mineur (1)"
+          other: "Sorts mineurs (%{count})"
+        given_by_background: "Donné par votre historique (%{option})"
+        chosen_through_species: "Choisi grâce à votre espèce (%{option})"
+        known:
+          always_prepared: "un sort toujours préparé"
+          class: "vos sorts de classe"
+          feat: "%{feat} (%{origin})"
+          level: "niveau %{level}"
+        known_as: "Déjà connu : %{source}"
+        list_hint:
+          one: "Votre sort vient d'une liste, fixée pour toujours : vous pourrez le changer à chaque niveau gagné."
+          other: "Vos %{count} sorts viennent d'une même liste, fixée pour toujours : vous pourrez en changer un à chaque niveau gagné."
+        spell:
+          one: "Sort de niveau 1 (1)"
+          other: "Sorts de niveau 1 (%{count})"
       weapon_mastery_choices:
         masteries: "Maîtrises d'armes"
         masteries_hint:
@@ -1563,6 +1767,15 @@ fr:
         style: "Style de combat"
         style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
+      magic_item_choices:
+        enchantment_hint: "Une arme ou une armure magique se pose sur un objet de votre équipement de départ : changez d'équipement plus haut, puis enregistrez, pour en voir d'autres."
+        gold: "+ %{amount} pièces d'or et %{roll}, lancées quand vous terminez votre personnage."
+        gold_fixed: "+ %{amount} pièces d'or."
+        gold_roll: "%{dice}d%{sides} × %{multiplier} pièces d'or"
+        gold_rolled_only: "+ %{roll}, lancées quand vous terminez votre personnage."
+        hint: "Votre personnage commence au niveau %{level} : il reçoit en plus de l'or et des objets magiques."
+        numbered_place: "%{rarity} %{number}"
+        title: "Objets magiques de départ"
       equipment_choices:
         armor_class: "CA %{value}"
         choose_prompt: "Choisir…"
@@ -1590,6 +1803,9 @@ fr:
         submit: "Créer mon personnage"
         subtitle: "Votre personnage pour la table « %{name} »."
       spell_choices:
+        unprepared_spellbook: "Aussi dans votre %{label}"
+        book_chosen: "%{label} : %{chosen} sur %{allowed}"
+        prepared: "Préparé"
         always_prepared: "Sorts toujours préparés"
         always_prepared_hint: "Donnés par %{sources} : ils ne comptent pas dans les sorts à choisir."
         casting_time: "Incantation : %{text}"
@@ -1643,6 +1859,7 @@ fr:
         increase: "Augmenter %{label}"
         modifier: "Modificateur"
         note_html: "%{labels} : %{text}"
+        given_by: "Donnée par %{source}"
         offered: "Proposée"
         method_legend: "Méthode"
         place_result: "Attribuer"
@@ -1864,8 +2081,15 @@ fr:
         game: "Partie"
         ability_method_choice_hint: "Comment les joueurs obtiennent les scores de leurs caractéristiques. Au choix du joueur : chacun choisit en créant son personnage."
         hit_point_method_choice_hint: "Ce que gagne un personnage à chaque niveau après le premier, en plus de sa Constitution. Au choix du joueur : chacun choisit en créant son personnage."
+        higher_level_equipment_method_choice_hint: "Ce qu'un personnage créé au-dessus du niveau 1 reçoit en plus : de l'or (une part lancée à la fin de la création) et des objets magiques à choisir, selon son niveau."
         starting_equipment_method_choice_hint: "Ce que les joueurs reçoivent pour leur classe et leur historique en créant leur personnage."
+        ability_rerolls_hint: "Avec le lancer de dés, le joueur peut relancer autant qu'il veut. Éteint : un seul lancer, gardé."
+        ability_scores_typed_hint: "Avec le lancer de dés, le joueur peut taper ses scores (de vrais dés à la table). Éteint : seulement les résultats lancés ici."
+        method_summary: " : %{summary}."
+        level_feats_hint: "Aux niveaux 4, 8, 12… un joueur peut prendre un don au lieu de l'amélioration de caractéristique, et une faveur épique au niveau 19. Éteint : l'amélioration seulement."
+        origin_feats_hint: "L'historique donne son don (Initié à la magie pour l'Acolyte…), l'Humain en choisit un. Les personnages déjà créés gardent les leurs."
         limit_skill_choices_hint: "Un joueur ne coche pas plus de compétences que sa classe n'en propose, et seulement parmi elles. Éteint : le nombre reste une aide."
+        players_change_given_choices_hint: "Les sauvegardes de la classe, les compétences de l'historique ou d'un don sont cochées d'office. Allumé : le joueur peut les décocher (règle maison)."
         players_choose_level_hint: "Le niveau de départ leur est alors proposé, et ils peuvent le changer sur la première page de leur personnage."
         player_choice: "Au choix du joueur"
         starting_level_hint: "Les personnages de vos joueurs commencent à ce niveau."

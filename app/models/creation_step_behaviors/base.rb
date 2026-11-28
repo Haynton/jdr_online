@@ -8,13 +8,20 @@ module CreationStepBehaviors
     end
 
     # What it adds at the end of the form of its step, and to its block of the summary (paths written in full: a search
-    # for a partial finds who draws it). Both get character:, the form after_sections: (sections shown before it)
+    # for a partial finds who draws it; nil for nothing in the block). Both get character:, the form after_sections:
+    # (sections shown before it)
     def form_partial
       raise NotImplementedError
     end
 
     def summary_partial
       raise NotImplementedError
+    end
+
+    # Whether its step has something to ask, for the table, the options picked (picked_effects: their effects) and the
+    # values of the sheet (its level); a step whose behaviors have nothing is not shown, as a step only_with_effect
+    def shown?(_game_table, _picked_effects, _sheet = {})
+      true
     end
 
     # On its own step: what it keeps of what was sent (spell_keys: the spells ticked)

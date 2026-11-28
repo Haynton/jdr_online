@@ -6,8 +6,8 @@
 # from the catalog of the table (Catalogs::TableCatalog: its template's, changed by its game master).
 # Beside the groups, the spells an option always prepares from a level (always_prepared_spells: the domain spells of
 # the Life domain), which count in no group and cannot be chosen there.
-# Known limit: the spellbook of the wizard (6 spells, some of them prepared) comes later; here every class prepares
-# its spells from the list of its class
+# A class with a spellbook (the wizard) prepares among the spells written in it (CharacterSheets::Spellbook); its group
+# still offers every spell of its levels, those the book may hold
 module CharacterSheets
   class CharacterSheets::SpellChoices
     # A group of the template with what the class gives at this level: its key, its label and help (the words of the
@@ -62,11 +62,11 @@ module CharacterSheets
     # when the class changes (a spell of the class before goes). Those always prepared are copied again, from the
     # options picked now
     def keep_offered(chosen_spells)
-      chosen_spells.reject { |spell| spell["always_prepared"] }
+      chosen_spells.reject { |spell| spell["always_prepared"] || spell[CharacterSheets::FeatSpells::MARK] }
                    .select { |spell| group_of(spell["key"]) }
                    .group_by { |spell| group_of(spell["key"]) }
                    .flat_map { |group, spells_of_group| spells_of_group.first(group.allowed_count) } +
-        always_prepared.copies
+        always_prepared.copies + chosen_spells.select { |spell| spell[CharacterSheets::FeatSpells::MARK] }
     end
 
     # What a character keeps of a spell: a copy, which the catalog changing never changes (decision)
@@ -136,11 +136,19 @@ module CharacterSheets
     end
 
     # [option, value of the effect] for each option picked that has this effect
+    # Also the options picked in the groups of choices of the class (the land of the circle and its spells)
     def picked_options_with(effect_key)
-      @game_table.character_sheet_fields.filter_map do |field|
+      from_lists = @game_table.character_sheet_fields.filter_map do |field|
         option = @character.sheet[field["key"]]
         value = field.dig("effects", option.to_s, effect_key)
         [option, value] if value
+      end
+      from_lists + class_choice_options_with(effect_key)
+    end
+
+    def class_choice_options_with(effect_key)
+      @character.class_choice_groups(level: level).picked_effects.filter_map do |label, effects|
+        [label, effects[effect_key]] if effects[effect_key]
       end
     end
   end

@@ -1,8 +1,9 @@
 # Makes the change of a valid LevelUp, in one transaction: the level written in the sheet, the subclass and its effects
-# (CharacterSheets::ChoiceEffectsApplier), the abilities raised, the expertise ticked, the hit die rolled or its
-# average kept with the rolls of the levels before (nil: the average), the maximum of the hit points worked out again
-# and the current ones raised by the same gain, the spells its subclass always prepares copied, and the level given by
-# the game master done. Written in the chat for the whole table. Returns the hit points gained
+# (CharacterSheets::ChoiceEffectsApplier), the abilities raised, the expertise and the skills of the subclass ticked,
+# the options picked in the groups of choices of the class, the hit die rolled or its average kept with the rolls of the
+# levels before (nil: the average), the maximum of the hit points worked out again and the current ones raised by the
+# same gain, the spells its subclass always prepares copied, and the level given by the game master done, and the spells
+# of its feats swapped. Written in the chat for the whole table. Returns the hit points gained
 module CharacterSheets
   class LevelUpApplier
     def initialize(level_up)
@@ -26,9 +27,14 @@ module CharacterSheets
     private
 
     def write_choices
-      new_sheet = @character.sheet.merge(level_values, subclass_values, improved_scores, expertise_values)
+      new_sheet = @character.sheet.merge(level_values, subclass_values, expertise_values,
+                                         (@level_up.chosen_skill_keys + @level_up.feat_skill_keys).index_with(true))
       @character.sheet = ChoiceEffectsApplier.new(fields: @character.sheet_fields, previous_sheet: @character.sheet)
                                              .call(new_sheet)
+      @character.class_choices = @level_up.future_character.class_choices
+      @character.feats = @level_up.feats_with_swaps + [@level_up.feat_entry].compact
+      @character.spellbook = @character.spellbook.to_a + @level_up.spellbook_additions
+      @character.sync_feat_spells
       @character.spells = @character.spell_choices.keep_offered(@character.spells.to_a)
       @character.level_up_to = nil
     end
@@ -41,13 +47,6 @@ module CharacterSheets
     def subclass_values
       field = @level_up.subclass_field
       field ? { field["key"] => @level_up.subclass } : {}
-    end
-
-    # The score typed is raised: the bonus of the background stays apart
-    def improved_scores
-      @level_up.ability_increases.to_h do |key, points|
-        [key, @character.sheet[key].to_i + points]
-      end
     end
 
     def expertise_values

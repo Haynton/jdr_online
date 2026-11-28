@@ -49,6 +49,32 @@ en:
             ability_increases:
               not_shared: "Share exactly %{points} points."
               above_maximum: "%{ability} would go above %{maximum}."
+            class_choices:
+              not_picked:
+                one: "“%{group}”: pick 1."
+                other: "“%{group}”: pick %{count}."
+            skill_keys:
+              not_picked:
+                one: "Pick 1 skill of your subclass."
+                other: "Pick %{count} skills of your subclass."
+            feat_key:
+              inclusion: "Choose a feat of the list."
+            feat_skill_keys:
+              not_picked:
+                one: "Choose 1 skill."
+                other: "Choose %{count} skills."
+            spellbook_keys:
+              not_picked:
+                one: "Pick %{count} spell for your %{label}."
+                other: "Pick %{count} spells for your %{label}."
+            feat_spell_swaps:
+              not_allowed: "Replace a spell of the feat with another of the same level, from its list, that you do not know yet."
+            feat_spells:
+              cantrips: "Pick the cantrips of the feat, in its list."
+              spell: "Pick the level 1 spell of the feat, in its list."
+              spell_ability: "Pick the ability to cast these spells."
+              spell_list: "Pick a spell list."
+              spell_known: "One of these spells is already known elsewhere: pick another one."
             expertise_keys:
               not_picked:
                 one: "Choose 1 skill."
@@ -92,11 +118,14 @@ en:
         description: "Description"
         name: "Name"
       character:
+        class_choices: "Class choices"
+        feats: "Feat"
         fighting_style: "Fighting style"
         weapon_masteries: "Weapon masteries"
         name: "Character name"
         owner_character: "Character"
         spells: "Spells"
+        starting_magic_items: "Starting magic items"
       game_table:
         board_game_map: "Map on the board"
         cover_image: "Cover"
@@ -106,7 +135,13 @@ en:
         ability_method_choice: "Ability score method"
         hit_point_method_choice: "Hit points at the next levels"
         starting_equipment_method_choice: "Starting equipment"
+        higher_level_equipment_method_choice: "Equipment at higher levels"
+        ability_rerolls: "Roll the ability dice again"
+        ability_scores_typed: "Ability scores typed by hand"
+        level_feats: "Feats at higher levels"
+        origin_feats: "Origin feats"
         limit_skill_choices: "Limit skills to the class choice"
+        players_change_given_choices: "Players may change what their choices give"
         players_choose_level: "Players choose their level"
         starting_level: "Starting level"
       participation:
@@ -127,6 +162,8 @@ en:
         attack_without_name: "each attack needs a name"
         too_many_attacks: "%{count} attacks at most"
         ability_bonus_too_high: "goes past %{count} with the bonus"
+        not_a_rolled_result: "to pick among your results: %{values}"
+        rolled_result_taken: "%{value} is already placed on another ability"
         not_in_standard_array: "pick one of %{values}"
         outside_point_buy: "from %{minimum} to %{maximum} with point buy"
         standard_array_value_taken: "%{value} is already placed on another ability"
@@ -136,6 +173,7 @@ en:
         too_many_expertise:
           one: "too much expertise: %{count} at most"
           other: "too much expertise: %{count} at most"
+        skills_not_fitting: "these skills do not fit the lists of your choices (%{offers}): each offers its own"
         too_many_skills:
           one: "too many skills ticked: %{count} at most among those offered"
           other: "too many skills ticked: %{count} at most among those offered"
@@ -147,7 +185,8 @@ en:
               cell_taken: "A token is already on this cell"
               outside_grid: "The token must be on a cell of the map"
             character:
-              not_a_creature_of_the_table: "must be a non-player character or an enemy of this table"
+              not_a_character_of_the_table: "must be a non-player character, an enemy or a complete character of this table"
+              already_on_the_map: "already has its token on this map"
         friendship:
           attributes:
             addressee:
@@ -178,9 +217,10 @@ en:
               invalid_blocked: "holds blocked zones in an unexpected form"
               tokens_without_table: "holds tokens, though it belongs to no table"
               invalid_token: "holds a token in an unexpected form"
-              unknown_token_character: "holds the token of a character who is not a non-player character or an enemy of the table"
+              unknown_token_character: "holds the token of a character who is neither a non-player character, an enemy nor a complete character of the table"
               token_outside_grid: "holds a token outside the grid"
               tokens_overlap: "holds two tokens on the same cell"
+              player_character_twice: "holds two tokens of the same player character"
               token_on_blocked_cell: "holds a token on a blocked zone"
         game_map:
           attributes:
@@ -194,6 +234,25 @@ en:
           one_catalog: "A catalog entry belongs to a template or to a table, not both."
         character:
           attributes:
+            class_choices:
+              not_offered: "include an option your class does not give at this level"
+              repeated: "“%{group}”: an option is taken only once"
+              too_many:
+                one: "“%{group}”: %{count} at most"
+                other: "“%{group}”: %{count} at most"
+            starting_magic_items:
+              not_picked: "need the item of rarity “%{rarity}”"
+            feats:
+              cantrips: "include cantrips to review: pick as many as the feat gives, in its list"
+              skills:
+                one: "ask 1 skill of the feat"
+                other: "ask %{count} skills of the feat"
+              level_feat: "of level %{level}: %{detail}"
+              species_feat: "ask an origin feat of the list"
+              spell: "ask a level 1 spell of the list of the feat"
+              spell_ability: "ask the ability to cast the spells of the feat"
+              spell_list: "ask a spell list of the feat"
+              spell_known: "count a spell already known elsewhere: pick another one"
             fighting_style:
               not_offered: "is not offered by your class at this level"
             weapon_masteries:
@@ -208,6 +267,7 @@ en:
             hit_point_rolls:
               not_rolled: "Roll your hit dice before finishing."
             ability_scores:
+              roll_first: "Roll the dice: your scores are picked among the results."
               too_many_points:
                 one: "Take off 1 point to continue."
                 other: "Take off %{count} points to continue."
@@ -219,6 +279,10 @@ en:
             spells:
               spell_not_offered: "A spell chosen is not offered to your class and level."
               too_many_spells: "Too many spells chosen in “%{group}”: %{count} at most."
+              prepared_outside_spellbook: "A spell prepared is not in your %{label}: tick it in the %{label} first."
+              spellbook_not_offered: "A spell of the spellbook is not offered to your class and level."
+              spellbook_too_full: "Too many spells in “%{label}”: %{count} at most."
+              spell_known_twice: "“%{spell}” is already known through another choice: untick it here."
         game_table:
           attributes:
             board_game_map:
@@ -241,12 +305,19 @@ en:
           invalid_ability_method_dice: "The method “%{method}”: the dice (dice, sides, keep_highest) must be positive whole numbers, keeping no more dice than rolled"
           invalid_rule_method_label: "The method “%{method}”: the label must be filled in, on one line, in %{count} characters at most"
           invalid_point_buy: "The method “%{method}”: the points must be a positive whole number, and each score a whole cost"
+          invalid_equipment_tiers: "The way “%{method}”: it needs tiers, each from a level higher than the one before, with gold, a roll (dice, sides, multiplier) and magic items by rarity in positive whole numbers"
           invalid_standard_array: "The method “%{method}”: it needs one value per ability (%{count} in all), positive whole numbers"
           missing_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is required"
           unknown_rule_method: "The method “%{type}” (%{rule}) is unknown"
           unknown_rule_method_parameter: "The method “%{method}”: the setting “%{parameter}” is unknown"
           duplicate_spell_group: "The group of spells “%{group}” is declared twice"
           duplicate_condition: "The condition “%{key}” is declared twice"
+          duplicate_price_list: "Two price lists have the same key: %{key}"
+          invalid_price_list_key: "The price list “%{key}”: its key must be lowercase letters, digits and underscores, a letter first"
+          invalid_price_list_label: "The price list “%{key}”: it needs a label of %{count} characters at most, on one line"
+          invalid_price_lines: "The price list “%{list}”: it needs lines, each with a label, a price and, if needed, a short note"
+          invalid_price_lists: "The price lists: they must be a list of lists, each with its key, its label and its lines"
+          unknown_price_list_parameter: "The price list “%{list}”: the setting “%{parameter}” is unknown"
           invalid_conditions: "The conditions: they must be a list of conditions, each with its key and its label"
           invalid_condition_description: "The condition “%{condition}”: the description must be a text of %{count} characters at most"
           invalid_condition_key: "The condition “%{key}”: the key must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -274,6 +345,9 @@ en:
           invalid_label: "%{part} › %{field}: the label must be filled in, on one line, in %{count} characters at most"
           invalid_level_entries: "%{part} › %{field} › %{option}: the effect “%{effect}” must give a list for each level, from 1 to 20"
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
+          invalid_spellbook: "%{part} › %{field} › %{option}: the spellbook needs a label, a number of spells at start and per level, and the group of spells that prepares from it"
+          invalid_attunement: "the number of items attuned at a time (attunement) must be a whole number of at least 1"
+          invalid_grid: "the length of a cell (grid) must be a positive number, with its unit in %{count} characters at most"
           invalid_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” must give, for each of the 20 levels, a list of whole numbers, 0 or more"
           invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -313,6 +387,13 @@ en:
           invalid_weapon_attacks_label: "The weapon attacks: the two-handed label must be filled in, on one line, in %{count} characters at most"
           missing_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is required"
           unknown_weapon_attacks_parameter: "The weapon attacks: the setting “%{parameter}” is unknown"
+          invalid_class_choices: "The class choices: the setting must be a list of groups"
+          invalid_class_choice_group: "The group of choices “%{group}”: a key, a label on one line, when it changes and options"
+          invalid_class_choice_option: "%{group} › %{option}: a key, a label on one line, a summary, a level from 1 to 20, a required option of the same group and known effects"
+          unknown_class_choice_group: "%{part} › %{field} › %{option}: the group of choices “%{group}” does not exist"
+          unknown_class_choice_parameter: "The class choices: the setting “%{parameter}” is unknown"
+          invalid_feats: "The feats: the setting must be a list of feats, with their categories named"
+          invalid_feat: "The feat “%{feat}”: a key, a known category, a level from 1 to 20, known needs and effects"
           invalid_fighting_styles: "The fighting styles: the setting must be a list of styles"
           invalid_fighting_style: "The fighting style “%{style}”: a key, a label on one line, and known effects"
           unknown_fighting_style: "%{part} › %{field} › %{option}: the fighting style “%{style}” does not exist"
@@ -329,6 +410,7 @@ en:
           unknown_type: "%{part} › %{field}: the type “%{type}” is unknown"
           wrong_effect_target: "%{part} › %{field} › %{option}: the effect “%{effect}” must name “%{expected}” fields (%{target})"
           wrong_reference: "%{part} › %{field}: “%{parameter}” must name a “%{expected}” field (%{target})"
+          invalid_shown_with: "%{part} › %{field}: “shown_with” must name a list of the same part and some of its options"
         user:
           attributes:
             avatar: *avatar_errors
@@ -340,7 +422,13 @@ en:
     passwords:
       create:
         email_not_sent: "The email could not be sent. Please try again in a few minutes."
+  magic_items:
+    attunement: "attunement"
   character_sheets:
+    ability_methods:
+      roll:
+        no_rerolls: "One roll only: your game master does not allow rolling again."
+        no_typing: "Your scores are picked among the results: your game master does not allow typing them."
     features:
       group: "%{list} · %{option}"
     summary:
@@ -857,7 +945,10 @@ en:
       bestiary_hint: "A creature is copied into your table when you put its first token."
       bestiary_title: "Bestiary"
       empty: "None yet."
-      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away. A token is hidden from the players at first: put the tool down with a right click, then click the token to show it from the start of the game."
+      intro: "Choose a character or a creature, then click a cell to put its token: as many times as you want, for a band. A click on a token takes it away. The token of a creature is hidden from the players at first: put the tool down with a right click, then click the token to show it from the start of the game."
+      player_detail: "Played by %{username}"
+      players_hint: "One token for each character: put elsewhere, it moves there. Shown to the players at first."
+      players_title: "Player characters"
       no_match: "No character or creature matches this search."
       search: "Search a character or a creature"
       table_title: "Non-player characters and enemies of the table"
@@ -880,6 +971,7 @@ en:
       no_field: "—"
       rules:
         ability_modifier: "The modifier of %{ability}."
+        initiative_bonus: "The modifier of %{ability}, plus the %{proficiency} when a feat gives it (Alert)."
         hit_dice_by_class: "One die per level (%{level}), its size set by the class chosen (%{class})."
         hit_points_by_level: "At first level, the highest roll of the hit die of the class (%{class}) plus the modifier of %{ability}; at each level after (%{level}), the average of the die plus that modifier."
         proficiency_by_level: "From the level (%{level}), following the thresholds of the template."
@@ -1050,8 +1142,8 @@ en:
         hint: "The field that gives the level of the character."
         label: "Level field"
       listed:
-        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP)."
-        label: "Shown in the NPC list"
+        hint: "The value shows beside the name, in the list of NPCs and enemies of a table (CR, AC, HP), or under the name of an item, in its window (Ring · Rare · Requires attunement)."
+        label: "Shown beside the name"
       max:
         hint: "The highest value allowed. Optional."
         label: "Maximum"
@@ -1093,6 +1185,7 @@ en:
         label: "Computing rule"
         values:
           ability_modifier: "Modifier of an ability"
+          initiative_bonus: "Initiative"
           hit_dice_by_class: "Hit dice by class"
           hit_points_by_level: "Hit points by level"
           proficiency_by_level: "Proficiency bonus by level"
@@ -1104,6 +1197,12 @@ en:
       section:
         hint: "The group of the sheet where the field shows."
         label: "Section"
+      shown_with:
+        hint: "The field only shows for some values of a list (the damage of an item, for a weapon only)."
+        label: "Shown depending on a list"
+      unit:
+        hint: "What the number counts, written in its field (kg, gp)."
+        label: "Unit"
       short:
         hint: "A single line instead of a text area."
         label: "Short text"
@@ -1144,6 +1243,7 @@ en:
         ability_methods: "ability scores"
         hit_point_methods: "hit points"
         starting_equipment_methods: "starting equipment"
+        higher_level_equipment_methods: "equipment at higher levels"
       field_types:
         ability: "ability"
         ability_bonuses: "ability bonuses"
@@ -1208,9 +1308,16 @@ en:
       hand: "Move the map"
       hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
       hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
+      move_cells:
+        one: "%{count} cell"
+        other: "%{count} cells"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"
+      place_player: "Place on the map"
+      player_already_placed: "%{name} is already on the map."
+      player_hint: "Click a cell to place “%{name}”. Escape to stop."
       place_map: "Place %{name} on the board"
       remove: "Take off"
       remove_map: "Take %{name} off the board"
@@ -1223,6 +1330,7 @@ en:
         level_granted: "The GM gives level %{level} to %{character}."
         level_reached: "%{character} reaches level %{level}: +%{hit_points} HP."
         level_reached_rolled: "%{character} reaches level %{level}: hit die %{roll}, +%{hit_points} HP."
+        class_choices_changed: "%{character} changes their class choices: %{changes}."
         weapon_masteries_changed: "%{character} changes their masteries: %{changes}."
         spell_slot_spent: "%{character} spends a level %{level} slot: %{left} of %{total} left."
         hit_die_spent: "%{character} spends a hit die (d%{sides}): %{roll} %{modifier} → %{healed} HP back."
@@ -1239,6 +1347,7 @@ en:
           one: "The GM gave “%{item}” to %{character}."
           other: "The GM gave %{count} × “%{item}” to %{character}."
         money_given: "The GM gave %{count} %{coin} to %{character}."
+        spell_copied: "%{character} copies “%{spell}” into their spellbook (%{count} %{coin})."
         spells_changed: "%{character} changes their spells: %{changes}."
         dice_rolled: "%{roller} rolls %{notation}: %{dice} → %{total}"
         dice_rolled_by_game_master: "The GM rolls %{notation}: %{dice} → %{total}"
@@ -1303,6 +1412,8 @@ en:
     item_gift_dialog:
       cancel: "Cancel"
       close: "Close"
+      magic: "Magic"
+      no_magic: "None"
       give: "Give"
       quantity: "Quantity"
       receiver: "To whom?"
@@ -1318,6 +1429,7 @@ en:
       close: "Close %{name}"
     panels:
       character:
+        change_class_choices: "Change my class choices"
         change_masteries: "Change my masteries"
         abilities: "Abilities"
         edit_sheet: "Edit my sheet"
@@ -1343,6 +1455,9 @@ en:
         result: "Result"
         roll: "Roll"
         title: "Dice"
+      attune_switch:
+        attune: "Attune to “%{name}”"
+        attuned: "Attuned"
       equip_switch:
         equip: "Equip “%{name}”"
         equipped: "Equipped"
@@ -1353,6 +1468,7 @@ en:
         remove: "Take out"
         title: "Money"
       inventory:
+        attuned_count: "Items attuned: %{count} of %{limit}"
         amount: "Amount to take out of %{label}"
         bag: "In the bag"
         gear: "Gear"
@@ -1385,6 +1501,8 @@ en:
         title: "NPCs and enemies"
       features:
         title: "Features"
+      prices:
+        title: "Prices"
       skills:
         title: "Skills"
       spells:
@@ -1537,20 +1655,52 @@ en:
         later: "Later"
         picks_later: "Your new spells and weapon masteries are picked afterwards, in “Change my spells” and “Change my masteries”."
         submit: "Reach level %{level}"
-        subtitle: "The GM gives a level to %{name}. Make the choices of that level; the chat will say the result."
+        subtitle: "The GM gives a level to %{name}. Make the choices of that level."
         title: "Level %{level}"
       hit_points:
         title: "Hit points"
         average: "Average: +%{points} HP"
         roll: "Roll the d%{sides}"
+      skills:
+        title: "Skills"
+        rule:
+          one: "Your subclass makes you proficient in 1 more skill."
+          other: "Your subclass makes you proficient in %{count} more skills."
+      feat_spell_swaps:
+        cantrips: "Cantrips"
+        from: "Spell to replace"
+        hint: "Optional: you may replace one spell of each feat with another of the same level, from the same list."
+        level_one: "Level 1 spells"
+        none: "None, I keep my spells"
+        title: "Spells of your feats"
+        to: "With"
+      spellbook:
+        level: "Level %{level}"
+        title:
+          one: "Add %{count} spell to your %{label}"
+          other: "Add %{count} spells to your %{label}"
+      feat:
+        title: "Feat"
+        rule: "Take the Ability Score Improvement, or another feat you qualify for."
+        skills:
+          one: "Pick 1 skill you are not proficient in yet."
+          other: "Pick %{count} skills you are not proficient in yet."
       improvement:
-        title: "Ability Score Improvement"
-        rule: "Share %{points} points, never above the maximum of an ability."
+        title: "Abilities"
+        rule: "Share %{points} points, never above %{maximum}."
       expertise:
         title: "Expertise"
         rule:
           one: "Choose 1 proficient skill: its proficiency bonus counts twice."
           other: "Choose %{count} proficient skills: their proficiency bonus counts twice."
+    class_choices:
+      edit:
+        back: "Back to the game"
+        cancel: "Cancel"
+        close: "Close"
+        save: "Save"
+        subtitle: "The choices the class of %{name} gives (invocations, metamagic...), within what its level allows. The change is written in the chat."
+        title: "Change my class choices"
     weapon_mastery_choices:
       edit:
         back: "Back to the game"
@@ -1559,7 +1709,22 @@ en:
         save: "Save"
         subtitle: "The fighting style and weapon masteries of %{name}, within what their class and level give. The change is written in the chat."
         title: "Change my masteries"
+    spellbook_copies:
+      create:
+        not_enough: "Not enough gold to copy this spell."
+    inventory_items:
+      update:
+        too_many_attuned:
+          one: "Already %{count} item attuned: end one first."
+          other: "Already %{count} items attuned: end one first."
     spell_choices:
+      spellbook_copy:
+        cost: "%{count} %{coin}"
+        hint: "A spell found in an adventure (a scroll…): its cost is taken from your purse, and the copy is written in the chat of the table."
+        level: "level %{level}"
+        spell: "Spell to copy"
+        submit: "Copy"
+        title: "Copy a spell into your %{label}"
       edit:
         back: "Back to the game"
         cancel: "Cancel"
@@ -1584,6 +1749,45 @@ en:
         played_by: "Played by %{username}"
         title: "Character sheet"
     character_steps:
+      class_choices:
+        count:
+          one: "Pick 1."
+          other: "Pick %{count}."
+        min_level: "Level %{level}"
+        requires: "Requires %{option}"
+      species_feat:
+        hint: "Your species lets you pick an origin feat, and what it asks."
+        title: "Feat from your species"
+      feat_cards:
+        taken: "Already taken: %{source}"
+        with_list: "%{feat}: %{list}"
+      origin_feats:
+        background_title: "Feat from your background"
+        level_hint: "Your character starts at level %{level}: it takes the feats of the levels its class improves, as if it had gained them."
+        level_title: "Level %{level} feat"
+        nothing_to_pick: "Nothing to pick: this feat is already yours."
+      feat_spells:
+        ability: "Ability to cast them"
+        background_hint:
+          one: "Your spell comes from the %{list} list, set by your background: you may change it at each level gained."
+          other: "Your %{count} spells come from the %{list} list, set by your background: you may change one at each level gained."
+        cantrips:
+          one: "Cantrip (1)"
+          other: "Cantrips (%{count})"
+        given_by_background: "Given by your background (%{option})"
+        chosen_through_species: "Picked through your species (%{option})"
+        known:
+          always_prepared: "a spell always prepared"
+          class: "your class spells"
+          feat: "%{feat} (%{origin})"
+          level: "level %{level}"
+        known_as: "Already known: %{source}"
+        list_hint:
+          one: "Your spell comes from one list, set for good: you may change it at each level gained."
+          other: "Your %{count} spells come from one list, set for good: you may change one at each level gained."
+        spell:
+          one: "Level 1 spell (1)"
+          other: "Level 1 spells (%{count})"
       weapon_mastery_choices:
         masteries: "Weapon masteries"
         masteries_hint:
@@ -1592,6 +1796,15 @@ en:
         style: "Fighting style"
         style_hint: "Pick a style: it applies to all your attacks or to your defense."
       band_label: "Steps of your character"
+      magic_item_choices:
+        enchantment_hint: "A magic weapon or armour goes on an item of your starting equipment: change your equipment above, then save, to see others."
+        gold: "+ %{amount} gold pieces and %{roll}, rolled when you finish your character."
+        gold_fixed: "+ %{amount} gold pieces."
+        gold_roll: "%{dice}d%{sides} × %{multiplier} gold pieces"
+        gold_rolled_only: "+ %{roll}, rolled when you finish your character."
+        hint: "Your character starts at level %{level}: it gets more gold and magic items."
+        numbered_place: "%{rarity} %{number}"
+        title: "Starting magic items"
       equipment_choices:
         armor_class: "AC %{value}"
         choose_prompt: "Choose…"
@@ -1619,6 +1832,9 @@ en:
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
       spell_choices:
+        unprepared_spellbook: "Also in your %{label}"
+        book_chosen: "%{label}: %{chosen} of %{allowed}"
+        prepared: "Prepared"
         always_prepared: "Always prepared spells"
         always_prepared_hint: "Given by %{sources}: they do not count among the spells to choose."
         casting_time: "Casting time: %{text}"
@@ -1672,6 +1888,7 @@ en:
         increase: "Increase %{label}"
         modifier: "Modifier"
         note_html: "%{labels}: %{text}"
+        given_by: "Given by %{source}"
         offered: "Suggested"
         method_legend: "Method"
         place_result: "Assign"
@@ -1893,8 +2110,15 @@ en:
         game: "Game"
         ability_method_choice_hint: "How the players get the scores of their abilities. Player’s choice: each one picks while making their character."
         hit_point_method_choice_hint: "What a character gains at each level after the first, on top of its Constitution. Player’s choice: each one picks while making their character."
+        higher_level_equipment_method_choice_hint: "What a character created above level 1 gets more: gold (part of it rolled at the end of the creation) and magic items to pick, by its level."
         starting_equipment_method_choice_hint: "What the players get for their class and background while making their character."
+        ability_rerolls_hint: "With the dice roll, the player may roll again as often as they like. Off: one roll only, kept."
+        ability_scores_typed_hint: "With the dice roll, the player may type their scores (real dice at the table). Off: only the results rolled here."
+        method_summary: ": %{summary}."
+        level_feats_hint: "At levels 4, 8, 12… a player may take a feat instead of the ability score improvement, and an epic boon at level 19. Off: the improvement only."
+        origin_feats_hint: "The background gives its feat (Magic Initiate for the Acolyte…), the Human picks one. Characters already made keep theirs."
         limit_skill_choices_hint: "A player ticks no more skills than their class offers, and only among them. Off: the number is only a guide."
+        players_change_given_choices_hint: "The saving throws of the class, the skills of the background or of a feat are ticked for them. On: the player may untick them (house rule)."
         players_choose_level_hint: "The starting level is then offered to them, and they may change it on the first page of their character."
         player_choice: "Player's choice"
         starting_level_hint: "Your players' characters start at this level."

@@ -4,8 +4,9 @@ module ComputedRules
   # (none for a light armour, 2 for a medium one, 0 for a heavy one), plus the bonus of a fighting style while armoured
   # (Defense); without one: 10 plus that modifier, plus the
   # modifier of the unarmored defense of the class chosen in class_from (not for a monk with a shield:
-  # unarmored_defense_without_shield). Then the bonus of the shield equipped, and
-  # the number typed in bonus_from (the game master's). A plain number, kept as a text ("16"); nothing until based_on
+  # unarmored_defense_without_shield). The magic bonus of an armour or a shield attuned counts with it. Then the bonus
+  # of the shield equipped, the bonus of the magic items (Ring of Protection), and the number typed in bonus_from (the
+  # game master's). A plain number, kept as a text ("16"); nothing until based_on
   # has a score. The equipment changes outside of the page (the inventory of the game room): no JavaScript twin
   class WornArmorClass < Base
     KEY = "worn_armor_class".freeze
@@ -16,7 +17,8 @@ module ComputedRules
       modifier = reader.modifier(field["based_on"])
       return unless modifier
 
-      armor_class = body_armor_class(field, reader, modifier) + shield_bonus(reader)
+      armor_class = body_armor_class(field, reader, modifier) + shield_bonus(reader) +
+                    reader.magic_effects.to_h["armor_class_bonus"].to_i
       (armor_class + reader.typed_number(field["bonus_from"])).to_s
     end
 
@@ -27,7 +29,7 @@ module ComputedRules
       return unarmored(field, reader, modifier) unless armor
 
       cap = armor[Equippable::DEXTERITY_CAP_FIELD]
-      armor[Equippable::ARMOR_FIELD].to_i + (cap ? [modifier, cap.to_i].min : modifier) +
+      armor[Equippable::ARMOR_FIELD].to_i + (cap ? [modifier, cap.to_i].min : modifier) + armor["magic_bonus"].to_i +
         reader.fighting_style_effects["armored_armor_class_bonus"].to_i
     end
 
@@ -40,7 +42,8 @@ module ComputedRules
     end
 
     def shield_bonus(reader)
-      reader.equipped_items.sum { |properties| properties[Equippable::SHIELD_FIELD].to_i }
+      shields = reader.equipped_items.select { |properties| properties[Equippable::SHIELD_FIELD].present? }
+      shields.sum { |properties| properties[Equippable::SHIELD_FIELD].to_i + properties["magic_bonus"].to_i }
     end
   end
 end

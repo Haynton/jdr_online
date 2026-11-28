@@ -38,9 +38,19 @@ module BoardHelper
   end
 
   def board_tokens_json(game_map, game_master:)
-    tokens = game_map.board_tokens.includes(:character)
+    tokens = game_map.board_tokens.includes(character: { avatar_attachment: :blob })
     seen_tokens = game_master ? tokens : tokens.reject(&:hidden?)
     seen_tokens.map { |token| board_token_data(token, game_master:) }.to_json
+  end
+
+  # The tokens of a player's own character hidden from the others: only on their own stream (BoardTokensSender)
+  def board_own_tokens_data(game_table, participation)
+    board_map = game_table.board_game_map
+    character = participation.character
+    tokens = board_map && character ? board_map.board_tokens.where(character:, hidden: true) : BoardToken.none
+    { room_board_target: "tokens", game_map_id: board_map&.id,
+      tokens: tokens.map { |token| board_token_data(token, game_master: false) }.to_json,
+      movable_character_ids: board_movable_character_ids(character).to_json }
   end
 
   def board_blocked_cells_json(game_map)
@@ -60,25 +70,36 @@ module BoardHelper
       "aria-pressed:border-brass aria-pressed:bg-primary-soft aria-pressed:text-primary-soft-ink"
   end
 
+  def board_token_picture(character)
+    rails_blob_path(character.avatar, only_path: true) if character.pc? && character.avatar.attached?
+  end
+
   private
 
   def board_token_data(token, game_master:)
-    { id: token.id, name: token.displayed_name, kind: token.character.kind, column: token.column, row: token.row,
+    character = token.character
+    { id: token.id, name: token.displayed_name, kind: character.kind, column: token.column, row: token.row,
       number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
-      custom_name: (token.name if game_master), character_name: (token.character.name if game_master) }
+      picture: board_token_picture(character), character_id: character.id,
+      custom_name: (token.name if game_master), character_name: (character.name if game_master) }
   end
 
   def game_master_board_data(board_map)
-    shared_board_data(board_map, KEPT_FROM_GAME_MASTER).merge(action: "#{ZOOM_ACTIONS} #{GAME_MASTER_ACTIONS}",
+    actions = "#{ZOOM_ACTIONS} #{BoardMovesHelper::MOVE_ACTIONS} #{GAME_MASTER_ACTIONS}"
+    shared_board_data(board_map, KEPT_FROM_GAME_MASTER).merge(action: actions,
                                                               map_preview_show_natural_blocks_value: true)
   end
 
   def player_board_data(board_map)
-    shared_board_data(board_map, KEPT_FROM_PLAYERS).merge(action: ZOOM_ACTIONS)
+    shared_board_data(board_map, KEPT_FROM_PLAYERS).merge(action: "#{ZOOM_ACTIONS} #{BoardMovesHelper::MOVE_ACTIONS}")
   end
 
   def shared_board_data(board_map, kept_keys)
+    passage = board_map.passage
     game_map_preview_data(board_map).merge(room_board_target: "map", board_zoom_target: "map",
+                                           game_map_id: board_map.id,
+                                           blocked_cells: passage&.blocked_cells.to_a.to_json,
+                                           blocked_sides: passage&.blocked_sides.to_a.to_json,
                                            map_preview_layout_value: board_map.layout.except(*kept_keys).to_json,
                                            map_preview_token_characters_value: {}.to_json)
   end

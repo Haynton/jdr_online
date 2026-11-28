@@ -31,6 +31,16 @@ module CharacterSheets
       @play_state.fighting_style_effects
     end
 
+    # The effects of its feats ({ "initiative_proficiency" => true }), {} for none
+    def feat_effects
+      @play_state.feat_effects
+    end
+
+    # What its magic items give ({ "armor_class_bonus" => 1, "abilities" => { "constitution" => 19 } }), {} for none
+    def magic_effects
+      @play_state.magic_effects
+    end
+
     # nil while the ability has no score
     def modifier(ability_key)
       @modifiers[ability_key]

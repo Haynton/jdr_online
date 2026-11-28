@@ -23,6 +23,12 @@
     </div>
   <% end %>
   <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
+  <%# The spellbook of a wizard: its spells ticked on the cards of the group it prepares from, each with « Préparé »
+      once written in it (CharacterSheets::Spellbook) %>
+  <% book = character.spellbook_of_class %>
+  <% if book.any? && !compact %>
+    <%= hidden_field_tag "character[spellbook_keys][]", "", id: nil %>
+  <% end %>
   <%= render "shared/details_dialog", id: local_assigns.fetch(:details_dialog_id, "details-dialog") %>
   <%# The spell slots first (decision): they say how far the prepared spells will go %>
   <% if !compact && (slots = character_spell_slots(character)) %>
@@ -83,15 +89,27 @@
       </section>
     <% end %>
 
+    <%# The spells a feat gives already (Magic Initiate), ticked and disabled with where they come from %>
+    <% known_by_feats = character.feat_spells.known_elsewhere(except: CharacterSheets::FeatSpells::CLASS_SOURCE) %>
     <% groups.each do |group| %>
+      <% in_book = book.any? && book.group.key == group.key %>
+      <%# In the game room, the book does not change here (a spell is copied into it): only its spells, to prepare %>
+      <% group = group.with(spells: group.spells.select { |spell| book.include?(spell.key) }) if in_book && compact %>
       <%= tag.fieldset class: "min-w-0", data: spell_group_data(group) do %>
         <%# The legend floats (as in game_tables/_choice_row): a legend in place sits in the border of the fieldset, and
             the count beside it would not line up %>
         <legend class="float-left mr-6 text-lg leading-7 font-bold text-ink"><%= group.label %></legend>
         <%= tag.p spell_group_status(character, group), role: "status",
                   class: "text-sm leading-7 font-medium text-ink data-invalid:text-error-ink",
-                  data: { spell_choices_target: "status", invalid: ("" if spell_group_over?(character, group)) } %>
+                  data: { spell_choices_target: "status", invalid: ("" if spell_group_over?(character, group)),
+                          count_for: ("prepared" if in_book) } %>
         <p class="clear-left mt-1 text-sm text-muted"><%= spell_group_hint(group) %></p>
+        <% if in_book && !compact %>
+          <%= tag.p spellbook_status(book), role: "status",
+                    class: "mt-3 text-sm font-medium text-ink data-invalid:text-error-ink",
+                    data: spellbook_status_data(book) %>
+          <p class="mt-1 text-sm text-muted"><%= book.help %></p>
+        <% end %>
         <%# One block per level, hidden by the search when none of its spells is left %>
         <% spells_by_level(group).each do |level, spells| %>
           <div data-spell-choices-target="block">
@@ -102,7 +120,9 @@
             <%# Each card at its own height (items-start): an open description does not stretch the cards beside it %>
             <ul class="mt-3 grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
               <% spells.each do |spell| %>
-                <%= render "game_tables/character_steps/spell_choice", character: character, spell: spell %>
+                <%= render "game_tables/character_steps/spell_choice", character: character, spell: spell,
+                                                                       known_as: known_by_feats[spell.key],
+                                                                       book: (book if in_book), book_locked: compact %>
               <% end %>
             </ul>
           </div>

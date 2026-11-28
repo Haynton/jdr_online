@@ -124,11 +124,15 @@ class BoardMapTest < ActionDispatch::IntegrationTest
     assert_select "#game-room-board-game-master p", text: /Placez une carte sur le plateau/
   end
 
-  test "the room listens to the stream of the table once, outside the chat" do
+  test "the room of a player listens once to the stream of the table and once to their own, outside the chat" do
     sign_in @player
     get game_table_path(@game_table)
 
-    assert_select "turbo-cable-stream-source[channel=GameTableChannel]", count: 1
+    participation = @game_table.participations.find_by!(user: @player)
+    streams = css_select("turbo-cable-stream-source[channel=GameTableChannel]").map do |source|
+      Turbo.signed_stream_verifier.verified(source["signed-stream-name"], purpose: GameTableChannel::SIGNATURE_PURPOSE)
+    end
+    assert_equal [@game_table.to_gid_param, "#{@game_table.to_gid_param}:#{participation.to_gid_param}"], streams
     assert_select "#game-room-chat-body turbo-cable-stream-source", count: 0
   end
 

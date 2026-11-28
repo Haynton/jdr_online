@@ -5,6 +5,7 @@
   "banner_color": "arcane",
   "description": "Investigators facing the unspeakable: percentile skills, sanity, and a sheet on a single page.",
   "character_fields": {
+    "grid": {"cell_length": 5, "unit": "ft"},
     "fields": [
       { "key": "occupation", "label": "Occupation", "type": "text", "section": "Identity", "visible_to_others": true },
       { "key": "age", "label": "Age", "type": "number", "min": 15, "max": 90, "section": "Identity", "visible_to_others": true },

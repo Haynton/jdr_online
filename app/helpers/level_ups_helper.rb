@@ -20,11 +20,6 @@ module LevelUpsHelper
     end
   end
 
-  # The points an ability may gain: +0 to the most allowed on one ability
-  def level_up_increase_choices(level_up)
-    (0..level_up.improvement["max_per_ability"]).to_a
-  end
-
   # The new spells and weapon masteries are picked afterwards, in their own windows: said when the character has some
   def level_up_picks_later?(character)
     character.spells.present? || character.weapon_mastery_choices.offered?

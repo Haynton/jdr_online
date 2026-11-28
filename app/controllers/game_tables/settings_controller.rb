@@ -33,7 +33,9 @@ module GameTables
     def settings_params
       params.fetch(:game_table, {}).permit(:starting_level, :players_choose_level, :ability_method_choice,
                                            :hit_point_method_choice, :starting_equipment_method_choice,
-                                           :limit_skill_choices)
+                                           :higher_level_equipment_method_choice,
+                                           :limit_skill_choices, :origin_feats, :level_feats,
+                                           :ability_scores_typed, :ability_rerolls, :players_change_given_choices)
     end
   end
 end

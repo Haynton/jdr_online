@@ -45,14 +45,16 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
                  spells_by_level)
   end
 
-  test "the heroic fantasy has the creatures of challenge 0 to 2 of the SRD 5.2.1, the same in both languages" do
+  test "the heroic fantasy has the creatures of the SRD 5.2.1, the same in both languages" do
     bestiaries = %w[en fr].map do |locale|
       read_json(Rails.root.join("db/seeds/catalogs/heroic_fantasy_monsters.#{locale}.json"))["entries"]
     end
     numbers = %w[challenge armor_class hp speed strength]
 
-    assert_equal [175, 175], bestiaries.map(&:size)
-    assert_equal({ "0" => 28, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 42 },
+    assert_equal [330, 330], bestiaries.map(&:size)
+    assert_equal({ "0" => 29, "1/8" => 19, "1/4" => 32, "1/2" => 27, "1" => 27, "2" => 42, "3" => 25, "4" => 16, "5" => 25, "6" => 11,
+                   "7" => 6, "8" => 10, "9" => 8, "10" => 6, "11" => 7, "12" => 2, "13" => 6, "14" => 3, "15" => 4,
+                   "16" => 5, "17" => 4, "19" => 1, "20" => 3, "21" => 4, "22" => 2, "23" => 3, "24" => 2, "30" => 1 },
                  bestiaries.first.map { |creature| creature.dig("properties", "challenge") }.tally)
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature["properties"].slice(*numbers).except("speed") } })
     assert_equal(*bestiaries.map { |entries| entries.map { |creature| creature.dig("properties", "attacks").to_a.size } })
@@ -66,12 +68,13 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     weapons_and_armor = catalogs.first.select { |item| item.dig("properties", "training") }
 
     assert_equal(*catalogs.map { |entries| entries.map { |item| item["properties"].slice(*rule_values) } })
-    assert_equal 20, weapons_and_armor.size
-    assert_equal({ "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8" },
+    assert_equal 51, weapons_and_armor.size
+    assert_equal({ "battleaxe" => "1d10", "longsword" => "1d10", "quarterstaff" => "1d8", "spear" => "1d8",
+                   "trident" => "1d10", "war-pick" => "1d10", "warhammer" => "1d10" },
                  catalogs.first.select { |item| item.dig("properties", "versatile_dice") }
                                .to_h { |item| [item["key"], item.dig("properties", "versatile_dice")] })
     weapons_and_armor.select { |item| item.dig("properties", "training").end_with?("weapons") }.each do |weapon|
-      assert_match(/\A\d+d\d+\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
+      assert_match(/\A\d+(d\d+)?\z/, weapon.dig("properties", "damage_dice"), weapon["key"])
       assert weapon.dig("properties", "damage").start_with?(weapon.dig("properties", "damage_dice")), weapon["key"]
     end
   end
@@ -119,8 +122,20 @@ class PredefinedCatalogsTest < ActiveSupport::TestCase
     end
   end
 
+  test "every feat the template declares has its name and summary in the catalog of features" do
+    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "feature" }.each do |catalog_file|
+      feature_keys = read_json(catalog_file)["entries"].pluck("key")
+      feat_keys = create_template_of(catalog_file).character_fields["feats"].to_a.pluck("key")
+
+      assert_operator feat_keys.size, :>=, 17, catalog_file.basename
+      assert_empty feat_keys - feature_keys, catalog_file.basename
+    end
+  end
+
   test "every item of a starting equipment is in the catalog, and every group of your choice has items" do
-    CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }.each do |catalog_file|
+    # The magic items are a catalog of items of their own, never in a starting equipment
+    item_files = CATALOG_FILES.select { |catalog_file| read_json(catalog_file)["kind"] == "item" }
+    item_files.reject { |catalog_file| catalog_file.basename.to_s.include?("_magic.") }.each do |catalog_file|
       items = read_json(catalog_file)["entries"]
       groups = items.filter_map { |item| item.dig("properties", "group") }.uniq
       template = create_template_of(catalog_file)

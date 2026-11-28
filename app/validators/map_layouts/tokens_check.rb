@@ -1,10 +1,11 @@
 module MapLayouts
   # Checks the tokens put on a map of a table (the list "tokens" of its layout): each one { "character_id", "column",
-  # "row" }, and "hidden" (true or false, hidden when it is not said), a non-player character or an enemy of the table
-  # (step "PNJ et ennemis", or copied from the bestiary in the editor), on a cell of the grid, never two on the same
-  # cell, never on a blocked zone painted by the game master (the empty ground is refused by the editor only: a map
-  # switched from its picture to its drawing could otherwise never be saved again). The same character may have
-  # several tokens (Anthony's decision: a band of goblins) and tokens on other maps. A map of « Mes cartes » has none:
+  # "row" }, and "hidden" (true or false; when it is not said, hidden for a creature, shown for a player character), a
+  # character of the game master (step "PNJ et ennemis", or copied from the bestiary in the editor) or a complete
+  # player character, on a cell of the grid, never two on the same cell, never on a blocked zone painted by the game
+  # master (the empty ground is refused by the editor only: a map switched from its picture to its drawing could
+  # otherwise never be saved again). A character of the game master may have several tokens (Anthony's decision: a
+  # band of goblins), a player character one; both may have tokens on other maps. A map of « Mes cartes » has none:
   # it belongs to no table. Gives the first error, [type, options], or nil
   class TokensCheck
     TOKEN_KEYS = %w[character_id column row].freeze
@@ -20,6 +21,7 @@ module MapLayouts
       return [:tokens_without_table, {}] unless @map.respond_to?(:game_table)
       return [:invalid_token, {}] unless @tokens.all? { |token| well_formed?(token) }
       return [:unknown_token_character, {}] unless (character_ids - table_character_ids).empty?
+      return [:player_character_twice, {}] if player_character_twice?
 
       placement_error
     end
@@ -49,12 +51,18 @@ module MapLayouts
       !token.key?("hidden") || [true, false].include?(token["hidden"])
     end
 
+    def player_character_twice?
+      player_character_ids = @map.game_table.characters.pc.ids
+      placed_ids = @tokens.map { |token| token["character_id"] }.select { |id| player_character_ids.include?(id) }
+      placed_ids.uniq.size != placed_ids.size
+    end
+
     def character_ids
       @tokens.map { |token| token["character_id"] }.uniq
     end
 
     def table_character_ids
-      @map.game_table ? @map.game_table.npcs.ids : []
+      @map.game_table ? @map.game_table.characters.placeable_on_the_board.ids : []
     end
   end
 end

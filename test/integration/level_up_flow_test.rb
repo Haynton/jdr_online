@@ -33,7 +33,8 @@ class LevelUpFlowTest < ActionDispatch::IntegrationTest
     get game_table_path(@game_table)
     assert_select "a[href=?]", new_game_table_level_up_path(@game_table), text: "Passer au niveau 4"
     get new_game_table_level_up_path(@game_table)
-    assert_select "legend", text: "Amélioration de caractéristique"
+    assert_select "legend", text: "Don"
+    assert_select "input[name=?][value=?][checked]", "level_up[feat_key]", "ability-score-improvement"
 
     post game_table_level_up_path(@game_table), params: { level_up: { ability_increases: { strength: "1" } } }
     assert_response :unprocessable_content

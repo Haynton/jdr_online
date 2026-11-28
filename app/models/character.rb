@@ -8,7 +8,9 @@ class Character < ApplicationRecord
   include CharacterAbilityMethod
   include CharacterSkillChoices
   include CharacterDraftSaving
+  include CharacterSpellbook
   include CharacterHitPoints
+  include CharacterHigherLevelEquipment
   include CharacterInPlay
   include PlacedOnMaps
   include CharacterDescription
@@ -38,10 +40,7 @@ class Character < ApplicationRecord
 
   # A player character is made in steps, saved as a draft after each one (CharacterCreationSteps), and complete
   # once the player confirms the summary
-  enum :status, {
-    draft: "draft",
-    complete: "complete"
-  }
+  enum :status, { draft: "draft", complete: "complete" }
 
   # The kinds of the characters of the game master (step "NPCs and enemies")
   GAME_MASTER_KINDS = %w[npc monster companion].freeze
@@ -74,11 +73,13 @@ class Character < ApplicationRecord
   # in a list applies its effects to the other steps too, and a value the others no longer offer goes (the subclass of
   # a class changed: CharacterSheets::ChoiceEffectsApplier), and the starting equipment and the spells its new
   # class does not offer go. The step that chooses the spells copies those chosen (spell_keys)
-  # choices: what the behaviors of the step get (spell_keys, fighting_style, weapon_mastery_keys)
+  # choices: what the behaviors of the step get (spell_keys, fighting_style, weapon_mastery_keys, class_choices)
   def fill_step(step, sheet_values:, name: nil, **choices)
     filled_values = CharacterSheets::Builder.new(fields: step.fields, submitted_values: sheet_values).call
     self.sheet = CharacterSheets::ChoiceEffectsApplier.new(fields: sheet_fields, previous_sheet: sheet)
                                                       .call(sheet.except(*step.field_keys).merge(filled_values))
+    keep_feat_skills_ticked
+    keep_given_ticked if pc?
     self.name = name if step.asks_name
     self.required_sheet_fields = step.required_fields
     self.checks_ability_method = step.fields.any? { |field| field["type"] == "ability" }
@@ -94,11 +95,6 @@ class Character < ApplicationRecord
     end
   end
 
-  # The spells this character may choose: its class, its level (CharacterSheets::SpellChoices)
-  def spell_choices
-    CharacterSheets::SpellChoices.new(self)
-  end
-
   # Once complete, the values the game will change start from what was worked out at creation (initial_from: the hit
   # points, a resource, start full; the armour class, a number; the gold), and the starting equipment becomes lines
   # of its inventory, saved with it
@@ -109,7 +105,8 @@ class Character < ApplicationRecord
       [field["key"], FieldTypes.of(field).initial_value(value)] if value
     end
     self.sheet = sheet.merge(initial_values.to_h)
-    inventory_items << starting_inventory
+    add_higher_level_gold
+    inventory_items << with_starting_magic_items(starting_inventory)
     self.status = :complete
   end
 
@@ -127,19 +124,10 @@ class Character < ApplicationRecord
   def computed_sheet_values
     play_state = CharacterSheets::PlayState.new(hit_point_rolls: hit_point_rolls_for_rules,
                                                 equipped_items: equipped_item_properties,
-                                                fighting_style_effects: fighting_style_effects)
+                                                fighting_style_effects: fighting_style_effects,
+                                                magic_effects: magic_effects, **feat_play_values)
     CharacterSheets::Calculator.new(fields: sheet_fields, sheet: sheet, level_thresholds: game_table.level_thresholds,
                                     play_state: play_state).call
-  end
-
-  # A copy of each spell chosen (decision: the catalog changing never changes a character), and of those its options
-  # always prepare. A key not offered stays as a bare key, refused by CharacterSpellsValidator
-  def choose_spells(spell_keys)
-    choices = spell_choices
-    chosen_spells = spell_keys.to_a.compact_blank.uniq.map do |spell_key|
-      choices.copy_of(spell_key) || { "key" => spell_key }
-    end
-    self.spells = chosen_spells + choices.always_prepared.copies
   end
 
   # Only a companion has an owner, and only a player character of its own table

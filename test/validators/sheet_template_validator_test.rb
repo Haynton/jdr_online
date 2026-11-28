@@ -103,6 +103,17 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  :labels_not_matching_options
   end
 
+  test "a field shown only with some values names a list of the same part, and some of its options" do
+    shown_with = { "field" => "class", "values" => ["Guerrier"] }
+    field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité", "shown_with" => shown_with }
+    assert_predicate build_template { |fields| fields << field }, :valid?
+
+    [{ "field" => "level", "values" => ["Guerrier"] }, { "field" => "class", "values" => ["Mage"] },
+     { "field" => "class", "values" => [] }, { "field" => "class" }, "class"].each do |wrong|
+      assert_error build_template { |fields| fields << field.merge("shown_with" => wrong) }, :invalid_shown_with
+    end
+  end
+
   test "a list that depends on another names its options, for options of that list" do
     template = build_template { |fields| fields << subclass_field }
     assert_predicate template, :valid?
@@ -296,10 +307,34 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
     assert_error template, :invalid_condition_description
   end
 
+  test "the length of a cell is a positive number with a short unit, nothing else; a template may say none" do
+    assert_predicate with_grid({ "cell_length" => 1.5, "unit" => "m" }), :valid?
+    assert_predicate with_grid(nil), :valid?
+    refused = [{ "cell_length" => 0, "unit" => "m" }, { "cell_length" => "1,5", "unit" => "m" },
+               { "cell_length" => 5, "unit" => "" }, { "cell_length" => 5, "unit" => "f" * 11 },
+               { "cell_length" => 5, "unit" => "ft", "squares" => true }, [1.5, "m"]]
+    refused.each { |grid| assert_error with_grid(grid), :invalid_grid }
+  end
+
   test "the conditions are a list of conditions; a template may have none" do
     assert_error with_conditions({ "poisoned" => "Empoisonné" }), :invalid_conditions
     assert_predicate with_conditions([{ "key" => "exhaustion", "label" => "Épuisement", "levels" => 6 }]), :valid?
     assert_predicate build_template, :valid?
+  end
+
+  test "the price lists have a unique key, a label and lines with a label, a price and a short note" do
+    inn = { "key" => "inn", "label" => "Auberge", "lines" => [{ "label" => "Modeste", "price" => "5 pa" }] }
+    assert_predicate with_price_lists([inn]), :valid?
+
+    template = with_price_lists([inn, inn.merge("label" => "Auberge bis"),
+                                 { "key" => "Repas", "label" => "Repas", "lines" => [], "color" => "green" },
+                                 { "key" => "meals", "label" => "Repas", "lines" => [{ "label" => "Riche" }] }])
+    assert_error template, :duplicate_price_list
+    assert_error template, :invalid_price_list_key
+    assert_error template, :unknown_price_list_parameter
+    assert_error template, :invalid_price_lines, "La liste de prix « Repas » : il faut des lignes, chacune avec un " \
+                                                 "libellé, un prix et, au besoin, une note courte"
+    assert_error with_price_lists({ "inn" => "5 pa" }), :invalid_price_lists
   end
 
   test "the dice declare their modes, the die they apply to and their initiative" do
@@ -421,6 +456,14 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
   # The template given to the block (its character fields) can be changed before it is built
   def with_ability_methods(methods)
     build_template.tap { |template| template.character_fields["ability_methods"] = methods }
+  end
+
+  def with_grid(grid)
+    build_template.tap { |template| template.character_fields["grid"] = grid }
+  end
+
+  def with_price_lists(lists)
+    build_template.tap { |template| template.character_fields["price_lists"] = lists }
   end
 
   def with_conditions(conditions)

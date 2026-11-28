@@ -1,0 +1,46 @@
+<%# The groups of choices the class gives at the level of the character (decision of 27 November;
+    CharacterSheets::ClassChoices: invocations, metamagic, prey of the hunter, land of the circle), at the step of the
+    skills. Each group: its name, its rule and how many to pick, then its options as cards (a radio button when one
+    is picked, boxes to tick otherwise), each with its summary, the level it needs and the option it requires. Sent as
+    character[class_choices][<group>][] (an empty value first: every box may be unticked), kept by
+    CreationStepBehaviors::ChoosesClassChoices, checked by the server (CharacterClassChoicesValidator: its errors
+    above the choices). Also in the window of a level gained and of the game room (field_name:, groups:) %>
+<% groups = local_assigns.fetch(:groups) { character.class_choice_groups.groups } %>
+<% field_name = local_assigns.fetch(:field_name, "character[class_choices]") %>
+<% if groups.any? %>
+  <div class="<%= local_assigns[:after_sections] ? "mt-10" : "mt-2" %> flex flex-col gap-10">
+    <% local_assigns.fetch(:errors, character.errors.full_messages_for(:class_choices)).each do |message| %>
+      <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= message %></p>
+    <% end %>
+    <% groups.each do |group| %>
+      <% picked = local_assigns.dig(:picked, group.key) || group.picked %>
+      <fieldset class="min-w-0">
+        <legend class="float-left w-full text-lg leading-7 font-bold text-ink"><%= group.label %></legend>
+        <p class="clear-left pt-1 text-sm text-muted">
+          <%= t("game_tables.character_steps.class_choices.count", count: group.allowed_count) %> <%= group.help %>
+        </p>
+        <%= hidden_field_tag "#{field_name}[#{group.key}][]", "", id: nil %>
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <% group.options.each do |option| %>
+            <label class="<%= weapon_mastery_card_classes %>">
+              <% if group.allowed_count == 1 %>
+                <%= radio_button_tag "#{field_name}[#{group.key}][]", option.key, picked.include?(option.key),
+                                     id: "class-choice-#{group.key}-#{option.key}", class: "mt-1 shrink-0 accent-current" %>
+              <% else %>
+                <%= check_box_tag "#{field_name}[#{group.key}][]", option.key, picked.include?(option.key),
+                                  id: "class-choice-#{group.key}-#{option.key}", class: "#{SimpleFormFieldClasses::CHECKBOX} mt-0.5 shrink-0" %>
+              <% end %>
+              <span class="min-w-0">
+                <span class="block text-sm font-semibold text-ink"><%= option.label %></span>
+                <% if (requirements = class_choice_requirements(group, option)) %>
+                  <span class="mt-0.5 block text-xs font-medium text-brass"><%= requirements %></span>
+                <% end %>
+                <span class="mt-0.5 block text-xs text-muted"><%= option.description %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+<% end %>

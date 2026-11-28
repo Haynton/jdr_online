@@ -8,14 +8,20 @@ class BoardToken < ApplicationRecord
 
   validates :name, length: { maximum: NAME_MAX_LENGTH }
   validates :hidden, inclusion: { in: [true, false] }
+  validates :name, absence: true, if: -> { character&.pc? }
   validates :column, :row, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :cell_inside_the_grid
   validate :cell_free
   validate :cell_not_blocked, on: :create
-  validate :creature_of_the_table
+  validate :character_of_the_table
 
-  before_create :take_placement
-  before_save :take_number_when_first_shown
+  before_create :take_placement, unless: -> { character.pc? }
+  before_create :keep_one_token_of_a_player_character
+  before_save :take_number_when_first_shown, unless: -> { character.pc? }
+
+  def self.hidden_at_first?(character)
+    !character.pc?
+  end
 
   def letter
     remaining = placement
@@ -42,10 +48,48 @@ class BoardToken < ApplicationRecord
     name || character.name
   end
 
+  # The game master moves any token; a player the token of their own character, and those of its companions
+  def movable_by?(participation)
+    return true if participation.game_master?
+
+    own_character = participation.character
+    return false unless own_character&.complete?
+
+    character_id == own_character.id || (character.companion? && character.owner_character_id == own_character.id)
+  end
+
+  # Where a player's token arrives: only where a way leads, step by step, without crossing a wall nor a blocked cell
+  # (MapPassage#path); on a cell held by another token (a hidden enemy they cannot see), on the last free cell of that
+  # way instead (decision of 27 November: a refusal would let them probe for hidden creatures). nil when no way leads
+  def arrival_for_a_player(column, row)
+    start = [self.column, self.row]
+    way = way_for_a_player(start, [column, row])
+    return unless way
+
+    taken = game_map.board_tokens.where.not(id:).pluck(:column, :row).to_set
+    way.reverse.find { |cell| cell == start || taken.exclude?(cell) }
+  end
+
   private
+
+  # The cheapest way on a drawn map; straight there on a map without a drawing (nothing stops a token on it)
+  def way_for_a_player(start, arrival)
+    passage = game_map.passage
+    passage ? passage.path(start, arrival) : [start, arrival]
+  end
 
   def take_placement
     self.placement = game_map.take_token_placement
+  end
+
+  def keep_one_token_of_a_player_character
+    return unless character.pc?
+
+    game_map.lock!
+    return unless game_map.board_tokens.exists?(character:)
+
+    errors.add(:character, :already_on_the_map)
+    throw :abort
   end
 
   def take_number_when_first_shown
@@ -74,10 +118,10 @@ class BoardToken < ApplicationRecord
     errors.add(:base, :outside_grid)
   end
 
-  def creature_of_the_table
+  def character_of_the_table
     return unless game_map && character
-    return if character.game_table_id == game_map.game_table_id && character.kind.in?(Character::GAME_MASTER_KINDS)
+    return if character.game_table_id == game_map.game_table_id && character.placeable_on_the_board?
 
-    errors.add(:character, :not_a_creature_of_the_table)
+    errors.add(:character, :not_a_character_of_the_table)
   end
 end

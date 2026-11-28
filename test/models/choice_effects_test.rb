@@ -9,8 +9,8 @@ class ChoiceEffectsTest < ActiveSupport::TestCase
   }.freeze
 
   test "the registry lists every effect, once, in the order of the summary of the choices" do
-    assert_equal %w[hit_die hit_points_per_level proficient skill_choices expertise_choices ability_score_improvement weapon_mastery fighting_style spellcasting always_prepared_spells
-                    ability_bonus_choices origin_feat set unarmored_defense unarmored_defense_without_shield training tools features_by_level resources traits
+    assert_equal %w[hit_die hit_points_per_level proficient skill_choices expertise_choices ability_score_improvement weapon_mastery fighting_style class_choices spellcasting always_prepared_spells
+                    ability_bonus_choices origin_feat feat_choice set unarmored_defense unarmored_defense_without_shield training tools features_by_level resources traits
                     starting_equipment], ChoiceEffects.keys
     assert_equal ChoiceEffects.keys, SheetTemplate::CHOICE_EFFECTS
     assert_nil ChoiceEffects.find("flight")

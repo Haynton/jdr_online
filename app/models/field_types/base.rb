@@ -6,7 +6,7 @@ module FieldTypes
     # the validator of the template refuses any other (SheetTemplateValidator: a typo like maxx never passes)
     COMMON_PARAMETERS = %w[
       key label type section help required at_creation visible_to_others abbreviation summary_only internal column
-      listed filter game_master_adjusts currency
+      listed filter game_master_adjusts currency shown_with
     ].freeze
     OWN_PARAMETERS = [].freeze
     # The settings without which the type does not work
@@ -79,6 +79,16 @@ module FieldTypes
       :boxes
     end
 
+    # In a plain form (the window of a catalog entry), not on a sheet: its look and its place in the grid, the same as
+    # on a sheet unless the type says otherwise (a number is a field with its own "−" and "+", decision of 27 November)
+    def form_partial_for(field)
+      partial_for(field)
+    end
+
+    def form_flow_group(field)
+      flow_group(field)
+    end
+
     # How its value is worked out, as the template editor says it in a sentence (the key of its text, read with the
     # labels of the fields it reads: SheetTemplates::FieldFormHelper#field_calculation), nil for a value typed
     def calculation_key(_field)
@@ -138,6 +148,12 @@ module FieldTypes
     # The value as read on the summary sheet
     def summary_text(value, _field)
       value
+    end
+
+    # The value beside the name of an entry (listed: "Anneau · Rare" under the name of an item): its text, after the
+    # abbreviation of its field when it has one
+    def listed_text(value, field)
+      [field["abbreviation"], summary_text(value, field)].compact_blank.join(" ")
     end
 
     # The value it starts the game with, from what was worked out at creation (initial_from)

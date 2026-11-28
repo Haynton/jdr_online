@@ -20,23 +20,7 @@ module AbilityMethods
     end
 
     def score_errors(scores, method)
-      values = method["values"]
-      outside = scores.reject { |_ability, score| values.include?(score) }
-      outside_errors = outside.map do |ability, _score|
-        [[ability], :not_in_standard_array, { values: values.join(", ") }]
-      end
-      outside_errors + placed_too_often_errors(scores.except(*outside.keys), values)
-    end
-
-    private
-
-    # A value typed more often than the array has it: every ability holding it is refused
-    def placed_too_often_errors(scores, values)
-      scores.group_by { |_ability, score| score }.filter_map do |value, holders|
-        next if holders.size <= values.count(value)
-
-        [holders.map(&:first), :standard_array_value_taken, { value: value }]
-      end
+      placement_errors(scores, method["values"], outside: :not_in_standard_array, taken: :standard_array_value_taken)
     end
   end
 end

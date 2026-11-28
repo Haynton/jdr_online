@@ -30,12 +30,21 @@ module CharacterSheets
       @fields.select { |field| field["type"] == "ability" }
     end
 
-    # The score typed, plus the bonus placed on it (the bonus is kept apart, decision)
+    # The score typed, plus the bonus placed on it and the points of its feats (both kept apart, decisions); a magic
+    # item that sets the ability to a score (Amulet of Health: 19) raises it to that score, never lowers it
     def ability_scores
       ability_fields.to_h do |field|
-        score = @sheet[field["key"]]
-        [field["key"], score.is_a?(Integer) ? score + ability_bonuses[field["key"]].to_i : nil]
+        key = field["key"]
+        score = @sheet[key]
+        next [key, nil] unless score.is_a?(Integer)
+
+        raised = score + ability_bonuses[key].to_i + @play_state.ability_increases[key].to_i
+        [key, [raised, magic_scores[key].to_i].max]
       end
+    end
+
+    def magic_scores
+      @play_state.magic_effects.to_h["abilities"].to_h
     end
 
     def ability_bonuses

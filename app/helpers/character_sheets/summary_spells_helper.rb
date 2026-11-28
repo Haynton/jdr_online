@@ -11,7 +11,19 @@ module CharacterSheets
       declared_groups = character.game_table.spell_groups
       (always_prepared.any? ? [[t("#{SCOPE}.always_prepared"), always_prepared]] : []) +
         chosen.group_by { |spell| spell["level"].to_i }
-              .map { |level, spells| [summary_spell_level_title(declared_groups, level), spells] }
+              .map { |level, spells| [summary_spell_level_title(declared_groups, level), spells] } +
+        unprepared_spellbook_group(character)
+    end
+
+    # The spells of the spellbook of a wizard it has not prepared, last (« Aussi dans votre Grimoire »)
+    def unprepared_spellbook_group(character)
+      prepared = character.spells.to_a.pluck("key")
+      unprepared = character.spellbook.to_a.reject { |spell| prepared.include?(spell["key"]) }
+      return [] if unprepared.empty?
+
+      label = character.spellbook_of_class.settings.to_h["label"]
+      sorted = unprepared.sort_by { |spell| [spell["level"].to_i, spell["name"]] }
+      [[t("#{SCOPE}.unprepared_spellbook", label: label), sorted]]
     end
 
     # A spell chosen (a copy in the character, a hash) read as an entry of the catalog, so that its details are

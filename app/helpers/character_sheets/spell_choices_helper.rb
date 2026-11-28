@@ -92,6 +92,17 @@ module CharacterSheets
       spell_chosen_count(character, group) > group.allowed_count
     end
 
+    # « Grimoire : 5 sur 6 », worked out on the spells written (spell_choices_controller.js counts them while ticking)
+    def spellbook_status(book)
+      t("#{SCOPE}.book_chosen", label: book.label, chosen: book.keys.size, allowed: book.size)
+    end
+
+    def spellbook_status_data(book)
+      template = t("#{SCOPE}.book_chosen", label: book.label, chosen: CHOSEN_PLACEHOLDER, allowed: ALLOWED_PLACEHOLDER)
+      { spell_choices_target: "status", count_for: "book", allowed: book.size, template: template,
+        invalid: ("" if book.keys.size > book.size) }
+    end
+
     def spell_group_data(group)
       { spell_choices_target: "group", allowed: group.allowed_count,
         template: t("#{SCOPE}.chosen", chosen: CHOSEN_PLACEHOLDER, allowed: ALLOWED_PLACEHOLDER) }
@@ -131,7 +142,7 @@ module CharacterSheets
     end
 
     def spell_chosen_count(character, group)
-      character.spells.count { |spell| group.keys.include?(spell["key"]) }
+      character.spells.count { |spell| !spell[CharacterSheets::FeatSpells::MARK] && group.keys.include?(spell["key"]) }
     end
   end
 end

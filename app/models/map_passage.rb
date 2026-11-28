@@ -8,11 +8,14 @@
 #                                         # the walls a room or stones draw by themselves (MapFloors#walls_block?)
 #
 # The walls, low walls and doors put by hand, the water, the objects are all crossed. A door put in the wall of a
-# floor is its way in. On a map played on a picture, only the cells painted are blocked. Cells counted from 0
+# floor is its way in. On a map played on a picture, only the cells painted are blocked. Cells counted from 0.
+# Its moves step by step: MapPassage::Steps
 class MapPassage
   DOOR = "door".freeze
   # The four neighbours of a cell
   NEIGHBOUR_OFFSETS = [[1, 0], [-1, 0], [0, 1], [0, -1]].freeze
+
+  include Steps
 
   def initialize(map)
     @layout = map.layout.to_h

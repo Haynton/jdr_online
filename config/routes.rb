@@ -34,7 +34,10 @@ Rails.application.routes.draw do
       # before the editor, in a window
       resource :map_list, only: %i[edit update]
       resource :board_map, only: %i[update destroy]
-      resources :board_tokens, only: %i[create update destroy]
+      resources :board_tokens, only: %i[create update destroy] do
+        # A token dragged on the board: the game master moves any, a player their character and its companions
+        resource :move, only: :update, module: :board_tokens
+      end
       resource :board_clearing, only: :create
       resources :game_maps, only: %i[new create edit update destroy], path: "maps" do
         resource :layout, only: :update, module: :game_maps
@@ -76,7 +79,9 @@ Rails.application.routes.draw do
       resource :purse, only: :update
       # A player changes the spells of their character, from the game room (whenever they like, said in the chat)
       resource :spell_choice, only: %i[edit update]
+      resource :spellbook_copy, only: :create
       resource :weapon_mastery_choice, only: %i[edit update]
+      resource :class_choice, only: %i[edit update]
       # The game master gives the next level to a player's character; the player then makes the choices of that level
       resource :level_grant, only: :create
       resource :level_up, only: %i[new create]

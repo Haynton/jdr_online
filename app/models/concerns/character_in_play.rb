@@ -15,6 +15,8 @@ module CharacterInPlay
     include CharacterSpellSlots
     include CharacterHitDice
     include CharacterWeaponMasteries
+    include CharacterClassChoices
+    include CharacterFeats
     include CharacterLevels
   end
 end

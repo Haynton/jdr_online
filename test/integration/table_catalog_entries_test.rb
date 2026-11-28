@@ -104,6 +104,46 @@ class TableCatalogEntriesTest < ActionDispatch::IntegrationTest
     assert_not @game_table.catalog_entries.exists?(key: added.key)
   end
 
+  test "an item shows what it brings under its name, and only the fields of its category" do
+    @sheet_template.update!(item_fields: { "fields" => [
+      { "key" => "category", "label" => "Catégorie", "section" => "Général", "listed" => true, "type" => "choice",
+        "options" => %w[Arme Anneau] },
+      { "key" => "weight", "label" => "Poids", "unit" => "kg", "section" => "Général", "type" => "number", "min" => 0,
+        "max" => 100, "step" => 0.001 },
+      { "key" => "damage", "label" => "Dégâts", "section" => "Arme", "type" => "text", "short" => true,
+        "shown_with" => { "field" => "category", "values" => ["Arme"] } },
+      { "key" => "finesse", "label" => "Finesse", "section" => "Arme", "type" => "boolean",
+        "shown_with" => { "field" => "category", "values" => ["Arme"] } },
+      { "key" => "rarity", "label" => "Rareté", "section" => "Magie", "listed" => true, "type" => "choice",
+        "options" => %w[rare], "labels" => ["Rare"] },
+      { "key" => "attunement", "label" => "Demande un lien", "section" => "Magie", "listed" => true, "type" => "boolean" },
+      { "key" => "item_ac_bonus", "label" => "Bonus de CA magique", "abbreviation" => "CA", "section" => "Magie",
+        "listed" => true, "type" => "number", "min" => 1, "max" => 2, "labels" => ["+1", "+2"] },
+      { "key" => "group", "label" => "Groupe", "type" => "choice", "internal" => true, "options" => ["musical_instrument"] }
+    ] })
+    @sheet_template.catalog_entries.create!(kind: "item", key: "ring", name: "Anneau de protection",
+                                            properties: { "category" => "Anneau", "rarity" => "rare",
+                                                          "attunement" => true, "item_ac_bonus" => 1 })
+    get edit_game_table_catalog_entry_path(@game_table, "ring", kind: "item"), headers: FRAME_HEADERS
+
+    assert_select "header p", text: "Anneau · Rare · Demande un lien · CA +1"
+    assert_select "section select[name='catalog_entry[properties][category]']", count: 0
+    assert_select "select[name='catalog_entry[properties][category]']"
+    assert_select "[data-controller=number-stepper][data-number-stepper-increment-value='1']" do
+      assert_select "input[type=number][name='catalog_entry[properties][weight]']"
+      assert_select "span", text: "kg"
+    end
+    assert_select "fieldset[hidden][disabled][data-field=category] input[name='catalog_entry[properties][damage]']"
+    assert_select "section[hidden] h3", text: "Arme"
+    assert_select "section:not([hidden]) h3", text: "Magie"
+
+    patch game_table_catalog_entry_path(@game_table, "ring", kind: "item"),
+          params: { catalog_entry: { name: "Anneau de protection",
+                                     properties: { category: "Anneau", damage: "1d4", rarity: "rare", attunement: "1" } } }
+    copy = @game_table.catalog_entries.find_by!(key: "ring")
+    assert_equal({ "category" => "Anneau", "rarity" => "rare", "attunement" => true }, copy.properties)
+  end
+
   test "an entry saved in the window refreshes the list behind" do
     post game_table_catalog_entries_path(@game_table, kind: "item"),
          params: { catalog_entry: { name: "Corde", properties: { category: "Arme" } } }, headers: FRAME_HEADERS

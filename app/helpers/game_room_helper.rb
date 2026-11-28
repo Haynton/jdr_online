@@ -8,7 +8,8 @@ module GameRoomHelper
     "map_tools" => "shared/icons/cloud_fog", "dice" => "shared/icons/dices",
     "items" => "shared/icons/backpack", "inventory" => "shared/icons/backpack",
     "spells" => "shared/icons/wand_sparkles", "skills" => "shared/icons/list_checks",
-    "features" => "shared/icons/sparkles", "details" => "shared/icons/scroll_text"
+    "features" => "shared/icons/sparkles", "details" => "shared/icons/scroll_text",
+    "prices" => "shared/icons/coins"
   }.freeze
   # Written in full, so that a search for the file name finds them (rule of the project)
   PANEL_PARTIALS = {
@@ -16,7 +17,7 @@ module GameRoomHelper
     "maps" => "game_rooms/panels/maps", "items" => "game_rooms/panels/items",
     "inventory" => "game_rooms/panels/inventory", "spells" => "game_rooms/panels/spells",
     "skills" => "game_rooms/panels/skills", "features" => "game_rooms/panels/features",
-    "details" => "game_rooms/panels/details",
+    "details" => "game_rooms/panels/details", "prices" => "game_rooms/panels/prices",
     "dice" => "game_rooms/panels/dice"
   }.freeze
   # The sections of the window of the settings, written in full too (GameRoom#settings_sections)

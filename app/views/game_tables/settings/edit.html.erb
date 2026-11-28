@@ -1,21 +1,23 @@
 <%# The second step of the creation of a table: the settings that depend on the template chosen at the first step.
     Laid out as a list of settings (decision, after a first try that stacked them): one line each, its name and its
     help on the left, its control on the right (under them on a narrow screen), lines split by a thin rule, under the
-    title of their group. Two columns from 1280 px (decision): the characters on the left, the game and the AI on the
-    right; narrower, a column would squeeze the help beside a list, so the groups follow each other, 672 px wide at
-    most. The starting level only when the template has levels: a number between "−" and "+", like the abilities of
-    a character sheet. Then "the players choose their level": its name is the label of its switch, the help stays text
-    (decision: a whole line that toggled was surprising), and the invisible check box over the switch is sized like its track
-    (size-full: Safari keeps a check box at its own 13 px, in the top left corner, whatever its inset). When it is on, the starting level is the one offered to the players, who
-    may change it on the first page of their character.
-    The form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
+    title of their group. Two columns from 1536 px (decision; from 1280 px until 27 November, a column of 545 px
+    squeezed the long help of a rule beside its list): the characters on the left, the game and the AI on the right;
+    narrower, a column would squeeze the help beside a list, so the groups follow each other over the full width
+    (decision of 27 November: at 672 px at most, a long help was squeezed beside its list on a medium screen). The
+    starting level only when the template has levels: a number between "−" and "+", like the abilities of a character
+    sheet. Then "the players choose their level": its name is the label of its switch, the help stays text (decision:
+    a whole line that toggled was surprising), and the invisible check box over the switch is sized like its track
+    (size-full: Safari keeps a check box at its own 13 px, in the top left corner, whatever its inset). When it is on,
+    the starting level is the one offered to the players, who may change it on the first page of their character. The
+    form fills the rest of the page (flex-1): its buttons go to the bottom of the screen, as on the other steps %>
 <%= creation_page(current_step: "settings", game_table: @game_table) do %>
   <%= page_header(title: t(".title"), subtitle: t(".subtitle")) %>
   <%= simple_form_for @game_table, url: game_table_settings_path(@game_table), method: :patch,
                                    html: { id: creation_form_id, class: "flex flex-1 flex-col" } do |form| %>
     <%= form_error_notification(form) %>
 
-    <div class="grid max-w-2xl gap-x-16 gap-y-10 xl:max-w-none xl:grid-cols-2">
+    <div class="grid gap-x-16 gap-y-10 2xl:grid-cols-2">
       <% if @game_table.asks_starting_level? %>
         <section class="min-w-0" aria-labelledby="characters-settings-title">
           <h2 id="characters-settings-title" class="<%= settings_group_title_classes %>"><%= t(".characters") %></h2>
@@ -37,7 +39,12 @@
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "ability_method_choice",
                                                               methods: @game_table.ability_methods %>
             <% end %>
-            <% %w[hit_point_method starting_equipment_method].each do |rule| %>
+            <% if @game_table.asks_ability_roll_settings? %>
+              <% %i[ability_scores_typed ability_rerolls].each do |attribute| %>
+                <%= render "game_tables/settings/switch", form: form, attribute: attribute, hint: t(".#{attribute}_hint") %>
+              <% end %>
+            <% end %>
+            <% %w[hit_point_method starting_equipment_method higher_level_equipment_method].each do |rule| %>
               <% next if @game_table.rule_methods(rule).empty? %>
               <%= render "game_tables/settings/rule_choice", form: form, attribute: "#{rule}_choice",
                                                               methods: @game_table.rule_methods(rule) %>
@@ -45,6 +52,13 @@
             <% if @game_table.asks_skill_choices? %>
               <%= render "game_tables/settings/switch", form: form, attribute: :limit_skill_choices,
                                                          hint: t(".limit_skill_choices_hint") %>
+              <%= render "game_tables/settings/switch", form: form, attribute: :players_change_given_choices,
+                                                         hint: t(".players_change_given_choices_hint") %>
+            <% end %>
+            <% if @game_table.asks_feats? %>
+              <% %i[origin_feats level_feats].each do |attribute| %>
+                <%= render "game_tables/settings/switch", form: form, attribute: attribute, hint: t(".#{attribute}_hint") %>
+              <% end %>
             <% end %>
           </div>
         </section>

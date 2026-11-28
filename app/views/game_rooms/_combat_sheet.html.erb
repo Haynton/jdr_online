@@ -22,6 +22,17 @@
       <%= render "game_rooms/fighter_badges", fighter: fighter, group: group,
                                               stats: player ? combat_player_stats(fighter.character, computed) : [] %>
     </div>
+    <% if player %>
+      <button type="button" hidden aria-pressed="false" class="<%= board_map_button_classes %> mt-3 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+              data-place-label="<%= t("game_rooms.board.place_creature", name: name) %>"
+              data-needs-map-label="<%= t("game_rooms.board.needs_map") %>"
+              data-already-placed-label="<%= t("game_rooms.board.player_already_placed", name: name) %>"
+              data-room-board-target="creaturePlacer" data-action="room-board#takeCreature"
+              data-room-board-id-param="<%= fighter.character.id %>" data-room-board-name-param="<%= name %>"
+              data-room-board-kind-param="pc">
+        <%= t("game_rooms.board.place_player") %>
+      </button>
+    <% end %>
   </header>
 
   <div class="mt-4">

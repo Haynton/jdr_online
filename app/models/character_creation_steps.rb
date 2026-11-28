@@ -114,7 +114,8 @@ class CharacterCreationSteps
 
   def shown?(declared)
     effect = declared["only_with_effect"]
-    effect.nil? || picked_effects.any? { |effects| effects.key?(effect) }
+    (effect.nil? || picked_effects.any? { |effects| effects.key?(effect) }) &&
+      CreationStepBehaviors.of(declared).all? { |behavior| behavior.shown?(@game_table, picked_effects, @sheet) }
   end
 
   # The effects of the options picked in the lists of the sheet (the class chosen, its background...)

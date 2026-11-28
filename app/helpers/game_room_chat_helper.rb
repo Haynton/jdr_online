@@ -4,6 +4,7 @@ module GameRoomChatHelper
   CHAT_EVENT_TEXTS = {
     "item_given" => "game_rooms.chat.events.item_given", "money_given" => "game_rooms.chat.events.money_given",
     "spells_changed" => "game_rooms.chat.events.spells_changed",
+    "spell_copied" => "game_rooms.chat.events.spell_copied",
     "dice_rolled" => "game_rooms.chat.events.dice_rolled",
     "dice_rolled_by_game_master" => "game_rooms.chat.events.dice_rolled_by_game_master",
     "initiative_rolled" => "game_rooms.chat.events.initiative_rolled",
@@ -21,7 +22,8 @@ module GameRoomChatHelper
     "weapon_masteries_changed" => "game_rooms.chat.events.weapon_masteries_changed",
     "level_granted" => "game_rooms.chat.events.level_granted",
     "level_reached" => "game_rooms.chat.events.level_reached",
-    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled"
+    "level_reached_rolled" => "game_rooms.chat.events.level_reached_rolled",
+    "class_choices_changed" => "game_rooms.chat.events.class_choices_changed"
   }.freeze
 
   # A message in a bubble, rectangular with rounded corners (decision): the others on surface-raised, the reader's own

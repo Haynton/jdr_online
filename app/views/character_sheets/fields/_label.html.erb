@@ -1,0 +1,18 @@
+<%# The label of a field (its unit said to screen readers, « Poids (kg) »), and in a block of with_help_bubbles, after it,
+    the button (i) that opens its help in a bubble (CharacterSheets::HelpBubblesHelper), named « Aide : Poids » and shown
+    by help_bubble_controller.js. hint: the help of the field, or nil %>
+<% label = capture do %><%= field["label"] %><% if field["unit"] %><span class="sr-only"> (<%= field["unit"] %>)</span><% end %><% end %>
+<% if sheet_help_bubble?(hint) %>
+  <div class="<%= CharacterSheets::HelpBubblesHelper::LABEL_ROW_CLASSES %>">
+    <%= label_tag sheet_field_id(field), label, class: CharacterSheets::HelpBubblesHelper::LABEL_CLASSES %>
+    <button type="button" hidden class="<%= CharacterSheets::HelpBubblesHelper::BUTTON_CLASSES %>"
+            aria-expanded="false" aria-controls="<%= sheet_help_hint_id(field) %>"
+            aria-label="<%= t("game_tables.characters.new.about", label: field["label"]) %>"
+            title="<%= t("game_tables.characters.new.about", label: field["label"]) %>"
+            data-help-bubble-target="button" data-action="help-bubble#toggle">
+      <%= render "shared/icons/info" %>
+    </button>
+  </div>
+<% else %>
+  <%= label_tag sheet_field_id(field), label, class: SimpleFormFieldClasses::LABEL %>
+<% end %>

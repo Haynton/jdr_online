@@ -72,7 +72,7 @@ class CombatStrip
 
     tokens = board_map.board_tokens.includes(:character)
     seen_tokens = @game_room.game_master? ? tokens : tokens.reject(&:hidden?)
-    seen_tokens.map(&:character).uniq.map do |character|
+    seen_tokens.map(&:character).uniq.reject(&:pc?).map do |character|
       fighter_of(character, character.npc? ? :npc : :enemy)
     end
   end

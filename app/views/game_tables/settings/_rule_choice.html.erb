@@ -1,13 +1,26 @@
 <%# A rule of the table with the ways its template offers to play it (TableRules): the scores of the abilities, the hit
     points of the levels after the first, the starting equipment. Its ways by their labels (in the words of the game),
-    then the player's choice where the rule has one, made while making their character.
-    attribute: ability_method_choice, hit_point_method_choice or starting_equipment_method_choice %>
+    then the player's choice where the rule has one, made while making their character. Under them, what each way makes
+    the player do, when the template says it (summary: the name of a rule says little to a new game master).
+    attribute: ability_method_choice, hit_point_method_choice, starting_equipment_method_choice or
+    higher_level_equipment_method_choice %>
 <% hint_id = "#{attribute.dasherize}-hint" %>
 <div class="<%= setting_line_classes %>">
   <div class="min-w-0">
     <%= form.label attribute, class: "text-sm font-semibold text-ink" %>
     <p id="<%= hint_id %>" class="mt-1 text-sm text-muted"><%= t("game_tables.settings.edit.#{attribute}_hint") %></p>
     <%= form.error attribute, class: "mt-1 text-sm text-error-ink first-letter:uppercase" %>
+    <% summarized = methods.select { |method| method["summary"].present? } %>
+    <% if summarized.any? %>
+      <dl class="mt-2 flex flex-col gap-1 text-sm">
+        <% summarized.each do |method| %>
+          <div>
+            <dt class="inline font-semibold text-ink"><%= method["label"] %></dt>
+            <dd class="inline text-muted"><%= t("game_tables.settings.edit.method_summary", summary: method["summary"]) %></dd>
+          </div>
+        <% end %>
+      </dl>
+    <% end %>
   </div>
   <span class="relative block w-full shrink-0 @md:w-64">
     <%= form.select attribute, rule_method_options(attribute.delete_suffix("_choice"), methods), {}, aria: { describedby: hint_id },

@@ -1,7 +1,9 @@
 <%# A spell or an item of the catalog of a table: in the window of the step "Spells and items" (its title bar: the
     name, what it is, the close cross; GameTables::CatalogEntryDialogHelper), or, opened directly or without
     JavaScript, a page of the step. title: its name, or "New spell" %>
-<% subtitle = t("game_tables.catalog_entries.window.kind.#{@entry.kind}") %>
+<%# Under the name, what it brings (its values marked listed: "Anneau · Rare · Demande un lien"), or what it is %>
+<% recap = catalog_entry_recap(catalog_entry_shown_fields(@game_table, @entry.kind), @entry.properties) %>
+<% subtitle = recap.presence || t("game_tables.catalog_entries.window.kind.#{@entry.kind}") %>
 <% if catalog_entry_in_dialog? %>
   <%= turbo_frame_tag GameTables::CatalogEntryDialogHelper::FRAME, class: "flex min-h-0 flex-1 flex-col" do %>
     <header class="flex shrink-0 items-start justify-between gap-4 border-b border-line py-4 pr-3 pl-6">

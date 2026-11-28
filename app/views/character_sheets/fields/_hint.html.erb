@@ -1,0 +1,10 @@
+<%# The help of a field under it; in a block of with_help_bubbles, the bubble its button (i) opens, laid over the fields
+    below by help_bubble_controller.js (CharacterSheets::HelpBubblesHelper::BUBBLE_CLASSES). hint: the help, or nil %>
+<% if hint %>
+  <% if sheet_help_bubble?(hint) %>
+    <p id="<%= sheet_help_hint_id(field) %>" class="<%= SimpleFormFieldClasses::HINT %>"
+       data-help-bubble-target="bubble" data-bubble-classes="<%= CharacterSheets::HelpBubblesHelper::BUBBLE_CLASSES %>"><%= hint %></p>
+  <% else %>
+    <p id="<%= sheet_help_hint_id(field) %>" class="<%= SimpleFormFieldClasses::HINT %>"><%= hint %></p>
+  <% end %>
+<% end %>

@@ -5,9 +5,10 @@
 class GameRoom
   # The bar of the room (maquette C, decision of 26 November): its tools in groups, each group under a short name.
   # The map tools come with their own branch (« Bientôt » until then); the initiative roll will join the panel of
-  # the dice (decision)
+  # the dice (decision); the prices of what is paid without being carried (the inn, a hireling) only when the template
+  # declares them (TemplateCopy#price_lists)
   GAME_MASTER_TOOL_GROUPS = {
-    "map" => %w[maps map_tools], "library" => %w[npcs items], "dice" => %w[dice]
+    "map" => %w[maps map_tools], "library" => %w[npcs items prices], "dice" => %w[dice]
   }.freeze
   # A player's sheet in its tools (decision of 26 November: every piece of information of the sheet has its panel):
   # their character in a fight, their skills, their inventory, their spells, their features, the rest of their sheet
@@ -38,7 +39,7 @@ class GameRoom
   # A tool with nothing in it is left out: « Sorts » for a character without spells, « Compétences » for a template
   # without bonus rows, « Capacités » for options that name no features
   def tool_groups
-    return GAME_MASTER_TOOL_GROUPS if game_master?
+    return game_master_tool_groups if game_master?
 
     PLAYER_TOOL_GROUPS.transform_values { |panels| panels - empty_player_panels }
   end
@@ -86,6 +87,12 @@ class GameRoom
               .sort_by { |participation| [participation.game_master? ? 0 : 1, participation.user.username.downcase] }
   end
 
+  def game_master_tool_groups
+    return GAME_MASTER_TOOL_GROUPS if game_table.price_lists.any?
+
+    GAME_MASTER_TOOL_GROUPS.transform_values { |panels| panels - %w[prices] }
+  end
+
   def empty_player_panels
     character = own_character
     panels = []
@@ -112,6 +119,13 @@ class GameRoom
   def items
     return CatalogEntry.none unless game_master?
 
-    Catalogs::TableCatalog.new(game_table).entries("item").reorder(:name)
+    Catalogs::TableCatalog.new(game_table).entries("item").where.not("properties ? 'applies_to'").reorder(:name)
+  end
+
+  # The magic the game master may put on an item when giving it (Catalogs::Enchantments)
+  def enchantments
+    return [] unless game_master?
+
+    Catalogs::Enchantments.new(game_table).all
   end
 end

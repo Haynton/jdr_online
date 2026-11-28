@@ -780,7 +780,10 @@ export default class extends Controller {
     this.stroke.removing ??= Boolean(this.layout.tokenAt(column, row))
     if (this.stroke.removing) return this.layout.removeTokenAt(column, row)
 
-    return this.layout.placeToken(Number(this.tool.key), column, row)
+    const characterId = Number(this.tool.key)
+    if (this.tokenCharactersValue[characterId]?.kind === "pc") return this.layout.placePlayerToken(characterId, column, row)
+
+    return this.layout.placeToken(characterId, column, row)
   }
 
   // A creature of the bestiary: copied into the table by the server on the first cell of the stroke, then its token is

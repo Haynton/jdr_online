@@ -37,8 +37,12 @@ class LevelUpTest < ActiveSupport::TestCase
                                             level_up.subclass_field, level_up.expertise_count]
     assert_equal 8, level_up.save
     @character.reload
-    assert_equal [4, 17, { "current" => 28, "max" => 36 }, nil],
+    assert_equal [4, 15, { "current" => 28, "max" => 36 }, nil],
                  [@character.sheet["level"], @character.sheet["strength"], @character.sheet["hp"], @character.level_up_to]
+    # The +2 is kept with the feat, apart from the score typed, and counts in the score
+    assert_equal [{ "key" => "ability-score-improvement", "level" => 4, "abilities" => { "strength" => 2 } }],
+                 @character.feats
+    assert_equal 17, @character.computed_sheet_values[:scores]["strength"]
     assert_equal "level_reached", @game_table.chat_messages.last.event_key
   end
 

@@ -6,11 +6,12 @@
 # vie : ..."), in the language of the page
 class SheetTemplateValidator < ActiveModel::Validator
   CHECKS = [
-    SheetTemplates::FieldsCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
+    SheetTemplates::FieldsCheck, SheetTemplates::ShownWithCheck, SheetTemplates::EffectsCheck, SheetTemplates::StepsCheck,
     SheetTemplates::SpellGroupsCheck, SheetTemplates::SpellSlotsCheck, SheetTemplates::RuleMethodsCheck,
     SheetTemplates::ConditionsCheck, SheetTemplates::DiceRollsCheck, SheetTemplates::WeaponAttacksCheck,
-    SheetTemplates::DeathSavesCheck, SheetTemplates::FightingStylesCheck,
-    SheetTemplates::PresetsCheck
+    SheetTemplates::DeathSavesCheck, SheetTemplates::FightingStylesCheck, SheetTemplates::ClassChoicesCheck,
+    SheetTemplates::FeatsCheck, SheetTemplates::AttunementCheck, SheetTemplates::PriceListsCheck,
+    SheetTemplates::GridCheck, SheetTemplates::PresetsCheck
   ].freeze
 
   def validate(sheet_template)

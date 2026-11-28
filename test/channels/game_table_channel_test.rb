@@ -40,6 +40,32 @@ class GameTableChannelTest < ActionCable::Channel::TestCase
     assert_has_stream Turbo::StreamsChannel.send(:stream_name_from, [@game_table, "game_master"])
   end
 
+  test "the stream of a participation is for its own person only, never for the game master nor another player" do
+    participation = @game_table.participations.find_by!(user: @player)
+    other_player = create_user("autre")
+    @game_table.participations.create!(user: other_player, role: "player")
+    own_stream = GameTableChannel.signed_stream_name_for(@game_table, participation:)
+
+    [@game_master, other_player].each do |stranger|
+      listen_as(stranger, own_stream)
+      assert subscription.rejected?, stranger.username
+    end
+
+    listen_as(@player, own_stream)
+    assert subscription.confirmed?
+    assert_has_stream Turbo::StreamsChannel.send(:stream_name_from, [@game_table, participation])
+  end
+
+  test "the stream of a participation at another table is refused, even for its own person" do
+    other_table = GameTableCreator.new(user: @game_master, attributes: { name: "Le Phare" },
+                                       sheet_template: SheetTemplate.create!(name: "Autre", locale: "fr")).call
+    elsewhere = other_table.participations.create!(user: @player, role: "player")
+
+    listen_as(@player, GameTableChannel.signed_stream_name_for(@game_table, participation: elsewhere))
+
+    assert subscription.rejected?
+  end
+
   test "a player removed from the table no longer hears it" do
     signed_stream_name = GameTableChannel.signed_stream_name_for(@game_table)
     @game_table.participations.find_by!(user: @player).destroy

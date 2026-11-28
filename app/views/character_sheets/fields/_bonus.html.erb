@@ -1,18 +1,23 @@
 <%# A saving throw or a skill: the player only ticks its proficiency. Its bonus, on the right, is the modifier of its
     ability (abbreviation beside the name), plus the proficiency bonus when ticked (CharacterSheets::Calculator,
     and character_sheet_controller.js while the player types). Marked "Proposée" when the option picked in a list
-    offers it (skill_choices: the class of the character), by data-offered, set by the controller. A skill the
+    offers it (skill_choices: the class of the character), by data-offered, set by the controller; « Donnée par
+    Soldat » when an option or a feat gives it (sheet_given_by). A skill the
     character may give expertise to has a box « Expertise » too (sheet_expertise_check_box): its proficiency counts
     twice %>
 <div class="group flex items-center gap-3 border-b border-line py-2"
      data-character-sheet-target="bonusRow" data-key="<%= field["key"] %>">
-  <%= sheet_check_box(character, field) %>
+  <% given_by = sheet_given_by(character, field) %>
+  <%= sheet_check_box(character, field, locked: given_by.present? && character.given_locked?(field["key"])) %>
   <%= label_tag sheet_field_id(field), class: "min-w-0 flex-1 cursor-pointer text-sm text-ink" do %>
     <%= field["label"] %>
     <span class="text-xs text-muted"><%= sheet_ability_abbreviation(all_fields, field["based_on"]) %></span>
     <span class="hidden text-xs font-medium text-brass group-data-offered:inline">
       · <%= t("game_tables.characters.new.offered") %>
     </span>
+    <% if given_by %>
+      <span class="inline-block text-xs font-medium text-brass">· <%= t("game_tables.characters.new.given_by", source: given_by) %></span>
+    <% end %>
     <span class="sr-only"><%= t("game_tables.characters.new.proficient") %></span>
   <% end %>
   <% if (expertise_box = sheet_expertise_check_box(character, field)) %>
