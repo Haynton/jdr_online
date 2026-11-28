@@ -331,6 +331,7 @@ fr:
           invalid_level_table: "%{part} › %{field} › %{option} : la table « %{table} » des sorts doit donner un nombre pour chacun des 20 niveaux"
           invalid_spellbook: "%{part} › %{field} › %{option} : le grimoire doit avoir un libellé, un nombre de sorts au départ et par niveau, et le groupe de sorts qui y prépare"
           invalid_attunement: "le nombre d'objets liés à la fois (attunement) doit être un nombre entier d'au moins 1"
+          invalid_grid: "la longueur d'une case (grid) doit être un nombre positif, avec son unité en %{count} caractères au plus"
           invalid_slot_table: "%{part} › %{field} › %{option} : la table « %{table} » des emplacements de sorts doit donner, pour chacun des 20 niveaux, une liste de nombres entiers positifs ou nuls"
           invalid_parameter_value: "%{part} › %{field} : le réglage « %{parameter} » doit être %{expected}"
           invalid_spell_group_key: "Le groupe de sorts « %{group} » : la clé « %{key} » doit commencer par une lettre minuscule, puis ne contenir que des lettres minuscules sans accent, des chiffres et _"
@@ -1291,6 +1292,10 @@ fr:
       hand: "Déplacer la carte"
       hand_tip: "Déplacer la carte (H). Aussi : Espace + glisser, clic de la molette + glisser, deux doigts sur le pavé tactile ou l'écran."
       hint: "Cliquez sur une case pour placer « %{name} ». Maj + clic pour en placer plusieurs. Échap pour arrêter."
+      move_cells:
+        one: "%{count} case"
+        other: "%{count} cases"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Placez d'abord une carte sur le plateau (panneau Cartes)."
       place: "Placer"
       place_creature: "Placer %{name} sur la carte"

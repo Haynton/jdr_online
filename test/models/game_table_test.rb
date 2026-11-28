@@ -122,6 +122,16 @@ class GameTableTest < ActiveSupport::TestCase
     assert_equal [], GameTable.new(name: "Sans modèle").conditions
   end
 
+  test "a table reads the length of a cell of its template as it is now, nothing when the template says none" do
+    sheet_template = SheetTemplate.new(name: "Fantasy", locale: "fr",
+                                       character_fields: { "grid" => { "cell_length" => 1.5, "unit" => "m" } })
+    game_table = GameTable.new(name: "Les Marches du Nord")
+    game_table.use_sheet_template(sheet_template)
+
+    assert_equal({ "cell_length" => 1.5, "unit" => "m" }, game_table.grid)
+    assert_equal({}, GameTable.new(name: "Sans modèle").grid)
+  end
+
   test "a table without a template has an empty copy" do
     game_table = GameTable.new(name: "Les Marches du Nord", template_snapshot: { "character_fields" => {} })
 

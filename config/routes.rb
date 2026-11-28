@@ -34,7 +34,10 @@ Rails.application.routes.draw do
       # before the editor, in a window
       resource :map_list, only: %i[edit update]
       resource :board_map, only: %i[update destroy]
-      resources :board_tokens, only: %i[create update destroy]
+      resources :board_tokens, only: %i[create update destroy] do
+        # A token dragged on the board: the game master moves any, a player their character and its companions
+        resource :move, only: :update, module: :board_tokens
+      end
       resource :board_clearing, only: :create
       resources :game_maps, only: %i[new create edit update destroy], path: "maps" do
         resource :layout, only: :update, module: :game_maps

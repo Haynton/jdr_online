@@ -5,6 +5,7 @@
   "banner_color": "arcane",
   "description": "Des enquêteurs face à l'indicible : compétences en pourcentage, santé mentale, et une fiche sur une seule page.",
   "character_fields": {
+    "grid": {"cell_length": 1.5, "unit": "m"},
     "fields": [
       { "key": "occupation", "label": "Profession", "type": "text", "section": "Identité", "visible_to_others": true },
       { "key": "age", "label": "Âge", "type": "number", "min": 15, "max": 90, "section": "Identité", "visible_to_others": true },

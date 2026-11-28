@@ -110,6 +110,13 @@ module TemplateCopy
     (declared || template_snapshot.to_h.dig("character_fields", "attunement")).to_h["limit"]
   end
 
+  # The length of a cell of the maps and its unit (character_fields.grid: { "cell_length" => 1.5, "unit" => "m" }),
+  # read in the template as it is now like the conditions; {} when it says nothing
+  def grid
+    declared = sheet_template&.character_fields.to_h["grid"]
+    (declared || template_snapshot.to_h.dig("character_fields", "grid")).to_h
+  end
+
   # The dice of the game room (character_fields.dice_rolls: its modes, the die they apply to, its initiative), read in
   # the template as it is now like the conditions; none for a template that does not declare them
   def dice_rolls

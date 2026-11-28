@@ -1,0 +1,4 @@
+<%= turbo_stream.replace BoardTokensSender::PLAYER_TOKENS_ID,
+                         partial: "game_rooms/board_tokens", locals: { game_map: @board_map, game_master: false } %>
+<%= turbo_stream.replace BoardTokensSender::OWN_TOKENS_ID,
+                         partial: "game_rooms/board_own_tokens", locals: { game_table: @game_table, participation: @participation } %>

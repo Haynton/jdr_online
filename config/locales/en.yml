@@ -360,6 +360,7 @@ en:
           invalid_level_table: "%{part} › %{field} › %{option}: the spell table “%{table}” must give a number for each of the 20 levels"
           invalid_spellbook: "%{part} › %{field} › %{option}: the spellbook needs a label, a number of spells at start and per level, and the group of spells that prepares from it"
           invalid_attunement: "the number of items attuned at a time (attunement) must be a whole number of at least 1"
+          invalid_grid: "the length of a cell (grid) must be a positive number, with its unit in %{count} characters at most"
           invalid_slot_table: "%{part} › %{field} › %{option}: the spell slot table “%{table}” must give, for each of the 20 levels, a list of whole numbers, 0 or more"
           invalid_parameter_value: "%{part} › %{field}: the setting “%{parameter}” must be %{expected}"
           invalid_spell_group_key: "The group of spells “%{group}”: the key “%{key}” must start with a lower case letter, then hold only lower case letters without accents, digits and _"
@@ -1320,6 +1321,10 @@ en:
       hand: "Move the map"
       hand_tip: "Move the map (H). Also: Space + drag, wheel click + drag, two fingers on the touchpad or the screen."
       hint: "Click a cell to place “%{name}”. Shift + click to place several. Escape to stop."
+      move_cells:
+        one: "%{count} cell"
+        other: "%{count} cells"
+      move_distance: "%{distance} %{unit}"
       needs_map: "Place a map on the board first (panel Maps)."
       place: "Place"
       place_creature: "Place %{name} on the map"

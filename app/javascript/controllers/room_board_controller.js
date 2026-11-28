@@ -2,15 +2,18 @@ import { Controller } from "@hotwired/stimulus"
 import { Turbo } from "@hotwired/turbo-rails"
 import { createSvgElement } from "map_editor/svg"
 import { renderBoardTokens } from "map_editor/token_renderer"
+import { passageOf, walkTowards, pathCost, sameCell } from "map_editor/board_moves"
 
 const CELL_SIZE = 24
+const ghostOpacity = 0.4
 const clickMovementTolerance = 5
 const menuGap = 8
 
 export default class extends Controller {
   static targets = ["map", "tokens", "creaturePlacer", "hint", "hintName", "tokenMenu", "tokenMenuTitle",
-                    "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput"]
-  static values = { hint: String, playerHint: String, tokensUrl: String, showLabel: String, hideLabel: String }
+                    "tokenVisibilityButton", "tokenRenameButton", "tokenRenameForm", "tokenNameInput", "moveBubble"]
+  static values = { hint: String, playerHint: String, tokensUrl: String, showLabel: String, hideLabel: String,
+                    gameMaster: Boolean, cellLength: Number, distanceLabel: String, cellsLabels: Object }
 
   mapTargetConnected() {
     this.drawTokens()
@@ -27,6 +30,17 @@ export default class extends Controller {
     this.closeTokenMenu()
     this.drawTokens()
     this.creaturePlacerTargets.forEach((button) => this.showCreaturePlacer(button))
+    this.followTheDragAfterDrawing()
+  }
+
+  // The tokens drawn again during a drag (a message of the table): the drag goes on, unless someone else moved or took
+  // away the token dragged
+  followTheDragAfterDrawing() {
+    const drag = this.tokenDrag
+    if (!drag?.started) return
+
+    const now = this.tokenData(String(drag.token.id))
+    now && sameCell([now.column, now.row], drag.start) ? this.showDraggedToken(drag) : this.cancelTokenDrag()
   }
 
   creaturePlacerTargetConnected(button) {
@@ -106,6 +120,7 @@ export default class extends Controller {
     if (document.querySelector("dialog[open]")) return
 
     this.closeTokenMenu()
+    this.cancelTokenDrag()
     if (this.creature) this.dropCreature()
   }
 
@@ -124,8 +139,156 @@ export default class extends Controller {
     if (this.pointerMovedSinceDown(event) || this.mapTarget.closest("[data-moving-map]")) return
     if (this.creature) return this.placeCreature(event)
 
-    const token = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-board-token-id]")
+    const token = this.tokenUnder(event)
     token ? this.openTokenMenu(token) : this.closeTokenMenu()
+  }
+
+  // With the pointer capture of the board, the events reach the board itself: the token is the one under the pointer
+  tokenUnder(event) {
+    return document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-board-token-id]")
+  }
+
+  pressToken(event) {
+    if (this.tokenDrag) return this.cancelTokenDrag()
+    if (event.button !== 0 || this.creature || this.mapTarget.closest("[data-moving-map]")) return
+
+    const token = this.tokenData(this.tokenUnder(event)?.dataset.boardTokenId)
+    if (!token || !this.mayMove(token)) return
+
+    event.preventDefault()
+    this.tokenDrag = { token, pointerId: event.pointerId, pressedAt: [event.clientX, event.clientY], started: false,
+                       start: [token.column, token.row], cell: [token.column, token.row],
+                       passage: this.passageForMoves() }
+  }
+
+  dragToken(event) {
+    const drag = this.tokenDrag
+    if (!drag || event.pointerId !== drag.pointerId) return
+    if (!drag.started && !this.movedFrom(drag.pressedAt, event)) return
+
+    if (!drag.started) this.closeTokenMenu()
+    drag.started = true
+    drag.cell = walkTowards(drag.cell, this.cellInsideTheGrid(event), drag.passage)
+    this.showDraggedToken(drag)
+    this.showDistance(this.distanceTo(drag), event)
+  }
+
+  // The cheapest way from the start, as the server counts it, never the whole way of the pointer
+  distanceTo(drag) {
+    if (drag.distanceCell && sameCell(drag.distanceCell, drag.cell)) return drag.distance
+
+    drag.distanceCell = drag.cell
+    drag.distance = pathCost(drag.start, drag.cell, drag.passage, this.gridSize()) ?? 0
+    return drag.distance
+  }
+
+  dropToken(event) {
+    const drag = this.tokenDrag
+    if (!drag || event.pointerId !== drag.pointerId) return
+
+    this.endTokenDrag()
+    if (!drag.started) return
+
+    if (sameCell(drag.cell, drag.start) || this.cellHoldsAnotherToken(drag.cell, drag.token.id)) return this.drawTokens()
+
+    const [column, row] = drag.cell
+    this.sendTokenRequest(`${this.tokensUrlValue}/${drag.token.id}/move`, "PATCH", { column, row })
+  }
+
+  cancelTokenDrag() {
+    if (!this.tokenDrag) return
+
+    this.endTokenDrag()
+    this.drawTokens()
+  }
+
+  endTokenDrag() {
+    this.tokenDrag = null
+    if (this.hasMoveBubbleTarget) this.moveBubbleTarget.hidden = true
+    this.mapTarget.querySelector("[data-drag-ghost]")?.remove()
+  }
+
+  tokenData(tokenId) {
+    return tokenId && this.tokensOfTheMap().find((token) => String(token.id) === tokenId)
+  }
+
+  // The game master moves every token; a player the tokens of their character and of its companions
+  mayMove(token) {
+    if (this.gameMasterValue) return true
+
+    const ownTokens = this.tokensTargets.find((element) => element.dataset.movableCharacterIds)
+    return JSON.parse(ownTokens?.dataset.movableCharacterIds ?? "[]").includes(token.character_id)
+  }
+
+  // The game master passes everywhere; a player stops at a wall and before a blocked cell (MapPassage)
+  passageForMoves() {
+    if (this.gameMasterValue) return null
+
+    const { blockedCells, blockedSides } = this.mapTarget.dataset
+    return passageOf(JSON.parse(blockedCells ?? "[]"), JSON.parse(blockedSides ?? "[]"))
+  }
+
+  movedFrom([pressedX, pressedY], event) {
+    return Math.hypot(event.clientX - pressedX, event.clientY - pressedY) > clickMovementTolerance
+  }
+
+  cellInsideTheGrid(event) {
+    const [column, row] = this.cellAt(event)
+    const [columns, rows] = this.gridSize()
+    return [Math.min(Math.max(column, 0), columns - 1), Math.min(Math.max(row, 0), rows - 1)]
+  }
+
+  gridSize() {
+    const { mapPreviewColumnsValue: columns, mapPreviewRowsValue: rows } = this.mapTarget.dataset
+    return [Number(columns), Number(rows)]
+  }
+
+  showDraggedToken(drag) {
+    const tokenGroup = this.mapTarget.querySelector(`[data-board-token-id="${drag.token.id}"]`)
+    if (!tokenGroup) return
+
+    this.leaveGhostAtStart(tokenGroup)
+    const [column, row] = drag.cell
+    tokenGroup.setAttribute("transform", `translate(${(column - drag.token.column) * CELL_SIZE} ${(row - drag.token.row) * CELL_SIZE})`)
+    tokenGroup.parentElement.appendChild(tokenGroup)
+  }
+
+  // A faded copy of the token on its starting cell, for the one who drags it only; it takes no pointer and no id, so
+  // nothing picks it. Put back after the tokens are drawn again, taken away with the drag (endTokenDrag)
+  leaveGhostAtStart(tokenGroup) {
+    if (this.mapTarget.querySelector("[data-drag-ghost]")) return
+
+    const ghost = tokenGroup.cloneNode(true)
+    ghost.removeAttribute("data-board-token-id")
+    ghost.removeAttribute("transform")
+    ghost.setAttribute("data-drag-ghost", "")
+    ghost.setAttribute("opacity", ghostOpacity)
+    ghost.setAttribute("pointer-events", "none")
+    giveOwnClipIds(ghost)
+    tokenGroup.before(ghost)
+  }
+
+  showDistance(cells, event) {
+    const room = this.element.getBoundingClientRect()
+    this.moveBubbleTarget.textContent = this.distanceText(cells)
+    this.moveBubbleTarget.style.left = `${event.clientX - room.left + 16}px`
+    this.moveBubbleTarget.style.top = `${event.clientY - room.top - 36}px`
+    this.moveBubbleTarget.hidden = false
+  }
+
+  // In the distance of the template (« 7,5 m »); in cells when it gives none
+  distanceText(cells) {
+    const language = document.documentElement.lang || "en"
+    if (this.cellLengthValue > 0) {
+      const distance = new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(cells * this.cellLengthValue)
+      return this.distanceLabelValue.replace("__DISTANCE__", distance)
+    }
+    const form = new Intl.PluralRules(language).select(cells)
+    return (this.cellsLabelsValue[form] ?? this.cellsLabelsValue.other).replace("__COUNT__", cells)
+  }
+
+  cellHoldsAnotherToken([column, row], tokenId) {
+    return this.tokensOfTheMap().some((token) => token.id !== tokenId && token.column === column && token.row === row)
   }
 
   pointerMovedSinceDown(event) {
@@ -220,9 +383,22 @@ export default class extends Controller {
   async sendTokenRequest(url, method, fields = {}) {
     const body = new FormData()
     Object.entries(fields).forEach(([name, value]) => body.append(name, value))
-    const response = await fetch(url, { method, body, headers: turboStreamHeaders() })
-    if (response.ok) Turbo.renderStreamMessage(await response.text())
+    const response = await fetch(url, { method, body, headers: turboStreamHeaders() }).catch(() => null)
+    if (!response?.ok) return this.drawTokens()
+
+    Turbo.renderStreamMessage(await response.text())
   }
+}
+
+// A copy of a token keeps the clip of its picture: its own id, an id being unique in the page
+function giveOwnClipIds(copy) {
+  copy.querySelectorAll("clipPath").forEach((clip) => {
+    const ownId = `${clip.id}-ghost`
+    copy.querySelectorAll(`[clip-path="url(#${clip.id})"]`).forEach((clipped) => {
+      clipped.setAttribute("clip-path", `url(#${ownId})`)
+    })
+    clip.id = ownId
+  })
 }
 
 function turboStreamHeaders() {

@@ -32,10 +32,55 @@ class MapPassageTest < ActiveSupport::TestCase
     assert_empty passage.blocked_sides
   end
 
+  test "a step to the side costs 1, never into a blocked cell nor across a wall" do
+    passage = passage_of(floors: room_floors(3, 3, walled: { "1,1" => "stone" }), blocked: ["2,0"], size: [3, 3])
+
+    assert_equal 1, passage.step_cost([0, 0], [1, 0])
+    assert_nil passage.step_cost([1, 0], [2, 0])
+    assert_nil passage.step_cost([1, 0], [1, 1])
+  end
+
+  test "a diagonal step costs 1 with both ways around free, 2 around the corner of a wall, never between two walls" do
+    open_floor = passage_of(floors: room_floors(2, 2))
+    assert_equal 1, open_floor.step_cost([0, 0], [1, 1])
+
+    one_wall = passage_of(floors: room_floors(2, 2, walled: { "1,0" => "stone" }))
+    assert_equal 2, one_wall.step_cost([0, 0], [1, 1])
+
+    two_walls = passage_of(floors: room_floors(2, 2, walled: { "1,0" => "stone", "0,1" => "stone" }))
+    assert_nil two_walls.step_cost([0, 0], [1, 1])
+  end
+
+  test "the cells of the cheapest way, from the start to the arrival" do
+    floors = room_floors(5, 3, walled: { "2,0" => "stone", "2,1" => "stone" })
+    passage = passage_of(floors:, size: [5, 3])
+
+    way = passage.path([0, 0], [4, 0])
+    assert_equal [[0, 0], [4, 0]], [way.first, way.last]
+    assert_includes way, [2, 2]
+    assert_equal [[1, 1]], passage.path([1, 1], [1, 1])
+    assert_nil passage.path([0, 0], [2, 0])
+  end
+
+  test "the cheapest way goes around a wall; none leads into a walled room" do
+    floors = room_floors(5, 3, walled: { "2,0" => "stone", "2,1" => "stone" })
+    around = passage_of(floors:, size: [5, 3])
+    assert_equal 6, around.path_cost([0, 0], [4, 0])
+    assert_equal 0, around.path_cost([0, 0], [0, 0])
+
+    closed = passage_of(floors: floors.merge("2,2" => "stone"), size: [5, 3])
+    assert_nil closed.path_cost([0, 0], [4, 0])
+  end
+
   private
 
-  def passage_of(floors:, edges: {}, blocked: [], mode: "draw")
+  # A room of floors, some cells turned into stones (which wall themselves from any other floor)
+  def room_floors(columns, rows, walled: {})
+    (0...columns).to_a.product((0...rows).to_a).to_h { |column, row| ["#{column},#{row}", "room"] }.merge(walled)
+  end
+
+  def passage_of(floors:, edges: {}, blocked: [], mode: "draw", size: [2, 2])
     layout = MapTemplate::BLANK_LAYOUT.merge("floors" => floors, "edges" => edges, "blocked" => blocked, "mode" => mode)
-    MapPassage.new(GameMap.new(columns: 2, rows: 2, layout:))
+    MapPassage.new(GameMap.new(columns: size.first, rows: size.last, layout:))
   end
 end
