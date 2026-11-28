@@ -15,7 +15,7 @@ export default class extends Controller {
   // The two controllers start in no set order: the lines are read again whenever the other one marks them
   connect() {
     this.observer = new MutationObserver(() => this.refresh())
-    this.observer.observe(this.element, { subtree: true, attributeFilter: ["data-offered", "data-unfit"] })
+    this.observer.observe(this.element, { subtree: true, attributeFilter: ["data-offered", "data-unfit", "data-allowed"] })
     this.refresh()
   }
 

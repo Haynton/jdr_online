@@ -55,15 +55,21 @@ export default class extends Controller {
 
   // The skills offered by the options picked (skill_choices) are marked, and the count of those ticked is written
   // under the title of their section. Nothing to show while no option offers any. A skill another option already
-  // gives (proficient: the background ticks its own) is neither offered nor counted: the player picks the others
+  // gives (proficient: the background ticks its own) or a feat gives (Skilled: a line the server marked given,
+  // data-state) is neither offered nor counted: the player picks the others
   showSkillChoices() {
     const pickedEffects = this.pickedEffects()
     const offers = pickedEffects.filter(({ effects }) => effects.skill_choices)
-    const grantedKeys = new Set(pickedEffects.flatMap(({ effects }) => effects.proficient ?? []))
+    const grantedKeys = new Set([...pickedEffects.flatMap(({ effects }) => effects.proficient ?? []),
+      ...this.givenRowKeys()])
     const offeredKeys = new Set(offers.flatMap(({ effects }) => effects.skill_choices.from)
       .filter((fieldKey) => !grantedKeys.has(fieldKey)))
     this.bonusRowTargets.forEach((row) => row.toggleAttribute("data-offered", offeredKeys.has(row.dataset.key)))
     this.skillChoicesTargets.forEach((paragraph) => this.writeSkillChoices(paragraph, offers, offeredKeys))
+  }
+
+  givenRowKeys() {
+    return this.bonusRowTargets.filter((row) => row.dataset.state === "given").map((row) => row.dataset.key)
   }
 
   writeSkillChoices(paragraph, offers, offeredKeys) {
@@ -97,7 +103,8 @@ export default class extends Controller {
   // A skill some option of the template may offer, ticked, that the options picked neither offer nor give: refused
   // by the server when the table limits the skills (CharacterSheets::SkillChoices#not_offered_keys)
   notOfferedTicked(offeredKeys) {
-    const grantedKeys = new Set(this.pickedEffects().flatMap(({ effects }) => effects.proficient ?? []))
+    const grantedKeys = new Set([...this.pickedEffects().flatMap(({ effects }) => effects.proficient ?? []),
+      ...this.givenRowKeys()])
     const skillKeys = Object.values(this.effectsValue).flatMap((effectsByOption) => {
       return Object.values(effectsByOption).flatMap((effects) => effects.skill_choices?.from ?? [])
     })
