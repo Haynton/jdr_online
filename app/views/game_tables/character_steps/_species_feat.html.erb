@@ -57,7 +57,7 @@
         <p class="text-sm text-muted">
           <%= t("game_tables.character_steps.feat_spells.list_hint", count: spells["cantrips"].to_i + spells["level_one"].to_i) %>
         </p>
-        <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: card.list, settings: spells,
+        <%= render "game_tables/character_steps/feat_spell_picks", character: character, with_spells: false, list: card.list, settings: spells,
                                                                    field_name: "character[species_feat][feat_spells][by_list][#{card.list}]",
                                                                    picks: picked,
                                                                    known: character.feat_spells.known_elsewhere(except: CharacterFeats::SPECIES_SOURCE) %>

@@ -67,7 +67,7 @@ class Character < ApplicationRecord
   end
 
   def creation_steps
-    CharacterCreationSteps.new(game_table: game_table, sheet: sheet)
+    CharacterCreationSteps.new(game_table: game_table, sheet: sheet, feats: feats)
   end
 
   # What the player sent on a step replaces the values of that step only: an emptied field is removed. An option changed

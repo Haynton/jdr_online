@@ -30,7 +30,7 @@
         </p>
       </div>
       <% if given %>
-        <%= render "game_tables/character_steps/feat_spell_picks", character: character, list: given[:settings]["lists"].first,
+        <%= render "game_tables/character_steps/feat_spell_picks", character: character, with_spells: false, list: given[:settings]["lists"].first,
                                                                    settings: given[:settings], field_name: "character[feat_spells]",
                                                                    picks: character.origin_feat_picks,
                                                                    known: character.feat_spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE) %>

@@ -3,6 +3,11 @@
 module CharacterDraftSaving
   extend ActiveSupport::Concern
 
+  included do
+    # While the draft is saved in the background: what is being picked may be incomplete (the spells of a feat)
+    attr_accessor :saving_draft
+  end
+
   # Saved in the background while the player fills a step (decision: nothing typed is lost, even when the tab closes):
   # what is valid is kept, a refused value keeps the one saved before (its error shows on Continue), and a required
   # field may stay empty in a draft. The step reached does not move
@@ -13,6 +18,7 @@ module CharacterDraftSaving
                      starting_magic_items: starting_magic_items.deep_dup }
     fill_step(step, sheet_values: sheet_values, name: name, **choices)
     self.required_sheet_fields = nil
+    self.saving_draft = true
     restore_refused_values(saved_values) if invalid?
     save
   end

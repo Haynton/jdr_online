@@ -72,16 +72,16 @@ module CharacterSheets
     end
 
     # The errors of what was picked for a feat (its settings: spell_picks), [] when complete; known: the spells it knows
-    # elsewhere, never picked again
-    def errors_for(picks, settings, known: {})
+    # elsewhere, never picked again; partial: a draft being saved, fewer spells than asked are not an error yet
+    def errors_for(picks, settings, known: {}, partial: false)
       list = picks["spell_list"]
       return [:spell_list] unless Array(settings["lists"]).include?(list)
       return [:spell_ability] unless Array(settings["abilities"]).include?(picks["spell_ability"])
 
       offer = offer(list)
       errors = []
-      errors << :cantrips unless picked?(picks["cantrips"], offer.cantrips, settings["cantrips"])
-      errors << :spell unless picked?(Array(picks["spell"]), offer.spells, settings["level_one"])
+      errors << :cantrips unless picked?(picks["cantrips"], offer.cantrips, settings["cantrips"], partial: partial)
+      errors << :spell unless picked?(Array(picks["spell"]), offer.spells, settings["level_one"], partial: partial)
       errors << :spell_known if keys_of(picks).intersect?(known.keys)
       errors
     end
@@ -119,9 +119,10 @@ module CharacterSheets
       @character.spell_choices.always_prepared.keys
     end
 
-    def picked?(keys, offered, count)
+    def picked?(keys, offered, count, partial: false)
       keys = Array(keys).compact_blank
-      keys.uniq.size == count.to_i && (keys - offered.map(&:key)).empty?
+      enough = partial ? keys.uniq.size <= count.to_i : keys.uniq.size == count.to_i
+      enough && (keys - offered.map(&:key)).empty?
     end
 
     def list_spells(spell_list, level)

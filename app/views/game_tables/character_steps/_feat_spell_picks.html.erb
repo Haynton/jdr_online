@@ -35,6 +35,9 @@
     </span>
   </fieldset>
 
+  <%# with_spells: false on the pages of the feats of the creation: the spells are picked at the Spells step
+      (CharacterFeatSpellPicks), the page only asks the ability %>
+  <% if local_assigns.fetch(:with_spells, true) %>
   <div class="<%= CharacterSheets::FeatSpellsHelper::BOOK_CLASSES %>" data-controller="spell-preview">
     <div class="relative max-h-80 min-h-0 overflow-y-auto border-b border-line lg:max-h-none lg:border-r lg:border-b-0">
       <% groups.each do |kind, spells, count| %>
@@ -99,4 +102,7 @@
       <% end %>
     </div>
   </div>
+  <% else %>
+    <p class="text-sm text-muted"><%= t("game_tables.character_steps.feat_spells.picked_at_spells") %></p>
+  <% end %>
 </div>

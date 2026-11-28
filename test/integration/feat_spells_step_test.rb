@@ -17,21 +17,56 @@ class FeatSpellsStepTest < ActionDispatch::IntegrationTest
                                                  sheet: { "class" => "Guerrier", "background" => "Acolyte", "level" => 1 })
   end
 
-  test "the acolyte picks the spells of Magic Initiate in the cleric list at the step of the feats" do
+  test "the acolyte takes Magic Initiate at the step of the feats, and picks its spells at the Spells step" do
     sign_in @player
     get game_table_character_step_path(@game_table, "feats")
     assert_select "h2", text: /\AInitié à la magie : Clerc\s+Don de votre historique · Donné par votre historique \(Acolyte\)/
     assert_select "label input[type=radio][name='character[feat_spells][spell_ability]'][value=wisdom]"
-    assert_select "input[name='character[feat_spells][cantrips][]'][value=?]", "sacred-flame"
-    assert_select "input[name='character[feat_spells][spell]'][value=?]", "bless"
+    assert_select "input[name='character[feat_spells][cantrips][]']", count: 0
+    assert_select "p", text: "Vous choisirez ces sorts à l'étape Sorts, avec ceux de votre classe."
 
     patch game_table_character_step_path(@game_table, "feats"),
-          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: ["guidance"] } } }
+          params: { character: { feat_spells: { spell_ability: "wisdom" } } }
+    assert_response :redirect
+    # A fighter has no spells of its class: the step shows for the spells of its feat
+    assert_includes @character.reload.creation_steps.all.map(&:key), "spells"
+
+    @character.update_columns(creation_step: "spells")
+    get game_table_character_step_path(@game_table, "spells")
+    assert_select "input[name='character[feat_spell_picks][background][cantrips][]'][value=?]", "sacred-flame"
+    assert_select "input[name='character[feat_spell_picks][background][spell][]'][value=?]", "bless"
+
+    patch game_table_character_step_path(@game_table, "spells"),
+          params: { character: { feat_spell_picks: { background: { cantrips: ["guidance"] } } } }
     assert_response :unprocessable_content
 
-    patch game_table_character_step_path(@game_table, "feats"),
-          params: { character: { feat_spells: { spell_ability: "wisdom", cantrips: %w[guidance sacred-flame], spell: "bless" } } }
+    patch game_table_character_step_path(@game_table, "spells"),
+          params: { character: { feat_spell_picks: { background: { cantrips: %w[guidance sacred-flame], spell: ["bless"] } } } }
     assert_equal %w[bless guidance sacred-flame], @character.reload.spells.pluck("key").sort
+  end
+
+  test "the draft keeps the spells of a feat still being picked, Continue asks them all" do
+    sign_in @player
+    patch game_table_character_step_path(@game_table, "feats"), params: { character: { feat_spells: { spell_ability: "wisdom" } } }
+    @character.update_columns(creation_step: "spells")
+
+    patch draft_game_table_character_step_path(@game_table, "spells"),
+          params: { character: { feat_spell_picks: { background: { cantrips: ["guidance"] } } } }
+    assert_response :no_content
+    assert_equal %w[guidance], @character.reload.origin_feat_picks["cantrips"]
+
+    patch game_table_character_step_path(@game_table, "spells"),
+          params: { character: { feat_spell_picks: { background: { cantrips: ["guidance"] } } } }
+    assert_response :unprocessable_content
+  end
+
+  test "the spells of a feat stay while its list stays" do
+    sign_in @player
+    pick_background_spells
+    patch game_table_character_step_path(@game_table, "feats"),
+          params: { character: { feat_spells: { spell_ability: "charisma" } } }
+    entry = @character.reload.origin_feat_picks
+    assert_equal ["charisma", %w[guidance sacred-flame], "bless"], entry.values_at("spell_ability", "cantrips", "spell")
   end
 
   test "the human picks an origin feat on a step of its own, after the feats, and its skills are not class picks" do

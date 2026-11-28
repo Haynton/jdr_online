@@ -2,33 +2,48 @@
 # of its background gives (Magic Initiate: a list the feat offers, an ability among its own, as many cantrips and level
 # 1 spells as it gives, none it knows elsewhere, CharacterSheets::FeatSpells), and the feat its species lets pick (the
 # human: one offered, with its skills and spells). On the step that asks them (each its own: checks_feat_spells,
-# checks_species_feat) and when the character is done (a draft may wait); the feats of the levels it starts above
-# (CharacterLevelFeats); a feat taken at a level gained is checked by LevelUp. An error on feats
+# checks_species_feat) and when the character is done (a draft may wait); the spells of these feats are picked at the
+# Spells step (checks_feat_spell_picks, CharacterFeatSpellPicks): the page of a feat checks its list and its ability,
+# the Spells step its spells. The feats of the levels it starts above (CharacterLevelFeats); a feat taken at a level
+# gained is checked by LevelUp. An error on feats
 class CharacterFeatSpellsValidator < ActiveModel::Validator
+  # What the Spells step checks of a feat; the page of the feat checks the rest
+  PICK_ERRORS = %i[cantrips spell spell_known].freeze
+  # Which steps are checked now (a validator is shared: nothing kept on it)
+  Steps = Data.define(:feat, :spells, :species)
+
   def validate(character)
     return unless character.pc?
 
-    if checked?(character, character.checks_feat_spells)
-      check_background_feat(character)
-      check_level_feats(character)
-    end
-    check_species_feat(character) if checked?(character, character.checks_species_feat)
+    steps = steps_of(character)
+    check_background_feat(character, steps) if steps.feat || steps.spells
+    check_level_feats(character) if steps.feat
+    return check_species_feat(character, steps) if steps.species
+
+    check_species_feat_spells(character, steps) if steps.spells
   end
 
   private
 
-  def check_background_feat(character)
+  def steps_of(character)
+    completing = character.complete? && character.status_changed?
+    Steps.new(feat: character.checks_feat_spells || completing, spells: character.checks_feat_spell_picks || completing,
+              species: character.checks_species_feat || completing)
+  end
+
+  def check_background_feat(character, steps)
     given = character.origin_feat_spells
     return unless given
 
     spells = character.feat_spells
     known = spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE)
-    errors = spells.errors_for(character.origin_feat_picks, given[:settings], known: known)
-    errors.each { |error| character.errors.add(:feats, error) }
+    picks = character.origin_feat_picks
+    errors = spells.errors_for(picks, given[:settings], known: known, partial: character.saving_draft)
+    add_errors(character, errors, steps, feat_step: steps.feat)
   end
 
   # The feat the species lets pick (the human): one of those offered, its skills, its spells
-  def check_species_feat(character)
+  def check_species_feat(character, steps)
     return unless character.feat_choice_settings
 
     entry = character.species_feat_entry
@@ -36,19 +51,28 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     return character.errors.add(:feats, :species_feat) unless feat
 
     check_feat_skills(character, feat, entry)
-    check_species_feat_spells(character, feat, entry)
+    check_species_feat_spells(character, steps)
   end
 
   # In a list no other feat took, none of them a spell it knows elsewhere
-  def check_species_feat_spells(character, feat, entry)
-    settings = feat.effects["spell_picks"]
+  def check_species_feat_spells(character, steps)
+    entry = character.species_feat_entry
+    settings = character.feat_list.find(entry["key"].to_s)&.effects&.dig("spell_picks")
     return unless settings
 
     source = CharacterFeats::SPECIES_SOURCE
     spells = character.feat_spells
     errors = spells.errors_for(entry, spells.open_settings(settings, source: source),
-                               known: spells.known_elsewhere(except: source))
-    errors.each { |error| character.errors.add(:feats, error) }
+                               known: spells.known_elsewhere(except: source), partial: character.saving_draft)
+    add_errors(character, errors, steps, feat_step: steps.species)
+  end
+
+  # The errors of the step that asks them: the page of the feat, the Spells step, or both once the character is done
+  def add_errors(character, errors, steps, feat_step:)
+    errors.each do |error|
+      wanted = PICK_ERRORS.include?(error) ? steps.spells : feat_step
+      character.errors.add(:feats, error) if wanted
+    end
   end
 
   # As many skills as the feat gives, and only skills: a key of another bonus field (a saving throw) sent by hand is

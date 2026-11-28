@@ -66,6 +66,7 @@ class FeatsTest < ActiveSupport::TestCase
   test "the acolyte picks the spells of its origin feat in the cleric list, copied apart from its class spells" do
     acolyte = build_character("class" => "Guerrier", "background" => "Acolyte")
     acolyte.checks_feat_spells = true
+    acolyte.checks_feat_spell_picks = true
     acolyte.choose_origin_feat_spells({ "spell_ability" => "wisdom", "cantrips" => %w[guidance] })
     assert acolyte.tap(&:validate).errors.of_kind?(:feats, :cantrips)
 
@@ -103,7 +104,8 @@ class FeatsTest < ActiveSupport::TestCase
     assert_equal %w[Druide Magicien], settings["lists"]
     assert_equal "Initié à la magie (Acolyte)", acolyte.feat_spells.known_elsewhere(except: "species")["guidance"]
 
-    acolyte.checks_feat_spells = true
+    acolyte.checks_species_feat = true
+    acolyte.checks_feat_spell_picks = true
     acolyte.choose_species_feat({ "key" => "magic-initiate", "feat_spells" => {
       "spell_list" => "Druide", "by_list" => { "Druide" => { "spell_ability" => "wisdom", "cantrips" => %w[guidance druidcraft],
                                                              "spell" => "cure-wounds" } }

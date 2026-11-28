@@ -7,6 +7,7 @@ module CharacterFeats
   extend ActiveSupport::Concern
   include CharacterFeatOrigins
   include CharacterLevelFeats
+  include CharacterFeatSpellPicks
 
   def feat_list
     CharacterSheets::Feats.new(self)
@@ -49,7 +50,8 @@ module CharacterFeats
   def choose_origin_feat_spells(picks)
     given = origin_feat_spells
     others = Array(feats).reject { |entry| entry["source"] == BACKGROUND_SOURCE }
-    self.feats = given ? others + [origin_entry(given, picks.to_h)] : others
+    entry = given && with_kept_spell_picks(origin_entry(given, picks.to_h), origin_feat_picks)
+    self.feats = entry ? others + [entry] : others
     sync_feat_spells
   end
 
@@ -85,9 +87,10 @@ module CharacterFeats
   # of the feat picked before unticked), the spells of Magic Initiate
   def choose_species_feat(params)
     params = params.to_h.stringify_keys
-    untick_skills(species_feat_entry["skills"])
+    previous = species_feat_entry
+    untick_skills(previous["skills"])
     others = Array(feats).reject { |entry| entry["source"] == SPECIES_SOURCE }
-    entry = species_entry(params)
+    entry = species_entry(params)&.then { |picked| with_kept_spell_picks(picked, previous) }
     self.feats = entry ? others + [entry] : others
     tick_skills(entry.to_h["skills"])
     sync_feat_spells
@@ -101,11 +104,6 @@ module CharacterFeats
   # An option changed (the species) drops the feat it no longer lets pick
   def keep_offered_species_feat
     choose_species_feat({}) if species_feat_entry.any? && feat_choice_settings.nil?
-  end
-
-  # Its spells: those it picked for its class, then a copy of those of its feats
-  def sync_feat_spells
-    self.spells = spells.to_a.reject { |spell| spell[CharacterSheets::FeatSpells::MARK] } + feat_spells.copies
   end
 
   # What its feats give the rules (CharacterSheets::PlayState): their points to the abilities, their effects
@@ -149,6 +147,6 @@ module CharacterFeats
   def origin_entry(given, picks)
     { "key" => given[:feat].key, "source" => BACKGROUND_SOURCE, "spell_list" => given[:settings]["lists"].first,
       "spell_ability" => picks["spell_ability"].presence, "cantrips" => Array(picks["cantrips"]).compact_blank,
-      "spell" => picks["spell"].presence }.compact
+      "spell" => picks["spell"].presence }.compact_blank
   end
 end

@@ -24,6 +24,11 @@ module CreationStepBehaviors
       true
     end
 
+    # Whether the feats taken (characters.feats) show its step, whatever the options picked (only_with_effect)
+    def shown_through_feats?(_feats)
+      false
+    end
+
     # On its own step: what it keeps of what was sent (spell_keys: the spells ticked)
     def fill(_character, **); end
 

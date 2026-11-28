@@ -1,6 +1,7 @@
 module CreationStepBehaviors
   # The step offers the spells of the class at the level of the character (CharacterSheets::SpellChoices), and copies
-  # those ticked into the character
+  # those ticked into the character; also the spells of the feats of its origin (Magic Initiate, decision of 28
+  # November: CharacterFeatSpellPicks), so it shows for a class without spells when such a feat gives some
   class ChoosesSpells < Base
     KEY = "chooses_spells".freeze
 
@@ -12,9 +13,15 @@ module CreationStepBehaviors
       "character_sheets/summary/spells"
     end
 
-    def fill(character, spell_keys: nil, spellbook_keys: nil, **)
+    def fill(character, spell_keys: nil, spellbook_keys: nil, feat_spell_picks: nil, **)
       character.choose_spellbook(spellbook_keys)
       character.choose_spells(spell_keys)
+      character.checks_feat_spell_picks = true
+      character.choose_feat_spell_picks(feat_spell_picks)
+    end
+
+    def shown_through_feats?(feats)
+      CharacterFeatSpellPicks.feat_spells_to_pick?(feats)
     end
 
     # A class changed on another step drops the spells it does not offer, and the spellbook of a class without one

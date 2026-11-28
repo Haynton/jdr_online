@@ -97,13 +97,13 @@ module GameTables
     def step_params
       params.fetch(:character, {}).permit(:name, :ability_method, :fighting_style, *STEP_LISTS,
                                           sheet: {}, class_choices: {}, feat_spells: {}, species_feat: {},
-                                          level_feats: {}, starting_magic_items: {})
+                                          feat_spell_picks: {}, level_feats: {}, starting_magic_items: {})
     end
 
     # What the behaviors of the step get beside the sheet (CreationStepBehaviors: the spells, the style, the masteries)
     def behavior_choices
       step_params.slice(:spell_keys, :spellbook_keys, :fighting_style, :weapon_mastery_keys, :class_choices,
-                        :feat_spells, :species_feat, :level_feats,
+                        :feat_spells, :species_feat, :feat_spell_picks, :level_feats,
                         :starting_magic_items).to_h.symbolize_keys
     end
   end

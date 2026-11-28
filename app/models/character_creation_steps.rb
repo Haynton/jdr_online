@@ -26,9 +26,11 @@ class CharacterCreationSteps
     end
   end
 
-  def initialize(game_table:, sheet:)
+  # feats: the feats taken (characters.feats), which may show a step (the spells of Magic Initiate)
+  def initialize(game_table:, sheet:, feats: [])
     @game_table = game_table
     @sheet = sheet.to_h
+    @feats = Array(feats)
   end
 
   # The pages of the creation of this character, in order, the summary last
@@ -119,9 +121,11 @@ class CharacterCreationSteps
   end
 
   def shown?(declared)
+    behaviors = CreationStepBehaviors.of(declared)
     effect = declared["only_with_effect"]
-    (effect.nil? || picked_effects.any? { |effects| effects.key?(effect) }) &&
-      CreationStepBehaviors.of(declared).all? { |behavior| behavior.shown?(@game_table, picked_effects, @sheet) }
+    (effect.nil? || picked_effects.any? { |effects| effects.key?(effect) } ||
+      behaviors.any? { |behavior| behavior.shown_through_feats?(@feats) }) &&
+      behaviors.all? { |behavior| behavior.shown?(@game_table, picked_effects, @sheet) }
   end
 
   # The effects of the options picked in the lists of the sheet (the class chosen, its background...)
