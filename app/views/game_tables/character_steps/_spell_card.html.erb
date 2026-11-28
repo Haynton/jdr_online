@@ -1,0 +1,89 @@
+<%# One spell card (game_tables/character_steps/_spell_cards), in the spirit of Art Deco (decision, after the trials
+    of the prototype): a thin inner frame in the tone of its school, stepped corners doubled, a small fan of rays above
+    its school in small capitals, its name centred, three marks at its foot (casting, range, duration, each whole), C
+    and R under the top left corner, the diamond of the pick well above the bottom edge. Picked, its lines turn gold.
+    The whole card is the label of its box (sr-only): a click puts it in the hand. « Lire la carte » under it opens the
+    big card (its <template>, copied in the window by spell_card_dialog_controller.js). Its box, its name and what it
+    counts for come from its row (spell_card_box): a spell always prepared, or one a feat gives already (known_as), is
+    ticked and disabled; on the spellbook, the box writes the spell in it and « Préparé » under the card prepares it %>
+<% box_name, count_for, checked = spell_card_box(row, spell, character) %>
+<% box_id = "spell_card_#{row.key}_#{spell.key.underscore}" %>
+<% known_as = row.known[spell.key] %>
+<% book = row.book unless box_name.nil? %>
+<%= tag.li class: "#{CharacterSheets::SpellCardsHelper::CARD_PLACE_CLASSES} #{spell_card_tone(spell, character)}",
+           data: spell_card_place_data(spell, browse_field, book: book).merge(level: spell.level, row: row.key) do %>
+  <label for="<%= box_id %>" class="<%= CharacterSheets::SpellCardsHelper::CARD_CLASSES %>">
+    <%= check_box_tag box_name, spell.key, checked, id: box_id, disabled: box_name.nil?, class: "sr-only",
+                      data: { card_box: true, count_for: count_for } %>
+    <span class="pointer-events-none absolute inset-1.5 rounded-[10px] border border-(--line-art)" aria-hidden="true"></span>
+    <%= render "game_tables/character_steps/spell_card_corners", size: "size-3.5", inset: :small %>
+    <% tags = spell_tags(spell) %>
+    <% if tags.any? %>
+      <span class="absolute top-6 left-3.5 flex flex-col gap-[3px]">
+        <% tags.each do |tag_text| %>
+          <span class="<%= CharacterSheets::SpellCardsHelper::TAG_CLASSES %>" title="<%= tag_text %>"><%= tag_text.first %><span class="sr-only"> (<%= tag_text %>)</span></span>
+        <% end %>
+      </span>
+    <% end %>
+    <% if (level = spell_card_level(spell, row.group)) %>
+      <span class="<%= CharacterSheets::SpellCardsHelper::TAG_CLASSES %> absolute top-6 right-3.5"><%= level %></span>
+    <% end %>
+    <%= render "game_tables/character_steps/spell_card_fan", css_class: "mt-2.5 w-10" %>
+    <span class="mt-1.5 text-[9.5px] font-bold tracking-[0.14em] text-(--tone) uppercase group-has-checked/face:text-primary-soft-ink"><%= spell.properties["school"] %></span>
+    <span class="mt-1.5 line-clamp-2 w-full text-sm leading-[1.15] font-extrabold text-balance wrap-anywhere"><%= spell_card_name(spell) %></span>
+    <% if known_as.present? %>
+      <span class="mt-1 text-[10px] leading-tight text-primary-soft-ink"><%= t("game_tables.character_steps.feat_spells.known_as", source: known_as) %></span>
+    <% end %>
+    <span class="mt-auto flex w-full flex-col gap-[3px] px-1.5 pb-11 text-left">
+      <% spell_card_marks(spell).each do |label, value, icon| %>
+        <span class="<%= CharacterSheets::SpellCardsHelper::MARK_CLASSES %>" title="<%= "#{label} : #{value}" %>">
+          <%= render icon, css_class: "mt-px size-3 text-(--tone)" %>
+          <span class="line-clamp-2"><span class="sr-only"><%= label %> : </span><%= value %></span>
+        </span>
+      <% end %>
+    </span>
+    <span class="absolute bottom-4.5 left-1/2 -ml-[5.5px] size-[11px] rotate-45 rounded-[2px] border-[1.5px] border-brass bg-surface group-has-checked/face:bg-brass" aria-hidden="true"></span>
+  </label>
+  <div class="flex items-center gap-1">
+    <% if book %>
+      <%# Its place kept on every card of the book (a line shown once written would shift the row), disabled until
+          the spell is written (spell_hand_controller.js) %>
+      <label class="flex h-5.5 cursor-pointer items-center gap-1.5 px-1 text-xs font-medium text-ink has-disabled:cursor-not-allowed has-disabled:text-muted">
+        <%= check_box_tag "character[spell_keys][]", spell.key, book.include?(spell.key) && spell_picked_for_class?(character, spell),
+                          id: "#{box_id}_prepared", disabled: !book.include?(spell.key), class: SimpleFormFieldClasses::CHECKBOX,
+                          data: { count_for: "prepared", prepared_box: true } %>
+        <%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.prepared") %>
+      </label>
+    <% end %>
+    <button type="button" hidden class="<%= CharacterSheets::SpellCardsHelper::READ_LINK_CLASSES %>" aria-haspopup="dialog"
+            data-spell-card-dialog-target="opener" data-action="spell-card-dialog#open">
+      <%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.read") %><span class="sr-only"> <%= spell.name %></span>
+    </button>
+  </div>
+  <template data-spell-card-big>
+    <div class="flex flex-col items-center px-6.5 pt-7 pb-5 text-center">
+      <%= render "game_tables/character_steps/spell_card_fan", css_class: "w-16" %>
+      <span class="mt-2.5 text-[11px] font-bold tracking-[0.12em] text-(--tone) uppercase"><%= spell_card_kind(spell) %></span>
+      <h3 id="spell-card-title" class="mt-2.5 w-full text-2xl leading-tight font-extrabold text-balance wrap-anywhere"><%= spell_card_name(spell) %></h3>
+      <span class="mt-5 flex justify-center gap-5">
+        <% spell_card_marks(spell).each do |label, value, icon| %>
+          <span class="flex max-w-24 flex-col items-center gap-1 text-xs text-muted" title="<%= "#{label} : #{value}" %>">
+            <%= render icon, css_class: "size-4 text-(--tone)" %>
+            <span class="line-clamp-3"><span class="sr-only"><%= label %> : </span><%= value %></span>
+          </span>
+        <% end %>
+      </span>
+      <% chips = spell_intents(spell, browse_field) + spell_tags(spell) %>
+      <% if chips.any? %>
+        <span class="mt-4 flex flex-wrap justify-center gap-1.5">
+          <% chips.each do |chip| %>
+            <span class="rounded-full border border-line px-2 py-0.5 text-[11px] font-semibold text-muted"><%= chip %></span>
+          <% end %>
+        </span>
+      <% end %>
+    </div>
+    <div class="min-h-0 flex-1 overflow-y-auto px-6.5 pt-3 pb-4" tabindex="0">
+      <%= render "game_tables/character_steps/spell_details", spell: spell %>
+    </div>
+  </template>
+<% end %>

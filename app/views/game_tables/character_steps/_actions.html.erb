@@ -6,15 +6,19 @@
     saves: on a step with a form, Back is a button of the form (go_to): the step is saved before leaving (decision); on
     the summary, which has nothing to save, it is a link.
     The button of the step comes first in the page and shows last (order-last): Enter in a field presses the first
-    submit button of the form, which must be Continue, not Back %>
+    submit button of the form, which must be Continue, not Back. A step may put something between them
+    (content_for :creation_actions_middle: the hand of the spells) %>
 <% previous_step = character.creation_steps.before(step) %>
 <% next_label = creation_next_step_label(character, step) %>
 <%# Room under the end of a long step, before the bar (decision: scrolled to the end, the last line touched it) %>
 <div class="h-10 shrink-0" aria-hidden="true"></div>
 <div class="sticky bottom-0 z-10 -mx-4 mt-auto flex items-center gap-3 border-t border-line bg-page px-4 py-4 sm:-mx-8 sm:px-8">
   <div class="order-last"><%= yield %></div>
+  <% if content_for?(:creation_actions_middle) %>
+    <div class="order-2 min-w-0 flex-1 max-lg:hidden"><%= yield :creation_actions_middle %></div>
+  <% end %>
   <% if next_label %>
-    <span class="order-2 ml-auto text-xs text-muted max-sm:hidden"><%= next_label %></span>
+    <span class="order-2 ml-auto text-xs text-muted max-sm:hidden <%= "max-2xl:hidden" if content_for?(:creation_actions_middle) %>"><%= next_label %></span>
   <% end %>
   <% if previous_step %>
     <% if local_assigns[:saves] %>

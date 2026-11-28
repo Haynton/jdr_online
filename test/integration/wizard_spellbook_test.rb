@@ -23,7 +23,7 @@ class WizardSpellbookTest < ActionDispatch::IntegrationTest
     get game_table_character_step_path(@game_table, "spells")
     assert_select "input[name='character[spellbook_keys][]'][value=?]", "magic-missile"
     assert_select "input[name='character[spell_keys][]'][data-prepared-box][value=?]", "magic-missile"
-    assert_select "p[data-count-for=book]", text: "Grimoire : 0 sur 6"
+    assert_select "span[data-spell-hand-target=bookStatus]", text: "Grimoire : 0 sur 6"
 
     send_spells(book: BOOK, prepared: BOOK.first(4))
     @character.reload

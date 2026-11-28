@@ -1,0 +1,4 @@
+<%# Shown by spell_hand_controller.js when an intent leaves no card of the row %>
+<li hidden class="flex h-[200px] shrink-0 items-center px-4 text-sm text-muted" data-spell-hand-target="empty" data-row="<%= row.key %>">
+  <%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.no_match") %>
+</li>

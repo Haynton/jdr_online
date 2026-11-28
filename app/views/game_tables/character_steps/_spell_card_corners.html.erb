@@ -1,0 +1,10 @@
+<%# The four stepped corners of a spell card, doubled, in the tone of its lines (--line-art): inset :small on a card
+    of a row, :big on the big card of its window %>
+<% positions = CharacterSheets::SpellCardsHelper::CORNER_CLASSES.fetch(inset) %>
+<% positions.each do |position| %>
+  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"
+       class="pointer-events-none absolute text-(--line-art) <%= size %> <%= position %>">
+    <path d="M1 13V5h4V1h8" />
+    <path d="M4 13V8h4V4h5" />
+  </svg>
+<% end %>

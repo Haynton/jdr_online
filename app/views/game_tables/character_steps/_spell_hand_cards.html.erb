@@ -1,0 +1,27 @@
+<%# The hand of the spells picked, under the row of cards (decision of 28 November, Anthony's choice after the
+    prototype « Main de sorts »): one packet per part (the cantrips, the prepared spells, each feat), its name and its
+    count, its cards picked upright and overlapping, the real cards made small (spell_hand_controller.js copies their
+    face), a dashed place while it is empty. A click on a packet unfolds it on its own line, its cards side by side, the
+    other packets kept to their name and count (the page holds in the screen), and its part chosen above (the tab and
+    its row of cards); a click on a card puts it back (its box
+    unticked), a click on its name folds it. Rendered hidden, shown by the controller. rows: the SpellCardRows %>
+<%= tag.section hidden: true, class: "flex min-w-0 flex-col gap-2 border-t border-line pt-4",
+                data: { spell_hand_target: "hand", packet_card_classes: CharacterSheets::SpellHandHelper::PACKET_CARD_CLASSES },
+                aria: { labelledby: "spell_hand_title" } do %>
+  <h2 id="spell_hand_title" class="text-[11px] font-bold tracking-[0.12em] text-muted uppercase"><%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.hand") %></h2>
+  <div class="flex min-w-0 flex-wrap items-end gap-x-7 gap-y-3">
+    <% rows.reject { |row| row.counters.empty? }.each do |row| %>
+      <%= tag.div class: "flex min-w-0 flex-col gap-2 data-open:order-last data-open:basis-full", data: { packet: row.key } do %>
+        <div class="flex items-center gap-2">
+          <button type="button" class="<%= CharacterSheets::SpellHandHelper::PACKET_NAME_CLASSES %>" aria-expanded="false"
+                  data-action="spell-hand#togglePacket" data-row="<%= row.key %>">
+            <%= row.title %>
+            <span class="text-brass tabular-nums" data-packet-count><%= spell_row_count(row) %></span>
+          </button>
+        </div>
+        <%# Its cards: a button that unfolds it while folded, each card a button that puts it back once unfolded %>
+        <div class="relative h-[110px]" data-packet-cards></div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,13 @@
+<%# The arrows of a row of spell cards (card_row_controller.js: rendered hidden, shown by it) %>
+<div class="ml-auto flex shrink-0 items-center gap-1.5 <%= local_assigns[:css_class] %>">
+  <button type="button" hidden class="<%= button_classes(:secondary, size: :arrow) %>"
+          aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.previous") %>"
+          data-card-row-target="previousButton" data-action="card-row#scrollPrevious">
+    <%= render "shared/icons/chevron_left", css_class: "size-4" %>
+  </button>
+  <button type="button" hidden class="<%= button_classes(:secondary, size: :arrow) %>"
+          aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.next") %>"
+          data-card-row-target="nextButton" data-action="card-row#scrollNext">
+    <%= render "shared/icons/chevron_right", css_class: "size-4" %>
+  </button>
+</div>

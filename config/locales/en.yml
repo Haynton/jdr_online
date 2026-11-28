@@ -1127,6 +1127,9 @@ en:
       currency:
         hint: "A coin of the money of the character: shown in its inventory, added or taken out by its player, given by the game master."
         label: "Coin"
+      browse:
+        hint: "The options of this list are used to browse the spells when making a character: “What do you want to do?”."
+        label: "Browse the spells"
       filter:
         hint: "A list beside the search, in the windows of the catalog and the bestiary, to show only the entries of that value."
         label: "Search filter"
@@ -1815,6 +1818,7 @@ en:
           feat: "%{feat} (%{origin})"
           level: "level %{level}"
         known_as: "Already known: %{source}"
+        picked_at_spells: "You will pick these spells at the Spells step, with those of your class."
         list_hint:
           one: "Your spell comes from one list, set for good: you may change it at each level gained."
           other: "Your %{count} spells come from one list, set for good: you may change one at each level gained."
@@ -1864,6 +1868,38 @@ en:
         later: "Later"
         submit: "Create my character"
         subtitle: "Your character for the table “%{name}”."
+      spell_cards:
+        all: "All"
+        book: "%{label}: %{chosen} of %{allowed}"
+        cantrip: "Cantrip"
+        cantrips_short: "Cantrips"
+        close: "Close the card"
+        drop: "Take out of my hand"
+        full: "Hand full"
+        given: "Already in your hand"
+        hand: "Your hand"
+        hand_full: "Hand full for this group"
+        intents: "What do you want to do?"
+        left:
+          one: "%{count} to choose"
+          other: "%{count} to choose"
+        level: "Level %{level}"
+        levels: "Go to"
+        level_short: "Lvl %{level}"
+        marks:
+          casting_time: "Casting time"
+          duration: "Duration"
+          range: "Range"
+        next: "Next spells"
+        no_match: "No spell of this group for this intent."
+        over: "Too many spells: %{chosen} of %{allowed}"
+        previous: "Previous spells"
+        read: "Read the card"
+        remove: "Take %{name} out of my hand"
+        remove_from_book: "Take out of my %{label}"
+        take: "Put in my hand"
+        to_pick: "Your spells to pick"
+        write_in_book: "Write in my %{label}"
       spell_choices:
         unprepared_spellbook: "Also in your %{label}"
         book_chosen: "%{label}: %{chosen} of %{allowed}"

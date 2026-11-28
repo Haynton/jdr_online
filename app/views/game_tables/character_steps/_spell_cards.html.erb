@@ -1,0 +1,75 @@
+<%# The spells to choose at the creation, as a game of cards (decision of 28 November, the prototype « Sorts en
+    cartes »): on top, what the player wants to do (the values of the field of the spells marked « browse », the
+    intents, each with its number of cards; one at a time); then the rows of cards (CharacterSheets::SpellCardRowsHelper):
+    the first one of the class on top, the others in one strip under it (_spell_card_strip: the prepared spells level by
+    level, the spellbook, each feat that gives spells, the spells always prepared; decision: the page keeps two rows),
+    with marks that scroll to each part and level; at the foot, the hand: one slot per spell to pick, each
+    picked one a button that takes it back. A card is the label of its box: a click puts it in the hand, once a count is
+    reached the other cards fade, a spell picked in a row fades in the others (spell_hand_controller.js; without
+    JavaScript every row shows and the boxes still tick, the server checks: CharacterSpellsValidator,
+    CharacterFeatSpellsValidator). « Lire la carte » opens the big card in a window (spell_card_dialog_controller.js) %>
+<% rows = spell_card_rows(character) %>
+<% browse_field = spell_browse_field(character) %>
+<% all_spells = rows.flat_map(&:spells) %>
+<%= tag.div class: "mx-auto flex w-full max-w-[1240px] min-w-0 flex-col gap-2", data: { controller: "spell-hand spell-card-dialog", action: "change->spell-hand#refresh resize@window->spell-hand#fillPackets",
+                spell_hand_remove_template: t("#{CharacterSheets::SpellCardsHelper::SCOPE}.remove", name: "__NAME__") } do %>
+  <% if (messages = character.errors.messages_for(:spells)).any? %>
+    <div class="<%= toast_stack_classes %>">
+      <% messages.each do |message| %>
+        <%= render "shared/toast", variant: :error, message: message %>
+      <% end %>
+    </div>
+  <% end %>
+  <%= render "game_tables/character_steps/feat_errors", character: character %>
+  <%# An empty value per list: unticking every card still sends it %>
+  <%= hidden_field_tag "character[spell_keys][]", "", id: nil %>
+  <% if rows.any?(&:book) %>
+    <%= hidden_field_tag "character[spellbook_keys][]", "", id: nil %>
+  <% end %>
+  <% rows.select(&:feat).each do |row| %>
+    <% row.counters.each do |counter| %>
+      <%= hidden_field_tag "character[feat_spell_picks][#{row.feat.source}][#{counter.count_for}][]", "", id: nil %>
+    <% end %>
+  <% end %>
+
+  <% if rows.empty? %>
+    <p class="text-sm text-muted"><%= t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.none") %></p>
+  <% else %>
+    <%# The search by name (Anthony's request), then what the player wants to do (one intent at a time, « Tout »
+        first): both together filter the cards. Shown by the controller %>
+    <div hidden class="-mt-2 mb-4 flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:-mt-5"
+         data-spell-hand-target="tools">
+      <div class="relative w-full shrink-0 sm:w-56">
+        <%= label_tag "spell_search", t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"), class: "sr-only" %>
+        <%= render "shared/icons/search", css_class: "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" %>
+        <%= search_field_tag "spell_search", nil, class: "#{CharacterSheets::SpellCardsHelper::SEARCH_CLASSES}", autocomplete: "off",
+                                                  placeholder: t("#{CharacterSheets::SpellChoicesHelper::SCOPE}.search"),
+                                                  name: nil, data: { spell_hand_target: "search", action: "input->spell-hand#filter keydown.enter->spell-hand#keepSearching" } %>
+      </div>
+      <% if browse_field %>
+        <div class="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0"
+             role="group" aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.intents") %>">
+          <button type="button" aria-pressed="true" class="<%= CharacterSheets::SpellCardsHelper::INTENT_PILL_CLASSES %>"
+                  data-spell-hand-target="intent" data-value="" data-action="spell-hand#choose">
+            <%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.all") %>
+            <span class="text-[11px] tabular-nums opacity-80"><%= all_spells.size %></span>
+          </button>
+          <% spell_intent_pills(browse_field, all_spells).each do |value, count| %>
+            <button type="button" aria-pressed="false" class="<%= CharacterSheets::SpellCardsHelper::INTENT_PILL_CLASSES %>"
+                    data-spell-hand-target="intent" data-value="<%= value %>" data-action="spell-hand#choose">
+              <%= value %>
+              <span class="text-[11px] tabular-nums opacity-80"><%= count %></span>
+            </button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Trial of 28 November: the list of what to pick on the left, one row of cards on the right (_spell_quest). The
+        strip and the hand before it: _spell_card_row, _spell_card_strip, _spell_hand %>
+    <%= render "game_tables/character_steps/spell_quest", character: character, rows: rows, browse_field: browse_field %>
+    <%# The hand: one packet per part, under the row of cards %>
+    <%= render "game_tables/character_steps/spell_hand_cards", rows: rows %>
+  <% end %>
+  <%= render "game_tables/character_steps/spell_card_dialog" %>
+<% end %>

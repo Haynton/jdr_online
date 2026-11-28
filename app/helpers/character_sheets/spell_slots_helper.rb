@@ -1,4 +1,4 @@
-# The spell slots shown on the Spells step and the summary (character_sheets/summary/_spell_slots)
+# The spell slots shown on the summary (character_sheets/summary/_spell_slots)
 module CharacterSheets
   module CharacterSheets::SpellSlotsHelper
     # The spell slots of the character at its level, by its class (CharacterSheets::SpellSlots), nil without

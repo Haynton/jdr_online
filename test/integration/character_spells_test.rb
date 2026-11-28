@@ -19,32 +19,31 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
     get spells_step_path
 
     assert_response :success
-    assert_select "fieldset legend", text: "Sorts mineurs"
-    assert_select "fieldset legend", text: "Sorts préparés"
+    assert_select "button[data-spell-hand-target=partButton][data-row=cantrips]", text: /Sorts mineurs\s+0\/2/
+    assert_select "button[data-spell-hand-target=partButton][data-row=prepared]", text: /Sorts préparés/
     assert_select "input[type=checkbox][name=?][value=?]", "character[spell_keys][]", "fire-bolt"
     assert_select "input[type=checkbox][name=?][value=?]", "character[spell_keys][]", "magic-missile"
     assert_select "input[value=blur]", count: 0
     assert_select "input[value=bless]", count: 0
-    assert_select "p[role=status]", text: "0 sur 2 choisis", count: 2
-    assert_select "details summary", text: "Détails"
-    assert_select "button[hidden][aria-haspopup=dialog][data-action='details-dialog#open']", text: /Détails/
-    assert_select "dialog#details-dialog[aria-labelledby=details-dialog-title]", count: 1
-    assert_select "p", text: /Vous pourrez en remplacer un à chaque niveau gagné\./
-    assert_select "p", text: /Vous pourrez changer toute la liste après chaque repos long\./
-    assert_select "#spell-slots-title", text: "Emplacements de sorts"
-    assert_select "section[aria-labelledby=spell-slots-title] dt", text: "Niveau 1", count: 1
+    assert_select "span[role=status]", text: "2 à choisir", count: 2
+    assert_select "label[for$=magic_missile]", text: /Projectile magique/
+    assert_select "button[hidden][aria-haspopup=dialog][data-action='spell-card-dialog#open']", text: /Lire la carte/
+    assert_select "dialog[aria-labelledby=spell-card-title]", count: 1
+    # The search filters in the page: never sent with the step
+    assert_select "input#spell_search[type=search]:not([name])"
+    assert_select "li[data-spell-hand-target=card][data-search=?]", "projectile magique"
+    assert_select "section[data-row=cantrips] p", text: /Vous pourrez en remplacer un à chaque niveau gagné\./
+    assert_select "section[data-row=prepared] p", text: /Vous pourrez changer toute la liste après chaque repos long\./
   end
 
-  test "the filters offer the levels of the spells, concentration and ritual when some have them, and the choice" do
+  test "the intents of the template sort the cards, each with its number, and each card says its own" do
     choose_class("Mage")
     get spells_step_path
 
-    assert_select "[role=group][aria-label=Niveau] button[aria-pressed=false]", count: 2
-    assert_select "button[data-group=level][data-value='0']", text: "Sorts mineurs"
-    assert_select "[role=group][aria-label='École']", count: 0
-    assert_select "button[data-group=casting]", count: 0
-    assert_select "button[data-group=chosen]", text: "Mes choix"
-    assert_select "li[data-level='1'][data-school=?][data-casting='']", "Évocation", count: 2
+    assert_select "button[data-spell-hand-target=intent][aria-pressed=true]", text: /Tout\s+5/
+    assert_select "button[data-spell-hand-target=intent][data-value=Attaquer]", text: /Attaquer\s+2/
+    assert_select "button[data-spell-hand-target=intent][data-value=Soigner]", text: /Soigner\s+0/
+    assert_select "li[data-spell-hand-target=card][data-intents=Explorer]", count: 2
   end
 
   test "the spells chosen are copied into the character and shown on the summary" do
@@ -74,7 +73,7 @@ class CharacterSpellsTest < ActionDispatch::IntegrationTest
     assert_select "[role=alert]", text: /Un sort choisi n'est pas proposé à votre classe et à votre niveau\./
     assert_select "[role=alert]",
                   text: /Trop de sorts choisis dans «[[:space:]]Sorts mineurs[[:space:]]»[[:space:]]: 2 au plus\./
-    assert_select "p[role=status][data-invalid]", text: "3 sur 2 choisis"
+    assert_select "span[role=status][data-invalid]", text: "Trop de sorts : 3 sur 2"
     assert_empty character.spells
   end
 

@@ -75,8 +75,8 @@ class CharacterSubclassTest < ActionDispatch::IntegrationTest
     patch game_table_character_step_path(@game_table, "equipment"), params: { character: { sheet: {} } }
     get spells_step_path
 
-    assert_select "h2", text: "Sorts toujours préparés"
-    assert_select "p", text: /Donnés par Domaine de la Vie/
+    assert_select "button[data-row=always_prepared]", text: "Sorts toujours préparés"
+    assert_select "section[data-row=always_prepared] p", text: /Donnés par Domaine de la Vie/
     assert_select "input[type=checkbox][value=shield][disabled][checked]:not([name])"
     assert_select "input[name=?][value=shield]", "character[spell_keys][]", count: 0
 

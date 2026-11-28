@@ -1,0 +1,54 @@
+<%# The spells to choose as parts to pick and one row of cards (trial of 28 November, Anthony's requests: the marks
+    above the cards and the hand at the foot did not say what to choose; then, a column of blocks on the left was too
+    heavy). On top, one underlined tab per part, its name and its count (« Sorts mineurs 1/2 »), which wrap rather than
+    shrink (pills would look like the intents above them); under them, for the part chosen, one sentence that says what it is (where its spells come from, when they change),
+    and its counts (the spells taken go in the hand at the foot, _spell_hand_cards); then the
+    cards of that part, in one row, with a pill per level when it holds several (spell_hand_controller.js#select;
+    without JavaScript every part shows). rows: the SpellCardRows %>
+<div class="flex min-w-0 flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-line" role="group" aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.to_pick") %>">
+    <% rows.each_with_index do |row, position| %>
+      <button type="button" aria-pressed="<%= position.zero? %>" class="<%= CharacterSheets::SpellCardsHelper::PART_PILL_CLASSES %>"
+              data-spell-hand-target="partButton" data-row="<%= row.key %>" data-action="spell-hand#select">
+        <span><%= row.title %></span>
+        <% if row.counters.any? %>
+          <span class="tabular-nums text-brass" data-part-count="<%= row.key %>"><%= spell_row_count(row) %></span>
+        <% end %>
+      </button>
+    <% end %>
+  </div>
+
+  <% rows.each do |row| %>
+    <% levels = spell_row_levels(row) %>
+    <%= tag.section class: "flex min-w-0 flex-col gap-2", aria: { label: row.title },
+                    data: { controller: "card-row", spell_hand_target: "partCards", row: row.key } do %>
+      <%# Its room kept whatever the length of the sentence (changing tabs does not move what is under it): two lines from
+          1024 px, one from 1280 px, where every sentence holds on the whole width %>
+      <p class="text-xs leading-4 text-muted lg:min-h-8 xl:min-h-4"><%= row.hint %></p>
+      <%# Its counts, the spells taken, its levels, the arrows: one line above its cards %>
+      <div class="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 lg:flex-nowrap">
+        <%= render "game_tables/character_steps/spell_counters", row: row %>
+        <div class="ml-auto flex shrink-0 items-center gap-3">
+          <% if levels.any? %>
+            <div class="no-scrollbar flex min-w-0 gap-1 overflow-x-auto" role="group" aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.levels") %>">
+              <% levels.each_with_index do |(level, name), index| %>
+                <button type="button" aria-pressed="<%= index.zero? %>" class="<%= CharacterSheets::SpellCardsHelper::LEVEL_PILL_CLASSES %>"
+                        data-spell-hand-target="mark" data-row="<%= row.key %>" data-level="<%= level %>"
+                        data-action="spell-hand#jump"><%= name %></button>
+              <% end %>
+            </div>
+          <% end %>
+          <%= render "game_tables/character_steps/spell_row_arrows" %>
+        </div>
+      </div>
+      <ul class="<%= CharacterSheets::SpellCardsHelper::CARD_ROW_CLASSES %>" data-card-row-target="row"
+          data-action="scroll->card-row#toggleButtons scroll->spell-hand#followRow">
+        <% row.spells.each do |spell| %>
+          <%= render "game_tables/character_steps/spell_card", character: character, spell: spell, row: row,
+                                                               browse_field: browse_field %>
+        <% end %>
+        <%= render "game_tables/character_steps/spell_row_empty", row: row %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>

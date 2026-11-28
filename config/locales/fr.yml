@@ -1098,6 +1098,9 @@ fr:
       currency:
         hint: "Une pièce de l'argent du personnage : montrée dans son inventaire, ajoutée ou retirée par son joueur, donnée par le MJ."
         label: "Pièce de monnaie"
+      browse:
+        hint: "Les options de cette liste servent à parcourir les sorts à la création d'un personnage : « Que voulez-vous faire ? »."
+        label: "Parcourir les sorts"
       filter:
         hint: "Une liste à côté de la recherche, dans les fenêtres du catalogue et du bestiaire, pour ne voir que les entrées de cette valeur."
         label: "Filtre de la recherche"
@@ -1786,6 +1789,7 @@ fr:
           feat: "%{feat} (%{origin})"
           level: "niveau %{level}"
         known_as: "Déjà connu : %{source}"
+        picked_at_spells: "Vous choisirez ces sorts à l'étape Sorts, avec ceux de votre classe."
         list_hint:
           one: "Votre sort vient d'une liste, fixée pour toujours : vous pourrez le changer à chaque niveau gagné."
           other: "Vos %{count} sorts viennent d'une même liste, fixée pour toujours : vous pourrez en changer un à chaque niveau gagné."
@@ -1835,6 +1839,38 @@ fr:
         later: "Plus tard"
         submit: "Créer mon personnage"
         subtitle: "Votre personnage pour la table « %{name} »."
+      spell_cards:
+        all: "Tout"
+        book: "%{label} : %{chosen} sur %{allowed}"
+        cantrip: "Sort mineur"
+        cantrips_short: "Mineurs"
+        close: "Fermer la carte"
+        drop: "Retirer de ma main"
+        full: "Main pleine"
+        given: "Déjà dans votre main"
+        hand: "Votre main"
+        hand_full: "Main pleine pour ce groupe"
+        intents: "Que voulez-vous faire ?"
+        left:
+          one: "%{count} à choisir"
+          other: "%{count} à choisir"
+        level: "Niveau %{level}"
+        levels: "Aller à"
+        level_short: "Niv. %{level}"
+        marks:
+          casting_time: "Incantation"
+          duration: "Durée"
+          range: "Portée"
+        next: "Sorts suivants"
+        no_match: "Aucun sort de ce groupe pour cette intention."
+        over: "Trop de sorts : %{chosen} sur %{allowed}"
+        previous: "Sorts précédents"
+        read: "Lire la carte"
+        remove: "Retirer %{name} de ma main"
+        remove_from_book: "Retirer de mon %{label}"
+        take: "Mettre dans ma main"
+        to_pick: "Vos sorts à choisir"
+        write_in_book: "Écrire dans mon %{label}"
       spell_choices:
         unprepared_spellbook: "Aussi dans votre %{label}"
         book_chosen: "%{label} : %{chosen} sur %{allowed}"

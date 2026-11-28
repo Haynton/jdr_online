@@ -198,6 +198,15 @@
   --color-banner-arcane-ink: #5b3a82;
   --color-banner-stone: #e6e1d8;
   --color-banner-stone-ink: #4d473f;
+  /* The tones of the cards of a catalog (the spells: one per option of their school, in its order). Text on surface 5.76 to 7.26, on page 5.43 to 6.84 */
+  --color-card-tone-1: #2f5f9e;
+  --color-card-tone-2: #566474;
+  --color-card-tone-3: #a63d66;
+  --color-card-tone-4: #a24c1c;
+  --color-card-tone-5: #7c3fa6;
+  --color-card-tone-6: #2c6e45;
+  --color-card-tone-7: #5e4e7a;
+  --color-card-tone-8: #7d5c0d;
 }
 
 @layer theme {
@@ -258,6 +267,15 @@
     --color-banner-arcane-ink: #c9b2ea;
     --color-banner-stone: #2a2826;
     --color-banner-stone-ink: #cfc8bc;
+    /* The tones of the cards: text 6.38 to 8.22 on surface, 7.05 to 9.08 on page */
+    --color-card-tone-1: #7ea6e0;
+    --color-card-tone-2: #aeb9c4;
+    --color-card-tone-3: #e48bb0;
+    --color-card-tone-4: #f0955e;
+    --color-card-tone-5: #c899ea;
+    --color-card-tone-6: #7fc796;
+    --color-card-tone-7: #b4a4d4;
+    --color-card-tone-8: #e0b45a;
   }
 }
 

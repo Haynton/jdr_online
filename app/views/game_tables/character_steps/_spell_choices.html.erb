@@ -1,0 +1,8 @@
+<%# The spells to choose: at the creation of a character, a game of cards (game_tables/character_steps/_spell_cards,
+    decision of 28 November); in the window of the game room (compact: « Changer mes sorts »), the list with its search
+    and its filters (_spell_list), narrower and more spells to look through %>
+<% if local_assigns[:compact] %>
+  <%= render "game_tables/character_steps/spell_list", **local_assigns %>
+<% else %>
+  <%= render "game_tables/character_steps/spell_cards", character: character %>
+<% end %>

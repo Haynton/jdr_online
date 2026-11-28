@@ -26,6 +26,10 @@ module EquipmentSpellsTemplateBuilder
     ["mage-hand", "Main du mage", 0, %w[Mage]], ["magic-missile", "Projectile magique", 1, %w[Mage]],
     ["shield", "Bouclier", 1, %w[Mage]], ["bless", "Bénédiction", 1, %w[Prêtre]], ["blur", "Flou", 2, %w[Mage]]
   ].freeze
+  # What each spell lets do (the field the Spells step browses the cards by)
+  SPELL_INTENTS = { "fire-bolt" => %w[Attaquer], "light" => %w[Explorer], "mage-hand" => %w[Explorer],
+                    "magic-missile" => %w[Attaquer], "shield" => %w[Protéger], "bless" => %w[Soutenir],
+                    "blur" => %w[Protéger] }.freeze
   ITEMS = [
     ["dagger", "Dague", "Arme", nil], ["chain-mail", "Cotte de mailles", "Armure", nil],
     ["lute", "Luth", "Instrument de musique", "musical_instrument"],
@@ -47,7 +51,7 @@ module EquipmentSpellsTemplateBuilder
     SPELLS.each do |key, name, level, classes|
       sheet_template.catalog_entries.create!(kind: "spell", key: key, name: name, description: "Un sort.",
                                              properties: { "level" => level, "school" => "Évocation",
-                                                           "classes" => classes })
+                                                           "classes" => classes, "intents" => SPELL_INTENTS[key] })
     end
     ITEMS.each do |key, name, category, group|
       sheet_template.catalog_entries.create!(kind: "item", key: key, name: name,
@@ -92,6 +96,8 @@ module EquipmentSpellsTemplateBuilder
     { "fields" => [
       { "key" => "level", "label" => "Niveau", "type" => "number", "min" => 0, "max" => 9, "required" => true },
       { "key" => "school", "label" => "École", "type" => "choice", "options" => ["Évocation"] },
+      { "key" => "intents", "label" => "Intentions", "type" => "picks", "browse" => true,
+        "options" => %w[Soigner Attaquer Protéger Soutenir Explorer] },
       { "key" => "classes", "label" => "Classes", "type" => "picks", "options" => %w[Mage Prêtre Guerrier],
         "required" => true }
     ] }

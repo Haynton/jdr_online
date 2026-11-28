@@ -1,0 +1,30 @@
+<%# The big card of a spell (decision of 28 November): a window in the ratio of a tarot card (7 × 12), as tall as the
+    screen allows, the same frame and corners as the small card; « Lire la carte » copies the face of its card in it
+    (spell_card_dialog_controller.js, from its <template>, with the tone of its school), the description scrolls inside,
+    the button at the foot puts the spell in the hand or takes it back. Escape, the cross or a click beside it close
+    it; it takes the focus itself on opening, and gives it back to the link (no ring after a click) %>
+<dialog aria-labelledby="spell-card-title" tabindex="-1"
+        class="m-auto max-h-none w-[min(380px,calc(100vw-2rem),calc((100dvh-3rem)*7/12))] max-w-none overflow-visible border-0 bg-transparent p-0 outline-none backdrop:bg-black/55"
+        data-spell-card-dialog-target="dialog"
+        data-take-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.take") %>"
+        data-drop-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.drop") %>"
+        data-full-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.hand_full") %>"
+        data-given-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.given") %>"
+        data-take-classes="<%= button_classes(:primary, full_width: true) %>"
+        data-drop-classes="<%= button_classes(:secondary, full_width: true) %>"
+        data-action="click->spell-card-dialog#closeOnBackdrop cancel->spell-card-dialog#cancelled close->spell-card-dialog#returnFocus turbo:before-cache@document->spell-card-dialog#close">
+  <div class="relative flex aspect-[7/12] max-h-[calc(100dvh-3rem)] w-full flex-col overflow-hidden rounded-[18px] border border-line bg-surface text-ink [--line-art:color-mix(in_srgb,var(--tone)_55%,transparent)]"
+       data-spell-card-dialog-target="face">
+    <span class="pointer-events-none absolute inset-[7px] rounded-[13px] border border-(--line-art)" aria-hidden="true"></span>
+    <%= render "game_tables/character_steps/spell_card_corners", size: "size-4.5", inset: :big %>
+    <button type="button" class="<%= button_classes(:quiet, size: :compact_icon) %> absolute top-4 right-4 z-10"
+            aria-label="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.close") %>"
+            title="<%= t("#{CharacterSheets::SpellCardsHelper::SCOPE}.close") %>" data-action="spell-card-dialog#close">
+      <%= render "shared/icons/x", css_class: "size-5" %>
+    </button>
+    <div class="flex min-h-0 flex-1 flex-col" data-spell-card-dialog-target="body"></div>
+    <div class="px-5.5 pt-2.5 pb-6.5">
+      <button type="button" data-spell-card-dialog-target="toggle" data-action="spell-card-dialog#toggle"></button>
+    </div>
+  </div>
+</dialog>

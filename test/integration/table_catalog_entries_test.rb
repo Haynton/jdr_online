@@ -34,6 +34,8 @@ class TableCatalogEntriesTest < ActionDispatch::IntegrationTest
         "max" => 2, "labels" => ["Sort mineur", "Niveau 1", "Niveau 2"], "required" => true },
       { "key" => "school", "label" => "École", "section" => "Niveau et école", "type" => "choice",
         "options" => ["Évocation"] },
+      { "key" => "intents", "label" => "Intentions", "section" => "Niveau et école", "type" => "picks",
+        "options" => %w[Attaquer Protéger Soutenir Explorer] },
       { "key" => "classes", "label" => "Classes", "section" => "Classes", "type" => "picks",
         "options" => %w[Mage Prêtre], "required" => true }
     ]

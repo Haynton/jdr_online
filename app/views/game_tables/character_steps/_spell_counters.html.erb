@@ -1,0 +1,15 @@
+<%# The counts of a row of spell cards (a SpellCardRow), in gold: the spellbook of a wizard (« Grimoire : 5 sur 6 »),
+    then one per kind of spell it asks (« 2 à choisir », « Sorts mineurs (2) : Main pleine »), red past the number
+    allowed, kept up to date by spell_hand_controller.js %>
+<%= tag.span class: "flex shrink-0 items-center gap-3", data: { spell_hand_target: "counters", row: row.key } do %>
+  <% if row.book %>
+    <%= tag.span t("#{CharacterSheets::SpellCardsHelper::SCOPE}.book", label: row.book.label, chosen: row.book.keys.size, allowed: row.book.size),
+                 role: "status", class: "shrink-0 text-[13px] font-semibold text-brass data-invalid:text-error-ink",
+                 title: row.book.help, data: spell_cards_book_status_data(row.book, row).merge(invalid: ("" if row.book.keys.size > row.book.size)) %>
+  <% end %>
+  <% row.counters.each do |counter| %>
+    <%= tag.span spell_counter_text(counter), role: "status",
+                 class: "shrink-0 text-[13px] font-semibold text-brass data-invalid:text-error-ink",
+                 data: spell_counter_data(counter) %>
+  <% end %>
+<% end %>
