@@ -5,8 +5,8 @@
 # feat of the human). No rule of a game is written here
 module CharacterSheets
   class Feats
-    Feat = Data.define(:key, :name, :description, :category, :min_level, :ability_minimum, :needs_effect, :repeatable,
-                       :effects)
+    Feat = Data.define(:key, :name, :description, :icon, :category, :min_level, :ability_minimum, :needs_effect,
+                       :repeatable, :effects)
     # The categories a feat may come from at a level that improves the abilities; and at an epic level, the epic boons
     COMMON_CATEGORIES = %w[origin general fighting_style].freeze
     EPIC_CATEGORY = "epic_boon".freeze
@@ -75,9 +75,9 @@ module CharacterSheets
     def feat_of(feat)
       entry = catalog[feat["key"]]
       Feat.new(key: feat["key"], name: entry&.name || feat["key"].humanize, description: entry&.description,
-               category: feat["category"], min_level: feat["min_level"].to_i, ability_minimum: feat["ability_minimum"],
-               needs_effect: feat["needs_effect"], repeatable: feat["repeatable"] == true,
-               effects: feat["effects"].to_h)
+               icon: feat["icon"], category: feat["category"], min_level: feat["min_level"].to_i,
+               ability_minimum: feat["ability_minimum"], needs_effect: feat["needs_effect"],
+               repeatable: feat["repeatable"] == true, effects: feat["effects"].to_h)
     end
 
     def available?(feat, level, taken)

@@ -1,11 +1,12 @@
 module SheetTemplates
-  # The feats of the template (character_fields.feats), when it declares them: each a key, a category among those it
-  # names (feat_categories: their labels, in the words of the game), what it needs (min_level, ability_minimum: one of
-  # these abilities at that score, needs_effect: an effect the options picked give, NEEDS), whether it may be taken
-  # again (repeatable) and its effects from a closed list (EFFECTS); its name and summary are in the catalog of
-  # features (Catalogs::TableCatalog). A fighting style it gives is one of character_fields.fighting_styles
+  # The feats of the template (character_fields.feats), when it declares them: each a key, its emblem among OptionIcons
+  # (icon, on its tile), a category among those it names (feat_categories: their labels, in the words of the game),
+  # what it needs (min_level, ability_minimum: one of these abilities at that score, needs_effect: an effect the
+  # options picked give, NEEDS), whether it may be taken again (repeatable) and its effects from a closed list
+  # (EFFECTS); its name and summary are in the catalog of features (Catalogs::TableCatalog). A fighting style it gives
+  # is one of character_fields.fighting_styles
   class FeatsCheck < Check
-    PARAMETERS = %w[key category min_level ability_minimum needs_effect repeatable effects].freeze
+    PARAMETERS = %w[key icon category min_level ability_minimum needs_effect repeatable effects].freeze
     # What a feat may do: raise abilities, give skills to pick, give a fighting style, add the proficiency bonus to the
     # initiative, give spells to pick from lists
     EFFECTS = %w[ability_increase skill_picks fighting_style initiative_proficiency spell_picks].freeze
@@ -34,10 +35,20 @@ module SheetTemplates
     end
 
     def valid_feat?(feat)
-      (feat.keys - PARAMETERS).empty? && feat["key"].to_s.match?(ClassChoicesCheck::OPTION_KEY_FORMAT) &&
-        character_settings["feat_categories"].key?(feat["category"]) &&
+      (feat.keys - PARAMETERS).empty? && known_icon?(feat["icon"]) &&
+        feat["key"].to_s.match?(ClassChoicesCheck::OPTION_KEY_FORMAT) &&
+        valid_needs?(feat) && valid_effects?(feat["effects"].to_h)
+    end
+
+    # Its category named by the template, its level and the effect it needs known
+    def valid_needs?(feat)
+      character_settings["feat_categories"].key?(feat["category"]) &&
         (feat["min_level"].nil? || feat["min_level"].in?(1..20)) &&
-        (feat["needs_effect"].nil? || NEEDS.include?(feat["needs_effect"])) && valid_effects?(feat["effects"].to_h)
+        (feat["needs_effect"].nil? || NEEDS.include?(feat["needs_effect"]))
+    end
+
+    def known_icon?(icon)
+      icon.nil? || OptionIcons.keys.include?(icon)
     end
 
     def valid_effects?(effects)

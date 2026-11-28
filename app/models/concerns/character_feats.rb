@@ -19,7 +19,7 @@ module CharacterFeats
   included do
     # Set by the step that asks them: the feats of the background and of the levels (step « Dons »), the feat the
     # species lets pick (its own step); all of them once the character is done
-    attr_accessor :checks_feat_spells, :checks_species_feat
+    attr_accessor :checks_feat_spells, :checks_species_feat, :checks_level_feats
 
     validates_with CharacterFeatSpellsValidator
   end

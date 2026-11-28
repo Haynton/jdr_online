@@ -1,8 +1,8 @@
 <%# The step « Dons » (decision of 27 November, its own step after the skills): the origin feat the background gives,
     shown even with nothing to pick (Alert for the criminal), with the spells of Magic Initiate in the list it fixes
     (sent as character[feat_spells]); then the origin feat the species lets pick (the human, sent as
-    character[species_feat], game_tables/character_steps/_species_feat); then the feats of the levels it starts above
-    (CreationFeat, sent as character[level_feats][<level>], the window of a level gained drawing them). Kept by CreationStepBehaviors::ChoosesOriginFeats,
+    character[species_feat], game_tables/character_steps/_species_feat); the feats of the levels it starts above have their
+    own step (game_tables/character_steps/_level_feats). Kept by CreationStepBehaviors::ChoosesOriginFeats,
     checked by CharacterFeatSpellsValidator, its errors floating above the page (_feat_errors) %>
 <% feat = character.background_feat %>
 <% given = character.origin_feat_spells %>
@@ -36,19 +36,6 @@
                                                                    known: character.feat_spells.known_elsewhere(except: CharacterFeats::BACKGROUND_SOURCE) %>
       <% else %>
         <p class="text-sm text-muted"><%= t("game_tables.character_steps.origin_feats.nothing_to_pick") %></p>
-      <% end %>
-    </section>
-  <% end %>
-  <% level_feats = character.creation_feats %>
-  <% if level_feats.any? %>
-    <% level_feats.each(&:validate) if character.errors[:feats].any? %>
-    <section class="flex min-w-0 flex-col gap-10">
-      <p class="text-sm text-brass"><%= t("game_tables.character_steps.origin_feats.level_hint", level: character.current_level) %></p>
-      <% level_feats.each do |level_feat| %>
-        <div class="max-w-3xl">
-          <%= render "game_tables/level_ups/feat", level_up: level_feat,
-                                                   title: t("game_tables.character_steps.origin_feats.level_title", level: level_feat.level) %>
-        </div>
       <% end %>
     </section>
   <% end %>

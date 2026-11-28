@@ -4,23 +4,24 @@
 # human: one offered, with its skills and spells). On the step that asks them (each its own: checks_feat_spells,
 # checks_species_feat) and when the character is done (a draft may wait); the spells of these feats are picked at the
 # Spells step (checks_feat_spell_picks, CharacterFeatSpellPicks): the page of a feat checks its list and its ability,
-# the Spells step its spells. The feats of the levels it starts above (CharacterLevelFeats); a feat taken at a level
-# gained is checked by LevelUp. An error on feats
+# the Spells step its spells. The feats of the levels it starts above (CharacterLevelFeats), on their own step
+# (checks_level_feats); a feat taken at a level gained is checked by LevelUp. An error on feats
 class CharacterFeatSpellsValidator < ActiveModel::Validator
   # What the Spells step checks of a feat; the page of the feat checks the rest
   PICK_ERRORS = %i[cantrips spell spell_known].freeze
   # Which steps are checked now (a validator is shared: nothing kept on it)
-  Steps = Data.define(:feat, :spells, :species)
+  Steps = Data.define(:feat, :spells, :species, :levels)
 
   def validate(character)
     return unless character.pc?
 
     steps = steps_of(character)
     check_background_feat(character, steps) if steps.feat || steps.spells
-    check_level_feats(character) if steps.feat
+    check_level_feats(character) if steps.levels
     return check_species_feat(character, steps) if steps.species
 
     check_species_feat_spells(character, steps) if steps.spells
+    check_level_feat_spells(character, steps) if steps.spells
   end
 
   private
@@ -28,7 +29,7 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
   def steps_of(character)
     completing = character.complete? && character.status_changed?
     Steps.new(feat: character.checks_feat_spells || completing, spells: character.checks_feat_spell_picks || completing,
-              species: character.checks_species_feat || completing)
+              species: character.checks_species_feat || completing, levels: character.checks_level_feats || completing)
   end
 
   def check_background_feat(character, steps)
@@ -65,6 +66,19 @@ class CharacterFeatSpellsValidator < ActiveModel::Validator
     errors = spells.errors_for(entry, spells.open_settings(settings, source: source),
                                known: spells.known_elsewhere(except: source), partial: character.saving_draft)
     add_errors(character, errors, steps, feat_step: steps.species)
+  end
+
+  # The spells of the feats of the levels it starts above, at the Spells step: their list and ability are checked on
+  # their own step (CreationFeat)
+  def check_level_feat_spells(character, steps)
+    spells = character.feat_spells
+    character.feat_spell_decks.each do |deck|
+      next unless deck.picks["source"].nil?
+
+      errors = spells.errors_for(deck.picks, spells.open_settings(deck.settings, source: deck.source),
+                                 known: spells.known_elsewhere(except: deck.source), partial: character.saving_draft)
+      add_errors(character, errors, steps, feat_step: false)
+    end
   end
 
   # The errors of the step that asks them: the page of the feat, the Spells step, or both once the character is done

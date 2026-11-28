@@ -143,6 +143,18 @@ class SheetTemplateValidatorTest < ActiveSupport::TestCase
                  :unknown_option
   end
 
+  test "a feat names its emblem among the icons of the app" do
+    with_feat = lambda do |feat|
+      build_template.tap do |template|
+        template.character_fields["feat_categories"] = { "general" => "Don général" }
+        template.character_fields["feats"] = [{ "key" => "alert", "category" => "general" }.merge(feat)]
+      end
+    end
+
+    assert_predicate with_feat.call("icon" => "eye"), :valid?
+    assert_error with_feat.call("icon" => "dragon"), :invalid_feat
+  end
+
   test "a field shown only with some values names a list of the same part, and some of its options" do
     shown_with = { "field" => "class", "values" => ["Guerrier"] }
     field = { "key" => "rage", "label" => "Rage", "type" => "text", "section" => "Identité",

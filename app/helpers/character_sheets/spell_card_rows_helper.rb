@@ -129,9 +129,8 @@ module CharacterSheets
     # « Donné par votre historique (Sage). Vos 3 sorts viennent d'une même liste… »: where the feat comes from, and when
     # its spells change
     def feat_spell_row_hint(character, deck)
-      key = deck.source == CharacterFeats::BACKGROUND_SOURCE ? "given_by_background" : "chosen_through_species"
       count = deck.settings["cantrips"].to_i + deck.settings["level_one"].to_i
-      [t("game_tables.character_steps.feat_spells.#{key}", option: character.feat_origin("source" => deck.source)),
+      [feat_spell_row_origin(character, deck),
        t("game_tables.character_steps.feat_spells.list_hint", count: count)].join(". ")
     end
 

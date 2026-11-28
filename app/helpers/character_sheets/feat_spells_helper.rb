@@ -53,5 +53,14 @@ module CharacterSheets
       picked_keys = Array(picks["cantrips"]) + Array(picks["spell"])
       groups.flat_map { |_kind, spells, _count| spells.to_a }.find { |spell| picked_keys.include?(spell.key) }
     end
+
+    # « Donné par votre historique (Sage) », « Choisi grâce à votre espèce (Humain) », « Pris au niveau 4 »
+    def feat_spell_row_origin(character, deck)
+      scope = "game_tables.character_steps.feat_spells"
+      return t("#{scope}.taken_at_level", level: deck.picks["level"]) if deck.picks["source"].nil?
+
+      key = deck.source == CharacterFeats::BACKGROUND_SOURCE ? "given_by_background" : "chosen_through_species"
+      t("#{scope}.#{key}", option: character.feat_origin("source" => deck.source))
+    end
   end
 end

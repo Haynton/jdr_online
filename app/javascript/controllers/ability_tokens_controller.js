@@ -153,14 +153,16 @@ export default class extends Controller {
     choice.dispatchEvent(new Event("change", { bubbles: true }))
   }
 
-  // A value goes on any card; a "+1" on an ability the background raises, while it holds less than the most
+  // A value goes on any card; a "+1" on an ability the background raises, while it holds less than the most (and than
+  // its room, data-room: the points it may still take under the highest score, a feat of a level)
   mayReceive(card) {
     if (this.held?.dataset.kind === "value") return true
     if (this.held?.dataset.kind === "step") return this.mayStep(card, Number(this.held.dataset.step))
     if (!card.hasAttribute("data-raised")) return false
 
     const alreadyThere = this.placedBonuses[this.held.dataset.index] === card.dataset.ability
-    return alreadyThere || this.bonusOn(card.dataset.ability) < this.maxPerAbilityValue
+    const most = Math.min(this.maxPerAbilityValue, Number(card.dataset.room ?? Infinity))
+    return alreadyThere || this.bonusOn(card.dataset.ability) < most
   }
 
   cardOf(ability) {

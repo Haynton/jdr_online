@@ -1,0 +1,96 @@
+<%# The step « Dons des niveaux » (decision of 28 November, after the prototype « Dons des niveaux »): the feats of the
+    levels a character starts above (CreationFeat), one level per tab (tabs_controller.js), under it the feat it took
+    and a gold diamond once complete (a red one while points wait). In a level: the feats it may take as tiles with
+    their emblem, as the classes (the Ability Score Improvement picked first; a feat taken already greyed, with what
+    took it); under them, the feat picked, its category, its summary; then what it asks: its points as tokens placed on
+    the six cards of the abilities step, with its controller (_level_feat_points), its skills, or the ability of the spells of its list (its spells at the Spells step; choice_blocks_controller.js
+    showing those of the feat picked). Sent as character[level_feats][<level>], kept by
+    CreationStepBehaviors::ChoosesLevelFeats, checked by CharacterFeatSpellsValidator. Without JavaScript, every level
+    shows one under the other, the points on the radio buttons of the window of a level gained %>
+<% level_feats = character.creation_feats %>
+<% level_feats.each(&:validate) if character.errors[:feats].any? %>
+<% selected = level_feat_selected_index(level_feats) %>
+<%= tag.div class: "mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-4",
+            data: { controller: "tabs", tabs_selected_index_value: selected } do %>
+  <div class="hidden min-w-0 justify-center-safe gap-1 overflow-x-auto border-b border-line [scrollbar-width:none] scripted:flex" role="tablist"
+       aria-label="<%= t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.levels") %>" data-tabs-target="list">
+    <% level_feats.each_with_index do |level_feat, index| %>
+      <button type="button" role="tab" id="level-feat-tab-<%= level_feat.level %>" aria-controls="level-feat-panel-<%= level_feat.level %>"
+              aria-selected="<%= index == selected %>" tabindex="<%= index == selected ? 0 : -1 %>"
+              class="group/tab -mb-px shrink-0 cursor-pointer border-b-2 border-transparent px-3.5 pt-1 pb-2 text-left aria-selected:border-brass focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus-ring"
+              data-tabs-target="tab" data-action="tabs#choose keydown->tabs#moveWithKeys">
+        <span class="flex items-center gap-1.5 text-sm font-semibold text-ink">
+          <%= tag.span class: "size-[7px] rotate-45 rounded-[1px] border-[1.5px] border-error-ink data-complete:border-brass data-complete:bg-brass",
+                       aria: { hidden: true }, data: { complete: ("" if level_feat_complete?(level_feat)), level_feat_mark: level_feat.level } %>
+          <%= t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.level", level: level_feat.level) %>
+        </span>
+        <span class="block max-w-56 truncate text-xs text-muted group-aria-selected/tab:text-brass" data-level-feat-summary="<%= level_feat.level %>"><%= level_feat_summary(level_feat) %></span>
+      </button>
+    <% end %>
+  </div>
+
+  <% level_feats.each_with_index do |level_feat, index| %>
+    <% cards = level_feat_cards_in_order(level_feat) %>
+    <%= tag.section id: "level-feat-panel-#{level_feat.level}", role: "tabpanel", aria: { labelledby: "level-feat-tab-#{level_feat.level}" },
+                    class: "flex min-w-0 flex-col gap-4 #{'scripted:hidden' unless index == selected}",
+                    data: { tabs_target: "panel", controller: "choice-blocks level-feat", level_feat_level_value: level_feat.level,
+                            level_feat_texts_value: level_feat_texts, action: "change->level-feat#render" } do %>
+      <h2 class="text-lg font-bold text-ink scripted:sr-only"><%= t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.level", level: level_feat.level) %></h2>
+      <fieldset class="min-w-0" aria-describedby="<%= level_feat.dom_prefix %>_feat_key_error">
+        <legend class="sr-only"><%= t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.feat_legend", level: level_feat.level) %></legend>
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+          <% cards.each do |card| %>
+            <% if card.taken? %>
+              <%# Taken already: « Déjà pris » on the tile, where it comes from in its title and for screen readers (decision of
+                  28 November: the whole sentence did not fit in the tile, its emblem went out of it) %>
+              <% taken = t("game_tables.character_steps.feat_cards.taken", source: card.taken_by) %>
+              <div class="<%= CharacterSheets::OptionCardsHelper::OPTION_CARD_CLASSES %> opacity-40" title="<%= taken %>">
+                <%= render level_feat_icon(card.feat), css_class: "size-5" %>
+                <span class="text-xs leading-tight font-semibold"><%= card.name %></span>
+                <span class="text-[10px] leading-tight" aria-hidden="true"><%= t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.taken") %></span>
+                <span class="sr-only"><%= taken %></span>
+              </div>
+            <% else %>
+              <label class="<%= CharacterSheets::OptionCardsHelper::OPTION_CARD_CLASSES %>" title="<%= card.name %>">
+                <%= radio_button_tag "#{level_feat.form_name}[feat_key]", card.value, level_feat.feat_key == card.value,
+                                     id: "#{level_feat.dom_prefix.dasherize}-#{card.value.parameterize}", class: "sr-only",
+                                     data: { choice_blocks_target: "choice", level_feat_target: "feat",
+                                             action: "choice-blocks#show", **level_feat_tile_data(level_feat, card) } %>
+                <%= render level_feat_icon(card.feat), css_class: "size-5" %>
+                <span class="text-xs leading-tight font-semibold"><%= card.name %></span>
+              </label>
+            <% end %>
+          <% end %>
+        </div>
+        <%= render "game_tables/level_ups/error", level_up: level_feat, attribute: :feat_key %>
+      </fieldset>
+
+      <% cards.reject(&:taken?).each do |card| %>
+        <% feat = card.feat %>
+        <%= tag.div class: "flex min-w-0 flex-col gap-5", hidden: card.value != level_feat.feat_key,
+                    data: { choice_blocks_target: "block", choice_value: card.value } do %>
+          <div>
+            <h3 class="flex flex-wrap items-baseline gap-x-3 text-xl font-extrabold text-ink">
+              <%= card.name %>
+              <span class="text-xs font-semibold text-brass"><%= level_feat.feat_list.category_label(feat) %></span>
+            </h3>
+            <p class="mt-1 max-w-4xl text-sm text-muted"><%= card.list_description || feat.description %></p>
+          </div>
+          <%= render "game_tables/level_ups/feat_skills", level_up: level_feat, feat: feat if level_feat.feat_skill_count(feat).positive? %>
+          <% if card.list %>
+            <%# Its ability only: its spells are picked at the Spells step (decision of 28 November, as the origin feats) %>
+            <%= render "game_tables/character_steps/feat_spell_picks", character: level_feat.character, with_spells: false, list: card.list,
+                                                                       settings: level_feat.spell_settings(feat),
+                                                                       field_name: "#{level_feat.form_name}[feat_spells][by_list][#{card.list}]",
+                                                                       picks: (level_feat.feat_key == card.value ? level_feat.feat_spell_picks.to_h : {}),
+                                                                       known: level_feat.known_spells %>
+          <% end %>
+          <% if level_feat.increase_settings(feat) %>
+            <%= render "game_tables/character_steps/level_feat_points", level_feat: level_feat, feat: feat, card_value: card.value %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+    <% end %>
+  <% end %>
+<% end %>

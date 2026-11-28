@@ -46,6 +46,10 @@ export default class extends Controller {
       tab.setAttribute("aria-selected", isSelected)
       tab.tabIndex = isSelected ? 0 : -1
     })
-    this.panelTargets.forEach((panel, index) => { panel.hidden = index !== this.selectedIndex })
+    this.panelTargets.forEach((panel, index) => {
+      panel.hidden = index !== this.selectedIndex
+      // A panel hidden by CSS from the first paint (scripted:hidden: none flashes before this controller runs)
+      panel.classList.remove("scripted:hidden")
+    })
   }
 }

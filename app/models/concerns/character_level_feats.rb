@@ -1,6 +1,7 @@
 # The feats a player's character takes at its creation when it starts above level 1 (decision of 27 November): one per
 # level of its class that improves the abilities, up to its level (level 8: those of levels 4 and 8), each picked on
-# the step « Dons » as at a level gained (CreationFeat). Kept in characters.feats like a feat taken at a level gained
+# the step « Dons des niveaux » as at a level gained (CreationFeat), its spells at the Spells step. Kept in
+# characters.feats like a feat taken at a level gained
 # ({ "key", "level", "abilities", "skills", spells }), so that the rules read them the same way. Part of CharacterFeats
 module CharacterLevelFeats
   extend ActiveSupport::Concern
@@ -34,9 +35,10 @@ module CharacterLevelFeats
   # ticked on the sheet (those of the feat picked before unticked), its spells copied
   def choose_level_feats(params)
     params = params.to_h.stringify_keys
+    previous = level_feat_entries.index_by { |entry| entry["level"].to_i }
     untick_skills(level_feat_entries.flat_map { |entry| Array(entry["skills"]) })
     self.feats = Array(feats) - level_feat_entries
-    creation_feat_levels.each { |level| add_level_feat(level, params[level.to_s]) }
+    creation_feat_levels.each { |level| add_level_feat(level, params[level.to_s], previous[level].to_h) }
     tick_skills(level_feat_entries.flat_map { |entry| Array(entry["skills"]) })
     sync_feat_spells
   end
@@ -65,10 +67,11 @@ module CharacterLevelFeats
     Array(feats).select { |entry| entry["source"].nil? && entry["level"] }
   end
 
-  # Each feat read on the character as it is when its level comes: with the feats of the levels before it
-  def add_level_feat(level, picks)
+  # Each feat read on the character as it is when its level comes: with the feats of the levels before it. Its spells,
+  # picked at the Spells step, stay while the feat and its list stay
+  def add_level_feat(level, picks, previous)
     entry = CreationFeat.new(character: self, level: level, **level_feat_attributes(picks)).feat_entry
-    self.feats = feats + [entry] if entry
+    self.feats = feats + [with_kept_spell_picks(entry, previous)] if entry
   end
 
   def level_feat_attributes(picks)

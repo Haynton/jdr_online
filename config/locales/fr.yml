@@ -1766,8 +1766,6 @@ fr:
         with_list: "%{feat} : %{list}"
       origin_feats:
         background_title: "Don de votre historique"
-        level_hint: "Votre personnage commence au niveau %{level} : il prend les dons des niveaux que sa classe améliore, comme s'il les avait gagnés."
-        level_title: "Don du niveau %{level}"
         nothing_to_pick: "Rien à choisir : ce don est déjà à vous."
       feat_spells:
         recommended: "Recommandée"
@@ -1784,6 +1782,7 @@ fr:
           other: "Sorts mineurs (%{count})"
         given_by_background: "Donné par votre historique (%{option})"
         chosen_through_species: "Choisi grâce à votre espèce (%{option})"
+        taken_at_level: "Pris au niveau %{level}"
         known:
           always_prepared: "un sort toujours préparé"
           class: "vos sorts de classe"
@@ -1805,6 +1804,14 @@ fr:
         style: "Style de combat"
         style_hint: "Choisissez un style : il s'applique à toutes vos attaques ou à votre défense."
       band_label: "Étapes de votre personnage"
+      level_feats:
+        feat_legend: "Don du niveau %{level}"
+        idle: "Touchez un +1, puis la caractéristique où le poser."
+        gain: "+1 fait monter le modificateur"
+        level: "Niveau %{level}"
+        levels: "Niveaux"
+        placed: "dont +%{points} ce niveau"
+        taken: "Déjà pris"
       magic_item_choices:
         enchantment_hint: "Une arme ou une armure magique se pose sur un objet de votre équipement de départ : changez d'équipement plus haut, puis enregistrez, pour en voir d'autres."
         gold: "+ %{amount} pièces d'or et %{roll}, lancées quand vous terminez votre personnage."

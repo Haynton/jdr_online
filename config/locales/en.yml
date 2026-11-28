@@ -1795,8 +1795,6 @@ en:
         with_list: "%{feat}: %{list}"
       origin_feats:
         background_title: "Feat from your background"
-        level_hint: "Your character starts at level %{level}: it takes the feats of the levels its class improves, as if it had gained them."
-        level_title: "Level %{level} feat"
         nothing_to_pick: "Nothing to pick: this feat is already yours."
       feat_spells:
         recommended: "Recommended"
@@ -1813,6 +1811,7 @@ en:
           other: "Cantrips (%{count})"
         given_by_background: "Given by your background (%{option})"
         chosen_through_species: "Picked through your species (%{option})"
+        taken_at_level: "Taken at level %{level}"
         known:
           always_prepared: "a spell always prepared"
           class: "your class spells"
@@ -1834,6 +1833,14 @@ en:
         style: "Fighting style"
         style_hint: "Pick a style: it applies to all your attacks or to your defense."
       band_label: "Steps of your character"
+      level_feats:
+        feat_legend: "Feat of level %{level}"
+        idle: "Touch a +1, then the ability to place it on."
+        gain: "+1 raises the modifier"
+        level: "Level %{level}"
+        levels: "Levels"
+        placed: "incl. +%{points} this level"
+        taken: "Taken already"
       magic_item_choices:
         enchantment_hint: "A magic weapon or armour goes on an item of your starting equipment: change your equipment above, then save, to see others."
         gold: "+ %{amount} gold pieces and %{roll}, rolled when you finish your character."

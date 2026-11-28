@@ -1,0 +1,38 @@
+<%# The points of a feat that raises the abilities (the improvement, the grappler, an epic boon), as on the abilities
+    step and with its controller (decision of 28 November: the same behavior, only the server changes): a tray of « +1 »
+    in gold, one per point of the feat; the player touches one, then the card where it goes; two on the same card make
+    +2, up to what the feat allows on one ability (ability_tokens_controller.js, max-per-ability) and to the highest
+    score (data-room). The tokens tick the +0 | +1 | +2 of each card, sent as ability_increases (without JavaScript,
+    shown under the cards). An ability the feat does not raise has no radio buttons and fades while a token is held.
+    The score and the modifier of each card follow its points (level_feat_controller.js) %>
+<% settings = level_feat.increase_settings(feat) %>
+<% allowed = level_feat.increase_fields(feat) %>
+<% points = level_feat.feat_key == card_value ? level_feat.ability_increases.to_h : {} %>
+<%= tag.div class: "flex flex-col items-center",
+            data: { controller: "ability-tokens",
+                    ability_tokens_idle_value: t("#{CharacterSheets::LevelFeatsHelper::SCOPE}.idle"),
+                    ability_tokens_hold_bonus_value: t("character_sheets.ability_cards.hold_bonus", abilities: allowed.pluck("label").to_sentence,
+                                                                                                    most: settings["max_per_ability"].to_i),
+                    ability_tokens_max_per_ability_value: settings["max_per_ability"].to_i } do %>
+  <div hidden class="flex items-center gap-2" data-ability-tokens-target="bonusTray">
+    <span class="flex items-center gap-1">
+      <% settings["points"].to_i.times do |token_index| %>
+        <button type="button" class="<%= CharacterSheets::AbilityCardsHelper::TOKEN_CLASSES %> <%= CharacterSheets::AbilityCardsHelper::BONUS_TOKEN_CLASSES %>"
+                aria-pressed="false" aria-label="<%= t("character_sheets.ability_cards.bonus_token") %>"
+                data-ability-tokens-target="bonusToken" data-kind="bonus" data-index="<%= token_index %>"
+                data-action="ability-tokens#hold">
+          <span class="relative">+1</span>
+        </button>
+      <% end %>
+    </span>
+  </div>
+  <p class="mt-3 min-h-5 text-center text-sm text-muted" aria-live="polite" data-ability-tokens-target="hint"></p>
+
+  <div class="mt-6 grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
+    <% level_feat.ability_fields.each do |field| %>
+      <%= render "game_tables/character_steps/level_feat_ability_card", level_feat: level_feat, field: field, settings: settings,
+                                                                          raised: allowed.include?(field), placed: points[field["key"]].to_i %>
+    <% end %>
+  </div>
+  <%= render "game_tables/level_ups/error", level_up: level_feat, attribute: :ability_increases %>
+<% end %>

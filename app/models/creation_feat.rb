@@ -2,7 +2,8 @@
 # feat of its level 4, as if it had gained it). The same choice as at a level gained (LevelUpFeat: the Ability Score
 # Improvement by default, or another feat it may take, with its points, skills and spells), read on the character as it
 # was before that level: without the feats of this level and the later ones, so that its own feat is offered again and
-# the scores shown do not count its points twice. Built by CharacterLevelFeats, on the step « Dons »
+# the scores shown do not count its points twice. Built by CharacterLevelFeats, on the step « Dons des niveaux »; the
+# spells of a feat that gives some are picked at the Spells step
 class CreationFeat
   include ActiveModel::Model
   include LevelUpFeat
@@ -51,6 +52,13 @@ class CreationFeat
 
   def score_of(field)
     character.computed_sheet_values[:scores].to_h[field["key"]]
+  end
+
+  # A feat of the creation that gives spells asks here its list and its ability only: its spells are picked at the
+  # Spells step (decision of 28 November, as the origin feats), checked there (CharacterFeatSpellsValidator)
+  def feat_spells_picked
+    errors_found = character.feat_spells.errors_for(feat_spell_picks.to_h, spell_settings, known: known_spells)
+    (errors_found - CharacterFeatSpellsValidator::PICK_ERRORS).each { |error| errors.add(:feat_spells, error) }
   end
 
   private

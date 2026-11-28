@@ -1,0 +1,42 @@
+<%# An ability on the step of the level feats, the card of the abilities step (character_sheets/fields/_ability_card):
+    its abbreviation, its modifier large, its name, its score in a round astride its foot (read only: the points come from
+    the tokens), the points of this level in gold under it. raised: the feat may raise it, its +0 | +1 | +2 sent
+    (ticked by the tokens; shown without JavaScript); room: the points it may still take under the highest score %>
+<% before = level_feat_score_before(level_feat, field) %>
+<% room = settings["maximum"].to_i - before %>
+<%= tag.div class: "group/card relative flex min-w-0 flex-col items-center",
+            data: { ability_tokens_target: "card", level_feat_target: "card", ability: field["key"],
+                    raised: ("" if raised && room.positive?), room: (room if room < settings["max_per_ability"].to_i),
+                    before: before, rule: field["modifier"], gained: ("" if placed.positive?) } do %>
+  <div class="relative flex h-[clamp(6.5rem,14vh,8.5rem)] w-full flex-col items-center justify-center rounded-[10px] border border-line pb-3 transition-colors group-data-locked/card:opacity-35 group-data-gained/card:border-chosen-line group-data-gained/card:bg-primary-soft">
+    <button type="button" disabled class="absolute inset-0 rounded-[10px] enabled:cursor-pointer enabled:hover:border enabled:hover:border-brass"
+            data-action="ability-tokens#place"
+            aria-label="<%= t("character_sheets.ability_cards.place_on", label: field["label"]) %>"></button>
+    <span class="text-xs font-bold tracking-widest text-muted uppercase group-data-gained/card:text-primary-soft-ink"><%= field["abbreviation"] || field["label"] %></span>
+    <p class="text-[clamp(1.75rem,4vh,2.25rem)] leading-tight font-extrabold text-ink tabular-nums">
+      <span class="sr-only"><%= t("game_tables.characters.new.modifier") %></span>
+      <output data-level-feat-target="modifier"><%= level_feat_modifier(field, before + placed) %></output>
+    </p>
+    <span class="text-xs text-muted"><%= field["label"] %></span>
+    <%# The round sticks out of the card: a token held is placed from it too %>
+    <div class="absolute -bottom-5 left-1/2 z-10 -translate-x-1/2" data-action="click->ability-tokens#place">
+      <span class="<%= CharacterSheets::AbilityCardsHelper::SCORE_ROUND_CLASSES %> grid place-items-center group-data-gained/card:text-brass" data-level-feat-target="score"><%= before + placed %></span>
+    </div>
+  </div>
+  <div class="mt-7 flex flex-col items-center text-center text-xs leading-snug">
+    <p class="h-4 font-semibold text-brass data-gain:font-medium data-gain:text-muted" data-level-feat-target="note"></p>
+    <% if raised %>
+      <%# The points sent for this ability: ticked by the tokens; the choice itself without JavaScript %>
+      <div class="mt-1 flex gap-1" role="radiogroup" data-ability-tokens-target="fallback"
+           aria-label="<%= t("character_sheets.ability_cards.bonus_on", label: field["label"]) %>">
+        <% (0..settings["max_per_ability"].to_i).each do |bonus| %>
+          <label class="flex h-7 w-9 cursor-pointer items-center justify-center rounded-md bg-field text-xs text-ink has-checked:bg-surface has-checked:font-semibold">
+            <%= radio_button_tag "#{level_feat.form_name}[ability_increases][#{field["key"]}]", bonus, placed == bonus,
+                                 id: nil, class: "sr-only", data: { bonus: bonus } %>
+            +<%= bonus %>
+          </label>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
