@@ -1810,10 +1810,12 @@ fr:
         numbered_place: "%{rarity} %{number}"
         title: "Objets magiques de départ"
       equipment_choices:
+        items_card: "Objets"
+        gold_purpose: "pour acheter votre équipement vous-même."
+        total: "Au départ : %{count} pièces d'or"
         armor_class: "CA %{value}"
         choose_prompt: "Choisir…"
         gold: "%{count} pièces d'or"
-        gold_instead: "%{count} pièces d'or pour acheter votre équipement vous-même."
         groups:
           artisan_tools: "Outils d'artisan"
           gaming_set: "Jeu"
@@ -1824,8 +1826,6 @@ fr:
         or: " ou "
         pick_first: "Choisissez d'abord une classe et un historique, à l'étape Personnage."
         plus_gold: "+ %{count} pièces d'or"
-        take_gold: "Prendre %{count} pièces d'or"
-        take_items: "Prendre les objets"
         title: "Équipement"
         weight: "%{value} kg"
       show:

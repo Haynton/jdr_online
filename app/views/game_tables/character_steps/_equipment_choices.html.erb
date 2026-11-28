@@ -1,78 +1,92 @@
-<%# The starting equipment (rules of 2024), on its own step (decision: the spells come after, on theirs). One block per
-    list that offers it, the class then the background: a switch "Prendre les objets | Prendre 150 pièces d'or" drawn like the
-    theme selector (the whole option clickable, no JavaScript, the items chosen by default), then the items of the
-    option chosen, one line per item
-    (decision: the packs are opened, their contents listed), and its gold. An item of your choice (an instrument, a
-    holy symbol...) is a list in its line; its name holds the letter of its option (picks[a][2]): only the picks of
-    the option chosen are kept (CharacterSheets::Builder). Without a class or a background yet, a sentence sends back
-    to the Character step %>
+<%# The starting equipment (rules of 2024), on its own step (decision: the spells come after, on theirs), as on the
+    prototype "Création façon jeu": one block per list that offers it, the class then the background, side by side in the
+    centered column, each titled in small capitals; its options as tabs, "Objets | 150 pièces d'or" (the whole tab
+    clickable, no JavaScript, the items chosen by default), then the items of the option chosen,
+    one line each (decision: the packs are opened, their contents listed): a small diamond, its name, its damage, armour
+    class or category, its weight; then its gold. An item of your choice (an instrument, a holy symbol...) is a list in
+    its line; its name holds the letter of its option (picks[a][2]): only the picks of the option chosen are kept
+    (CharacterSheets::Builder). Under the blocks, the gold to start with, worked out from the options chosen
+    (equipment_total_controller.js). Without a class or a background yet, a sentence sends back to the first steps %>
 <% starting_equipment = CharacterSheets::StartingEquipment.new(character) %>
 <% choices = starting_equipment.choices %>
-<%# The class and the background side by side from 1024 px (decision), each block a container for its lines %>
-<div class="grid items-start gap-12 lg:grid-cols-2">
-  <% if choices.empty? %>
-    <p class="text-sm text-muted"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.pick_first") %></p>
-  <% end %>
-  <% choices.each do |choice| %>
-    <% error = sheet_field_error(character, choice.field) %>
-    <%= tag.fieldset class: "group @container min-w-0", aria: { invalid: (true if error) } do %>
-      <legend class="text-lg leading-7 font-bold text-ink"><%= equipment_source_title(choice, character.sheet_fields) %></legend>
-      <%# A single option (the rule of the table keeps only the items, or only the gold): nothing to switch, the radio
-          stays checked and hidden, still sent, and still showing its panel %>
-      <%= tag.div class: "#{CharacterSheets::EquipmentChoicesHelper::SWITCH_CLASSES} mt-3", hidden: choice.options.one? do %>
-        <% choice.options.each do |option| %>
-          <label class="<%= CharacterSheets::EquipmentChoicesHelper::SWITCH_OPTION_CLASSES %>">
-            <%= radio_button_tag equipment_option_input_name(choice, "option"), option["key"],
-                                 equipment_option_checked?(choice, option), id: equipment_option_id(choice, option),
-                                 class: "sr-only" %>
-            <%= equipment_option_label(choice, option) %>
-          </label>
+<div class="mx-auto w-full max-w-5xl" data-controller="equipment-total" data-action="change->equipment-total#count"
+     data-equipment-total-template-value="<%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.total", count: "__GOLD__") %>">
+  <div class="grid items-start gap-10 lg:grid-cols-2">
+    <% if choices.empty? %>
+      <p class="text-sm text-muted"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.pick_first") %></p>
+    <% end %>
+    <% choices.each do |choice| %>
+      <% error = sheet_field_error(character, choice.field) %>
+      <%= tag.fieldset class: "group min-w-0", aria: { invalid: (true if error) } do %>
+        <%# The legend floats: its margin, not the one of the switch under it (lost against a float) %>
+        <legend class="<%= CharacterSheets::WeaponMasteryChoicesHelper::TITLE_CLASSES %> mb-3"><%= equipment_source_title(choice, character.sheet_fields) %></legend>
+        <%# The options as tabs, a gold line under the one picked (decision, after a trial of cards). A single option
+            (the rule of the table keeps only the items, or only the gold): nothing to pick, the radio stays checked
+            and hidden, still sent, and still showing its panel %>
+        <%= tag.div class: "#{CharacterSheets::EquipmentOptionTabsHelper::TABS_CLASSES} clear-left", hidden: choice.options.one? do %>
+          <% choice.options.each do |option| %>
+            <label class="<%= CharacterSheets::EquipmentOptionTabsHelper::TAB_CLASSES %>">
+              <%= radio_button_tag equipment_option_input_name(choice, "option"), option["key"],
+                                   equipment_option_checked?(choice, option), id: equipment_option_id(choice, option),
+                                   class: "sr-only", data: { gold: option["gold"].to_i } %>
+              <%= equipment_option_tab_label(choice, option) %>
+            </label>
+          <% end %>
         <% end %>
-      <% end %>
-      <% if error %>
-        <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
-      <% end %>
+        <% if error %>
+          <p class="<%= SimpleFormFieldClasses::ERROR %>"><%= error %></p>
+        <% end %>
 
-      <% choice.options.each do |option| %>
-        <div class="<%= equipment_option_panel_classes(option) %> mt-4">
-          <% if option["items"].blank? %>
-            <p class="text-sm text-muted"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold_instead", count: option["gold"].to_i) %></p>
-          <% else %>
-            <ul class="divide-y divide-line border-y border-line">
-              <% option["items"].each_with_index do |line, position| %>
-                <% if line["choose"] %>
-                  <% pick_id = "#{equipment_option_id(choice, option)}_pick_#{position}" %>
-                  <li class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
-                    <div class="max-w-sm basis-full">
-                      <%= label_tag pick_id, equipment_choose_label(line["choose"]), class: "text-xs font-medium text-muted" %>
-                      <div class="relative mt-1">
+        <% choice.options.each do |option| %>
+          <div class="<%= equipment_option_panel_classes(option) %> clear-left mt-3">
+            <% if option["items"].blank? %>
+              <p class="px-3 py-4 text-sm text-muted">
+                <span class="block text-2xl font-bold text-brass"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold", count: option["gold"].to_i) %></span>
+                <%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.gold_purpose") %>
+              </p>
+            <% else %>
+              <ul>
+                <% option["items"].each_with_index do |line, position| %>
+                  <% if line["choose"] %>
+                    <% pick_id = "#{equipment_option_id(choice, option)}_pick_#{position}" %>
+                    <li class="<%= CharacterSheets::EquipmentChoicesHelper::CHOOSE_LINE_CLASSES %>">
+                      <span class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_MARKER_CLASSES %>" aria-hidden="true"></span>
+                      <%= label_tag pick_id, equipment_choose_label(line["choose"]), class: "truncate text-muted" %>
+                      <%# The pick written as the detail of a line, in gold, a small chevron: a list that reads like the
+                          other lines (decision: a grey field looked out of place in the table) %>
+                      <div class="relative flex items-center justify-end">
                         <%= select_tag "#{equipment_option_input_name(choice, 'picks')}[#{option['key']}][#{position}]",
                                        equipment_pick_options(starting_equipment, line["choose"],
                                                               (choice.picks[position.to_s] if equipment_option_chosen?(choice, option))),
                                        include_blank: t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.choose_prompt"), id: pick_id,
-                                       class: CharacterSheets::FieldsHelper::SELECT_CLASSES %>
-                        <%= render "shared/icons/chevron_down", css_class: CollectionSelectInput::CHEVRON_CLASSES %>
+                                       class: CharacterSheets::EquipmentChoicesHelper::PICK_CLASSES,
+                                       data: { controller: "pointer-pick", action: "pointerdown->pointer-pick#remember change->pointer-pick#release blur->pointer-pick#forget" } %>
+                        <%= render "shared/icons/chevron_down", css_class: "pointer-events-none absolute right-0 size-3.5 text-brass" %>
                       </div>
-                    </div>
-                  </li>
-                <% elsif (item = equipment_line_item(line, starting_equipment)) %>
-                  <li class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
-                    <span class="basis-full font-medium text-ink @xl:basis-auto"><%= equipment_item_text(item) %></span>
-                    <%# An empty cell keeps its column in a wide block, and leaves no gap in a narrow one %>
-                    <span class="text-muted empty:hidden @xl:empty:block"><%= item.entry.properties["category"] %></span>
-                    <span class="text-muted empty:hidden @xl:empty:block"><%= equipment_item_detail(item) %></span>
-                    <span class="text-muted tabular-nums empty:hidden @xl:empty:block @xl:text-right"><%= equipment_item_weight(item) %></span>
-                  </li>
+                    </li>
+                  <% elsif (item = equipment_line_item(line, starting_equipment)) %>
+                    <li class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_LINE_CLASSES %>">
+                      <span class="<%= CharacterSheets::EquipmentChoicesHelper::ITEM_MARKER_CLASSES %>" aria-hidden="true"></span>
+                      <span class="truncate text-ink"><%= equipment_item_text(item) %></span>
+                      <span class="hidden truncate text-xs text-muted sm:block"><%= equipment_item_detail(item) || item.entry.properties["category"] %></span>
+                      <span class="text-right text-xs text-muted tabular-nums"><%= equipment_item_weight(item) %></span>
+                    </li>
+                  <% end %>
                 <% end %>
+              </ul>
+              <% if (gold_text = equipment_gold_text(option)) %>
+                <p class="mt-3 pl-3 text-sm font-semibold text-brass"><%= gold_text %></p>
               <% end %>
-            </ul>
-            <% if (gold_text = equipment_gold_text(option)) %>
-              <p class="mt-3 text-sm font-medium text-brass"><%= gold_text %></p>
             <% end %>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
+  </div>
+  <% if choices.any? %>
+    <p class="mt-8 text-center text-sm text-muted" aria-live="polite">
+      <span data-equipment-total-target="total"><%= t("#{CharacterSheets::EquipmentChoicesHelper::SCOPE}.total", count: equipment_starting_gold(choices)) %></span>
+    </p>
   <% end %>
 </div>
 <%= render "game_tables/character_steps/magic_item_choices", character: character %>

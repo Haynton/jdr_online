@@ -41,7 +41,7 @@
       { "key": "feats", "label": "Dons", "sections": [], "chooses_origin_feats": true },
       { "key": "species_feat", "label": "Don de l'espèce", "intro": "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande.", "sections": [], "chooses_species_feat": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
-      { "key": "equipment", "label": "Équipement", "sections": ["Équipement"], "chooses_equipment": true },
+      { "key": "equipment", "label": "Équipement", "intro": "Votre classe et votre historique vous donnent chacun des objets, ou de l'or pour les acheter.", "sections": ["Équipement"], "chooses_equipment": true },
       { "key": "spells", "label": "Sorts", "sections": ["Sorts"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Détails", "sections": ["Détails"] }
     ],

@@ -41,7 +41,7 @@
       { "key": "feats", "label": "Feats", "sections": [], "chooses_origin_feats": true },
       { "key": "species_feat", "label": "Species feat", "intro": "Your species lets you pick an origin feat, and what it asks.", "sections": [], "chooses_species_feat": true },
       { "key": "combat", "label": "Combat", "sections": ["Combat"], "summary_only": true },
-      { "key": "equipment", "label": "Equipment", "sections": ["Equipment"], "chooses_equipment": true },
+      { "key": "equipment", "label": "Equipment", "intro": "Your class and your background each give you items, or gold to buy them.", "sections": ["Equipment"], "chooses_equipment": true },
       { "key": "spells", "label": "Spells", "sections": ["Spells"], "only_with_effect": "spellcasting", "chooses_spells": true },
       { "key": "details", "label": "Details", "sections": ["Details"] }
     ],

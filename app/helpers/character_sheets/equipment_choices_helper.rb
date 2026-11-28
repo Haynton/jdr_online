@@ -1,20 +1,10 @@
 # The starting equipment on the Equipment step (CharacterSheets::StartingEquipment): one block per list (the class,
-# the background), a switch "Prendre les objets | Prendre 150 pièces d'or" drawn like the theme selector, then the
-# items of the option
+# the background), its options as tabs (EquipmentOptionTabsHelper), then the items of the option
 # chosen, one line per item (decision: the packs are opened in the template), an item of your choice as a list in its
 # line
 module CharacterSheets
   module CharacterSheets::EquipmentChoicesHelper
     SCOPE = "game_tables.character_steps.equipment_choices".freeze
-    # The switch: the field background, the option chosen as a surface pill (shared/_theme_choice), the whole option
-    # clickable (its label holds its radio). Without JavaScript too. No ring (decision): an option is always chosen,
-    # the items by default (equipment_option_checked?), so the pill always draws the switch
-    SWITCH_CLASSES = "inline-flex max-w-full flex-wrap gap-1 rounded-lg bg-field p-1".freeze
-    SWITCH_OPTION_CLASSES = %w[
-      inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-sm text-ink transition-colors hover:bg-surface/60
-      has-checked:bg-surface has-checked:font-semibold has-checked:shadow-sm
-      has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus-ring
-    ].join(" ").freeze
     # The items of an option show once it is chosen, read from the radios of the block (group on the fieldset): written
     # in full for each letter, Tailwind builds no class put together
     OPTION_PANEL_CLASSES = {
@@ -22,24 +12,31 @@ module CharacterSheets
       "b" => "hidden group-has-[input[type=radio][value=b]:checked]:block",
       "c" => "hidden group-has-[input[type=radio][value=c]:checked]:block"
     }.freeze
-    # One line per item: its name, its category, damage or armour class, its weight in columns when its block is 576 px
-    # wide (container query: the blocks sit in two columns from 1024 px); narrower, the name on its line, the rest
-    # together on a second one
-    ITEM_LINE_CLASSES = "flex flex-wrap items-baseline gap-x-3 py-2 text-sm " \
-                        "@xl:grid @xl:grid-cols-[minmax(0,1fr)_7rem_8rem_4rem] @xl:items-center @xl:gap-x-4".freeze
+    # One line per item, 36 px: a small diamond, its name, its damage, armour class or category (from 640 px: on a
+    # phone it took the room of the name), its weight
+    ITEM_LINE_CLASSES = %w[
+      grid h-9 grid-cols-[10px_minmax(0,1fr)_3.5rem] items-center gap-x-3 border-b border-line px-3 text-sm
+      last:border-b-0 sm:grid-cols-[10px_minmax(0,1fr)_minmax(0,auto)_3.5rem]
+    ].join(" ").freeze
+    # An item to choose: the diamond, what to choose, its list on the right
+    CHOOSE_LINE_CLASSES = %w[
+      grid h-10 grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-x-3 border-b border-line px-3 text-sm
+      last:border-b-0
+    ].join(" ").freeze
+    # The list of an item to choose, read as the detail of its line: no field, its value in gold, a chevron after it.
+    # Its focus a light background, not the outline (Chrome draws the outline of the keyboard after a click on a list);
+    # after a pick with the pointer the list lets go of its focus (pointer_pick_controller.js): the background stays
+    # for the keyboard only
+    PICK_CLASSES = %w[
+      max-w-48 cursor-pointer appearance-none truncate rounded-md border-0 bg-transparent py-1 pr-5 pl-2 text-right
+      text-sm font-semibold text-brass hover:bg-surface focus:bg-surface-raised focus:outline-none
+    ].join(" ").freeze
+    ITEM_MARKER_CLASSES = "size-[7px] justify-self-center rotate-45 rounded-[1px] bg-brass".freeze
 
     # "Classe · Rôdeur"
     def equipment_source_title(choice, fields)
       list = fields.find { |field| field["key"] == choice.field["from"] }
       "#{list&.dig('label')} · #{choice.source_option}"
-    end
-
-    # "Prendre les objets" (or "Objets A", "Objets B" when there are several), "Prendre 150 pièces d'or"
-    def equipment_option_label(choice, option)
-      return t("#{SCOPE}.take_gold", count: option["gold"].to_i) if option["items"].blank?
-
-      several = choice.options.count { |candidate| candidate["items"].present? } > 1
-      several ? t("#{SCOPE}.items_option", letter: option["key"].upcase) : t("#{SCOPE}.take_items")
     end
 
     def equipment_option_input_name(choice, part)
@@ -97,6 +94,14 @@ module CharacterSheets
       return if weight.zero?
 
       t("#{SCOPE}.weight", value: number_with_precision(weight, precision: 2, strip_insignificant_zeros: true))
+    end
+
+    # The gold the options chosen give together (the options checked when the page opens; the page counts again)
+    def equipment_starting_gold(choices)
+      choices.sum do |choice|
+        checked = choice.options.find { |option| equipment_option_checked?(choice, option) }
+        checked.to_h["gold"].to_i
+      end
     end
 
     # "+ 7 pièces d'or" after the items of an option

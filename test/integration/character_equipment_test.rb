@@ -21,13 +21,13 @@ class CharacterEquipmentTest < ActionDispatch::IntegrationTest
     assert_select "main h1", text: "Équipement"
     assert_select "[role=tablist]", count: 0
     assert_select "fieldset legend", text: "Classe · Mage"
-    assert_select "label", text: "Prendre les objets"
-    assert_select "label", text: "Prendre 55 pièces d'or"
+    assert_select "label", text: "Objets"
+    assert_select "label", text: "55 pièces d'or"
+    assert_select "p", text: /55 pièces d'or\s+pour acheter votre équipement vous-même\./
     assert_select "input[type=radio][name=?][value=a][checked]", "character[sheet][class_equipment][option]"
     assert_select "input[type=radio][name=?][value=b]:not([checked])", "character[sheet][class_equipment][option]"
     assert_select "li span", text: "2 × Dague"
     assert_select "select[name=?] option", "character[sheet][class_equipment][picks][a][1]", text: "Luth"
-    assert_select "p", text: "55 pièces d'or pour acheter votre équipement vous-même."
   end
 
   test "the spells have their own step after the equipment, for a class that casts them" do

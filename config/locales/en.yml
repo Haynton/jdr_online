@@ -1839,10 +1839,12 @@ en:
         numbered_place: "%{rarity} %{number}"
         title: "Starting magic items"
       equipment_choices:
+        items_card: "Items"
+        gold_purpose: "to buy your equipment yourself."
+        total: "To start with: %{count} gold pieces"
         armor_class: "AC %{value}"
         choose_prompt: "Choose…"
         gold: "%{count} gold pieces"
-        gold_instead: "%{count} gold pieces to buy your equipment yourself."
         groups:
           artisan_tools: "Artisan's tools"
           gaming_set: "Gaming set"
@@ -1853,8 +1855,6 @@ en:
         or: " or "
         pick_first: "Choose a class and a background first, on the Character step."
         plus_gold: "+ %{count} gold pieces"
-        take_gold: "Take %{count} gold pieces"
-        take_items: "Take the items"
         title: "Equipment"
         weight: "%{value} lb"
       show:
