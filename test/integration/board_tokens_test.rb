@@ -279,6 +279,21 @@ class BoardTokensTest < ActionDispatch::IntegrationTest
     assert_equal %w[A B C], game_master_tokens.pluck("letter")
   end
 
+  test "a player gets the character of their own token, never the one of a creature shown" do
+    @tavern.board_tokens.create!(character: @aria, column: 1, row: 1, hidden: false)
+    @tavern.board_tokens.create!(character: @goblin, column: 2, row: 1, hidden: false)
+    sign_in @player
+
+    get game_table_path(@game_table)
+    character_ids = player_tokens.to_h { |token| [token["kind"], token["character_id"]] }
+    assert_equal({ "pc" => @aria.id, "monster" => nil }, character_ids)
+
+    sign_in @game_master
+    get game_table_path(@game_table)
+    game_master_tokens = JSON.parse(css_select("#game-room-board-tokens-game-master").first["data-tokens"])
+    assert_includes game_master_tokens.pluck("character_id"), @goblin.id
+  end
+
   private
 
   def own_tokens_in(broadcast)

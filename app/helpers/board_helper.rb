@@ -80,8 +80,13 @@ module BoardHelper
     character = token.character
     { id: token.id, name: token.displayed_name, kind: character.kind, column: token.column, row: token.row,
       number: token.shown_number, letter: (token.letter if game_master), hidden: token.hidden?,
-      picture: board_token_picture(character), character_id: character.id,
+      picture: board_token_picture(character), character_id: board_token_character_id(character, game_master:),
       custom_name: (token.name if game_master), character_name: (character.name if game_master) }
+  end
+
+  # A player needs the id only to drag the tokens they move: on a creature, it would tell two renamed tokens apart.
+  def board_token_character_id(character, game_master:)
+    character.id if game_master || character.pc? || character.companion?
   end
 
   def game_master_board_data(board_map)
