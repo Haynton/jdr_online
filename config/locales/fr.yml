@@ -1811,6 +1811,7 @@ fr:
         gold_fixed: "+ %{amount} pièces d'or."
         gold_roll: "%{dice}d%{sides} × %{multiplier} pièces d'or"
         gold_rolled_only: "+ %{roll}, lancées quand vous terminez votre personnage."
+        missing: "Choisissez un objet pour chaque ligne en rouge."
         hint: "Votre personnage commence au niveau %{level} : il reçoit en plus de l'or et des objets magiques."
         numbered_place: "%{rarity} %{number}"
         title: "Objets magiques de départ"

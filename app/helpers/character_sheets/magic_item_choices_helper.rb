@@ -3,6 +3,9 @@
 module CharacterSheets
   module MagicItemChoicesHelper
     SCOPE = "game_tables.character_steps.magic_item_choices".freeze
+    # The pick of a line, as the picks of the equipment (EquipmentChoicesHelper::PICK_CLASSES), wider: the names of
+    # the magic items are longer (« Amulette de santé physique »)
+    PICK_CLASSES = EquipmentChoicesHelper::PICK_CLASSES.sub("max-w-48", "max-w-72").freeze
 
     # « + 500 pièces d'or et 1d10 × 25 pièces d'or, lancées quand vous terminez votre personnage. », nil without gold
     def higher_level_gold_text(tier)

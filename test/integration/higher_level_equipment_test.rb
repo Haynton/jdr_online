@@ -39,7 +39,9 @@ class HigherLevelEquipmentTest < ActionDispatch::IntegrationTest
                                  starting_magic_items: { "common-1" => "potion-of-healing" } } }
 
     assert_response :unprocessable_content
-    assert_select "p", text: /Objets magiques de départ demandent l'objet de rareté « Peu commune »/
+    assert_select "p[role=alert]", text: "Choisissez un objet pour chaque ligne en rouge."
+    assert_select "select[name='character[starting_magic_items][uncommon-1]'][aria-invalid=true]"
+    assert_select "select[name='character[starting_magic_items][common-1]'][aria-invalid]", count: 0
   end
 
   test "the magic items and the gold go into the inventory when the character is done" do

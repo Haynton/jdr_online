@@ -1840,6 +1840,7 @@ en:
         gold_fixed: "+ %{amount} gold pieces."
         gold_roll: "%{dice}d%{sides} × %{multiplier} gold pieces"
         gold_rolled_only: "+ %{roll}, rolled when you finish your character."
+        missing: "Pick an item for each line in red."
         hint: "Your character starts at level %{level}: it gets more gold and magic items."
         numbered_place: "%{rarity} %{number}"
         title: "Starting magic items"
