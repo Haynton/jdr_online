@@ -14,7 +14,8 @@ module CharacterSkillChoices
 
   def skill_choices
     CharacterSheets::SkillChoices.new(fields: sheet_fields, sheet: sheet,
-                                      granted: Array(feats).flat_map { |entry| Array(entry["skills"]) })
+                                      granted: Array(feats).flat_map { |entry| Array(entry["skills"]) } +
+                                               option_skill_keys)
   end
 
   # What its options and feats give stays ticked (the rules of the game: a barbarian always has its saving throw of
@@ -30,6 +31,7 @@ module CharacterSkillChoices
   def given_locked?(field_key)
     return false if game_table.players_change_given_choices
 
-    skill_choices.given_by.key?(field_key) || feat_list.skill_keys.include?(field_key)
+    skill_choices.given_by.key?(field_key) || feat_list.skill_keys.include?(field_key) ||
+      option_skill_keys.include?(field_key)
   end
 end

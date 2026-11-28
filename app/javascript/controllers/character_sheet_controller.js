@@ -56,10 +56,12 @@ export default class extends Controller {
   // The skills offered by the options picked (skill_choices) are marked, and the count of those ticked is written
   // under the title of their section. Nothing to show while no option offers any. A skill another option already
   // gives (proficient: the background ticks its own) or a feat gives (Skilled: a line the server marked given,
-  // data-state) is neither offered nor counted: the player picks the others
+  // data-state) is neither offered nor counted: the player picks the others. A list that depends on another (the
+  // subclass, refinements) offers its skills on a step of its own, as CharacterSheets::SkillChoices on the server
   showSkillChoices() {
     const pickedEffects = this.pickedEffects()
-    const offers = pickedEffects.filter(({ effects }) => effects.skill_choices)
+    const dependentLists = Object.values(this.refinementsValue).flat()
+    const offers = pickedEffects.filter(({ fieldKey, effects }) => effects.skill_choices && !dependentLists.includes(fieldKey))
     const grantedKeys = new Set([...pickedEffects.flatMap(({ effects }) => effects.proficient ?? []),
       ...this.givenRowKeys()])
     const offeredKeys = new Set(offers.flatMap(({ effects }) => effects.skill_choices.from)
@@ -124,7 +126,7 @@ export default class extends Controller {
       const select = this.element.querySelector(`#character_sheet_${fieldKey}`)
       const option = select ? select.value : this.sheetValue[fieldKey]
       const effects = this.effectsValue[fieldKey][option]
-      return effects ? [{ option, effects }] : []
+      return effects ? [{ fieldKey, option, effects }] : []
     })
   }
 

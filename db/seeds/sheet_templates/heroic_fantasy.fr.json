@@ -37,6 +37,7 @@
       { "key": "species", "label": "Espèce", "intro": "Le peuple de votre héros : sa taille, sa vitesse et ses capacités de naissance.", "sections": ["Espèce"] },
       { "key": "abilities", "label": "Caractéristiques", "intro": "Donnez un score à chaque caractéristique, puis placez les bonus de votre historique.", "sections": ["Caractéristiques"] },
       { "key": "skills", "label": "Compétences", "intro": "Une compétence maîtrisée ajoute votre bonus de maîtrise à ses jets. Choisissez celles que votre classe propose.", "sections": ["Jets de sauvegarde", "Compétences"], "chooses_class_choices": true },
+      { "key": "subclass_skills", "label": "Compétences de la sous-classe", "intro": "Votre sous-classe vous laisse choisir des compétences en plus de celles de votre classe.", "sections": [], "chooses_option_skills": true },
       { "key": "weapons", "label": "Armes", "intro": "Votre classe vous apprend à tirer le meilleur de certaines armes : chacune donne une propriété à vos attaques.", "sections": [], "only_with_effect": "weapon_mastery", "chooses_weapon_masteries": true },
       { "key": "feats", "label": "Dons", "sections": [], "chooses_origin_feats": true },
       { "key": "species_feat", "label": "Don de l'espèce", "intro": "Votre espèce vous laisse choisir un don d'origine, et ce qu'il demande.", "sections": [], "chooses_species_feat": true },

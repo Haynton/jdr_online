@@ -8,6 +8,7 @@ class Character < ApplicationRecord
   include CharacterAbilityMethod
   include CharacterAbilityRolls
   include CharacterSkillChoices
+  include CharacterOptionSkills
   include CharacterDraftSaving
   include CharacterSpellbook
   include CharacterHitPoints

@@ -1,0 +1,41 @@
+<%# The step « Compétences de la sous-classe » (decision of 28 November): for each list that depends on another and
+    offers skills (the College of Lore of the bard: 3 of any list), where they come from, the option's description,
+    then its skills as chips, the count above them (pick_limit_controller.js: the others faded once enough are ticked).
+    A skill known by another way (the class, the background, a feat) is not offered. Sent as
+    character[option_skills][<list>][], kept by CreationStepBehaviors::ChoosesOptionSkills (CharacterOptionSkills) %>
+<% given = character.skill_choices.granted_keys - character.option_skill_keys %>
+<% class_picks = character.skill_choices.chosen_keys %>
+<div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-10">
+  <% character.errors[:option_skills].uniq.each do |message| %>
+    <p class="<%= SimpleFormFieldClasses::ERROR %>" role="alert"><%= message %></p>
+  <% end %>
+  <% character.option_skill_offers.each do |offer| %>
+    <% key = offer.field["key"] %>
+    <% picked = Array(character.option_skills.to_h[key]) %>
+    <% candidates = character.sheet_fields.select { |field| offer.from.include?(field["key"]) && (given + class_picks).exclude?(field["key"]) } %>
+    <%= tag.fieldset class: "min-w-0",
+                     data: { controller: "pick-limit", action: "change->pick-limit#count", pick_limit_allowed_value: offer.count,
+                             pick_limit_template_value: t("game_tables.character_steps.feat_spells.chosen", count: offer.count, chosen: "__CHOSEN__") } do %>
+      <legend class="<%= CharacterSheets::WeaponMasteryChoicesHelper::TITLE_CLASSES %>"><%= offer.field["label"] %> · <%= offer.option %></legend>
+      <% if (description = offer.field.dig("descriptions", offer.option)) %>
+        <p class="clear-left pt-2 text-sm text-muted"><%= description %></p>
+      <% end %>
+      <p class="clear-left pt-3 text-sm text-ink"><%= t("game_tables.level_ups.feat.skills", count: offer.count) %></p>
+      <p class="pt-1 text-sm font-semibold text-brass data-invalid:text-error-ink" role="status" data-pick-limit-target="count">
+        <%= t("game_tables.character_steps.feat_spells.chosen", count: offer.count, chosen: picked.size) %>
+      </p>
+      <%= hidden_field_tag "character[option_skills][#{key}][]", "", id: nil %>
+      <div class="flex flex-wrap gap-1.5 pt-3">
+        <% candidates.each do |field| %>
+          <label class="<%= CharacterSheets::WeaponMasteryChoicesHelper::CHIP_CLASSES %>">
+            <%= check_box_tag "character[option_skills][#{key}][]", field["key"], picked.include?(field["key"]),
+                              id: "option-skill-#{key}-#{field["key"]}", class: "peer sr-only",
+                              data: { pick_limit_target: "box" } %>
+            <span class="size-2.5 shrink-0 rotate-45 rounded-[2px] border border-brass group-has-checked/pick:bg-brass" aria-hidden="true"></span>
+            <%= field["label"] %>
+          </label>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

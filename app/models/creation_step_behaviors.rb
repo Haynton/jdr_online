@@ -8,7 +8,7 @@ module CreationStepBehaviors
     CreationStepBehaviors::ChoosesEquipment, CreationStepBehaviors::ChoosesSpells,
     CreationStepBehaviors::ChoosesWeaponMasteries, CreationStepBehaviors::ChoosesClassChoices,
     CreationStepBehaviors::ChoosesOriginFeats, CreationStepBehaviors::ChoosesSpeciesFeat,
-    CreationStepBehaviors::ChoosesLevelFeats
+    CreationStepBehaviors::ChoosesLevelFeats, CreationStepBehaviors::ChoosesOptionSkills
   ].freeze
 
   def self.all

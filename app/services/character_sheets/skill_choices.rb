@@ -1,7 +1,8 @@
 # The skills a character picks (effect skill_choices of an option: the class offers count skills from a list), read
 # on its sheet. The same reading as character_sheet_controller.js#showSkillChoices: a skill another option picked
 # already gives (proficient: the background ticks its own) is neither offered nor counted. Only the skills some option
-# of the template may offer are concerned (the saving throws, ticked by the class, are not)
+# of the template may offer are concerned (the saving throws, ticked by the class, are not). A list that depends on
+# another (the subclass) offers its skills on a step of its own (CharacterOptionSkills): not counted here
 module CharacterSheets
   class SkillChoices
     # granted: skills given beside the options (those of a feat: Skilled)
@@ -70,7 +71,7 @@ module CharacterSheets
 
     # The options picked that offer skills, with how many each: "Rôdeur : 3, Humain : 1"
     def offers_text
-      @choice_fields.filter_map do |field|
+      @choice_fields.reject { |field| field["options_from"] }.filter_map do |field|
         count = field["effects"][@sheet[field["key"]]].to_h.dig("skill_choices", "count")
         "#{@sheet[field['key']]} : #{count}" if count
       end.join(", ")
@@ -105,7 +106,9 @@ module CharacterSheets
     end
 
     def offers
-      picked_effects.select { |effects| effects["skill_choices"] }
+      @choice_fields.reject { |field| field["options_from"] }
+                    .filter_map { |field| field["effects"][@sheet[field["key"]]] }
+                    .select { |effects| effects["skill_choices"] }
     end
 
     def picked_effects

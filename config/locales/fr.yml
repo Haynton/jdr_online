@@ -94,6 +94,7 @@ fr:
         fighting_style: "Style de combat"
         weapon_masteries: "Maîtrises d'armes"
         name: "Nom du personnage"
+        option_skills: "Compétences de la sous-classe"
         owner_character: "Personnage"
         spells: "Sorts"
         starting_magic_items: "Objets magiques de départ"

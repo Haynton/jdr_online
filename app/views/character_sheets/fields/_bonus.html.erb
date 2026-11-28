@@ -7,6 +7,7 @@
 <% state = skill_row_state(character, field) %>
 <% given_by = sheet_given_by(character, field) %>
 <% availability = skill_row_availability(character, field, state) %>
+<% expertise_box = sheet_expertise_check_box(character, field) %>
 <%= tag.div class: "group/skill relative",
             data: { state: state, character_sheet_target: "bonusRow", skill_rows_target: "row", key: field["key"],
                     offered: ("" if skill_row_offered?(character, field)),
@@ -18,7 +19,9 @@
             data-character-sheet-target="bonus" data-based-on="<%= field["based_on"] %>"
             data-proficiency="<%= field["proficiency"] %>" data-proficient-box="<%= sheet_field_id(field) %>"
             data-expertise-box="<%= sheet_field_id(field) %>-expertise"><%= format_bonus(value) %></output>
-    <span class="truncate">
+    <%# The box « Expertise » lies over the end of the line once shown: the name keeps its room (a long source, « Collège
+        du Savoir », went under it) %>
+    <span class="truncate <%= CharacterSheets::SkillRowsHelper::EXPERTISE_ROOM_CLASSES if expertise_box %>">
       <%= field["label"] %>
       <% if given_by %>
         <span class="ml-1.5 text-xs font-normal text-muted"><%= given_by %></span>
@@ -27,7 +30,7 @@
     <%# Hidden on a narrow line (the column of the saving throws): their name says the ability already %>
     <span class="hidden text-xs font-normal text-muted group-has-[input[value='1']:checked]/skill:text-current @sm:block"><%= sheet_ability_abbreviation(all_fields, field["based_on"]) %></span>
   <% end %>
-  <% if (expertise_box = sheet_expertise_check_box(character, field)) %>
+  <% if expertise_box %>
     <%# Shown only once the skill is ticked (or already in expertise), on the line, left of the ability %>
     <label class="absolute top-1/2 right-14 hidden -translate-y-1/2 cursor-pointer items-center gap-1.5 text-xs text-primary-soft-ink group-has-[input[value='1']:checked]/skill:flex group-has-[input[value='2']:checked]/skill:flex"
            title="<%= t("game_tables.characters.new.expertise_hint") %>">

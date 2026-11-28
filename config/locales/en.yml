@@ -123,6 +123,7 @@ en:
         fighting_style: "Fighting style"
         weapon_masteries: "Weapon masteries"
         name: "Character name"
+        option_skills: "Subclass skills"
         owner_character: "Character"
         spells: "Spells"
         starting_magic_items: "Starting magic items"

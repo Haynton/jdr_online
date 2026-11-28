@@ -111,7 +111,8 @@ module CharacterSheets
       return unless character.is_a?(Character) && character.pc?
 
       @sheet_given_by ||= {}
-      @sheet_given_by[character.id] ||= character.skill_choices.given_by.merge(character.feat_skill_sources)
+      @sheet_given_by[character.id] ||= character.skill_choices.given_by
+                                                 .merge(character.feat_skill_sources, character.option_skill_sources)
       @sheet_given_by[character.id][field["key"]]
     end
 

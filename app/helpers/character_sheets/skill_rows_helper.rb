@@ -9,6 +9,10 @@
 # The box is the field the step always sent, hidden in the line: the server checks it as before
 module CharacterSheets
   module SkillRowsHelper
+    # The room of the box « Expertise » at the end of a ticked line (character_sheets/fields/_bonus)
+    EXPERTISE_ROOM_CLASSES = "group-has-[input[value='1']:checked]/skill:pr-24 " \
+                             "group-has-[input[value='2']:checked]/skill:pr-24".freeze
+
     SKILL_ROW_CLASSES = %w[
       grid h-10 w-full grid-cols-[10px_2rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg border
       border-transparent px-3 text-sm text-ink transition-colors peer-focus-visible:outline-2
